@@ -23,7 +23,7 @@ This API makes heavy use of concepts of:
 - Value Object / Data Transfer Object:
     - https://en.wikipedia.org/wiki/Value_object
     - https://www.martinfowler.com/bliki/ValueObject.html
-    - https://en.wikipedia.org/wiki/Value_object
+    - https://en.wikipedia.org/wiki/Data_transfer_object
     - https://www.martinfowler.com/eaaCatalog/dataTransferObject.html
 
 The value objects allow to create very clean interface for agent, but at the same time allow to precisely define what agents can perceive and do.
