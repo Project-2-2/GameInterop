@@ -19,13 +19,24 @@ public class PerceptsTest extends SimpleUnitTest {
                     new Point(1, 1)
                 ),
                 new AgentPercepts(new HashSet<>(Arrays.asList(
-                    new AgentPercept(AgentPerceptType.Guard, new Point(0, 0), 1)
+                    new AgentPercept(AgentPerceptType.Guard, new Point(0, 0), 1),
+                    new AgentPercept(AgentPerceptType.Intruder, new Point(2, 2), 1)
                 ))),
                 new ObjectPercepts(new HashSet<>(Arrays.asList(
-                    new ObjectPercept(ObjectPerceptType.Wall, new LineCurve(Arrays.asList(
-                        new Point(1, 1),
-                        new Point(2, 2)
-                    )))
+                    new ObjectPercept(
+                        ObjectPerceptType.Wall,
+                        new LineCurve(Arrays.asList(
+                            new Point(1, 1),
+                            new Point(2, 2)
+                        )
+                    )),
+                    new ObjectPercept(
+                        ObjectPerceptType.Marker1,
+                        new LineCurve(Arrays.asList(
+                            new Point(3, 3),
+                            new Point(4, 5)
+                        )
+                    ))
                 )))
             );
 
