@@ -1,6 +1,6 @@
 This is a proposition of a common API that will allow to implement agents independently.
 
-The main interface af an agent is very simple:
+The main interface of an agent is very simple:
 ```$java
 /**
  * The common interface for agents.
@@ -45,3 +45,5 @@ The idea is very simple:
     
     }
 ```
+
+You can see how that works in practice in `src/test/java/PerceptsTest.java PerceptsTest#main`.
