@@ -2,6 +2,9 @@ package Percepts;
 
 import Geometry.*;
 import Percept.*;
+import Percept.Smell.Intensity;
+import Percept.Smell.SmellPercept;
+import Percept.Smell.SmellPerceptType;
 import Percept.Smell.SmellPercepts;
 import Percept.Sound.*;
 import Percept.Vision.*;
@@ -10,15 +13,19 @@ import SimpleUnitTest.*;
 import java.util.Arrays;
 import java.util.HashSet;
 
+/**
+ * @author Tomasz Darmetko
+ */
 public class PerceptsTest extends SimpleUnitTest {
 
     public static void main(String[] args) {
 
         System.out.println("\n\nPercepts Test\n");
 
-        it("allows to create percepts", () -> {
+        it("allows to create intruder percepts", () -> {
 
-            Percepts percepts = new Percepts(
+            IntruderPercepts percepts = new IntruderPercepts(
+                Direction.fromDegrees(90),
                 new VisionPrecepts(
                     new FieldOfView(
                         new Distance(7),
@@ -36,11 +43,45 @@ public class PerceptsTest extends SimpleUnitTest {
                     )))
                 ),
                 new SoundPercepts(),
-                new SmellPercepts(),
-                false
+                new SmellPercepts(new HashSet<>(Arrays.asList(
+                    new SmellPercept(
+                        SmellPerceptType.Pheromone1,
+                        new Intensity(0.5),
+                        Direction.fromDegrees(180)
+                    ),
+                    new SmellPercept(
+                        SmellPerceptType.Pheromone2,
+                        new Intensity(0.3),
+                        Direction.fromDegrees(90)
+                    )
+                ))),
+                true
             );
 
-            assertInstanceOf(percepts, Percepts.class);
+            assertInstanceOf(percepts, IntruderPercepts.class);
+            assertInstanceOf(percepts.getTargetDirection(), Direction.class);
+            assertInstanceOf(percepts.getVision(), VisionPrecepts.class);
+            assertInstanceOf(percepts.getSounds(), SoundPercepts.class);
+            assertInstanceOf(percepts.getSmells(), SmellPercepts.class);
+
+        });
+
+        it("allows to create empty guard percepts", () -> {
+
+            GuardPercepts percepts = EmptyPercepts.createEmptyForGuard(true);
+
+            assertInstanceOf(percepts, GuardPercepts.class);
+            assertInstanceOf(percepts.getVision(), VisionPrecepts.class);
+            assertInstanceOf(percepts.getSounds(), SoundPercepts.class);
+            assertInstanceOf(percepts.getSmells(), SmellPercepts.class);
+
+        });
+
+        it("allows to create empty intruder percepts", () -> {
+
+            IntruderPercepts percepts = EmptyPercepts.createEmptyForIntruder(true);
+
+            assertInstanceOf(percepts, IntruderPercepts.class);
             assertInstanceOf(percepts.getVision(), VisionPrecepts.class);
             assertInstanceOf(percepts.getSounds(), SoundPercepts.class);
             assertInstanceOf(percepts.getSmells(), SmellPercepts.class);

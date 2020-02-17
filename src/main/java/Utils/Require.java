@@ -4,6 +4,8 @@ import java.util.Objects;
 
 /**
  * This class allows to efficiently express requirements.
+ *
+ * @author Tomasz Darmetko
  */
 public class Require {
     public static void notNull(Object object) {

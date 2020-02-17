@@ -6,6 +6,11 @@ import java.util.Objects;
 
 /**
  * Represents perception of the world by vision.
+ *
+ * See: https://en.wikipedia.org/wiki/Ray_casting
+ *
+ * You should also take a look at:
+ * @see Percept.Vision.FieldOfView
  */
 public class VisionPrecepts {
 

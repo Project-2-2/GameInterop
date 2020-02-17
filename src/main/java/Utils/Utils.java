@@ -7,6 +7,8 @@ import static java.lang.Double.NaN;
 
 /**
  * Some useful common functions and constants.
+ *
+ * @author Tomasz Darmetko
  */
 public class Utils {
 

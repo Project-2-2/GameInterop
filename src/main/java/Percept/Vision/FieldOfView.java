@@ -10,7 +10,9 @@ import java.util.Objects;
  * An agent is able to perceive by vision only in this field of view.
  *
  * Everything in the field of view is relative to an agent.
- * The field of view always faces in the direction that an agent is facing.
+ * The agent is the origin of the coordinate system of that agent percepts.
+ * The field of view always faces in the direction that the agent is facing.
+ * The direction the agent is facing coincides with the positive part of y-axis in the agent coordinate system.
  *
  * Field of View:
  *
@@ -20,6 +22,7 @@ import java.util.Objects;
  *         \|/
  *          V  <----- Angle
  *        Agent
+ *    Coordinate: (0, 0)
  *
  */
 public class FieldOfView {

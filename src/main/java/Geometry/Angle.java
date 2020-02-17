@@ -17,7 +17,7 @@ public class Angle {
      * @see #fromRadians
      * @see #fromDegrees
      */
-    private Angle(double radians) {
+    protected Angle(double radians) {
         if(!Utils.isRealNumber(radians)) {
             throw new RuntimeException("Wrong angle! Angle needs to be a real number, but given: " + radians);
         }

@@ -7,6 +7,15 @@ import java.util.Objects;
 
 /**
  * Represents the visible part (perception) of an object.
+ *
+ * An agent vision is implemented based on the idea of ray casting.
+ * See: https://en.wikipedia.org/wiki/Ray_casting
+ *
+ * Notice! A ray cast that does not intersect anything should be reported as an empty space.
+ * @see ObjectPerceptType#EmptySpace
+ *
+ * You should also take a look at:
+ * @see Percept.Vision.FieldOfView
  */
 public class ObjectPercept {
 
@@ -20,10 +29,16 @@ public class ObjectPercept {
         this.point = point;
     }
 
+    /**
+     * The type of a visible object that a ray intersected.
+     */
     public ObjectPerceptType getType() {
         return type;
     }
 
+    /**
+     * The point of intersection of a ray casted by an agent and a visible object.
+     */
     public Point getPoint() {
         return point;
     }
