@@ -43,6 +43,7 @@ public class PerceptsTest extends SimpleUnitTest {
             assertInstanceOf(percepts, Percepts.class);
             assertInstanceOf(percepts.getVision(), VisionPrecepts.class);
             assertInstanceOf(percepts.getSounds(), SoundPercepts.class);
+            assertInstanceOf(percepts.getSmells(), SmellPercepts.class);
 
         });
 

@@ -40,6 +40,10 @@ public class Percepts {
         return sounds;
     }
 
+    public SmellPercepts getSmells() {
+        return smells;
+    }
+
     /**
      * This information allows an agent to recover from issuing an invalid action.
      * @return Whether the last action issued by an agent was executed.
