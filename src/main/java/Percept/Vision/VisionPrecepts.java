@@ -1,5 +1,7 @@
 package Percept.Vision;
 
+import Utils.Require;
+
 import java.util.Objects;
 
 /**
@@ -11,8 +13,8 @@ public class VisionPrecepts {
     private ObjectPercepts objectPercepts;
 
     public VisionPrecepts(FieldOfView fieldOfView, ObjectPercepts objectPercepts) {
-        Objects.requireNonNull(fieldOfView);
-        Objects.requireNonNull(objectPercepts);
+        Require.notNull(fieldOfView);
+        Require.notNull(objectPercepts);
         this.fieldOfView = fieldOfView;
         this.objectPercepts = objectPercepts;
     }

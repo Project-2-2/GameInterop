@@ -20,8 +20,8 @@ public class Percepts {
     private boolean wasLastActionExecuted;
 
     public Percepts(VisionPrecepts vision, SoundPercepts sounds, boolean wasLastActionExecuted) {
-        Objects.requireNonNull(vision);
-        Objects.requireNonNull(sounds);
+        Require.notNull(vision);
+        Require.notNull(sounds);
         this.vision = vision;
         this.sounds = sounds;
         this.wasLastActionExecuted = wasLastActionExecuted;

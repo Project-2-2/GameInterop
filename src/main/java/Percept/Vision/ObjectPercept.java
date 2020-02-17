@@ -1,6 +1,7 @@
 package Percept.Vision;
 
 import Geometry.*;
+import Utils.Require;
 
 import java.util.Objects;
 
@@ -13,8 +14,8 @@ public class ObjectPercept {
     private Point point;
 
     public ObjectPercept(ObjectPerceptType type, Point point) {
-        Objects.requireNonNull(type);
-        Objects.requireNonNull(point);
+        Require.notNull(type);
+        Require.notNull(point);
         this.type = type;
         this.point = point;
     }

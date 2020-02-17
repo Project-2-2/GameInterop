@@ -1,6 +1,7 @@
 package Percept.Vision;
 
 import Geometry.*;
+import Utils.Require;
 
 import java.util.Objects;
 
@@ -27,8 +28,8 @@ public class FieldOfView {
     private Angle angle;
 
     public FieldOfView(Distance range, Angle angle) {
-        Objects.requireNonNull(range);
-        Objects.requireNonNull(angle);
+        Require.notNull(range);
+        Require.notNull(angle);
         this.range = range;
         this.angle = angle;
     }
