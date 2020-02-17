@@ -1,6 +1,8 @@
 package Percept.Vision;
 
-import Geometry.LineCurve;
+import Geometry.*;
+
+import java.util.Objects;
 
 /**
  * Represents the visible part (perception) of an object.
@@ -8,19 +10,21 @@ import Geometry.LineCurve;
 public class ObjectPercept {
 
     private ObjectPerceptType type;
-    private LineCurve curve;
+    private Point point;
 
-    public ObjectPercept(ObjectPerceptType type, LineCurve curve) {
+    public ObjectPercept(ObjectPerceptType type, Point point) {
+        Objects.requireNonNull(type);
+        Objects.requireNonNull(point);
         this.type = type;
-        this.curve = curve;
+        this.point = point;
     }
 
     public ObjectPerceptType getType() {
         return type;
     }
 
-    public LineCurve getCurve() {
-        return curve;
+    public Point getPoint() {
+        return point;
     }
 
 }

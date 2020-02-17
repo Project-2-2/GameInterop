@@ -1,3 +1,5 @@
+package SimpleUnitTest;
+
 /**
  * Simple unit test framework.
  *
@@ -13,7 +15,7 @@
  *
  * @author Tomasz Darmetko
  */
-abstract class SimpleUnitTest {
+public abstract class SimpleUnitTest {
 
     /**
      * This method is just a placeholder explaining to you what to do.

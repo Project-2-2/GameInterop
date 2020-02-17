@@ -1,44 +1,44 @@
 package Percept.Vision;
 
-import Geometry.Point;
+import Geometry.*;
+
+import java.util.Objects;
 
 /**
  * Represents the field of view of an agent.
- * The field of view is relative to the agent.
- * The field of view always faces in the direction that the agent is facing.
+ * An agent is able to perceive by vision only in this field of view.
  *
- * The field of view is a isosceles triangle, with:
- *  - the apex is centered on the perceiver
- *  - the left corner of the base representing the leftmost corner of the field of view
- *  - the right corner of the base representing the rightmost corner of the field of view
+ * Everything in the field of view is relative to an agent.
+ * The field of view always faces in the direction that an agent is facing.
  *
- * The triangle is an approximation from the circle sector that would normally represent the filed of view.
- * The approximation simplifies computation of points of line segments intersecting the field of view.
+ * Field of View:
  *
- * The agent is able to perceive only in this field of view.
+ *       ⌄--⌄--⌄----- Rays
+ *       \  |  /  <-- Range
+ *        \ | /
+ *         \|/
+ *          V  <----- Angle
+ *        Agent
+ *
  */
 public class FieldOfView {
 
-    private final Point perceiverCorner = new Point(0, 0);
+    private Distance range;
+    private Angle angle;
 
-    private Point leftCorner;
-    private Point rightCorner;
-
-    public FieldOfView(Point leftCorner, Point rightCorner) {
-        this.leftCorner = leftCorner;
-        this.rightCorner = rightCorner;
+    public FieldOfView(Distance range, Angle angle) {
+        Objects.requireNonNull(range);
+        Objects.requireNonNull(angle);
+        this.range = range;
+        this.angle = angle;
     }
 
-    public Point getPerceiverCorner() {
-        return perceiverCorner;
+    public Distance getRange() {
+        return range;
     }
 
-    public Point getLeftCorner() {
-        return leftCorner;
-    }
-
-    public Point getRightCorner() {
-        return rightCorner;
+    public Angle getAngle() {
+        return angle;
     }
 
 }

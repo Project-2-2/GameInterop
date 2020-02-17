@@ -1,19 +1,30 @@
 package Percept;
 
+import Action.*;
 import Percept.Sound.SoundPercepts;
 import Percept.Vision.VisionPrecepts;
 
+import java.util.Objects;
+
 /**
- * Represents the percepts as perceived by an agent.
+ * Represents the percepts of an agent.
+ *
+ * Percept: A perceived object as it exists in the mind of someone perceiving it;
+ *          the mental impression that is the result of perceiving something.
  */
 public class Percepts {
 
     private VisionPrecepts vision;
     private SoundPercepts sounds;
 
-    public Percepts(VisionPrecepts vision, SoundPercepts sounds) {
+    private boolean wasLastActionExecuted;
+
+    public Percepts(VisionPrecepts vision, SoundPercepts sounds, boolean wasLastActionExecuted) {
+        Objects.requireNonNull(vision);
+        Objects.requireNonNull(sounds);
         this.vision = vision;
         this.sounds = sounds;
+        this.wasLastActionExecuted = wasLastActionExecuted;
     }
 
     public VisionPrecepts getVision() {
@@ -22,6 +33,14 @@ public class Percepts {
 
     public SoundPercepts getSounds() {
         return sounds;
+    }
+
+    /**
+     * This information allows an agent to recover from issuing an invalid action.
+     * @return Whether the last action issued by an agent was executed.
+     */
+    public boolean wasLastActionExecuted() {
+        return wasLastActionExecuted;
     }
 
 }

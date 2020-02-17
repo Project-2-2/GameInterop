@@ -1,11 +1,29 @@
 package Percept.Vision;
 
 /**
- * Lists all possible object types.
- *
- * Notice: Objects are represented differently from Agents.
+ * Lists all possible object types, detectable by vision.
  */
 public enum ObjectPerceptType {
-    Wall, Shadow, // TODO: Are there more?
-    Marker1, Marker2, Marker3, Marker4, Marker5;
+
+    Guard, Intruder,
+    Wall, Window, Door,
+    Teleport,
+    SentryTower,
+    ShadedArea,
+    TargetArea,
+    EmptySpace;
+
+    /**
+     * @return Whether the perceived object is an agent.
+     */
+    public boolean isAgent() {
+        switch (this) {
+            case Intruder:
+            case Guard:
+                return true;
+            default:
+                return false;
+        }
+    }
+
 }
