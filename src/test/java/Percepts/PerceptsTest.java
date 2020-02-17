@@ -2,6 +2,7 @@ package Percepts;
 
 import Geometry.*;
 import Percept.*;
+import Percept.Smell.SmellPercepts;
 import Percept.Sound.*;
 import Percept.Vision.*;
 import SimpleUnitTest.*;
@@ -35,6 +36,7 @@ public class PerceptsTest extends SimpleUnitTest {
                     )))
                 ),
                 new SoundPercepts(),
+                new SmellPercepts(),
                 false
             );
 
