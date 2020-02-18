@@ -90,6 +90,15 @@ public class Utils {
     }
 
     /**
+     * @param alpha The one angle.
+     * @param beta The other angle.
+     * @return The absolute distance from the one angle to the other angle.
+     */
+    public static double getDistanceBetweenAngles(double alpha, double beta) {
+        return Math.abs(getSignedDistanceBetweenAngles(alpha, beta));
+    }
+
+    /**
      * Checks whether the given value is a real number.
      *
      * @param value The value to check.

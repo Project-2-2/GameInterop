@@ -31,4 +31,8 @@ public class Direction extends Angle {
         return fromRadians(Math.toRadians(degrees));
     }
 
+    public static Direction fromClockAngle(Point point) {
+        return new Direction(Utils.clockAngle(point.getX(), point.getY()));
+    }
+
 }

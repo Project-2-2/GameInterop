@@ -11,8 +11,8 @@ public class Point {
     private double y;
 
     public Point(double x, double y) {
-        Require.realNumber(x);
-        Require.realNumber(y);
+        Require.realNumber(x, "A point on cartesian coordinate system must have real coordinates!");
+        Require.realNumber(y, "A point on cartesian coordinate system must have real coordinates!");
         this.x = x;
         this.y = y;
     }
@@ -23,6 +23,25 @@ public class Point {
 
     public double getY() {
         return y;
+    }
+
+    public Direction getClockDirection() {
+        return Direction.fromClockAngle(this);
+    }
+
+    public Distance getDistance(Point point) {
+        return new Distance(this, point);
+    }
+
+    public Distance getDistanceFromOrigin() {
+        return getDistance(new Point(0, 0));
+    }
+
+    public String toString() {
+        return "Point{" +
+            "x=" + x +
+            ", y=" + y +
+            '}';
     }
 
 }

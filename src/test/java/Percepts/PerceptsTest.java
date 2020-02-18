@@ -34,11 +34,11 @@ public class PerceptsTest extends SimpleUnitTest {
                     new ObjectPercepts(new HashSet<>(Arrays.asList(
                         new ObjectPercept(
                             ObjectPerceptType.Guard,
-                            new Point(-1, 1)
+                            new Point(-1, 5)
                         ),
                         new ObjectPercept(
                             ObjectPerceptType.Wall,
-                            new Point(1, 1)
+                            new Point(1, 5)
                         )
                     )))
                 ),

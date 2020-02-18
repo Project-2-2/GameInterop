@@ -2,8 +2,7 @@ package Percept.Vision;
 
 import Geometry.*;
 import Utils.Require;
-
-import java.util.Objects;
+import Utils.Utils;
 
 /**
  * Represents the field of view of an agent.
@@ -28,21 +27,41 @@ import java.util.Objects;
 public class FieldOfView {
 
     private Distance range;
-    private Angle angle;
+    private Angle viewAngle;
 
-    public FieldOfView(Distance range, Angle angle) {
+    public FieldOfView(Distance range, Angle viewAngle) {
         Require.notNull(range);
-        Require.notNull(angle);
+        Require.notNull(viewAngle);
+        Require.notNegative(viewAngle.getRadians(), "The view angle must not be negative!");
+        if(viewAngle.getDegrees() > 360) {
+            throw new RuntimeException(
+                "View angle bigger than 360 degree does not make sense!\n" +
+                "View angle given (degrees): " + viewAngle.getDegrees()
+            );
+        }
         this.range = range;
-        this.angle = angle;
+        this.viewAngle = viewAngle;
     }
 
     public Distance getRange() {
         return range;
     }
 
-    public Angle getAngle() {
-        return angle;
+    public Angle getViewAngle() {
+        return viewAngle;
+    }
+
+    public boolean isInView(Point point) {
+        return isInRange(point) && isInViewAngle(point);
+    }
+
+    private boolean isInViewAngle(Point point) {
+        return Angle.fromRadians(0).getDistance(point.getClockDirection()).getRadians()
+            <= getViewAngle().getRadians() / 2;
+    }
+
+    private boolean isInRange(Point point) {
+        return point.getDistanceFromOrigin().getValue() <= getRange().getValue();
     }
 
 }

@@ -21,6 +21,18 @@ public class ObjectPercepts {
         return objectPercepts;
     }
 
+    ObjectPercepts getInFieldOfView(FieldOfView fieldOfView) {
+        return filter((ObjectPercept percept) -> {
+            return fieldOfView.isInView(percept.getPoint());
+        });
+    }
+
+    ObjectPercepts getNotInFieldOfView(FieldOfView fieldOfView) {
+        return filter((ObjectPercept percept) -> {
+            return !fieldOfView.isInView(percept.getPoint());
+        });
+    }
+
     /**
      * Allows to select objects that fulfil a given predicate.
      *
@@ -34,4 +46,7 @@ public class ObjectPercepts {
         return new ObjectPercepts(objectPercepts.stream().filter(predicate).collect(Collectors.toSet()));
     }
 
+    public String toString() {
+        return objectPercepts.toString();
+    }
 }
