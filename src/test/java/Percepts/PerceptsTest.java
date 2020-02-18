@@ -8,6 +8,7 @@ import Percept.Smell.SmellPerceptType;
 import Percept.Smell.SmellPercepts;
 import Percept.Sound.*;
 import Percept.Vision.*;
+import Percepts.Vision.VisionPerceptsTest;
 import SimpleUnitTest.*;
 
 import java.util.Arrays;
@@ -19,6 +20,8 @@ import java.util.HashSet;
 public class PerceptsTest extends SimpleUnitTest {
 
     public static void main(String[] args) {
+
+        VisionPerceptsTest.main(args);
 
         System.out.println("\n\nPercepts Test\n");
 

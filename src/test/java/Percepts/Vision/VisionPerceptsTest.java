@@ -17,6 +17,9 @@ import java.util.HashSet;
 public class VisionPerceptsTest extends SimpleUnitTest {
 
     public static void main(String[] args) {
+
+        System.out.println("\n\nVision Percepts Test\n");
+
         it("allows to create simple vision percepts in 360 degree field of view", () -> {
 
             VisionPrecepts visionPrecepts = new VisionPrecepts(
