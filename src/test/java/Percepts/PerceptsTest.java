@@ -2,7 +2,6 @@ package Percepts;
 
 import Geometry.*;
 import Percept.*;
-import Percept.Smell.Intensity;
 import Percept.Smell.SmellPercept;
 import Percept.Smell.SmellPerceptType;
 import Percept.Smell.SmellPercepts;
@@ -49,13 +48,11 @@ public class PerceptsTest extends SimpleUnitTest {
                 new SmellPercepts(new HashSet<>(Arrays.asList(
                     new SmellPercept(
                         SmellPerceptType.Pheromone1,
-                        new Intensity(0.5),
-                        Direction.fromDegrees(180)
+                        new Distance(1)
                     ),
                     new SmellPercept(
                         SmellPerceptType.Pheromone2,
-                        new Intensity(0.3),
-                        Direction.fromDegrees(90)
+                        new Distance(2)
                     )
                 ))),
                 true

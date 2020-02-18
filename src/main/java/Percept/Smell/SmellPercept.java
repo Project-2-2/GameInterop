@@ -2,6 +2,7 @@ package Percept.Smell;
 
 import Geometry.Angle;
 import Geometry.Direction;
+import Geometry.Distance;
 
 /**
  * Represents perception by a smell.
@@ -9,25 +10,19 @@ import Geometry.Direction;
 public class SmellPercept {
 
     private SmellPerceptType type;
-    private Intensity intensity;
-    private Direction direction;
+    private Distance distance;
 
-    public SmellPercept(SmellPerceptType type, Intensity intensity, Direction direction) {
+    public SmellPercept(SmellPerceptType type, Distance distance) {
         this.type = type;
-        this.intensity = intensity;
-        this.direction = direction;
+        this.distance = distance;
     }
 
     public SmellPerceptType getType() {
         return type;
     }
 
-    public Intensity getIntensity() {
-        return intensity;
-    }
-
-    public Direction getDirection() {
-        return direction;
+    public Distance getDistance() {
+        return distance;
     }
 
 }
