@@ -3,7 +3,12 @@ package Action;
 import Geometry.Angle;
 
 /**
- * This class represents an action of rotation that an agent wants to take.
+ * This class represents an intention of rotation issued by an agent.
+ *
+ * The agent is allowed to specify the angle in range limited by scenario parameters.
+ *
+ * Positive angle results in clockwise rotation.
+ * Negative angle results in anticlockwise rotation.
  */
 public class Rotate implements Action, GuardAction, IntruderAction {
 
