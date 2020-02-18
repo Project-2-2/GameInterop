@@ -2,6 +2,9 @@ package Percepts;
 
 import Geometry.*;
 import Percept.*;
+import Percept.Scenario.ScenarioIntruderPercepts;
+import Percept.Scenario.ScenarioPercepts;
+import Percept.Scenario.SlowDownModifiers;
 import Percept.Smell.SmellPercept;
 import Percept.Smell.SmellPerceptType;
 import Percept.Smell.SmellPercepts;
@@ -64,33 +67,32 @@ public class PerceptsTest extends SimpleUnitTest {
                         new Distance(2)
                     )
                 ))),
+                new AreaPercepts(
+                    false,
+                    false,
+                    false,
+                    true
+                ),
+                new ScenarioIntruderPercepts(
+                    new ScenarioPercepts(
+                        Angle.fromDegrees(45),
+                        new SlowDownModifiers(
+                            0.5,
+                            0.8,
+                            0.1
+                        ),
+                        new Distance(10),
+                        3
+                    ),
+                    new Distance(1),
+                    new Distance(3),
+                    3
+                ),
                 true
             );
 
             assertInstanceOf(percepts, IntruderPercepts.class);
             assertInstanceOf(percepts.getTargetDirection(), Direction.class);
-            assertInstanceOf(percepts.getVision(), VisionPrecepts.class);
-            assertInstanceOf(percepts.getSounds(), SoundPercepts.class);
-            assertInstanceOf(percepts.getSmells(), SmellPercepts.class);
-
-        });
-
-        it("allows to create empty guard percepts", () -> {
-
-            GuardPercepts percepts = EmptyPercepts.createEmptyForGuard(true);
-
-            assertInstanceOf(percepts, GuardPercepts.class);
-            assertInstanceOf(percepts.getVision(), VisionPrecepts.class);
-            assertInstanceOf(percepts.getSounds(), SoundPercepts.class);
-            assertInstanceOf(percepts.getSmells(), SmellPercepts.class);
-
-        });
-
-        it("allows to create empty intruder percepts", () -> {
-
-            IntruderPercepts percepts = EmptyPercepts.createEmptyForIntruder(true);
-
-            assertInstanceOf(percepts, IntruderPercepts.class);
             assertInstanceOf(percepts.getVision(), VisionPrecepts.class);
             assertInstanceOf(percepts.getSounds(), SoundPercepts.class);
             assertInstanceOf(percepts.getSmells(), SmellPercepts.class);

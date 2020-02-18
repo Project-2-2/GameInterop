@@ -3,6 +3,7 @@ package Percept;
 import Action.*;
 import Geometry.Angle;
 import Geometry.Distance;
+import Percept.Scenario.ScenarioPercepts;
 import Percept.Smell.SmellPercepts;
 import Percept.Sound.SoundPercepts;
 import Percept.Vision.FieldOfView;
@@ -34,16 +35,25 @@ public class Percepts {
     private VisionPrecepts vision;
     private SoundPercepts sounds;
     private SmellPercepts smells;
+    private AreaPercepts areaPercepts;
 
     private boolean wasLastActionExecuted;
 
-    protected Percepts(VisionPrecepts vision, SoundPercepts sounds, SmellPercepts smells, boolean wasLastActionExecuted) {
+    protected Percepts(
+        VisionPrecepts vision,
+        SoundPercepts sounds,
+        SmellPercepts smells,
+        AreaPercepts areaPercepts,
+        boolean wasLastActionExecuted
+    ) {
         Require.notNull(vision);
         Require.notNull(sounds);
         Require.notNull(smells);
+        Require.notNull(areaPercepts);
         this.vision = vision;
         this.sounds = sounds;
         this.smells = smells;
+        this.areaPercepts = areaPercepts;
         this.wasLastActionExecuted = wasLastActionExecuted;
     }
 
@@ -57,6 +67,10 @@ public class Percepts {
 
     public SmellPercepts getSmells() {
         return smells;
+    }
+
+    public AreaPercepts getAreaPercepts() {
+        return areaPercepts;
     }
 
     /**
