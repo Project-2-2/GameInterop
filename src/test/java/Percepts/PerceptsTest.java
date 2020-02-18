@@ -44,7 +44,16 @@ public class PerceptsTest extends SimpleUnitTest {
                         )
                     )))
                 ),
-                new SoundPercepts(),
+                new SoundPercepts(new HashSet<>(Arrays.asList(
+                    new SoundPercept(
+                        SoundPerceptType.Noise,
+                        Direction.fromClockAngle(new Point(1, 1))
+                    ),
+                    new SoundPercept(
+                        SoundPerceptType.Yell,
+                        Direction.fromClockAngle(new Point(2, 2))
+                    )
+                ))),
                 new SmellPercepts(new HashSet<>(Arrays.asList(
                     new SmellPercept(
                         SmellPerceptType.Pheromone1,

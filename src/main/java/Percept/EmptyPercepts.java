@@ -54,7 +54,7 @@ public class EmptyPercepts {
     }
 
     private static SoundPercepts getEmptySoundPercepts() {
-        return new SoundPercepts();
+        return new SoundPercepts(Collections.emptySet());
     }
 
     private static SmellPercepts getEmptySmellPercepts() {
