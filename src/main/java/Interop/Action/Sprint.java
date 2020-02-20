@@ -9,7 +9,7 @@ import Interop.Geometry.Distance;
  *
  * After a sprint an agent will enter a cool down period.
  */
-public class Sprint implements Action, IntruderAction {
+public final class Sprint implements Action, IntruderAction {
 
     private Distance distance;
 

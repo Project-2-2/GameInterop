@@ -10,7 +10,7 @@ import Interop.Geometry.Angle;
  * Positive angle results in clockwise rotation.
  * Negative angle results in anticlockwise rotation.
  */
-public class Rotate implements Action, GuardAction, IntruderAction {
+public final class Rotate implements Action, GuardAction, IntruderAction {
 
     private Angle angle;
 

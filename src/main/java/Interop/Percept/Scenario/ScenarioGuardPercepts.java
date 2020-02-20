@@ -5,7 +5,7 @@ import Interop.Geometry.Distance;
 /**
  * Represents scenario percepts with percepts relevant to the guards.
  */
-public class ScenarioGuardPercepts {
+public final class ScenarioGuardPercepts {
 
     private ScenarioPercepts scenarioPercepts;
     private Distance maxMoveDistanceGuard;

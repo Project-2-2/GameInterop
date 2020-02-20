@@ -8,7 +8,7 @@ import java.util.stream.Collectors;
 /**
  * Represents perception of a set of objects.
  */
-public class ObjectPercepts {
+public final class ObjectPercepts {
 
     private Set<ObjectPercept> objectPercepts;
 

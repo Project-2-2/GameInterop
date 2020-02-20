@@ -5,5 +5,5 @@ package Interop.Action;
  *
  * After a dropping a pheromone an agent will enter a cool down period.
  */
-public class DropPheromone {
+public final class DropPheromone implements Action, IntruderAction, GuardAction {
 }

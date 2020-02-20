@@ -23,7 +23,7 @@ import Interop.Utils.Require;
  *    Coordinate: (0, 0)
  *
  */
-public class FieldOfView {
+public final class FieldOfView {
 
     private Distance range;
     private Angle viewAngle;

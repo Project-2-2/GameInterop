@@ -8,7 +8,7 @@ import java.util.stream.Collectors;
 /**
  * Represents a set of sound percepts.
  */
-public class SoundPercepts {
+public final class SoundPercepts {
 
     private Set<SoundPercept> soundPercepts;
 

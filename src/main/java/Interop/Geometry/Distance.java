@@ -5,7 +5,7 @@ import Interop.Utils.*;
 /**
  * Represents an euclidean distance.
  */
-public class Distance {
+public final class Distance {
 
     private double distance;
 

@@ -10,5 +10,5 @@ import Interop.Percept.Percepts;
  * Specifically, agent issuing NoAction will perceive the action as executed on the next turn.
  * @see Percepts#wasLastActionExecuted()
  */
-public class NoAction implements Action, IntruderAction, GuardAction {
+public final class NoAction implements Action, IntruderAction, GuardAction {
 }

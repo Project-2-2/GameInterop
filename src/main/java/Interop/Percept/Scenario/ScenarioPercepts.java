@@ -7,7 +7,7 @@ import Interop.Utils.Require;
 /**
  * Represents percepts relevant to an agent that are specified in a scenario file.
  */
-public class ScenarioPercepts {
+public final class ScenarioPercepts {
 
     private Angle maxRotationAngle;
     private SlowDownModifiers slowDownModifiers;

@@ -14,7 +14,7 @@ import Interop.Utils.Require;
  *
  * @see Percepts
  */
-public class IntruderPercepts extends Percepts {
+public final class IntruderPercepts extends Percepts {
 
     private Direction targetDirection;
     private ScenarioIntruderPercepts scenarioIntruderPercepts;

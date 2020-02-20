@@ -5,7 +5,7 @@ import Interop.Geometry.Distance;
 /**
  * Represents perception by a smell.
  */
-public class SmellPercept {
+public final class SmellPercept {
 
     private SmellPerceptType type;
     private Distance distance;

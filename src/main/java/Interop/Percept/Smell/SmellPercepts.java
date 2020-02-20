@@ -8,7 +8,7 @@ import java.util.stream.Collectors;
 /**
  * Represents a set of smell percepts.
  */
-public class SmellPercepts {
+public final class SmellPercepts {
 
     private Set<SmellPercept> smellPercepts;
 

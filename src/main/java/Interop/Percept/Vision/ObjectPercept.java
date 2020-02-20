@@ -15,7 +15,7 @@ import Interop.Utils.Require;
  * You should also take a look at:
  * @see Interop.Percept.Vision.FieldOfView
  */
-public class ObjectPercept {
+public final class ObjectPercept {
 
     private ObjectPerceptType type;
     private Point point;

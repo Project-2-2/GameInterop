@@ -10,7 +10,7 @@ import Interop.Utils.Require;
  * Agent can perceive the current area based on area percepts:
  * @see Interop.Percept.AreaPercepts
  */
-public class SlowDownModifiers {
+public final class SlowDownModifiers {
 
     private double inWindow;
     private double inDoor;

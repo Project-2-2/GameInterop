@@ -5,7 +5,7 @@ package Interop.Percept;
  * This perception is relevant for the scenario percepts, especially slow down modifiers.
  * @see Interop.Percept.Scenario.SlowDownModifiers
  */
-public class AreaPercepts {
+public final class AreaPercepts {
 
     private boolean inWindow;
     private boolean inDoor;

@@ -13,7 +13,7 @@ import Interop.Utils.Require;
  *
  * @see Percepts
  */
-public class GuardPercepts extends Percepts {
+public final class GuardPercepts extends Percepts {
 
     private ScenarioGuardPercepts scenarioGuardPercepts;
 

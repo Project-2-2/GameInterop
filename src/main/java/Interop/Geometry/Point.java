@@ -5,7 +5,7 @@ import Interop.Utils.Require;
 /**
  * Represents a point in the 2-dimensional, cartesian coordinate system.
  */
-public class Point {
+public final class Point {
 
     private double x;
     private double y;

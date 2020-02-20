@@ -10,7 +10,7 @@ import Interop.Utils.Require;
  * You should also take a look at:
  * @see Interop.Percept.Vision.FieldOfView
  */
-public class VisionPrecepts {
+public final class VisionPrecepts {
 
     private FieldOfView fieldOfView;
     private ObjectPercepts objectPercepts;

@@ -6,7 +6,7 @@ import Interop.Utils.Require;
 /**
  * Represents scenario percepts extended with intruder specific scenario percepts.
  */
-public class ScenarioIntruderPercepts {
+public final class ScenarioIntruderPercepts {
 
     private ScenarioPercepts scenarioPercepts;
     private Distance maxMoveDistanceIntruder;

@@ -5,7 +5,7 @@ import Interop.Geometry.Direction;
 /**
  * Represents perception by hearing.
  */
-public class SoundPercept {
+public final class SoundPercept {
 
     private SoundPerceptType type;
     private Direction direction;

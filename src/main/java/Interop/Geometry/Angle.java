@@ -32,15 +32,15 @@ public class Angle {
         return fromRadians(Math.toRadians(degrees));
     }
 
-    public double getRadians() {
+    public final double getRadians() {
         return radians;
     }
 
-    public double getDegrees() {
+    public final double getDegrees() {
         return Math.toDegrees(radians);
     }
 
-    public Angle getDistance(Angle angle) {
+    public final Angle getDistance(Angle angle) {
         return fromRadians(
             Utils.getDistanceBetweenAngles(getRadians(), angle.getRadians())
         );
