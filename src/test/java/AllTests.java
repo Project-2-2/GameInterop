@@ -4,7 +4,6 @@ import Interop.InteropTests;
 import Interop.Percept.PerceptsTest;
 import Interop.Utils.UtilsTest;
 import SimpleUnitTest.SimpleUnitTest;
-import javafx.scene.Group;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
