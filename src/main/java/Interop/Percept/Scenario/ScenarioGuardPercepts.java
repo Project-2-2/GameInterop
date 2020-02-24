@@ -1,6 +1,7 @@
 package Interop.Percept.Scenario;
 
 import Interop.Geometry.Distance;
+import Interop.Utils.Require;
 
 /**
  * Represents scenario percepts with percepts relevant to the guards.
@@ -11,6 +12,8 @@ public final class ScenarioGuardPercepts {
     private Distance maxMoveDistanceGuard;
 
     public ScenarioGuardPercepts(ScenarioPercepts scenarioPercepts, Distance maxMoveDistanceGuard) {
+        Require.notNull(scenarioPercepts);
+        Require.notNull(maxMoveDistanceGuard);
         this.scenarioPercepts = scenarioPercepts;
         this.maxMoveDistanceGuard = maxMoveDistanceGuard;
     }

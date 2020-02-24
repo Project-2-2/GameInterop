@@ -9,18 +9,25 @@ import Interop.Utils.Require;
 public final class ScenarioIntruderPercepts {
 
     private ScenarioPercepts scenarioPercepts;
+    private int turnsInTargetAreaToWin;
     private Distance maxMoveDistanceIntruder;
     private Distance maxSprintDistanceIntruder;
     private int sprintCooldown;
 
     public ScenarioIntruderPercepts(
         ScenarioPercepts scenarioPercepts,
+        int turnsInTargetAreaToWin,
         Distance maxMoveDistanceIntruder,
         Distance maxSprintDistanceIntruder,
         int sprintCooldown
     ) {
+        Require.notNull(scenarioPercepts);
+        Require.notNull(maxMoveDistanceIntruder);
+        Require.notNull(maxSprintDistanceIntruder);
+        Require.notNegative(turnsInTargetAreaToWin, "The number of turns can not be negative!");
         Require.notNegative(sprintCooldown, "Sprint cool down must not be negative!");
         this.scenarioPercepts = scenarioPercepts;
+        this.turnsInTargetAreaToWin = turnsInTargetAreaToWin;
         this.maxMoveDistanceIntruder = maxMoveDistanceIntruder;
         this.maxSprintDistanceIntruder = maxSprintDistanceIntruder;
         this.sprintCooldown = sprintCooldown;
@@ -28,6 +35,13 @@ public final class ScenarioIntruderPercepts {
 
     public ScenarioPercepts getScenarioPercepts() {
         return scenarioPercepts;
+    }
+
+    /**
+     * @return Indicates how many turns the intruders needs to stay in target area in order to win.
+     */
+    public int getTurnsInTargetAreaToWin() {
+        return turnsInTargetAreaToWin;
     }
 
     /**

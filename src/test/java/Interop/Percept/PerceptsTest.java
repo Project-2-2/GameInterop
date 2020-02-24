@@ -1,6 +1,7 @@
 package Interop.Percept;
 
 import Interop.Geometry.*;
+import Interop.Percept.Scenario.GameMode;
 import Interop.Percept.Scenario.ScenarioIntruderPercepts;
 import Interop.Percept.Scenario.ScenarioPercepts;
 import Interop.Percept.Scenario.SlowDownModifiers;
@@ -74,6 +75,8 @@ public class PerceptsTest extends SimpleUnitTest {
                 ),
                 new ScenarioIntruderPercepts(
                     new ScenarioPercepts(
+                        GameMode.OneIntruderInTarget,
+                        new Distance(2),
                         Angle.fromDegrees(45),
                         new SlowDownModifiers(
                             0.5,
@@ -83,6 +86,7 @@ public class PerceptsTest extends SimpleUnitTest {
                         new Distance(10),
                         3
                     ),
+                    3,
                     new Distance(1),
                     new Distance(3),
                     3
