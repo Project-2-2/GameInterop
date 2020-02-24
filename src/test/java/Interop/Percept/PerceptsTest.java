@@ -75,7 +75,7 @@ public class PerceptsTest extends SimpleUnitTest {
                 ),
                 new ScenarioIntruderPercepts(
                     new ScenarioPercepts(
-                        GameMode.OneIntruderInTarget,
+                        GameMode.CaptureOneIntruder,
                         new Distance(2),
                         Angle.fromDegrees(45),
                         new SlowDownModifiers(
