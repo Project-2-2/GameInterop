@@ -1,8 +1,6 @@
-package Group5;
+package Group5.Agent;
 
-import java.util.List;
-
-public class Vertex{
+public class Vertex {
     final private String id;
     final private String name;
     private boolean visited;
@@ -18,7 +16,9 @@ public class Vertex{
         return id;
     }
 
-    public String getName() { return name; }
+    public String getName() {
+        return name;
+    }
 
     public boolean isVisited() {
         return visited;

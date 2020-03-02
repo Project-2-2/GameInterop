@@ -1,4 +1,4 @@
-package Group5;
+package Group5.Agent;
 
 public class Edge implements Comparable<Edge> {
     private final String id;
@@ -16,7 +16,7 @@ public class Edge implements Comparable<Edge> {
 
     @Override
     public int compareTo(Edge o) {
-        if(this.weight < o.getWeight())
+        if (this.weight < o.getWeight())
             return -1;
         else
             return 1;
@@ -25,6 +25,7 @@ public class Edge implements Comparable<Edge> {
     public String getId() {
         return id;
     }
+
     public Vertex getDestination() {
         return destination;
     }
@@ -32,17 +33,18 @@ public class Edge implements Comparable<Edge> {
     public Vertex getSource() {
         return source;
     }
+
     public int getWeight() {
         return weight;
     }
 
-    public void setLabel(char label) {
-        assert(label == 'N' || label == 'X');
-        this.label = label;
-    }
-
     public char getLabel() {
         return label;
+    }
+
+    public void setLabel(char label) {
+        assert (label == 'N' || label == 'X');
+        this.label = label;
     }
 
     @Override
