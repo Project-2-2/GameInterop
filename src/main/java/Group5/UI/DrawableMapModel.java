@@ -130,6 +130,7 @@ public class DrawableMapModel {
         return data;
     }
 
+
     public void step() {
         this.moveIntruder();
         if (intruderLocation.getX() < grid.length) {
