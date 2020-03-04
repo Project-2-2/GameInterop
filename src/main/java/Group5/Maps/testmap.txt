@@ -1,0 +1,12 @@
+gameMode = 0
+height = 80
+width = 120
+numGuards = 0
+numIntruders = 1
+targetArea = 20 20 40 20 20 40 40 40
+spawnAreaIntruders = 30 30 50 30 30 50 50 50
+spawnAreaGuards = 50 50 70 50 50 70 70 70
+wall = 10 10 20 10 30 30 30 30
+wall = 100 100 200 200 300 300 400 400
+teleport = 300 300 320 320 340 340 360 360
+shaded = 400 350 300 350 200 320 340 280

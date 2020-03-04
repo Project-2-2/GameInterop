@@ -17,7 +17,7 @@ import java.io.IOException;
  * where the initial conditions for the map are being read and generated.
  */
 
-public class AlertBox {
+public class DrawableDialogueBox {
 
     private static File file;
 
@@ -27,7 +27,6 @@ public class AlertBox {
      */
     public static void display(String title, String message) {
         Stage window = new Stage();
-
         window.initModality(Modality.APPLICATION_MODAL);
         window.setTitle(title);
         window.setMinWidth(300);
@@ -36,7 +35,6 @@ public class AlertBox {
         layout.setPadding(new Insets(10, 10, 10, 10));
         layout.setHgap(10);
         layout.setVgap(10);
-
         Label label_random = new Label(message);
         GridPane.setConstraints(label_random, 0, 0);
 
@@ -51,10 +49,11 @@ public class AlertBox {
         file_button.setOnAction(e -> {
             file = file_chooser.showOpenDialog(window);
             if (file != null) {
-                // Load the FXML for Mode 0 of the game
-                FXMLLoader loader = new FXMLLoader(AlertBox.class.getResource("/src/main/java/Group5/UI/mode0.fxml"));
-                Parent root = null;
                 try {
+                    // Load the FXML for Mode 0 of the game
+                    Parent root;
+                    MapFileParser.readMapFile(file);
+                    FXMLLoader loader = new FXMLLoader(DrawableDialogueBox.class.getResource("/src/main/java/Group5/UI/mode0.fxml"));
                     root = loader.load();
                     Scene scene = new Scene(root);
                     Stage stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
@@ -67,17 +66,16 @@ public class AlertBox {
                 }
             }
         });
-        GridPane.setConstraints(file_button, 0, 7);
 
+        GridPane.setConstraints(file_button, 0, 7);
         layout.getChildren().addAll(label_random, file_button);
         layout.setAlignment(Pos.CENTER);
-
         Scene scene = new Scene(layout);
         window.setScene(scene);
         window.showAndWait();
     }
 
-    public static String getFile() {
-        return file.getPath();
+    public static File getFile() {
+        return file;
     }
 }

@@ -6,7 +6,6 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import Group5.UI.AlertBox;
 
 public class Main extends Application {
 
@@ -21,14 +20,6 @@ public class Main extends Application {
             System.exit(0);
         });
     }
-
-    /**
-     * Starts Mode 0 of the game (thank you, captain Obvious)
-     */
-    private void mode0() {
-        AlertBox.display("Load Sceneraio", "Load a .txt file with input parameters for the Map");
-    }
-
 
     public static void main(String[] args) {
         launch(args);

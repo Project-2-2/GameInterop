@@ -32,7 +32,6 @@ public class DrawableMenuController {
     private ImageView PlVSPlButton;
 
     private void mode0() {
-        AlertBox.display("Load Scenario", "Load a .txt file with input parameters for the Map");
+        DrawableDialogueBox.display("Load Scenario", "Load a .txt file with input parameters for the Map");
     }
-
 }
