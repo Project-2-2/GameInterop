@@ -1,14 +1,14 @@
 package Group5.GameController;
 
 
-import Group5.UI.AlertBox;
-import Group5.UI.DrawableMapModel;
-import Group5.UI.View;
+import Group5.UI.DrawableDialogueBox;
+import Group5.UI.MapViewer;
 import Interop.Geometry.Point;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.layout.BorderPane;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Timer;
@@ -50,10 +50,9 @@ public class GameRunner {
     final private static double FRAMES_PER_SECOND = 5;
 
     @FXML
-    private View mapView;
+    private MapViewer mapViewer;
     @FXML
     private BorderPane gameBorder;
-    private DrawableMapModel drawableMapModel;
 
     private MapInfo mapInfo;
 
@@ -64,12 +63,11 @@ public class GameRunner {
 
     @FXML
     public void initialize() throws IOException {
-        String file = AlertBox.getFile();
-        mapInfo = new MapInfo();
-        mapInfo.readMap(file);
-        this.drawableMapModel = new DrawableMapModel();
+        File file = DrawableDialogueBox.getFile();
         this.update();
         this.startTimer();
+        mapViewer.setFocusTraversable(true);
+        mapViewer.requestFocus();
     }
 
     private void startTimer() {
@@ -92,10 +90,7 @@ public class GameRunner {
     }
 
     private void update() throws IOException {
-
-
-        this.drawableMapModel.step();
-        this.mapView.update(drawableMapModel);
+        this.mapViewer.moveIntruder(10, 10, true);
     }
 
     public static void main(String[] args) {
