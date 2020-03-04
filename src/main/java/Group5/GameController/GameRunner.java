@@ -1,6 +1,19 @@
 package Group5.GameController;
 
 
+import Group5.UI.AlertBox;
+import Group5.UI.DrawableMapModel;
+import Group5.UI.View;
+import Interop.Geometry.Point;
+import javafx.application.Platform;
+import javafx.fxml.FXML;
+import javafx.scene.layout.BorderPane;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
+
 public class GameRunner {
 
 //    protected String mapDoc;
@@ -33,6 +46,125 @@ public class GameRunner {
 //    private String getPath(){
 //        return this.mapDoc;
 //    }
+
+    final private static double FRAMES_PER_SECOND = 5;
+
+    @FXML
+    private View mapView;
+    @FXML
+    private BorderPane gameBorder;
+    private DrawableMapModel drawableMapModel;
+
+    private MapInfo mapInfo;
+
+    private Timer timer;
+
+    public GameRunner() {
+    }
+
+    @FXML
+    public void initialize() throws IOException {
+        String file = AlertBox.getFile();
+        mapInfo = new MapInfo();
+        mapInfo.readMap(file);
+        this.drawableMapModel = new DrawableMapModel();
+        this.update();
+        this.startTimer();
+    }
+
+    private void startTimer() {
+        this.timer = new Timer();
+        TimerTask timerTask = new TimerTask() {
+            public void run() {
+                Platform.runLater(new Runnable() {
+                    public void run() {
+                        try {
+                            update();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+            }
+        };
+        long frameTimeInMilliseconds = (long) (1000.0 / FRAMES_PER_SECOND);
+        this.timer.schedule(timerTask, 100, frameTimeInMilliseconds);
+    }
+
+    private void update() throws IOException {
+
+
+        this.drawableMapModel.step();
+        this.mapView.update(drawableMapModel);
+    }
+
+    public static void main(String[] args) {
+        Point from = new Point(2,2);
+        Point to = new Point (100,2);
+        GameRunner poep = new GameRunner();
+        Vector2D[] movement = poep.movementShape(from,to,4);
+
+        Area wall = new Area(51,5,51,5);
+
+        System.out.println(Sat.hasCollided(movement,wall.getAreaVectors()));
+
+
+    }
+
+    /**
+     * CALL THIS METHOD TO CHECK IF MOVEMENT IS VALID
+     * method to move an agent
+     * checks if movement is valid
+     * returns the postion after movement
+     */
+    public Point move(Point from, Point to){
+        ArrayList<Area> walls= mapInfo.walls;
+
+        //for now give the agent a radius of 1
+        Vector2D[] movment = movementShape(from,to,1);
+        for(int i =0; i<walls.size();i++){
+            Vector2D[] wallVectors = walls.get(i).getAreaVectors();
+            System.out.println("collision detected");
+            if (Sat.hasCollided(movment,wallVectors)||walls.get(i).isHit(to)){
+                to = from;
+                return to;
+            }
+        }
+        return to;
+    }
+
+    /**
+     * creates an area of the movement of the agent, since everything is discrete the total movement has to be checked
+     *
+     * @param from
+     * @param to
+     * @param radius of the agent
+     * @return
+     */
+    public Vector2D[] movementShape(Point from, Point to, double radius){
+        Vector2D start = new Vector2D(from);
+        Vector2D end = new Vector2D(to);
+
+        Vector2D direction = new Vector2D(start).add(end);
+        Vector2D directionOrthogonal = direction.orthogonal();
+        directionOrthogonal = directionOrthogonal.normalize();
+        directionOrthogonal = directionOrthogonal.absVector();
+        directionOrthogonal = directionOrthogonal.mul(radius);
+
+        Vector2D point1 = new Vector2D(start).add(directionOrthogonal);
+        System.out.println(point1.getX());
+        Vector2D point2 = new Vector2D(start).add(directionOrthogonal.mul(-1));
+        System.out.println(point2.getX());
+        Vector2D point3 = new Vector2D(end).add(directionOrthogonal);
+        System.out.println(point3.getX());
+        Vector2D point4 = new Vector2D(end).add(directionOrthogonal.mul(-1));
+        System.out.println(point4.getY());
+
+        Vector2D[] shape =  {point1,point2,point3,point4};
+
+        return shape;
+
+    }
 
 }
 
