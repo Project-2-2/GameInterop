@@ -25,7 +25,7 @@ public class Point extends Vector {
     }
 
     public Distance getDistance(Point point) {
-        return new Distance(this, point);
+        return new Distance(getEuclideanDistanceTo(point));
     }
 
     public Distance getDistanceFromOrigin() {
