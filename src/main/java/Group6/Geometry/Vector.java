@@ -107,7 +107,7 @@ public class Vector {
     public Vector toUnitVector() {
         double length = getLength();
         if (length == 0) return new Vector();
-        return divide(length);
+        return this.divide(length);
     }
 
     public boolean isEqualTo(Vector vector, double tolerance) {
