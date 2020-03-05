@@ -9,14 +9,14 @@ public final class Distance {
 
     private double distance;
 
-    public Distance(Interop.Geometry.Distance distance) {
-        this(distance.getValue());
-    }
-
     public Distance(double distance) {
         Require.realNumber(distance, "Distance must be real!");
         Require.notNegative(distance, "Distance can not be negative!");
         this.distance = distance;
+    }
+
+    public Distance(Interop.Geometry.Distance distance) {
+        this(distance.getValue());
     }
 
     public double getValue() {
