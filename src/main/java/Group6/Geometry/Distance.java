@@ -1,6 +1,5 @@
 package Group6.Geometry;
 
-import Interop.Geometry.Point;
 import Interop.Utils.Require;
 
 /**
@@ -17,6 +16,10 @@ public final class Distance {
         ));
     }
 
+    public Distance(Interop.Geometry.Distance distance) {
+        this(distance.getValue());
+    }
+
     public Distance(double distance) {
         Require.realNumber(distance, "Distance must be real!");
         Require.notNegative(distance, "Distance can not be negative!");
@@ -25,6 +28,10 @@ public final class Distance {
 
     public double getValue() {
         return distance;
+    }
+
+    public Interop.Geometry.Distance toInteropDistance() {
+        return new Interop.Geometry.Distance(distance);
     }
 
 }
