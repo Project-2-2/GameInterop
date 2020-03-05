@@ -65,12 +65,45 @@ public class Graph {
         return adjacentEdges;
     }
 
+    public List<Edge> getEdgesDirected(String vertex) {
+        List<Edge> adjacentEdges = new ArrayList<>();
+        for (Edge e : edges) {
+            if (e.getSource().getId().equals(vertex))
+                adjacentEdges.add(e);
+            else if (e.getSource().getName().equals(vertex))
+                adjacentEdges.add(e);
+        }
+        return adjacentEdges;
+    }
+
     public void addEdge(Edge e) {
         this.edges.add(e);
     }
 
     public void addVertex(Vertex v) {
         this.vertexes.add(v);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        Graph other = (Graph) obj;
+
+        for(Vertex v: other.getVertexes()){
+            if(!this.vertexes.contains(v)) return false;
+        }
+
+        for(Edge e: other.getEdges()){
+            if(!this.edges.contains(e)) return false;
+        }
+
+        return true;
+
     }
 
 

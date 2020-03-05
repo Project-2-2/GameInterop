@@ -5,7 +5,7 @@ public class Edge implements Comparable<Edge> {
     private final Vertex source;
     private final Vertex destination;
     private final int weight;
-    private char label;
+    private Edge mirror;
 
     public Edge(String id, Vertex source, Vertex destination, int weight) {
         this.id = id;
@@ -38,13 +38,17 @@ public class Edge implements Comparable<Edge> {
         return weight;
     }
 
-    public char getLabel() {
-        return label;
+    public Edge getMirror() {
+        return mirror;
     }
 
-    public void setLabel(char label) {
-        assert (label == 'N' || label == 'X');
-        this.label = label;
+    public void setMirror(Edge mirror) {
+        this.mirror = mirror;
+        mirror.setMirrorNoRecursion(this);
+    }
+
+    private void setMirrorNoRecursion(Edge mirror){
+        this.mirror = mirror;
     }
 
     @Override

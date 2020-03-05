@@ -12,6 +12,12 @@ public class Vertex {
         this.visited = visited;
     }
 
+    public Vertex(String id, String name) {
+        this.id = id;
+        this.name = name;
+        this.visited = false;
+    }
+
     public String getId() {
         return id;
     }
