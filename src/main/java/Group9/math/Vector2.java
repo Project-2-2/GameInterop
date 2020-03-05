@@ -1,6 +1,6 @@
 package Group9.math;
 
-import Interop.Geometry.Point;
+import Interop.Geometry.Vector;
 
 public class Vector2 {
 
@@ -47,8 +47,12 @@ public class Vector2 {
         return this.add(-x, -y);
     }
 
+    public double distance(Vector2 other)
+    {
+        return Math.sqrt(Math.pow(this.x - other.getX(), 2) + Math.pow(this.y - other.getY(), 2));
+    }
 
-    public static Vector2 from(Point point)
+    public static Vector2 from(Vector point)
     {
         return new Vector2(point.getX(), point.getY());
     }

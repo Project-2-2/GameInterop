@@ -50,16 +50,16 @@ public final class FieldOfView {
         return viewAngle;
     }
 
-    public boolean isInView(Point point) {
+    public boolean isInView(Vector point) {
         return isInRange(point) && isInViewAngle(point);
     }
 
-    private boolean isInViewAngle(Point point) {
+    private boolean isInViewAngle(Vector point) {
         return Angle.fromRadians(0).getDistance(point.getClockDirection()).getRadians()
             <= getViewAngle().getRadians() / 2;
     }
 
-    private boolean isInRange(Point point) {
+    private boolean isInRange(Vector point) {
         return point.getDistanceFromOrigin().getValue() <= getRange().getValue();
     }
 

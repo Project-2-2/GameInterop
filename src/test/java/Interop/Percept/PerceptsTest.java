@@ -39,22 +39,22 @@ public class PerceptsTest extends SimpleUnitTest {
                     new ObjectPercepts(new HashSet<>(Arrays.asList(
                         new ObjectPercept(
                             ObjectPerceptType.Guard,
-                            new Point(-1, 5)
+                            new Vector(-1, 5)
                         ),
                         new ObjectPercept(
                             ObjectPerceptType.Wall,
-                            new Point(1, 5)
+                            new Vector(1, 5)
                         )
                     )))
                 ),
                 new SoundPercepts(new HashSet<>(Arrays.asList(
                     new SoundPercept(
                         SoundPerceptType.Noise,
-                        Direction.fromClockAngle(new Point(1, 1))
+                        Direction.fromClockAngle(new Vector(1, 1))
                     ),
                     new SoundPercept(
                         SoundPerceptType.Yell,
-                        Direction.fromClockAngle(new Point(2, 2))
+                        Direction.fromClockAngle(new Vector(2, 2))
                     )
                 ))),
                 new SmellPercepts(new HashSet<>(Arrays.asList(

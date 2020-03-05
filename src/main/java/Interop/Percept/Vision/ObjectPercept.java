@@ -18,9 +18,9 @@ import Interop.Utils.Require;
 public final class ObjectPercept {
 
     private ObjectPerceptType type;
-    private Point point;
+    private Vector point;
 
-    public ObjectPercept(ObjectPerceptType type, Point point) {
+    public ObjectPercept(ObjectPerceptType type, Vector point) {
         Require.notNull(type);
         Require.notNull(point);
         Require.positive(
@@ -43,7 +43,7 @@ public final class ObjectPercept {
     /**
      * The point of intersection of a ray casted by an agent and a visible object.
      */
-    public Point getPoint() {
+    public Vector getPoint() {
         return point;
     }
 

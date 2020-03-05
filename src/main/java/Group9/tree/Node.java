@@ -15,6 +15,8 @@ public class Node<T extends PointContainer> {
     private final double width, height;
     private final int maxSize;
 
+    private PointContainer.Quadrilateral quadrilateral;
+
 
     public Node(Vector2 center, double width, double height, int maxSize)
     {
@@ -22,6 +24,16 @@ public class Node<T extends PointContainer> {
         this.width = width;
         this.height = height;
         this.maxSize = maxSize;
+
+
+        this.quadrilateral = new PointContainer.Quadrilateral(
+                center.add(width / 2, height / 2),
+                center.add(width / 2, -height / 2),
+                center.add(-width / 2, -height / 2),
+                center.add(-width / 2, height / 2)
+        );
+        System.out.println(PointContainer.intersect(quadrilateral, new PointContainer.Circle(new Vector2(10, 10), 10)));
+        System.out.println();
     }
 
     private boolean hasChildren()
@@ -31,12 +43,12 @@ public class Node<T extends PointContainer> {
 
     public void add(T container)
     {
-        // if |content| + 1 >= maxSize
-        //  --> split()
-
         if(this.hasChildren())
         {
-            this.children[getIndexBasedOnCenter(container)].add(container);
+            for(short index : divide(container, this.children))
+            {
+                this.children[index].add(container);
+            }
         }
         else if(this.content.size() + 1 <= maxSize)
         {
@@ -54,93 +66,49 @@ public class Node<T extends PointContainer> {
         this.children = new Node[4];
         final double w = width / 2D;
         final double h = height / 2D;
-        this.children[NE] = new Node<>(center.add(w, h), w, h, maxSize);
-        this.children[SE] = new Node<>(center.add(w, -h), w, h, maxSize);
-        this.children[SW] = new Node<>(center.add(-w, -h), w, h, maxSize);
-        this.children[NW] = new Node<>(center.add(-w, h), w, h, maxSize);
+        this.children[NE] = new Node<>(center.add(w, h), width, height, maxSize);
+        this.children[SE] = new Node<>(center.add(w, -h), width, height, maxSize);
+        this.children[SW] = new Node<>(center.add(-w, -h), width, height, maxSize);
+        this.children[NW] = new Node<>(center.add(-w, h), width, height, maxSize);
 
         for(T c : this.content)
         {
-            for(short index : divide(c))
+            for(short index : divide(c, this.children))
             {
                 this.children[index].add(c);
             }
         }
-
-        this.children[getIndexBasedOnCenter(container)].add(container);
-
         this.content = null;
+
+        this.add(container);
+
     }
 
-    private Short[] divide(T container)
+    private Set<Short> divide(PointContainer container, Node[] c)
     {
-        Vector2 relative = container.getCenter().sub(center);
-        Set<Short> subcontainers = new HashSet<>();
+        Set<Short> divisions = new HashSet<>();
 
-        if(container instanceof PointContainer.Rectangle)
+        if(PointContainer.intersect(container, c[NE].quadrilateral))
         {
-            PointContainer.Quadrilateral rec = (PointContainer.Quadrilateral) container;
-            /*Vector2 ne = new Vector2(relative.getX() + rec.getHeight(), relative.getY() + relative.getY());
-            Vector2 se = new Vector2(relative.getX() + rec.getHeight(), relative.getY() - relative.getY());
-            Vector2 sw = new Vector2(relative.getX() - rec.getHeight(), relative.getY() - relative.getY());
-            Vector2 nw = new Vector2(relative.getX() - rec.getHeight(), relative.getY() + relative.getY());
-
-            subcontainers.add(getIndexBasedOnCenter(ne));
-            subcontainers.add(getIndexBasedOnCenter(se));
-            subcontainers.add(getIndexBasedOnCenter(sw));
-            subcontainers.add(getIndexBasedOnCenter(nw));*/
-
+            divisions.add(NE);
         }
-        else if(container instanceof PointContainer.Circle)
+
+        if(PointContainer.intersect(container, c[SE].quadrilateral))
         {
-            PointContainer.Circle cir = (PointContainer.Circle) container;
-
-
+            divisions.add(SE);
         }
-        else
+
+        if(PointContainer.intersect(container, c[SW].quadrilateral))
         {
-            throw new IllegalStateException("Container type not implemented.");
+            divisions.add(SW);
         }
 
-        if (subcontainers.isEmpty()) {
-            throw new IllegalStateException("Failed to locate at least one container for the circle.");
-        }
-
-
-        return subcontainers.toArray(new Short[subcontainers.size()]);
-    }
-
-    private short getIndexBasedOnCenter(PointContainer container)
-    {
-        return this.getIndexBasedOnCenter(container.getCenter());
-    }
-
-    private short getIndexBasedOnCenter(Vector2 center)
-    {
-        Vector2 relative = center.sub(this.center);
-
-        if(relative.getX() > 0)
+        if(PointContainer.intersect(container, c[NW].quadrilateral))
         {
-            if(relative.getY() > 0)
-            {
-                return NE;
-            }
-            else
-            {
-                return SE;
-            }
+            divisions.add(NE);
         }
-        else
-        {
-            if(relative.getY() > 0)
-            {
-                return NW;
-            }
-            else
-            {
-                return SW;
-            }
-        }
+
+        return divisions;
     }
 
 }

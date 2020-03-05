@@ -67,19 +67,19 @@ public class Parser {
                         } break;
 
                         case "height": {
-
+                            builder.height(Integer.parseInt(data[0]));
                         } break;
 
                         case "width": {
-
+                            builder.width(Integer.parseInt(data[0]));
                         } break;
 
                         case "numguards": {
-
+                            builder.numGuards(Integer.parseInt(data[0]));
                         } break;
 
                         case "numintruders": {
-
+                            builder.numIntruders(Integer.parseInt(data[0]));
                         } break;
 
                         case "capturedistance": {
@@ -87,7 +87,7 @@ public class Parser {
                         } break;
 
                         case "winconditionintruderrounds": {
-
+                            builder.winConditionIntruderRounds(Integer.parseInt(data[0]));
                         } break;
 
                         case "maxrotationangle": {
@@ -95,19 +95,19 @@ public class Parser {
                         } break;
 
                         case "maxmovedistanceintruder": {
-
+                            builder.intruderMaxMoveDistance(Double.parseDouble(data[0]));
                         } break;
 
                         case "maxsprintdistanceintruder": {
-
+                            builder.intruderMaxSprintDistance(Double.parseDouble(data[0]));
                         } break;
 
                         case "maxmovedistanceguard": {
-
+                            builder.guardMaxMoveDistance(Double.parseDouble(data[0]));
                         } break;
 
                         case "sprintcooldown": {
-
+                            builder.sprintCooldown(Integer.parseInt(data[0]));
                         } break;
 
                         case "pheremoncooldown": {
@@ -139,7 +139,7 @@ public class Parser {
                         } break;
 
                         case "viewrangeintrudernormal": {
-
+                            builder.intruderMaxMoveDistance(Double.parseDouble(data[0]));
                         } break;
 
                         case "viewrangeintrudershaded": {

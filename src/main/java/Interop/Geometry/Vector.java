@@ -5,12 +5,12 @@ import Interop.Utils.Require;
 /**
  * Represents a point in the 2-dimensional, cartesian coordinate system.
  */
-public final class Point {
+public final class Vector {
 
     private double x;
     private double y;
 
-    public Point(double x, double y) {
+    public Vector(double x, double y) {
         Require.realNumber(x, "A point on cartesian coordinate system must have real coordinates!");
         Require.realNumber(y, "A point on cartesian coordinate system must have real coordinates!");
         this.x = x;
@@ -29,12 +29,12 @@ public final class Point {
         return Direction.fromClockAngle(this);
     }
 
-    public Distance getDistance(Point point) {
+    public Distance getDistance(Vector point) {
         return new Distance(this, point);
     }
 
     public Distance getDistanceFromOrigin() {
-        return getDistance(new Point(0, 0));
+        return getDistance(new Vector(0, 0));
     }
 
     public String toString() {

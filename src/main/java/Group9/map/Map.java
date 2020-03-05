@@ -126,6 +126,11 @@ public class Map {
             return this;
         }
 
+        public Builder winConditionIntruderRounds(int rounds)
+        {
+            return this;
+        }
+
         public Builder captureDistance(double captureDistance)
         {
             this.captureDistance = new Distance(captureDistance);
