@@ -1,34 +1,23 @@
 package Group6.Geometry;
 
-import Interop.Geometry.Direction;
-import Interop.Geometry.Distance;
+import Group6.Geometry.Direction;
+import Group6.Geometry.Distance;
 import Interop.Utils.Require;
 
 /**
  * Represents a point in the 2-dimensional, cartesian coordinate system.
  */
-public class Point {
+public class Point extends Vector {
 
     private double x;
     private double y;
 
     public Point(double x, double y) {
-        Require.realNumber(x, "A point on cartesian coordinate system must have real coordinates!");
-        Require.realNumber(y, "A point on cartesian coordinate system must have real coordinates!");
-        this.x = x;
-        this.y = y;
+        super(x, y);
     }
 
     public Point(Interop.Geometry.Point interopPoint) {
         this(interopPoint.getX(), interopPoint.getY());
-    }
-
-    public double getX() {
-        return x;
-    }
-
-    public double getY() {
-        return y;
     }
 
     public Direction getClockDirection() {
@@ -36,11 +25,15 @@ public class Point {
     }
 
     public Distance getDistance(Point point) {
-        return new Distance(toInteropPoint(), point.toInteropPoint());
+        return new Distance(this, point);
     }
 
     public Distance getDistanceFromOrigin() {
         return getDistance(new Point(0, 0));
+    }
+
+    public Interop.Geometry.Point toInteropPoint() {
+        return new Interop.Geometry.Point(x, y);
     }
 
     public String toString() {
@@ -48,10 +41,6 @@ public class Point {
             "x=" + x +
             ", y=" + y +
             '}';
-    }
-
-    public Interop.Geometry.Point toInteropPoint() {
-        return new Interop.Geometry.Point(x, y);
     }
 
 }
