@@ -39,13 +39,14 @@ class Node<T> {
         return this.children != null;
     }
 
-    public void add(Content<T> container)
+    public void add(Content<T> container, int depth)
     {
+        System.out.println(depth);
         if(this.hasChildren())
         {
             for(short index : divide(container.getContainer(), this.children))
             {
-                this.children[index].add(container);
+                this.children[index].add(container, depth + 1);
             }
         }
         else if(this.content.size() + 1 <= maxSize)
@@ -54,12 +55,12 @@ class Node<T> {
         }
         else
         {
-            this.split(container);
+            this.split(container, depth);
         }
 
     }
 
-    private void split(Content<T> container)
+    private void split(Content<T> container, int depth)
     {
         this.children = new Node[4];
         final double w = width / 2D;
@@ -69,16 +70,15 @@ class Node<T> {
         this.children[SW] = new Node<>(center.add(-w, -h), width, height, maxSize);
         this.children[NW] = new Node<>(center.add(-w, h), width, height, maxSize);
 
+        this.content.add(container);
         for(Content<T> c : this.content)
         {
             for(short index : divide(c.getContainer(), this.children))
             {
-                this.children[index].add(c);
+                this.children[index].add(c, depth + 1);
             }
         }
         this.content = null;
-
-        this.add(container);
 
     }
 

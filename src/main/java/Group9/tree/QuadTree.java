@@ -1,6 +1,5 @@
 package Group9.tree;
 
-import Group9.map.Map;
 import Group9.math.Vector2;
 
 public class QuadTree<T> {
@@ -24,7 +23,7 @@ public class QuadTree<T> {
     {
         PointContainer pointContainer = transferFunction.transfer(value);
         pointContainer.translate(this.translateToTreeOrigin);
-        this.root.add(new Node.Content<>(value, pointContainer));
+        this.root.add(new Node.Content<>(value, pointContainer), 1);
     }
 
     public interface TransferFunction<T> {
