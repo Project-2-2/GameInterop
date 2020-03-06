@@ -30,10 +30,6 @@ public class Map {
 
         this.width = width;
         this.height = height;
-
-        this.quadTree = new QuadTree<>(width, height, MapObject::getContainer);
-        mapObjects.forEach(o -> quadTree.add(o));
-        System.out.print("");
     }
 
     public int getWidth() {
