@@ -4,10 +4,7 @@ import Group9.map.Map;
 import Group9.map.area.ShadedArea;
 import Group9.map.area.TargetArea;
 import Group9.map.area.TeleportArea;
-import Group9.map.objects.Door;
-import Group9.map.objects.SentryTower;
-import Group9.map.objects.Wall;
-import Group9.map.objects.Window;
+import Group9.map.objects.*;
 import Group9.math.Vector2;
 import Group9.tree.PointContainer;
 import Interop.Percept.Scenario.GameMode;
@@ -53,6 +50,14 @@ public class Parser {
 
                         case "targetarea": {
                             builder.effect(new TargetArea(quadrilateralFromData(data)));
+                        } break;
+
+                        case "spawnareaintruders": {
+                            builder.object(new Spawn.Intruder(quadrilateralFromData(data), null));
+                        } break;
+
+                        case "spawnareaguards": {
+                            builder.object(new Spawn.Guard(quadrilateralFromData(data), null));
                         } break;
 
                         case "teleport": {
