@@ -12,12 +12,12 @@ public abstract class Spawn extends MapObject  {
     }
 
     public static class Intruder extends Spawn {
-        public Intruder(PointContainer area, List<EffectArea> effects) {
+        public Intruder(PointContainer.Quadrilateral area, List<EffectArea> effects) {
             super(area, effects);
         }
     }
     public static class Guard extends Spawn {
-        public Guard(PointContainer area, List<EffectArea> effects) {
+        public Guard(PointContainer.Quadrilateral area, List<EffectArea> effects) {
             super(area, effects);
         }
     }
