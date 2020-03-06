@@ -1,4 +1,14 @@
 package Group9.map.area;
 
-public class TargetArea {
+import Group9.tree.PointContainer;
+
+public class TargetArea extends EffectArea {
+    public TargetArea(PointContainer pointContainer) {
+        super(pointContainer);
+    }
+
+    @Override
+    void applyEffect() {
+
+    }
 }

@@ -4,11 +4,11 @@ import Group9.math.Vector2;
 
 import java.util.*;
 
-public class Node<T extends Container> {
+class Node<T> {
 
     private final short NW = 0, NE = 1, SW = 2, SE = 3;
 
-    private List<T> content = new ArrayList<>();
+    private List<Content<T>> content = new ArrayList<>();
     private Node<T>[] children;
 
     private final Vector2 center;
@@ -18,7 +18,7 @@ public class Node<T extends Container> {
     private PointContainer.Quadrilateral quadrilateral;
 
 
-    public Node(Vector2 center, double width, double height, int maxSize)
+    public Node(final Vector2 center, double width, double height, int maxSize)
     {
         this.center = center;
         this.width = width;
@@ -32,8 +32,6 @@ public class Node<T extends Container> {
                 center.add(-width / 2, -height / 2),
                 center.add(-width / 2, height / 2)
         );
-        System.out.println(PointContainer.intersect(quadrilateral, new PointContainer.Circle(new Vector2(10, 10), 10)));
-        System.out.println();
     }
 
     private boolean hasChildren()
@@ -41,7 +39,7 @@ public class Node<T extends Container> {
         return this.children != null;
     }
 
-    public void add(T container)
+    public void add(Content<T> container)
     {
         if(this.hasChildren())
         {
@@ -61,7 +59,7 @@ public class Node<T extends Container> {
 
     }
 
-    private void split(T container)
+    private void split(Content<T> container)
     {
         this.children = new Node[4];
         final double w = width / 2D;
@@ -71,7 +69,7 @@ public class Node<T extends Container> {
         this.children[SW] = new Node<>(center.add(-w, -h), width, height, maxSize);
         this.children[NW] = new Node<>(center.add(-w, h), width, height, maxSize);
 
-        for(T c : this.content)
+        for(Content<T> c : this.content)
         {
             for(short index : divide(c.getContainer(), this.children))
             {
@@ -84,7 +82,7 @@ public class Node<T extends Container> {
 
     }
 
-    private Set<Short> divide(PointContainer container, Node[] c)
+    private Set<Short> divide(PointContainer container, Node<T>[] c)
     {
         Set<Short> divisions = new HashSet<>();
 
@@ -109,6 +107,27 @@ public class Node<T extends Container> {
         }
 
         return divisions;
+    }
+
+    static class Content<T> {
+
+        private T content;
+        private PointContainer container;
+
+        public Content(T content, PointContainer container)
+        {
+            this.content = content;
+            this.container = container;
+        }
+
+        public T getContent() {
+            return content;
+        }
+
+        public PointContainer getContainer() {
+            return container;
+        }
+
     }
 
 }

@@ -1,8 +1,8 @@
 package Group9.map;
 
+import Group9.map.area.EffectArea;
 import Group9.map.objects.MapObject;
-import Group9.math.Vector2;
-import Group9.tree.Node;
+import Group9.tree.PointContainer;
 import Group9.tree.QuadTree;
 import Interop.Geometry.Angle;
 import Interop.Geometry.Distance;
@@ -14,15 +14,56 @@ import java.util.List;
 public class Map {
 
     private final ScenarioPercepts scenarioPercepts;
-    private Node<MapObject> quadTree;
+    private QuadTree<MapObject> quadTree;
+    private List<MapObject> mapObjects;
+    private List<EffectArea> mapEffects;
 
-    public Map(ScenarioPercepts scenarioPercepts, List<MapObject> mapObjects)
+    private int width, height;
+
+    public Map(ScenarioPercepts scenarioPercepts, List<MapObject> mapObjects, List<EffectArea> effects,
+               int width, int height)
     {
         this.scenarioPercepts = scenarioPercepts;
-        this.quadTree = new Node<>(new Vector2(0, 0), 300, 300, 2);
+
+        this.mapObjects = mapObjects;
+        this.mapEffects = effects;
+
+        this.width = width;
+        this.height = height;
+
+        this.quadTree = new QuadTree<MapObject>(width, height, new QuadTree.TransferFunction<MapObject>() {
+            @Override
+            public PointContainer transfer(MapObject o) {
+                return o.getContainer();
+            }
+        });
         mapObjects.forEach(o -> quadTree.add(o));
+        System.out.print("");
     }
 
+    public int getWidth() {
+        return width;
+    }
+
+    public int getHeight() {
+        return height;
+    }
+
+    public ScenarioPercepts getScenarioPercepts() {
+        return scenarioPercepts;
+    }
+
+    public QuadTree<MapObject> getQuadTree() {
+        return quadTree;
+    }
+
+    public List<MapObject> getMapObjects() {
+        return mapObjects;
+    }
+
+    public List<EffectArea> getMapEffects() {
+        return mapEffects;
+    }
 
     public static class Builder
     {
@@ -64,6 +105,7 @@ public class Map {
         private int sprintCooldown;
 
         private List<MapObject> objects = new ArrayList<>();
+        private List<EffectArea> effects = new ArrayList<>();
 
         public Builder() {}
 
@@ -236,13 +278,19 @@ public class Map {
             return this;
         }
 
+        public Builder effect(EffectArea effect)
+        {
+            this.effects.add(effect);
+            return this;
+        }
+
         public Map build()
         {
             ScenarioPercepts scenarioPercepts = new ScenarioPercepts(gameMode, this.captureDistance, this.maxRotationAngle,
                     new SlowDownModifiers(this.windowSlowdownModifier, this.doorSlowdownModifier, this.sentrySlowdownModifier),
                     this.pheromoneRadius, this.pheromoneCooldown);
 
-            return new Map(scenarioPercepts, this.objects);
+            return new Map(scenarioPercepts, this.objects, this.effects, this.width, this.height);
         }
 
     }

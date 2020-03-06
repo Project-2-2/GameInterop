@@ -1,7 +1,13 @@
 package Group9.map.parser;
 
 import Group9.map.Map;
+import Group9.map.area.ShadedArea;
+import Group9.map.area.TargetArea;
+import Group9.map.area.TeleportArea;
+import Group9.map.objects.Door;
+import Group9.map.objects.SentryTower;
 import Group9.map.objects.Wall;
+import Group9.map.objects.Window;
 import Group9.math.Vector2;
 import Group9.tree.PointContainer;
 import Interop.Percept.Scenario.GameMode;
@@ -16,11 +22,17 @@ public class Parser {
 
     public static Map parseFile(String path)
     {
+        Map.Builder builder = new Map.Builder();
 
         try {
             Files.lines(Paths.get(path)).forEachOrdered(line -> {
 
                 String trimmed = line.trim();
+
+                if(trimmed.isEmpty())
+                {
+                    return;
+                }
 
                 if(trimmed.startsWith("//"))
                 {
@@ -28,45 +40,39 @@ public class Parser {
                 }
                 else
                 {
+                    System.out.println(trimmed);
                     String[] split = trimmed.split("=");
                     String type = split[0].trim();
                     String[] data = split[1].trim().split(",");
 
-                    Map.Builder builder = new Map.Builder();
-
                     switch (type.toLowerCase())
                     {
                         case "wall": {
-                            builder.object(new Wall(new PointContainer.Quadrilateral(
-                                    new Vector2(Double.parseDouble(data[0]), Double.parseDouble(data[1])),
-                                    new Vector2(Double.parseDouble(data[2]), Double.parseDouble(data[3])),
-                                    new Vector2(Double.parseDouble(data[4]), Double.parseDouble(data[5])),
-                                    new Vector2(Double.parseDouble(data[6]), Double.parseDouble(data[7]))
-                            )));
+                            builder.object(new Wall(quadrilateralFromData(data)));
                         } break;
 
                         case "targetarea": {
-
+                            builder.effect(new TargetArea(quadrilateralFromData(data)));
                         } break;
 
                         case "teleport": {
-
+                            builder.effect(new TeleportArea(quadrilateralFromData(data)));
                         } break;
 
                         case "shaded": {
-
+                            builder.effect(new ShadedArea(quadrilateralFromData(data)));
                         } break;
 
                         case "door": {
-
+                            builder.object(new Door(quadrilateralFromData(data)));
                         } break;
 
                         case "window": {
-
+                            builder.object(new Window(quadrilateralFromData(data)));
                         } break;
 
                         case "sentry": {
-
+                            builder.object(new SentryTower(quadrilateralFromData(data)));
                         } break;
 
                         case "gamemode": {
@@ -122,7 +128,7 @@ public class Parser {
                             builder.pheromoneCooldown(Integer.parseInt(data[0]));
                         } break;
 
-                        case "radiuspheremon": {
+                        case "radiuspheromone": {
                             builder.pheromoneRadius(Double.parseDouble(data[0]));
                         } break;
 
@@ -185,12 +191,23 @@ public class Parser {
                 }
 
             });
+
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        return null;
+        return builder.build();
 
+    }
+
+    private static PointContainer.Quadrilateral quadrilateralFromData(String[] data)
+    {
+        return new PointContainer.Quadrilateral(
+                new Vector2(Double.parseDouble(data[0]), Double.parseDouble(data[1])),
+                new Vector2(Double.parseDouble(data[2]), Double.parseDouble(data[3])),
+                new Vector2(Double.parseDouble(data[4]), Double.parseDouble(data[5])),
+                new Vector2(Double.parseDouble(data[6]), Double.parseDouble(data[7]))
+        );
     }
 
     public static enum Types {

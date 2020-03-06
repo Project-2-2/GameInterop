@@ -1,4 +1,16 @@
 package Group9.map.area;
 
-public class TeleportArea {
+import Group9.tree.PointContainer;
+
+public class TeleportArea extends EffectArea {
+
+    public TeleportArea(PointContainer pointContainer) {
+        super(pointContainer);
+    }
+
+    @Override
+    void applyEffect() {
+
+    }
+
 }

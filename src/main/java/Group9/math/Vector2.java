@@ -27,6 +27,11 @@ public class Vector2 {
         return Math.sqrt(Math.pow(this.x, 2) + Math.pow(this.y, 2));
     }
 
+    public Vector2 mul(double x, double y)
+    {
+        return new Vector2(this.x * x, this.y * y);
+    }
+
     public Vector2 add(Vector2 add)
     {
         return this.add(add.getX(), add.getY());

@@ -2,10 +2,13 @@ package Group9.tree;
 
 import Group9.math.Line;
 import Group9.math.Vector2;
+import Interop.Geometry.Vector;
 
 import java.util.Arrays;
 
-public class PointContainer {
+public abstract class PointContainer {
+
+    abstract public void translate(Vector2 vector);
 
     public static class Quadrilateral extends PointContainer {
 
@@ -35,6 +38,17 @@ public class PointContainer {
         }
 
 
+        @Override
+        public void translate(Vector2 vector) {
+            for (int i = 0; i < this.points.length; i++) {
+                this.points[i] = this.points[i].add(vector);
+            }
+
+            this.lines[0] = new Line(this.points[0], this.points[1]);
+            this.lines[1] = new Line(this.points[1], this.points[2]);
+            this.lines[2] = new Line(this.points[2], this.points[3]);
+            this.lines[3] = new Line(this.points[3], this.points[0]);
+        }
     }
 
     public static class Circle extends PointContainer
@@ -54,6 +68,11 @@ public class PointContainer {
 
         public Vector2 getCenter() {
             return center;
+        }
+
+        @Override
+        public void translate(Vector2 vector) {
+            this.center = this.center.add(vector);
         }
     }
 
