@@ -131,7 +131,7 @@ public class Parser {
                         } break;
 
                         case "viewangle": {
-                            builder.windowSlowdownModifier(Double.parseDouble(data[0]));
+                            builder.viewAngle(Double.parseDouble(data[0]));
                         } break;
 
                         case "viewrays": {
@@ -139,39 +139,39 @@ public class Parser {
                         } break;
 
                         case "viewrangeintrudernormal": {
-                            builder.intruderMaxMoveDistance(Double.parseDouble(data[0]));
+                            builder.intruderViewRangeNormal(Double.parseDouble(data[0]));
                         } break;
 
                         case "viewrangeintrudershaded": {
-
+                            builder.intruderViewRangeShaded(Double.parseDouble(data[0]));
                         } break;
 
                         case "viewrangeguardnormal": {
-
+                            builder.guardViewRangeNormal(Double.parseDouble(data[0]));
                         } break;
 
                         case "viewrangeguardshaded": {
-
+                            builder.guardViewRangeShaded(Double.parseDouble(data[0]));
                         } break;
 
                         case "viewrangesentry": {
-
+                            builder.sentryViewRange(Double.parseDouble(data[0]),Double.parseDouble(data[1]));
                         } break;
 
                         case "yellsoundradius": {
-
+                            builder.yellSoundRadius(Double.parseDouble(data[0]));
                         } break;
 
                         case "maxmovesoundradius": {
-
+                            builder.moveMaxSoundRadius(Double.parseDouble(data[0]));
                         } break;
 
                         case "windowsoundradius": {
-
+                            builder.windowSoundRadius(Double.parseDouble(data[0]));
                         } break;
 
                         case "doorsoundradius": {
-
+                            builder.doorSoundRadius(Double.parseDouble(data[0]));
                         } break;
                     }
                 }
