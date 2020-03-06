@@ -1,6 +1,9 @@
 package Group9.map.parser;
 
 import Group9.map.Map;
+import Group9.map.objects.Wall;
+import Group9.math.Vector2;
+import Group9.tree.PointContainer;
 import Interop.Percept.Scenario.GameMode;
 
 import java.io.IOException;
@@ -34,7 +37,12 @@ public class Parser {
                     switch (type.toLowerCase())
                     {
                         case "wall": {
-
+                            builder.object(new Wall(new PointContainer.Quadrilateral(
+                                    new Vector2(Double.parseDouble(data[0]), Double.parseDouble(data[1])),
+                                    new Vector2(Double.parseDouble(data[2]), Double.parseDouble(data[3])),
+                                    new Vector2(Double.parseDouble(data[4]), Double.parseDouble(data[5])),
+                                    new Vector2(Double.parseDouble(data[6]), Double.parseDouble(data[7]))
+                            )));
                         } break;
 
                         case "targetarea": {

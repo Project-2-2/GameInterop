@@ -1,4 +1,11 @@
 package Group9.map.objects;
 
-public class Wall {
+import Group9.tree.PointContainer;
+
+public class Wall extends MapObject {
+
+    public Wall(PointContainer.Quadrilateral area) {
+        super(area);
+    }
+
 }

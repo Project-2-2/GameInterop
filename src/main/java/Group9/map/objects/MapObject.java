@@ -1,16 +1,20 @@
 package Group9.map.objects;
 
+import Group9.tree.Container;
 import Group9.tree.PointContainer;
 
-public class MapObject {
+public class MapObject implements Container {
 
-    private final PointContainer.Quadrilateral area;
+    private final PointContainer area;
 
-    public MapObject(double x, double y, double width, double height)
+    public MapObject(PointContainer area)
     {
-        this.area = null;
+        this.area = area;
     }
 
-
+    @Override
+    public PointContainer getContainer() {
+        return this.area;
+    }
 
 }

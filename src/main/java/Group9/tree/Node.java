@@ -4,7 +4,7 @@ import Group9.math.Vector2;
 
 import java.util.*;
 
-public class Node<T extends PointContainer> {
+public class Node<T extends Container> {
 
     private final short NW = 0, NE = 1, SW = 2, SE = 3;
 
@@ -45,7 +45,7 @@ public class Node<T extends PointContainer> {
     {
         if(this.hasChildren())
         {
-            for(short index : divide(container, this.children))
+            for(short index : divide(container.getContainer(), this.children))
             {
                 this.children[index].add(container);
             }
@@ -73,7 +73,7 @@ public class Node<T extends PointContainer> {
 
         for(T c : this.content)
         {
-            for(short index : divide(c, this.children))
+            for(short index : divide(c.getContainer(), this.children))
             {
                 this.children[index].add(c);
             }

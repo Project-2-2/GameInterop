@@ -1,20 +1,26 @@
 package Group9.map;
 
+import Group9.map.objects.MapObject;
+import Group9.math.Vector2;
+import Group9.tree.Node;
+import Group9.tree.QuadTree;
 import Interop.Geometry.Angle;
 import Interop.Geometry.Distance;
 import Interop.Percept.Scenario.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Map {
 
     private final ScenarioPercepts scenarioPercepts;
-    private final ScenarioGuardPercepts guardPercepts;
-    private final ScenarioIntruderPercepts intruderPercepts;
+    private Node<MapObject> quadTree;
 
-    public Map(ScenarioPercepts scenarioPercepts, ScenarioGuardPercepts guardPercepts, ScenarioIntruderPercepts intruderPercepts)
+    public Map(ScenarioPercepts scenarioPercepts, List<MapObject> mapObjects)
     {
-        this.guardPercepts = guardPercepts;
-        this.intruderPercepts = intruderPercepts;
         this.scenarioPercepts = scenarioPercepts;
+        this.quadTree = new Node<>(new Vector2(0, 0), 300, 300, 2);
+        mapObjects.forEach(o -> quadTree.add(o));
     }
 
 
@@ -31,6 +37,8 @@ public class Map {
 
         private Distance pheromoneRadius;
         private int pheromoneCooldown;
+
+        private List<MapObject> objects = new ArrayList<>();
 
         public Builder() {}
 
@@ -173,13 +181,19 @@ public class Map {
             return this;
         }
 
+        public Builder object(MapObject object)
+        {
+            this.objects.add(object);
+            return this;
+        }
+
         public Map build()
         {
             ScenarioPercepts scenarioPercepts = new ScenarioPercepts(gameMode, this.captureDistance, this.maxRotationAngle,
                     new SlowDownModifiers(this.windowSlowdownModifier, this.doorSlowdownModifier, this.sentrySlowdownModifier),
                     this.pheromoneRadius, this.pheromoneCooldown);
 
-            return new Map(scenarioPercepts, null, null);
+            return new Map(scenarioPercepts, this.objects);
         }
 
     }

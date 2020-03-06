@@ -12,6 +12,7 @@ public class Main {
         node.add(new PointContainer.Circle(new Vector2(10, 10), 40));
 
         //TODO limit tree depth
+        //TODO check whether or not the order of the points matter
 
         node.toString();
     }

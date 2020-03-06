@@ -7,7 +7,6 @@ import java.util.Arrays;
 
 public class PointContainer {
 
-
     public static class Quadrilateral extends PointContainer {
 
         private Vector2[] points = new Vector2[4];

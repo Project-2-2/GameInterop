@@ -1,4 +1,11 @@
 package Group9.map.objects;
 
-public class Door {
+import Group9.tree.PointContainer;
+
+public class Door extends MapObject {
+
+    public Door(PointContainer.Quadrilateral area) {
+        super(area);
+    }
+
 }
