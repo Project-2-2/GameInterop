@@ -8,6 +8,15 @@ public class Area {
     protected int topBoundary;
     protected int bottomBoundary;
 
+    protected int x1;
+    protected int x2;
+    protected int x3;
+    protected int x4;
+    protected int y1;
+    protected int y2;
+    protected int y3;
+    protected int y4;
+
     public Area(){
         leftBoundary=0;
         rightBoundary=1;
@@ -15,49 +24,54 @@ public class Area {
         bottomBoundary=1;
     }
 
-    public Area(int x1, int y1, int x2, int y2){
-        leftBoundary=Math.min(x1,x2);
-        rightBoundary=Math.max(x1,x2);
-        topBoundary=Math.max(y1,y2);
-        bottomBoundary=Math.min(y1,y2);
+    public Area(int x1, int y1, int x2, int y2, int x3, int y3, int x4, int y4){
+        leftBoundary=Math.min(Math.min(x1,x2),Math.min(x3,x4));
+        rightBoundary=Math.max(Math.max(x1,x2),Math.max(x3,x4));
+        topBoundary=Math.min(Math.max(y1,y2),Math.max(y3,y4));
+        bottomBoundary=Math.max(Math.max(y1,y2),Math.max(y3,y4));
+        this.x1=x1;
+        this.x2=x2;
+        this.x3=x3;
+        this.x4=x4;
+        this.y1=y1;
+        this.y2=y2;
+        this.y3=y3;
+        this.y4=y4;
+
     }
 
     /*
         Check whether a point is in the target area
     */
     public boolean isHit(double x,double y){
-        return (y>bottomBoundary)&(y<topBoundary)&(x>leftBoundary)&(x<rightBoundary);
+        Vector2D[] movement = new Vector2D[]{new Vector2D(x,y)};
+        return Sat.hasCollided(movement,getAreaVectors());
     }
 
     public boolean isHit(Point p){
-        return (p.getY()>bottomBoundary)&(p.getY()<topBoundary)&(p.getX()>leftBoundary)&(p.getX()<rightBoundary);
+        Vector2D[] movement = new Vector2D[]{new Vector2D(p)};
+        return Sat.hasCollided(movement,getAreaVectors());
     }
 
     public boolean isHit(Area other){
-        if(other.rightBoundary>leftBoundary&&other.bottomBoundary<bottomBoundary&&other.bottomBoundary>topBoundary){
-            return true;
-        }
-        if (other.leftBoundary<rightBoundary&&other.bottomBoundary<bottomBoundary&&other.bottomBoundary>topBoundary){
-            return true;
-        }
-        return false;
-
+        return Sat.hasCollided(this.getAreaVectors(),other.getAreaVectors());
     }
     /*
         Check whether something with a radius is in the target area
 
     */
     public boolean isHit(double x,double y,double radius){
-
-        return (y-radius>bottomBoundary)&(y+radius<topBoundary)&(x-radius>leftBoundary)&(x+radius<rightBoundary);
+        Vector2D[] circlePolygon = Sat.circleToPolygon(this.getAreaVectors(),new Point(x,y),radius);
+        return Sat.hasCollided(this.getAreaVectors(),circlePolygon);
+        //return (y-radius>bottomBoundary)&(y+radius<topBoundary)&(x-radius>leftBoundary)&(x+radius<rightBoundary);
     }
 
     public Vector2D[] getAreaVectors(){
         Vector2D[] vectors = new Vector2D[4];
-        Vector2D leftBottom = new Vector2D(leftBoundary,bottomBoundary);
-        Vector2D rightBottom = new Vector2D(rightBoundary,bottomBoundary);
-        Vector2D leftTop = new Vector2D(leftBoundary,topBoundary);
-        Vector2D rightTop = new Vector2D(rightBoundary,topBoundary);
+        Vector2D leftBottom = new Vector2D(x1,y1);
+        Vector2D rightBottom = new Vector2D(x2,y2);
+        Vector2D leftTop = new Vector2D(x3,y3);
+        Vector2D rightTop = new Vector2D(x4,y4);
         vectors[0] = leftBottom;
         vectors[1] = rightBottom;
         vectors[2] = leftTop;

@@ -127,4 +127,9 @@ public class Vector2D {
     public String toString() {
         return String.format("x = %f, y = %f", x, y);
     }
+
+    public Point toPoint(){
+        Point p = new Point(x,y);
+        return p;
+    }
 }

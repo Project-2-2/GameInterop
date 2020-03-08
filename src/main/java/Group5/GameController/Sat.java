@@ -1,5 +1,7 @@
 package Group5.GameController;
 
+import Interop.Geometry.Point;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -23,6 +25,33 @@ class Sat {
         Vector2D[] test = {new Vector2D(0,45),new Vector2D(100,100)};
 
         System.out.println(Sat.hasCollided(tank,test));
+
+
+    }
+
+    /**
+     * creates a polygon from a circle
+     * this polygon has vectors parallel to the vectors of the other polygon that has to be checked for colission
+     * @param compare the polygon that the circle will be checked if it has colission with
+     * @param p the center of the circle
+     * @param radius the radius of the circle
+     * @return
+     */
+    public static Vector2D[] circleToPolygon(Vector2D[] compare, Point p, double radius){
+        ArrayList<Vector2D> edges = polyToEdges(compare);
+        Vector2D[] circlePolygon = new Vector2D[edges.size()];
+        for (int i = 0; i<edges.size();i++){
+            System.out.println(edges.get(i).toPoint().getClockDirection().getRadians());
+            System.out.println(Math.atan2(edges.get(i).getX(),edges.get(i).getY()));
+            System.out.println(Math.atan2(compare[i].getX()-compare[i+1].getX(),compare[i].getY()-compare[i+1].getY()));
+            double x = p.getX()+radius*Math.cos(edges.get(i).toPoint().getClockDirection().getRadians());
+            double y = p.getY()+radius*Math.sin(edges.get(i).toPoint().getClockDirection().getRadians());
+            System.out.println("x: " + x + " y: "+ y);
+            circlePolygon[i] = new Vector2D(x,y);
+        }
+        return circlePolygon;
+
+
 
 
     }

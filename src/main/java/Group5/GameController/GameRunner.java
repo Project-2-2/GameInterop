@@ -59,15 +59,51 @@ public class GameRunner {
     private Timer timer;
 
     public GameRunner() {
+        mapInfo = new MapInfo();
+        timer = new Timer();
+    }
+
+    public static void main(String[] args) throws IOException {
+
+        Point from = new Point(6,6);
+        Point to = new Point (100,2);
+        GameRunner poep = new GameRunner();
+        //Vector2D[] movement = poep.movementShape(from,to,5);
+        //movement = new Vector2D[]{new Vector2D(from)};
+
+        Area wall = new Area(5,5,10,5,5,10,10,10);
+        Area wall2 = new Area(4,4,8,11,11,8,100,50);
+
+
+        System.out.println(wall.isHit(4,4,2));
+
+        System.out.println(wall.isHit(wall2));
+
+
+      /*
+        GameRunner runner = new GameRunner();
+        runner.initialize();
+
+       */
+
+
     }
 
     @FXML
     public void initialize() throws IOException {
-        File file = DrawableDialogueBox.getFile();
-        this.update();
-        this.startTimer();
+        //File file = DrawableDialogueBox.getFile();
+        //mapInfo.readMap(file.getPath());
+        String src = "src/main/java/Group5/Maps/testmap.txt";
+        mapInfo.readMap(src);
+        mapInfo.spawnAgents();  
+
+       // this.update();
+        //this.startTimer();
+        /*
         mapViewer.setFocusTraversable(true);
         mapViewer.requestFocus();
+
+         */
     }
 
     private void startTimer() {
@@ -93,18 +129,7 @@ public class GameRunner {
         this.mapViewer.moveIntruder(10, 10, true);
     }
 
-    public static void main(String[] args) {
-        Point from = new Point(2,2);
-        Point to = new Point (100,2);
-        GameRunner poep = new GameRunner();
-        Vector2D[] movement = poep.movementShape(from,to,4);
 
-        Area wall = new Area(51,5,51,5);
-
-        System.out.println(Sat.hasCollided(movement,wall.getAreaVectors()));
-
-
-    }
 
     /**
      * CALL THIS METHOD TO CHECK IF MOVEMENT IS VALID
@@ -112,7 +137,7 @@ public class GameRunner {
      * checks if movement is valid
      * returns the postion after movement
      */
-    public Point move(Point from, Point to){
+    public Point moveValidility(Point from, Point to){
         ArrayList<Area> walls= mapInfo.walls;
 
         //for now give the agent a radius of 1
