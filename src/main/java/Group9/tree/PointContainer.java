@@ -10,6 +10,8 @@ public abstract class PointContainer {
 
     abstract public void translate(Vector2 vector);
 
+    abstract public Vector2 getCenter();
+
     public static class Quadrilateral extends PointContainer {
 
         private Vector2[] points = new Vector2[4];
@@ -49,6 +51,12 @@ public abstract class PointContainer {
             this.lines[2] = new Line(this.points[2], this.points[3]);
             this.lines[3] = new Line(this.points[3], this.points[0]);
         }
+
+        @Override
+        public Vector2 getCenter() {
+            //TODO implement
+            return null;
+        }
     }
 
     public static class Circle extends PointContainer
@@ -66,6 +74,7 @@ public abstract class PointContainer {
             return radius;
         }
 
+        @Override
         public Vector2 getCenter() {
             return center;
         }

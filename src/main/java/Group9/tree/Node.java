@@ -14,17 +14,17 @@ class Node<T> {
     private final Vector2 center;
     private final double width, height;
     private final int maxSize;
+    private final int maxDepth;
 
     private PointContainer.Quadrilateral quadrilateral;
 
-
-    public Node(final Vector2 center, double width, double height, int maxSize)
+    public Node(final Vector2 center, double width, double height, int maxSize, final int maxDepth)
     {
         this.center = center;
         this.width = width;
         this.height = height;
         this.maxSize = maxSize;
-
+        this.maxDepth = maxDepth;
 
         this.quadrilateral = new PointContainer.Quadrilateral(
                 center.add(width / 2, height / 2),
@@ -41,7 +41,6 @@ class Node<T> {
 
     public void add(Content<T> container, int depth)
     {
-        System.out.println(depth);
         if(this.hasChildren())
         {
             for(short index : divide(container.getContainer(), this.children))
@@ -49,7 +48,7 @@ class Node<T> {
                 this.children[index].add(container, depth + 1);
             }
         }
-        else if(this.content.size() + 1 <= maxSize)
+        else if(this.content.size() + 1 <= maxSize || this.maxDepth == depth)
         {
             this.content.add(container);
         }
@@ -65,10 +64,10 @@ class Node<T> {
         this.children = new Node[4];
         final double w = width / 2D;
         final double h = height / 2D;
-        this.children[NE] = new Node<>(center.add(w, h), width, height, maxSize);
-        this.children[SE] = new Node<>(center.add(w, -h), width, height, maxSize);
-        this.children[SW] = new Node<>(center.add(-w, -h), width, height, maxSize);
-        this.children[NW] = new Node<>(center.add(-w, h), width, height, maxSize);
+        this.children[NE] = new Node<>(center.add(w, h), width, height, maxSize, maxDepth);
+        this.children[SE] = new Node<>(center.add(w, -h), width, height, maxSize, maxDepth);
+        this.children[SW] = new Node<>(center.add(-w, -h), width, height, maxSize, maxDepth);
+        this.children[NW] = new Node<>(center.add(-w, h), width, height, maxSize, maxDepth);
 
         this.content.add(container);
         for(Content<T> c : this.content)

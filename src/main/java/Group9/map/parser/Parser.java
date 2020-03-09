@@ -1,6 +1,6 @@
 package Group9.map.parser;
 
-import Group9.map.Map;
+import Group9.map.GameMap;
 import Group9.map.area.ShadedArea;
 import Group9.map.area.TargetArea;
 import Group9.map.area.TeleportArea;
@@ -10,16 +10,14 @@ import Group9.tree.PointContainer;
 import Interop.Percept.Scenario.GameMode;
 
 import java.io.IOException;
-import java.net.URI;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 
 public class Parser {
 
-    public static Map parseFile(String path)
+    public static GameMap parseFile(String path)
     {
-        Map.Builder builder = new Map.Builder();
+        GameMap.Builder builder = new GameMap.Builder();
 
         try {
             Files.lines(Paths.get(path)).forEachOrdered(line -> {
@@ -49,7 +47,7 @@ public class Parser {
                         } break;
 
                         case "targetarea": {
-                            builder.effect(new TargetArea(quadrilateralFromData(data)));
+                            builder.object(new TargetArea(quadrilateralFromData(data)));
                         } break;
 
                         case "spawnareaintruders": {

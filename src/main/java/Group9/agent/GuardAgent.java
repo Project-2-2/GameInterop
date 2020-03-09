@@ -5,10 +5,10 @@ import Interop.Agent.Guard;
 import Interop.Geometry.Vector;
 import Interop.Percept.GuardPercepts;
 
-public class ExplorerAgent extends AgentContainer<Guard> implements Guard {
+public class GuardAgent extends AgentContainer<Guard> implements Guard {
 
-    public ExplorerAgent(Vector position, Vector direction) {
-        super(position, direction);
+    public GuardAgent(Guard agent, Vector position, Vector direction) {
+        super(agent, position, direction);
     }
 
     @Override

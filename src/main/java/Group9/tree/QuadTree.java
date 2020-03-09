@@ -10,12 +10,12 @@ public class QuadTree<T> {
 
     private TransferFunction<T> transferFunction;
 
-    public QuadTree(int width, int height, TransferFunction<T> transferFunction)
+    public QuadTree(int width, int height, int maxDepth, TransferFunction<T> transferFunction)
     {
         this.translateToTreeOrigin = new Vector2(-width / 2D, -height / 2D);
         this.translateToRealOrigin = this.translateToTreeOrigin.mul(-1, -1);
 
-        this.root = new Node<>(new Vector2(0, 0), width, height, 1);
+        this.root = new Node<>(new Vector2(0, 0), width, height, 5, 3);
         this.transferFunction = transferFunction;
     }
 
