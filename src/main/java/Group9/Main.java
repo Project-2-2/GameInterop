@@ -1,16 +1,14 @@
 package Group9;
 
-import Group9.map.Map;
+import Group9.map.GameMap;
 import Group9.map.parser.Parser;
-import Group9.math.Vector2;
-import Group9.tree.PointContainer;
 
 public class Main {
 
     public static void main(String[] args) {
 
-        Map map = Parser.parseFile("./src/main/java/Group9/map/maps/test.map");
-        map.toString();
+        GameMap gameMap = Parser.parseFile("./src/main/java/Group9/map/maps/test.map");
+        gameMap.toString();
 
         //\left(-60,-40\right),\left(-60,-39\right),\left(60,-39\right),\left(60,-40\right)
 

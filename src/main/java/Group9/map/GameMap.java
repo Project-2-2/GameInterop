@@ -2,28 +2,44 @@ package Group9.map;
 
 import Group9.map.area.EffectArea;
 import Group9.map.objects.MapObject;
-import Group9.tree.PointContainer;
 import Group9.tree.QuadTree;
 import Interop.Geometry.Angle;
 import Interop.Geometry.Distance;
-import Interop.Percept.Scenario.*;
+import Interop.Percept.Scenario.GameMode;
+import Interop.Percept.Scenario.ScenarioPercepts;
+import Interop.Percept.Scenario.SlowDownModifiers;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
-public class Map {
+public class GameMap {
 
     private final ScenarioPercepts scenarioPercepts;
+
+    private Distance guardMaxMoveDistance;
+
+    private int turnsInTargetAreaToWin;
+    private Distance intruderMaxMoveDistance;
+    private Distance intruderMaxSprintDistance;
+
     private QuadTree<MapObject> quadTree;
     private List<MapObject> mapObjects;
     private List<EffectArea> mapEffects;
 
     private int width, height;
 
-    public Map(ScenarioPercepts scenarioPercepts, List<MapObject> mapObjects, List<EffectArea> effects,
-               int width, int height)
+    public GameMap(ScenarioPercepts scenarioPercepts, List<MapObject> mapObjects, List<EffectArea> effects,
+                   int width, int height,
+                   Distance guardMaxMoveDistance,
+                   int turnsInTargetAreaToWin, Distance intruderMaxMoveDistance, Distance intruderMaxSprintDistance)
     {
         this.scenarioPercepts = scenarioPercepts;
+
+        this.guardMaxMoveDistance = guardMaxMoveDistance;
+        this.turnsInTargetAreaToWin = turnsInTargetAreaToWin;
+        this.intruderMaxMoveDistance = intruderMaxMoveDistance;
+        this.intruderMaxSprintDistance = intruderMaxSprintDistance;
 
         this.mapObjects = mapObjects;
         this.mapEffects = effects;
@@ -31,9 +47,29 @@ public class Map {
         this.width = width;
         this.height = height;
 
-        this.quadTree = new QuadTree<>(width, height, MapObject::getContainer);
-        mapObjects.forEach(o -> quadTree.add(o));
-        System.out.print("");
+        //this.quadTree = new QuadTree<>(width, height, 3, MapObject::getContainer);
+        //mapObjects.forEach(o -> quadTree.add(o));
+        //System.out.print("");
+    }
+
+    public ScenarioPercepts getScenarioPercepts() {
+        return scenarioPercepts;
+    }
+
+    public Distance getGuardMaxMoveDistance() {
+        return guardMaxMoveDistance;
+    }
+
+    public Distance getIntruderMaxMoveDistance() {
+        return intruderMaxMoveDistance;
+    }
+
+    public Distance getIntruderMaxSprintDistance() {
+        return intruderMaxSprintDistance;
+    }
+
+    public int getTurnsInTargetAreaToWin() {
+        return turnsInTargetAreaToWin;
     }
 
     public int getWidth() {
@@ -44,8 +80,11 @@ public class Map {
         return height;
     }
 
-    public ScenarioPercepts getScenarioPercepts() {
-        return scenarioPercepts;
+    public <T extends MapObject> List<T> getObjects(Class<T> clazz)
+    {
+        return this.mapObjects.stream()
+                .filter(e -> clazz.isAssignableFrom(e.getClass()))
+                .map(object -> (T) object).collect(Collectors.toList());
     }
 
     public QuadTree<MapObject> getQuadTree() {
@@ -279,13 +318,16 @@ public class Map {
             return this;
         }
 
-        public Map build()
+        public GameMap build()
         {
             ScenarioPercepts scenarioPercepts = new ScenarioPercepts(gameMode, this.captureDistance, this.maxRotationAngle,
                     new SlowDownModifiers(this.windowSlowdownModifier, this.doorSlowdownModifier, this.sentrySlowdownModifier),
                     this.pheromoneRadius, this.pheromoneCooldown);
 
-            return new Map(scenarioPercepts, this.objects, this.effects, this.width, this.height);
+            return new GameMap(scenarioPercepts, this.objects, this.effects, this.width, this.height,
+                        this.guardMaxMoveDistance,
+                        this.winRounds, this.intruderMaxMoveDistance, this.intruderMaxSprintDistance
+                    );
         }
 
     }
