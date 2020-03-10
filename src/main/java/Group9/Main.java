@@ -2,13 +2,32 @@ package Group9;
 
 import Group9.map.GameMap;
 import Group9.map.parser.Parser;
+import Group9.math.graph.Graph;
+import Group9.math.graph.Vertex;
 
 public class Main {
 
     public static void main(String[] args) {
 
-        GameMap gameMap = Parser.parseFile("./src/main/java/Group9/map/maps/test.map");
-        gameMap.toString();
+        Graph<String> graph = new Graph<>();
+        Vertex<String> a = new Vertex<>("a");
+        Vertex<String> b = new Vertex<>("b");
+        Vertex<String> c = new Vertex<>("c");
+        Vertex<String> d = new Vertex<>("d");
+        Vertex<String> e = new Vertex<>("e");
+        Vertex<String> f = new Vertex<>("f");
+
+        graph.add(a, b, c, d, e);
+
+        graph.addEdge(a, b, 13);
+        graph.addEdge(b, c, 1);
+        graph.addEdge(a, c, 12);
+        graph.addEdge(c, d, 3);
+
+        System.out.println(graph.shortedPath(a, d));
+
+        //GameMap gameMap = Parser.parseFile("./src/main/java/Group9/map/maps/test.map");
+        //gameMap.toString();
 
         //\left(-60,-40\right),\left(-60,-39\right),\left(60,-39\right),\left(60,-40\right)
 
