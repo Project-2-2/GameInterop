@@ -48,6 +48,8 @@ public class Area {
         return Sat.hasCollided(movement,getAreaVectors());
     }
 
+
+
     public boolean isHit(Point p){
         Vector2D[] movement = new Vector2D[]{new Vector2D(p)};
         return Sat.hasCollided(movement,getAreaVectors());
@@ -74,6 +76,19 @@ public class Area {
         Vector2D[] circlePolygon = Sat.circleToPolygon(this.getAreaVectors(),center,radius);
         return Sat.hasCollided(this.getAreaVectors(),circlePolygon);
         //return (y-radius>bottomBoundary)&(y+radius<topBoundary)&(x-radius>leftBoundary)&(x+radius<rightBoundary);
+    }
+
+
+    /**
+     * CALL THIS METHOD FOR VISSION
+     * You need to have the two ends of the vision vector
+     * @param startVector
+     * @param endVector
+     * @return
+     */
+    public boolean isHit(Point startVector, Point endVector){
+        Vector2D[] rayVector = new Vector2D{new Vector2D(startVector),new Vector2D(endVector)};
+        return Sat.hasCollided(this.getAreaVectors(),rayVector);
     }
 
     public Vector2D[] getAreaVectors(){
