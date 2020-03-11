@@ -2,6 +2,8 @@ package Group9;
 
 import Group9.map.GameMap;
 import Group9.map.parser.Parser;
+import Group9.math.Line;
+import Group9.math.Vector2;
 import Group9.math.graph.Graph;
 import Group9.math.graph.Vertex;
 
@@ -9,7 +11,16 @@ public class Main {
 
     public static void main(String[] args) {
 
-        Graph<String> graph = new Graph<>();
+        {
+            Line a = new Line(new Vector2(-10, 0), new Vector2(10, 10));
+            Line b = new Line(new Vector2(-10, -2), new Vector2(10, 10.1));
+
+            System.out.println(a.intersect(b));
+        }
+
+
+
+        /*Graph<String> graph = new Graph<>();
         Vertex<String> a = new Vertex<>("a");
         Vertex<String> b = new Vertex<>("b");
         Vertex<String> c = new Vertex<>("c");
@@ -24,7 +35,7 @@ public class Main {
         graph.addEdge(a, c, 12);
         graph.addEdge(c, d, 3);
 
-        System.out.println(graph.shortedPath(a, d));
+        System.out.println(graph.shortedPath(a, d));*/
 
         //GameMap gameMap = Parser.parseFile("./src/main/java/Group9/map/maps/test.map");
         //gameMap.toString();
