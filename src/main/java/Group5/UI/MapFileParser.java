@@ -130,6 +130,27 @@ public class MapFileParser {
                         teleport.setFill(Color.GREEN);
                         drawableObjects.add(teleport);
                         break;
+                    case "door":
+                        DrawableObject door = new DrawableObject(Integer.parseInt(items[0]), Integer.parseInt(items[1]), Integer.parseInt(items[2]),
+                                Integer.parseInt(items[3]), Integer.parseInt(items[4]), Integer.parseInt(items[5]),
+                                Integer.parseInt(items[6]), Integer.parseInt(items[7]));
+                        door.setFill(Color.BROWN);
+                        drawableObjects.add(door);
+                        break;
+                    case "window":
+                        DrawableObject window = new DrawableObject(Integer.parseInt(items[0]), Integer.parseInt(items[1]), Integer.parseInt(items[2]),
+                                Integer.parseInt(items[3]), Integer.parseInt(items[4]), Integer.parseInt(items[5]),
+                                Integer.parseInt(items[6]), Integer.parseInt(items[7]));
+                        window.setFill(Color.TURQUOISE);
+                        drawableObjects.add(window);
+                        break;
+                    case "sentry":
+                        DrawableObject sentry = new DrawableObject(Integer.parseInt(items[0]), Integer.parseInt(items[1]), Integer.parseInt(items[2]),
+                                Integer.parseInt(items[3]), Integer.parseInt(items[4]), Integer.parseInt(items[5]),
+                                Integer.parseInt(items[6]), Integer.parseInt(items[7]));
+                        sentry.setFill(Color.BLACK);
+                        drawableObjects.add(sentry);
+                        break;
                 }
             }
         }
