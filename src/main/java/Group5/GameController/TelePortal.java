@@ -1,5 +1,7 @@
 package Group5.GameController;
 
+import Interop.Geometry.Point;
+
 public class TelePortal extends Area {
 
     protected int yTarget;
@@ -20,8 +22,8 @@ public class TelePortal extends Area {
         outOrientation = orient;
     }
 
-    public int[] getNewLocation(){
-        int[] target = new int[] {yTarget,xTarget};
+    public Point getNewLocation(){
+        Point target = new Point(xTarget,yTarget);
         return target;
     }
 

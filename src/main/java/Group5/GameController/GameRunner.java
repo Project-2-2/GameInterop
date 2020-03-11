@@ -54,7 +54,7 @@ public class GameRunner {
     @FXML
     private BorderPane gameBorder;
 
-    private MapInfo mapInfo;
+    private static MapInfo mapInfo;
 
     private Timer timer;
 
@@ -65,6 +65,7 @@ public class GameRunner {
 
     public static void main(String[] args) throws IOException {
 
+        /*
         Point from = new Point(6,6);
         Point to = new Point (100,2);
         GameRunner poep = new GameRunner();
@@ -79,8 +80,14 @@ public class GameRunner {
 
         System.out.println(wall.isHit(wall2));
 
+         */
+
+        IntruderController poep = new IntruderController(new Point(1,1),1);
+        poep.vision();
+
 
       /*
+
         GameRunner runner = new GameRunner();
         runner.initialize();
 
@@ -137,7 +144,7 @@ public class GameRunner {
      * checks if movement is valid
      * returns the postion after movement
      */
-    public Point moveValidility(Point from, Point to){
+    public static boolean moveValidility(Point from, Point to){
         ArrayList<Area> walls= mapInfo.walls;
 
         //for now give the agent a radius of 1
@@ -147,10 +154,10 @@ public class GameRunner {
             System.out.println("collision detected");
             if (Sat.hasCollided(movment,wallVectors)||walls.get(i).isHit(to)){
                 to = from;
-                return to;
+                return false;
             }
         }
-        return to;
+        return true;
     }
 
     /**
@@ -161,7 +168,7 @@ public class GameRunner {
      * @param radius of the agent
      * @return
      */
-    public Vector2D[] movementShape(Point from, Point to, double radius){
+    private static Vector2D[] movementShape(Point from, Point to, double radius){
         Vector2D start = new Vector2D(from);
         Vector2D end = new Vector2D(to);
 
@@ -183,6 +190,51 @@ public class GameRunner {
         Vector2D[] shape =  {point1,point2,point3,point4};
 
         return shape;
+
+    }
+
+    protected static Point teleportValidility(Point oldLocation, double radius){
+        ArrayList<TelePortal> teleports = mapInfo.teleports;
+        for (int i =0; i<teleports.size();i++){
+            if (teleports.get(i).isHit(oldLocation.getX(), oldLocation.getY(), radius)) {
+                Point targetLocation = teleports.get(i).getNewLocation();
+                if (checkNoColissionTeleport(targetLocation,radius)){
+                    return targetLocation;
+                }
+
+            }
+        }
+        return oldLocation;
+
+    }
+
+
+    /**
+     * extra check if new location doesn't give any colissions
+     * @param targetLocation
+     * @param radius
+     * @return
+     */
+    private static boolean checkNoColissionTeleport(Point targetLocation, double radius){
+        ArrayList<Area> walls =mapInfo.walls;
+        for (int i =0; i<walls.size();i++){
+            if (walls.get(i).isHit(targetLocation,radius)){
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * returns the area which can be seen with the raycast
+     * checks only for walls
+     * @param rayCast the raycast vector
+     * @param location the current location of the agent
+     * @return
+     */
+    protected Area visionCollision(Vector2D rayCast, Point location){
+       // ArrayList<>
+        return null;
 
     }
 

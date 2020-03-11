@@ -56,12 +56,22 @@ public class Area {
     public boolean isHit(Area other){
         return Sat.hasCollided(this.getAreaVectors(),other.getAreaVectors());
     }
+
     /*
         Check whether something with a radius is in the target area
 
     */
     public boolean isHit(double x,double y,double radius){
         Vector2D[] circlePolygon = Sat.circleToPolygon(this.getAreaVectors(),new Point(x,y),radius);
+        return Sat.hasCollided(this.getAreaVectors(),circlePolygon);
+        //return (y-radius>bottomBoundary)&(y+radius<topBoundary)&(x-radius>leftBoundary)&(x+radius<rightBoundary);
+    }
+    /*
+        Check whether something with a radius is in the target area
+
+    */
+    public boolean isHit(Point center,double radius){
+        Vector2D[] circlePolygon = Sat.circleToPolygon(this.getAreaVectors(),center,radius);
         return Sat.hasCollided(this.getAreaVectors(),circlePolygon);
         //return (y-radius>bottomBoundary)&(y+radius<topBoundary)&(x-radius>leftBoundary)&(x+radius<rightBoundary);
     }

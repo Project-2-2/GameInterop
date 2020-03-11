@@ -1,5 +1,6 @@
 package Group5.GameController;
 
+import Interop.Geometry.Angle;
 import Interop.Geometry.Point;
 
 public class Vector2D {
@@ -31,17 +32,15 @@ public class Vector2D {
 
 
     public Vector2D add(Vector2D other) {
-        if (other != null) {
-            x += other.getX();
-            y += other.getY();
-        }
-        return this;
+        double newX = x +other.getX();
+        double newY = y + other.getY();
+        return new Vector2D(newX,newY);
     }
 
     public Vector2D sub(Vector2D other) {
-        x -= other.getX();
-        y -= other.getY();
-        return this;
+        double newX = x - other.getX();
+        double newY = y - other.getY();
+        return new Vector2D(newX,newY);
     }
 
     /**
@@ -49,13 +48,9 @@ public class Vector2D {
      * @return the multiplied vector.
      */
     public Vector2D mul(double factor) {
-        if (x != 0) {
-            this.x *= factor;
-        }
-        if (y != 0) {
-            this.y *= factor;
-        }
-        return this;
+        double newX = x*factor;
+        double newY = y*factor;
+        return (new Vector2D(newX,newY));
     }
 
     /**
@@ -63,13 +58,9 @@ public class Vector2D {
      * @return
      */
     public Vector2D div(double factor) {
-        if (x != 0) {
-            this.x /= factor;
-        }
-        if (y != 0) {
-            this.y /= factor;
-        }
-        return this;
+        double newX = x/factor;
+        double newY = y/factor;
+        return (new Vector2D(newX,newY));
     }
 
     /**
@@ -131,5 +122,15 @@ public class Vector2D {
     public Point toPoint(){
         Point p = new Point(x,y);
         return p;
+    }
+
+
+    /**
+     * rotates a vector
+     * @param angle RADIANS
+     * @return
+     */
+    public Vector2D rotate(double angle){
+        return new Vector2D(x*Math.cos(angle)-y*Math.sin(angle),y*Math.cos(angle)+x*Math.sin(angle));
     }
 }
