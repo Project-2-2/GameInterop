@@ -1,19 +1,29 @@
 package Group9.map;
 
+import Group9.agent.AgentContainer;
 import Group9.map.area.EffectArea;
+import Group9.map.dynamic.DynamicObject;
 import Group9.map.objects.MapObject;
+import Group9.math.Line;
+import Group9.tree.PointContainer;
 import Group9.tree.QuadTree;
 import Interop.Geometry.Angle;
 import Interop.Geometry.Distance;
 import Interop.Percept.Scenario.GameMode;
 import Interop.Percept.Scenario.ScenarioPercepts;
 import Interop.Percept.Scenario.SlowDownModifiers;
+import Interop.Percept.Vision.ObjectPerceptType;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 public class GameMap {
+
+    private static List<ObjectPerceptType> _SOLID_PERCEPTS = Arrays.stream(ObjectPerceptType.values())
+                .filter(ObjectPerceptType::isSolid).collect(Collectors.toList());
 
     private final ScenarioPercepts scenarioPercepts;
 
@@ -22,17 +32,22 @@ public class GameMap {
     private int turnsInTargetAreaToWin;
     private Distance intruderMaxMoveDistance;
     private Distance intruderMaxSprintDistance;
+    private int sprintCooldown;
 
     private QuadTree<MapObject> quadTree;
     private List<MapObject> mapObjects;
     private List<EffectArea> mapEffects;
+
+
+    private List<DynamicObject> dynamicObjects = new ArrayList<>();
 
     private int width, height;
 
     public GameMap(ScenarioPercepts scenarioPercepts, List<MapObject> mapObjects, List<EffectArea> effects,
                    int width, int height,
                    Distance guardMaxMoveDistance,
-                   int turnsInTargetAreaToWin, Distance intruderMaxMoveDistance, Distance intruderMaxSprintDistance)
+                   int turnsInTargetAreaToWin, Distance intruderMaxMoveDistance, Distance intruderMaxSprintDistance,
+                   int sprintCooldown)
     {
         this.scenarioPercepts = scenarioPercepts;
 
@@ -41,15 +56,35 @@ public class GameMap {
         this.intruderMaxMoveDistance = intruderMaxMoveDistance;
         this.intruderMaxSprintDistance = intruderMaxSprintDistance;
 
+        this.sprintCooldown = sprintCooldown;
+
         this.mapObjects = mapObjects;
         this.mapEffects = effects;
 
         this.width = width;
         this.height = height;
 
-        //this.quadTree = new QuadTree<>(width, height, 3, MapObject::getContainer);
-        //mapObjects.forEach(o -> quadTree.add(o));
-        //System.out.print("");
+        this.quadTree = new QuadTree<>(width, height, 10000, MapObject::getContainer);
+        AtomicInteger index = new AtomicInteger();
+        mapObjects.forEach(a -> {
+            AtomicInteger c = new AtomicInteger();
+            mapObjects.forEach(b -> {
+                if(a != b)
+                {
+                    if(PointContainer.intersect(a.getContainer(), b.getContainer()))
+                    {
+                        c.getAndIncrement();
+                    }
+                }
+            });
+            System.out.println(index.getAndIncrement() + "." + c);
+        });
+        index.set(0);
+        mapObjects.forEach(a -> {
+            System.out.println(index.getAndIncrement());
+            quadTree.add(a);
+        });
+        System.out.print("");
     }
 
     public ScenarioPercepts getScenarioPercepts() {
@@ -70,6 +105,10 @@ public class GameMap {
 
     public int getTurnsInTargetAreaToWin() {
         return turnsInTargetAreaToWin;
+    }
+
+    public int getSprintCooldown() {
+        return sprintCooldown;
     }
 
     public int getWidth() {
@@ -97,6 +136,31 @@ public class GameMap {
 
     public List<EffectArea> getMapEffects() {
         return mapEffects;
+    }
+
+    public List<DynamicObject> getDynamicObjects() {
+        return dynamicObjects;
+    }
+
+    public <A, T extends MapObject> boolean isInArea(AgentContainer<A> agent, Class<T> clazz)
+    {
+        //TODO check whether this works or not...
+        return this.mapObjects.stream()
+                .filter(e -> clazz.isAssignableFrom(e.getClass()))
+                .anyMatch(e -> PointContainer.intersect(agent.getShape(), e.getContainer()));
+    }
+
+    public boolean isRayIntersecting(Line line, List<ObjectPerceptType> objectPerceptTypes)
+    {
+        List<ObjectPerceptType> objects = objectPerceptTypes.stream().filter(MapObject::is).collect(Collectors.toList());
+        List<ObjectPerceptType> effects = objectPerceptTypes.stream().filter(EffectArea::is).collect(Collectors.toList());
+        return this.mapObjects.stream().filter(objects::contains).anyMatch(e -> PointContainer.intersect(e.getContainer(), line)) ||
+                this.mapEffects.stream().filter(effects::contains).anyMatch(e -> PointContainer.intersect(e.getContainer(), line));
+    }
+
+    public boolean isRayIntersectingSolidObject(Line line)
+    {
+        return isRayIntersecting(line, _SOLID_PERCEPTS);
     }
 
     public static class Builder
@@ -326,7 +390,7 @@ public class GameMap {
 
             return new GameMap(scenarioPercepts, this.objects, this.effects, this.width, this.height,
                         this.guardMaxMoveDistance,
-                        this.winRounds, this.intruderMaxMoveDistance, this.intruderMaxSprintDistance
+                        this.winRounds, this.intruderMaxMoveDistance, this.intruderMaxSprintDistance, this.sprintCooldown
                     );
         }
 

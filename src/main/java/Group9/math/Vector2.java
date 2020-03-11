@@ -70,9 +70,18 @@ public class Vector2 {
         return Utils.clockAngle(this.x, this. y);
     }
 
+    public Vector toAnnoying()
+    {
+        return new Vector(this.x, this.y);
+    }
+
     public static Vector2 from(Vector point)
     {
         return new Vector2(point.getX(), point.getY());
     }
 
+    @Override
+    public Vector2 clone() throws CloneNotSupportedException {
+        return new Vector2(this.x, this.y);
+    }
 }

@@ -39,7 +39,6 @@ public abstract class PointContainer {
             return this.lines;
         }
 
-
         @Override
         public void translate(Vector2 vector) {
             for (int i = 0; i < this.points.length; i++) {
@@ -56,6 +55,12 @@ public abstract class PointContainer {
         public Vector2 getCenter() {
             //TODO implement
             return null;
+        }
+
+        @Override
+        public Quadrilateral clone() throws CloneNotSupportedException {
+            return new Quadrilateral(this.points[0].clone(), this.points[1].clone(), this.points[2].clone(),
+                    this.points[3].clone());
         }
     }
 
@@ -83,11 +88,53 @@ public abstract class PointContainer {
         public void translate(Vector2 vector) {
             this.center = this.center.add(vector);
         }
+
+        @Override
+        public Circle clone() throws CloneNotSupportedException {
+            return new Circle(center.clone(), this.radius);
+        }
+    }
+
+    @Override
+    public PointContainer clone() throws CloneNotSupportedException {
+        if(this instanceof Circle)
+        {
+            return ((Circle) this).clone();
+        }
+        else if(this instanceof Quadrilateral)
+        {
+            return ((Quadrilateral) this).clone();
+        }
+        throw new CloneNotSupportedException();
+    }
+
+    public static boolean intersect(PointContainer containerA, Line other)
+    {
+        if(containerA instanceof Quadrilateral)
+        {
+            for (Line a : ((Quadrilateral) containerA).getLines()) {
+                if(a.intersect(other))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+        else if(containerA instanceof Circle)
+        {
+            //TODO should be the same as :CircleIntersection
+            throw new IllegalArgumentException("Implement circle intersection test");
+        }
+        else
+        {
+            throw new IllegalArgumentException();
+        }
+
     }
 
     public static boolean intersect(PointContainer containerA, PointContainer containerB)
     {
-
 
         if (containerA instanceof Quadrilateral && containerB instanceof Quadrilateral)
         {
@@ -118,7 +165,7 @@ public abstract class PointContainer {
                 return true;
             }
 
-            //TODO
+            //TODO :CircleIntersection
 
         }
         else if(containerA instanceof Circle && containerB instanceof Circle)
