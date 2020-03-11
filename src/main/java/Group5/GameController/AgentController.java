@@ -19,15 +19,16 @@ public class AgentController {
     private Vector2D direction;
     private  Angle angle;
 
-    private Distance normalMoveDistance;
-    private Distance sprintDistance;
 
-    protected AgentController(Point position, double radius){
+    private double maxAngleRotation;
+
+    protected AgentController(Point position, double radius, double maxRotation){
         this.position = position;
         this.radius = radius;
         direction = new Vector2D(position);
         direction = new Vector2D(2,2);
         angle = position.getClockDirection();
+        this.maxAngleRotation = maxRotation;
 
     }
 
@@ -43,8 +44,8 @@ public class AgentController {
         direction = new Vector2D(x,y);
     }
 
-    public void move(Distance distance){
-        if (distance.getValue()>normalMoveDistance.getValue()){
+    public void move(Distance distance, Distance maxDistance){
+        if (distance.getValue()>maxDistance.getValue()){
             return;
         }
         double newX= position.getX()+distance.getValue()*Math.cos(angle.getRadians());

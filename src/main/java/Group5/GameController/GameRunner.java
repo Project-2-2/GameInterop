@@ -82,16 +82,19 @@ public class GameRunner {
 
          */
 
+        /*
         IntruderController poep = new IntruderController(new Point(1,1),1);
         poep.vision();
 
+         */
 
-      /*
+
+
 
         GameRunner runner = new GameRunner();
         runner.initialize();
 
-       */
+
 
 
     }

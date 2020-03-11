@@ -1,6 +1,7 @@
 package Group5.GameController;
 
 import Interop.Agent.Guard;
+import Interop.Geometry.Angle;
 import Interop.Geometry.Point;
 
 import java.nio.charset.Charset;
@@ -29,11 +30,47 @@ public class MapInfo {
     protected Area targetArea;
     protected ArrayList<Area> walls;
     protected ArrayList<TelePortal> teleports;
-    protected ArrayList<Area> shaded;
-    protected double baseSpeedIntruder;
+    protected ArrayList<ShadedArea> shaded;
+    protected ArrayList<Door> doors;
+    protected ArrayList<Window> windows;
+    protected ArrayList<SentryTower> sentryTowers;
+    protected double maxMoveDistanceIntruder;
     protected double baseSpeedGuard;
-    protected double sprintSpeedIntruder;
+    protected double maxSprintDistanceIntruder;
     protected int gameMode;
+    //TODO
+    protected double captureDistance;
+    //TODO
+    protected int winConditionIntruderRounds;
+    protected double maxRotationAngleDegrees;
+    //TODO
+    protected int sprintCooldown;
+    //TODO
+    protected int pheromoneCooldown;
+    //TODO
+    protected double radiusPheromone;
+
+    //TODO ALL THE SLOWDOWNN MODIFIERS
+    protected double slowDownModifierWindow;
+    protected double slowDownDoor;
+    protected double slowDownSentryTower;
+    protected double viewAngleDegrees;
+
+    //TODO ALL VIEW RANGES BUT CAN ONLY BE DONE AFTER VISION IS IMPLEMENTED
+    protected int viewRays;
+
+    protected double viewRangeIntruderNormal;
+    protected double viewRangeIntruderShaded;
+    protected double viewRangeGuardNormal;
+    protected double viewRangeGuardShaded;
+
+    //TODO BUT CAN ONLY BE DONE IS SOUND IS IMPLEMENTED
+    protected double[] viewRangeSentry;
+    protected double yellSoundRadius;
+    protected double maxMoveSoundRadius;
+    protected double windowSoundRadius;
+    protected double doorSoundRadius;
+
 
     protected ArrayList<GuardController> guards;
     protected ArrayList<IntruderController> intruders;
@@ -92,14 +129,74 @@ public class MapInfo {
                     case "numIntruders":
                         numIntruders = Integer.parseInt(value);
                         break;
-                    case "baseSpeedIntruder":
-                        baseSpeedIntruder = Double.parseDouble(value);
+                    case "captureDistance":
+                        captureDistance = Integer.parseInt(value);
                         break;
-                    case "sprintSpeedIntruder":
-                        sprintSpeedIntruder = Double.parseDouble(value);
+                    case "winConditionIntruderRounds":
+                        winConditionIntruderRounds = Integer.parseInt(value);
                         break;
-                    case "baseSpeedGuard":
+                    case "maxRotationAngle":
+                        maxRotationAngleDegrees = Double.parseDouble(value);
+                        break;
+                    case "maxMoveDistanceIntruder":
+                        maxMoveDistanceIntruder = Double.parseDouble(value);
+                        break;
+                    case "maxSprintDistanceIntruder":
+                        maxSprintDistanceIntruder = Double.parseDouble(value);
+                        break;
+                    case "maxMoveDistanceGuard":
                         baseSpeedGuard = Double.parseDouble(value);
+                        break;
+                    case "sprintCooldown":
+                        sprintCooldown = Integer.parseInt(value);
+                        break;
+                    case "pheromoneCooldown":
+                        pheromoneCooldown = Integer.parseInt(value);
+                        break;
+                    case "radiusPheromone":
+                        radiusPheromone = Integer.parseInt(value);
+                        break;
+                    case "slowDownModifierWindow":
+                        slowDownModifierWindow = Double.parseDouble(value);
+                        break;
+                    case "slowDownModifierDoor":
+                        slowDownDoor = Double.parseDouble(value);
+                        break;
+                    case "slowDownModifierSentryTower":
+                        slowDownSentryTower = Double.parseDouble(value);
+                        break;
+                    case "viewAngle":
+                        viewAngleDegrees = Double.parseDouble(value);
+                        break;
+                    case "viewRays":
+                        viewRays= Integer.parseInt(value);
+                        break;
+                    case "viewRangeIntruderNormal":
+                        viewRangeIntruderNormal= Double.parseDouble(value);
+                        break;
+                    case "viewRangeIntruderShaded":
+                        viewRangeIntruderShaded= Double.parseDouble(value);
+                        break;
+                    case "viewRangeGuardShaded":
+                        viewRangeGuardShaded= Double.parseDouble(value);
+                        break;
+                    case "viewRangeGuardNormal":
+                        viewRangeGuardNormal= Double.parseDouble(value);
+                        break;
+                    case "viewRangeSentry":
+                        viewRangeSentry= new double[]{Double.parseDouble(items[0]), Double.parseDouble(items[1])};
+                        break;
+                    case "yellSoundRadius":
+                        yellSoundRadius= Double.parseDouble(value);
+                        break;
+                    case "maxMoveSoundRadius":
+                        maxMoveSoundRadius= Double.parseDouble(value);
+                        break;
+                    case "windowSoundRadius":
+                        windowSoundRadius= Double.parseDouble(value);
+                        break;
+                    case "doorSoundRadius":
+                        doorSoundRadius= Double.parseDouble(value);
                         break;
                     case "targetArea":
                         targetArea = new Area(Integer.parseInt(items[0]),Integer.parseInt(items[1]),Integer.parseInt(items[2]),Integer.parseInt(items[3]),Integer.parseInt(items[4]),Integer.parseInt(items[5]),Integer.parseInt(items[6]),Integer.parseInt(items[7]));
@@ -115,15 +212,25 @@ public class MapInfo {
                         walls.add(tmp);
                         break;
                     case "shaded":
-                        tmp = new Area(Integer.parseInt(items[0]),Integer.parseInt(items[1]),Integer.parseInt(items[2]),Integer.parseInt(items[3]),Integer.parseInt(items[4]),Integer.parseInt(items[5]),Integer.parseInt(items[6]),Integer.parseInt(items[7]));
-                        shaded.add(tmp);
+                        ShadedArea tmpShaded = new ShadedArea(Integer.parseInt(items[0]),Integer.parseInt(items[1]),Integer.parseInt(items[2]),Integer.parseInt(items[3]),Integer.parseInt(items[4]),Integer.parseInt(items[5]),Integer.parseInt(items[6]),Integer.parseInt(items[7]));
+                        shaded.add(tmpShaded);
                         break;
                     case "teleport":
                         TelePortal teletmp = new TelePortal(Integer.parseInt(items[0]),Integer.parseInt(items[1]),Integer.parseInt(items[2]),Integer.parseInt(items[3]),Integer.parseInt(items[4]),Integer.parseInt(items[5]),Integer.parseInt(items[6]),Integer.parseInt(items[7]),Integer.parseInt(items[8]),Integer.parseInt(items[9]));
                         teleports.add(teletmp);
                         break;
-                    case "texture":
-                        // still to do. First the coordinates, then an int with texture type and then a double with orientation
+                    case "door":
+                        Door door = new Door(Integer.parseInt(items[0]),Integer.parseInt(items[1]),Integer.parseInt(items[2]),Integer.parseInt(items[3]),Integer.parseInt(items[4]),Integer.parseInt(items[5]),Integer.parseInt(items[6]),Integer.parseInt(items[7]));
+                        doors.add(door);
+                        break;
+                    case "window":
+                        Window window = new Window(Integer.parseInt(items[0]),Integer.parseInt(items[1]),Integer.parseInt(items[2]),Integer.parseInt(items[3]),Integer.parseInt(items[4]),Integer.parseInt(items[5]),Integer.parseInt(items[6]),Integer.parseInt(items[7]));
+                        windows.add(window);
+                        break;
+                    case "sentry":
+                        SentryTower sentry = new SentryTower(Integer.parseInt(items[0]),Integer.parseInt(items[1]),Integer.parseInt(items[2]),Integer.parseInt(items[3]),Integer.parseInt(items[4]),Integer.parseInt(items[5]),Integer.parseInt(items[6]),Integer.parseInt(items[7]),Integer.parseInt(items[8]),Integer.parseInt(items[9]),Integer.parseInt(items[10]),Integer.parseInt(items[11]),Integer.parseInt(items[12]),Integer.parseInt(items[13]),Integer.parseInt(items[14]),Integer.parseInt(items[15]));
+                        sentryTowers.add(sentry);
+                        break;
                 }
             }
         }
@@ -142,7 +249,7 @@ public class MapInfo {
             int randomY = ThreadLocalRandom.current().nextInt(spawnAreaGuards.topBoundary, spawnAreaGuards.bottomBoundary + 1);
             Point guardPosition = new Point(randomX,randomY);
 
-            GuardController guard = new GuardController(guardPosition,4);
+            GuardController guard = new GuardController(guardPosition,4,maxRotationAngleDegrees,baseSpeedGuard);
             guards.add(guard);
         }
     }
@@ -156,7 +263,7 @@ public class MapInfo {
             //System.out.println(randomX + " " + randomY);
             Point intruderPosition = new Point(randomX,randomY);
 
-            IntruderController intruder = new IntruderController(intruderPosition,4);
+            IntruderController intruder = new IntruderController(intruderPosition,4,maxMoveDistanceIntruder,maxSprintDistanceIntruder,maxRotationAngleDegrees);
             intruders.add(intruder);
         }
     }

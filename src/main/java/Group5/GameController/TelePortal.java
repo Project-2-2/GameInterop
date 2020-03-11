@@ -22,12 +22,12 @@ public class TelePortal extends Area {
         outOrientation = orient;
     }
 
-    public Point getNewLocation(){
+    protected Point getNewLocation(){
         Point target = new Point(xTarget,yTarget);
         return target;
     }
 
-    public double getNewOrientation(){
+    protected double getNewOrientation(){
         return outOrientation;
     }
 }

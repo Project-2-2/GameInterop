@@ -1,6 +1,7 @@
 package Group5.GameController;
 
 import Interop.Geometry.Angle;
+import Interop.Geometry.Distance;
 import Interop.Geometry.Point;
 
 public class GuardController extends AgentController {
@@ -10,9 +11,14 @@ public class GuardController extends AgentController {
     private double radius;
     //the direction an agent is walking
     private Vector2D direction;
-    private Angle angle;
+    private  Angle angle;
 
-    protected GuardController(Point position, double radius) {
-        super(position, radius);
+    private Distance normalMoveDistance;
+
+    private double maxAngleRotation;
+
+    protected GuardController(Point position, double radius, double maxAngleRotation, double moveDistance) {
+        super(position, radius, maxAngleRotation);
+        normalMoveDistance = new Distance(moveDistance);
     }
 }

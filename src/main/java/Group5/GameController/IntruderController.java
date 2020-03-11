@@ -16,11 +16,22 @@ public class IntruderController extends AgentController {
     private Distance normalMoveDistance;
     private Distance sprintDistance;
 
-    protected IntruderController(Point position, double radius) {
-        super(position, radius);
+    private double maxAngleRotation;
+
+
+    protected IntruderController(Point position, double radius, double moveDistance, double sprintDistance, double maxAngleRotation) {
+        super(position, radius, maxAngleRotation);
+        normalMoveDistance = new Distance(moveDistance);
+        this.sprintDistance = new Distance(sprintDistance);
     }
 
 
+    public void move(Distance distance){
+        super.move(distance,normalMoveDistance);
+    }
+
+
+    //TODO IMPLEMENT COOLDOWN
     public void sprint(Distance distance){
         if (distance.getValue()>sprintDistance.getValue()){
             return;
