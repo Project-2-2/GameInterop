@@ -87,7 +87,7 @@ public class Area {
      * @return
      */
     public boolean isHit(Point startVector, Point endVector){
-        Vector2D[] rayVector = new Vector2D{new Vector2D(startVector),new Vector2D(endVector)};
+        Vector2D[] rayVector = {new Vector2D(startVector),new Vector2D(endVector)};
         return Sat.hasCollided(this.getAreaVectors(),rayVector);
     }
 
