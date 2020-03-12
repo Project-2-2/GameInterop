@@ -13,8 +13,6 @@ public class AgentContainer<T> {
     private PointContainer.Circle shape;
     private Vector2 direction;
 
-    private int sprintCooldown = -1;
-
     public AgentContainer(T agent, Vector position, Vector direction)
     {
         this.agent = agent;
@@ -25,16 +23,6 @@ public class AgentContainer<T> {
     public T getAgent()
     {
         return this.agent;
-    }
-
-    public int getSprintCooldown()
-    {
-        return sprintCooldown;
-    }
-
-    public void setSprintCooldown(int sprintCooldown)
-    {
-        this.sprintCooldown = sprintCooldown;
     }
 
     public PointContainer.Circle getShape()

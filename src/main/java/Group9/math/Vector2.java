@@ -81,7 +81,7 @@ public class Vector2 {
     }
 
     @Override
-    public Vector2 clone() throws CloneNotSupportedException {
+    public Vector2 clone() {
         return new Vector2(this.x, this.y);
     }
 }

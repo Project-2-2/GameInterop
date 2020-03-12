@@ -15,15 +15,16 @@ import Interop.Percept.Scenario.SlowDownModifiers;
 import Interop.Percept.Vision.ObjectPerceptType;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class GameMap {
-
-    private static List<ObjectPerceptType> _SOLID_PERCEPTS = Arrays.stream(ObjectPerceptType.values())
-                .filter(ObjectPerceptType::isSolid).collect(Collectors.toList());
 
     private final ScenarioPercepts scenarioPercepts;
 
@@ -36,8 +37,6 @@ public class GameMap {
 
     private QuadTree<MapObject> quadTree;
     private List<MapObject> mapObjects;
-    private List<EffectArea> mapEffects;
-
 
     private List<DynamicObject> dynamicObjects = new ArrayList<>();
 
@@ -59,7 +58,6 @@ public class GameMap {
         this.sprintCooldown = sprintCooldown;
 
         this.mapObjects = mapObjects;
-        this.mapEffects = effects;
 
         this.width = width;
         this.height = height;
@@ -82,7 +80,7 @@ public class GameMap {
         index.set(0);
         mapObjects.forEach(a -> {
             System.out.println(index.getAndIncrement());
-            quadTree.add(a);
+            //quadTree.add(a);
         });
         System.out.print("");
     }
@@ -134,33 +132,41 @@ public class GameMap {
         return mapObjects;
     }
 
-    public List<EffectArea> getMapEffects() {
-        return mapEffects;
-    }
-
     public List<DynamicObject> getDynamicObjects() {
         return dynamicObjects;
     }
 
-    public <A, T extends MapObject> boolean isInArea(AgentContainer<A> agent, Class<T> clazz)
-    {
-        //TODO check whether this works or not...
+    public <T, A extends MapObject> boolean isInMapObject(AgentContainer<T> agentContainer, Class<A> clazz) {
         return this.mapObjects.stream()
                 .filter(e -> clazz.isAssignableFrom(e.getClass()))
-                .anyMatch(e -> PointContainer.intersect(agent.getShape(), e.getContainer()));
+                .anyMatch(e -> PointContainer.intersect(agentContainer.getShape(), e.getContainer()));
     }
 
-    public boolean isRayIntersecting(Line line, List<ObjectPerceptType> objectPerceptTypes)
+    public Set<EffectArea> getEffectAreas(AgentContainer<?> agent)
     {
-        List<ObjectPerceptType> objects = objectPerceptTypes.stream().filter(MapObject::is).collect(Collectors.toList());
-        List<ObjectPerceptType> effects = objectPerceptTypes.stream().filter(EffectArea::is).collect(Collectors.toList());
-        return this.mapObjects.stream().filter(objects::contains).anyMatch(e -> PointContainer.intersect(e.getContainer(), line)) ||
-                this.mapEffects.stream().filter(effects::contains).anyMatch(e -> PointContainer.intersect(e.getContainer(), line));
+        // @performance: this looks kinda like
+        return this.mapObjects.stream()
+                .filter(e -> !e.getEffects().isEmpty())
+                .filter(e -> PointContainer.intersect(agent.getShape(), e.getContainer()))
+                .flatMap((Function<MapObject, Stream<EffectArea>>) object -> object.getEffects().stream())
+                .collect(Collectors.toUnmodifiableSet());
+    }
+
+    public boolean isRayIntersecting(Line line, Predicate<ObjectPerceptType> filter)
+    {
+        return this.mapObjects.stream()
+                .filter(e -> filter.test(e.getType()))
+                .anyMatch(e -> PointContainer.intersect(e.getContainer(), line));
+    }
+
+    public boolean isRayIntersecting(Line line, List<ObjectPerceptType> types)
+    {
+        return isRayIntersecting(line, types::contains);
     }
 
     public boolean isRayIntersectingSolidObject(Line line)
     {
-        return isRayIntersecting(line, _SOLID_PERCEPTS);
+        return isRayIntersecting(line, ObjectPerceptType::isSolid);
     }
 
     public static class Builder

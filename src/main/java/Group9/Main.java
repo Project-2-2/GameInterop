@@ -15,6 +15,7 @@ public class Main {
         gameMap.toString();
 
         Game game = new Game(gameMap, 3);
+        game.turn();
 
         //\left(-60,-40\right),\left(-60,-39\right),\left(60,-39\right),\left(60,-40\right)
 

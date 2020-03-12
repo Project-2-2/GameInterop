@@ -18,6 +18,7 @@ public class MapObject implements Container {
     public MapObject(PointContainer area, ObjectPerceptType type)
     {
         this(area, new ArrayList<>(), type);
+        this.type = type;
     }
 
     public MapObject(PointContainer area, List<EffectArea> effects, ObjectPerceptType type)
@@ -25,6 +26,10 @@ public class MapObject implements Container {
         this.area = area;
         this.effects = effects;
         this.type = type;
+    }
+
+    public ObjectPerceptType getType() {
+        return type;
     }
 
     @Override
@@ -36,9 +41,9 @@ public class MapObject implements Container {
         return this.effects;
     }
 
-    public static boolean is(ObjectPerceptType type)
+    public boolean has(Class<EffectArea> clazz)
     {
-        return (type == ObjectPerceptType.Door || type == ObjectPerceptType.SentryTower || type == ObjectPerceptType.Wall
-                || type == ObjectPerceptType.Window);
+        return this.effects.stream().anyMatch(e -> clazz.isAssignableFrom(e.getClass()));
     }
+
 }

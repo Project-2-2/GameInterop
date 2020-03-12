@@ -1,9 +1,8 @@
 package Group9.map.parser;
 
 import Group9.map.GameMap;
-import Group9.map.area.ShadedArea;
-import Group9.map.area.TargetArea;
-import Group9.map.area.TeleportArea;
+import Group9.map.area.ModifyViewEffect;
+import Group9.map.objects.TargetArea;
 import Group9.map.objects.*;
 import Group9.math.Vector2;
 import Group9.tree.PointContainer;
@@ -63,7 +62,7 @@ public class Parser {
                         } break;
 
                         case "shaded": {
-                            builder.effect(new ShadedArea(quadrilateralFromData(data)));
+                            builder.effect(new ModifyViewEffect(quadrilateralFromData(data)));
                         } break;
 
                         case "door": {

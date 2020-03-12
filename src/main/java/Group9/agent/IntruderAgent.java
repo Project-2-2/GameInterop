@@ -7,6 +7,8 @@ import Interop.Percept.IntruderPercepts;
 
 public class IntruderAgent extends AgentContainer<Intruder> implements Intruder {
 
+    private int sprintCooldown = -1;
+
     public IntruderAgent(Intruder intruder, Vector position, Vector direction) {
         super(intruder, position, direction);
     }
@@ -15,5 +17,16 @@ public class IntruderAgent extends AgentContainer<Intruder> implements Intruder 
     public IntruderAction getAction(IntruderPercepts percepts) {
         return null;
     }
+
+    public int getSprintCooldown()
+    {
+        return sprintCooldown;
+    }
+
+    public void setSprintCooldown(int sprintCooldown)
+    {
+        this.sprintCooldown = sprintCooldown;
+    }
+
 
 }

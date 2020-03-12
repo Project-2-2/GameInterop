@@ -4,14 +4,14 @@ import Group9.agent.AgentContainer;
 import Group9.agent.GuardAgent;
 import Group9.agent.IntruderAgent;
 import Group9.map.GameMap;
-import Group9.map.area.TargetArea;
+import Group9.map.area.EffectArea;
+import Group9.map.area.ModifySpeedEffect;
+import Group9.map.area.ModifyViewEffect;
+import Group9.map.area.NoModify;
+import Group9.map.objects.*;
 import Group9.map.dynamic.DynamicObject;
 import Group9.map.dynamic.Pheromone;
 import Group9.map.dynamic.Sound;
-import Group9.map.objects.Door;
-import Group9.map.objects.SentryTower;
-import Group9.map.objects.Spawn;
-import Group9.map.objects.Window;
 import Group9.math.Line;
 import Group9.math.Vector2;
 import Interop.Action.*;
@@ -33,8 +33,10 @@ import Interop.Percept.Smell.SmellPercepts;
 import Interop.Percept.Sound.SoundPercept;
 import Interop.Percept.Sound.SoundPerceptType;
 import Interop.Percept.Sound.SoundPercepts;
+import Interop.Percept.Vision.ObjectPerceptType;
 
 import java.util.*;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 public class Game {
@@ -74,19 +76,10 @@ public class Game {
 
     }
 
-    private void turn()
+    public void turn()
     {
-        // --- iterate over dynamic objects (sounds) and adjust lifetime or remove
-        Iterator<DynamicObject> iterator = gameMap.getDynamicObjects().iterator();
-        while (iterator.hasNext()) {
-            DynamicObject e = iterator.next();
-            if(e.getLifetime() == 0)
-            {
-                iterator.remove();
-            }
 
-            e.setLifetime(e.getLifetime() - 1);
-        }
+        this.cooldown();
 
         for(GuardAgent guard : this.guards)
         {
@@ -116,13 +109,20 @@ public class Game {
         {
             return true;
         }
-        else if(action instanceof Move || action instanceof Sprint)
-        {
-            AreaPercepts areaPercepts = generateAreaPercepts(agentContainer);
 
-            final double slowdownModifier = getSlowdownModifier(areaPercepts);
-            final double distance = ((action instanceof Move) ?
+        //TODO --- cleanup
+        Set<EffectArea> effectAreas = gameMap.getEffectAreas(agentContainer);
+        Optional<EffectArea> modifySpeedEffect = effectAreas.stream().filter(e -> e instanceof ModifySpeedEffect).findAny();
+        Optional<EffectArea> modifyViewEffect = effectAreas.stream().filter(e -> e instanceof ModifyViewEffect).findAny();
+        //---
+
+        if(action instanceof Move || action instanceof Sprint)
+        {
+            final double slowdownModifier = modifySpeedEffect.orElseGet(NoModify::new).get(agentContainer);
+            double distance = ((action instanceof Move) ?
                     ((Move) action).getDistance().getValue() : ((Sprint) action).getDistance().getValue()) * slowdownModifier;
+
+            assert distance != -1;
 
             final double minSprint = isGuard ?
                     gameMap.getGuardMaxMoveDistance().getValue() : gameMap.getIntruderMaxMoveDistance().getValue();
@@ -141,7 +141,7 @@ public class Game {
                 else
                 {
                     assert isIntruder;
-                    if(agentContainer.getSprintCooldown() > 0 || distance > maxSprint)
+                    if(((IntruderAgent) agentContainer.getAgent()).getSprintCooldown() > 0 || distance > maxSprint)
                     {
                         return false;
                     }
@@ -158,14 +158,14 @@ public class Game {
             //TODO we are currently only checking whether a single line is intersecting with something but not whether
             // or not we are too wide
             Line line = new Line(agentContainer.getPosition(), end);
-            if(gameMap.isRayIntersectingSolidObject(line))
+            if(gameMap.isRayIntersecting(line, ObjectPerceptType::isSolid))
             {
                 return false;
             }
 
             if(isSprinting)
             {
-                agentContainer.setSprintCooldown(gameMap.getSprintCooldown());
+                ((IntruderAgent) agentContainer.getAgent()).setSprintCooldown(gameMap.getSprintCooldown());
             }
 
             agentContainer.move(distance);
@@ -210,23 +210,30 @@ public class Game {
 
     }
 
-    private double getSlowdownModifier(AreaPercepts areaPercepts)
+    private void cooldown()
     {
-        SlowDownModifiers modifiers = gameMap.getScenarioPercepts().getSlowDownModifiers();
-        double modifier = 1;
-        if(areaPercepts.isInDoor())
+        // --- iterate over dynamic objects (sounds) and adjust lifetime or remove
         {
-            modifier = modifiers.getInDoor();
+            Iterator<DynamicObject> iterator = gameMap.getDynamicObjects().iterator();
+            while (iterator.hasNext()) {
+                DynamicObject e = iterator.next();
+                if(e.getLifetime() == 0)
+                {
+                    iterator.remove();
+                }
+
+                e.setLifetime(e.getLifetime() - 1);
+            }
         }
-        else if(areaPercepts.isInSentryTower())
-        {
-            modifier = modifiers.getInSentryTower();
-        }
-        else if(areaPercepts.isInWindow())
-        {
-            modifier = modifiers.getInWindow();
-        }
-        return modifier;
+
+        // --- sprint cooldown
+        this.intruders.forEach(e -> {
+            if(e.getSprintCooldown() > 0)
+            {
+                e.setSprintCooldown(e.getSprintCooldown() - 1);
+            }
+        });
+
     }
 
     private GuardPercepts generateGuardPercepts(GuardAgent guard)
@@ -247,6 +254,7 @@ public class Game {
 
         Vector2 direction = this.gameMap.getObjects(TargetArea.class).get(0).getContainer()
                                             .getCenter().sub(intruder.getDirection()).normalise();
+
         //TODO generate data structure for the specific agent
         return new IntruderPercepts(
                 Direction.fromClockAngle(new Vector(direction.getX(), direction.getY())),
@@ -268,9 +276,9 @@ public class Game {
     private <T> AreaPercepts generateAreaPercepts(AgentContainer<T> agentContainer)
     {
         return new AreaPercepts(
-                gameMap.isInArea(agentContainer, Window.class),
-                gameMap.isInArea(agentContainer, Door.class),
-                gameMap.isInArea(agentContainer, SentryTower.class),
+                gameMap.isInMapObject(agentContainer, Window.class),
+                gameMap.isInMapObject(agentContainer, Door.class),
+                gameMap.isInMapObject(agentContainer, SentryTower.class),
                 false //TODO implement teleports
         );
     }
