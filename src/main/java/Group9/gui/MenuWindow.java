@@ -1,15 +1,31 @@
 package Group9.gui;
-
+import java.awt.Label;
+//import java.awt.Polygon;
+import javafx.application.Application; 
+import javafx.scene.Scene; 
+import javafx.scene.control.Button; 
+import javafx.scene.layout.*; 
+import javafx.scene.paint.Color; 
+import javafx.scene.shape.Polygon; 
+import javafx.scene.control.*; 
+import javafx.stage.Stage; 
 import javafx.application.Application;
 import javafx.event.EventHandler;
+import javafx.geometry.Pos;
 import javafx.scene.Group;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Labeled;
+import javafx.scene.control.Menu;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
+import javafx.scene.shape.Ellipse;
+import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
@@ -24,7 +40,7 @@ public class MenuWindow extends Application {
       
     }
 
-    public void start(Stage primaryStage) {
+    public void start(Stage primaryStage) {  
 	   
 	   VBox vBox = new VBox();
        vBox.setPrefWidth(250);
@@ -32,10 +48,10 @@ public class MenuWindow extends Application {
        
     //Start button   
      Button start = new Button("START");
-     start.setFont(Font.font("Times New Roman", FontWeight.BOLD, 30));
+     start.setFont(Font.font("Times New Roman", FontWeight.BOLD, 30));   
      start.setTranslateX(150);
      start.setTranslateY(200);
-     start.setTextFill(Color.WHITE);
+     start.setTextFill(Color.WHITE);     
      start.setMinWidth(vBox.getPrefWidth());
      start.setMinHeight(vBox.getPrefHeight());
      start.setStyle("-fx-border-color: white;-fx-border-width:3px;-fx-background-color: BLACK");
@@ -96,14 +112,14 @@ public class MenuWindow extends Application {
        start.setOnMouseClicked(handler);
        quit.setOnMouseClicked(handler);
       
-       	Group r = new Group();
+       	Group r = new Group();       
        	Scene scene = new Scene(r, 970, 630);
         r.getChildren().add(background);
         r.getChildren().addAll(title,start,quit);
         
         primaryStage.setScene(scene);
         primaryStage.setTitle("Multi-agents Surveillance");
-        primaryStage.setResizable(false);
+      //  primaryStage.setResizable(false);
         primaryStage.show();
     }
    public static void start1(Stage primaryStage) {
@@ -118,7 +134,7 @@ public class MenuWindow extends Application {
    easy.setFont(Font.font("Times New Roman", FontWeight.BOLD, 30));
     easy.setTranslateX(150);
     easy.setTranslateY(150);
-    easy.setTextFill(Color.WHITE);
+    easy.setTextFill(Color.WHITE);    
     easy.setMinWidth(vBox.getPrefWidth());
     easy.setMinHeight(vBox.getPrefHeight());
     easy.setStyle("-fx-border-color: white;-fx-border-width:3px;-fx-background-color: BLACK");
@@ -138,7 +154,7 @@ public class MenuWindow extends Application {
     medium.setFont(Font.font("Times New Roman", FontWeight.BOLD, 30));
      medium.setTranslateX(150);
      medium.setTranslateY(300);
-     medium.setTextFill(Color.WHITE);
+     medium.setTextFill(Color.WHITE);     
      medium.setMinWidth(vBox.getPrefWidth());
      medium.setMinHeight(vBox.getPrefHeight());
      medium.setStyle("-fx-border-color: white;-fx-border-width:3px;-fx-background-color: 	BLACK");
@@ -157,7 +173,7 @@ public class MenuWindow extends Application {
      hard.setFont(Font.font("Times New Roman", FontWeight.BOLD, 30));
       hard.setTranslateX(150);
       hard.setTranslateY(450);
-      hard.setTextFill(Color.WHITE);
+      hard.setTextFill(Color.WHITE);      
       hard.setMinWidth(vBox.getPrefWidth());
       hard.setMinHeight(vBox.getPrefHeight());
       hard.setStyle("-fx-border-color: white;-fx-border-width:3px;-fx-background-color: BLACK");
@@ -175,7 +191,7 @@ public class MenuWindow extends Application {
        back.setFont(Font.font("Times New Roman", FontWeight.BOLD, 30));
        back.setTranslateX(720);
        back.setTranslateY(540);
-       back.setTextFill(Color.WHITE);
+       back.setTextFill(Color.WHITE);      
        back.setMinWidth(vBox.getPrefWidth());
        back.setMinHeight(vBox.getPrefHeight());
        back.setStyle("-fx-border-color: white;-fx-border-width:3px;-fx-background-color: BLACK");
@@ -197,7 +213,13 @@ public class MenuWindow extends Application {
                // TODO Auto-generated method stub
 
               if (event.getSource() == easy) {
-                start3(primaryStage);
+            	  MapWindow map = new MapWindow();
+                try {
+					map.start(primaryStage);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
             	 
                }
                if (event.getSource() == medium) {
@@ -237,7 +259,7 @@ public class MenuWindow extends Application {
        
        primaryStage.setScene(scene);
        primaryStage.setTitle("Play mode ");
-       primaryStage.setResizable(false);
+     //  primaryStage.setResizable(false);
        primaryStage.show();
    }
    
@@ -360,20 +382,147 @@ public class MenuWindow extends Application {
 	
 public static void start3(Stage s)
 {
+	double scale = 5;
 	VBox vBox = new VBox();
     vBox.setPrefWidth(200);
     vBox.setPrefHeight(50);
     //Map
-    Rectangle map = new Rectangle(10,10,650,500);
+    Rectangle map = new Rectangle(0,0,80,120);
     map.setFill(Color.TRANSPARENT);
     map.setStroke(Color.BLACK);
     map.setStrokeWidth(2);
+   
+    
+    //Adding coordinates to the polygon 
+    double spawnareaGuards[] = {57.0,13.0,57.0,17.0,59.0,17.0,59.0,13.0};
+    double targetArea[] = {89.0,38.0,94.0,38.0,94.0,40.0,89.0,40.0};
+    double spawnAreaIntruders[] = {57.0,67.0,57.0,77.0,59.0,77.0,59.0,67.0};
+    double wall1[] =  {0.0,0.0,0.0,1.0,120.0,1.0,120.0,0.0};
+
+    // wall1.updateScale();
+   double wall2[] = {0.0,1.0,1.0,1.0,1.0,121.0,0.0,121.0};
+//    wall2.updateScale();
+   double wall3[] = {0,0,0,1,1,1,1,0};
+ //   wall3.updateScale();
+   double wall4[] = {1.1,0,1.1,1,2,1,2,0};
+   // wall4.updateScale();
+    double wall5[] = { 1.0,121.0,119.0,121.0,119.0,120.0,1.0,120.0};
+//    wall5.updateScale();
+    double wall6[] = {30.0,37.0,55.0,37.0,55.0,36.0,30.0,36.0};
+   // wall6.updateScale();
+    double wall7[] = {55.0,36.0,55.0,12.0,56.0,12.0,56.0,36.0};
+    //wall7.updateScale();
+    double wall8[] = { 30.0,37.0,30.0,42.0,31.0,42.0,31.0,37.0};
+  //  wall8.updateScale();
+  double wall9[] = {31.0,42.0,31.0,41.0,55.0,41.0,55.0,42.0};
+  //  wall9.updateScale();
+   double wall10[] = {55.0,41.0,55.0,87.0,56.0,87.0,56.0,41.0};
+   // wall10.updateScale();
+   double wall11[] = {56.0,12.0,60.0,12.0,60.0,11.0,56.0,11.0};
+   // wall11.updateScale();
+    double wall12[] = {60.0,12.0,60.0,36.0,61.0,36.0,61.0,12.0};
+   // wall12.updateScale();
+    double wall13[] = {61.0,36.0,61.0,37.0,95.0,37.0,95.0,36.0};
+  //  wall13.updateScale();
+   double wall14[] = {60.0,41.0,60.0,87.0,61.0,87.0,61.0,41.0};
+    //wall14.updateScale();
+   double wall15[] = {56.0,87.0,56.0,88.0,60.0,88.0,60.0,87.0};
+ //   wall15.updateScale();
+    double wall16[] = {61.0,41.0,61.0,42.0,95.0,42.0,95.0,41.0};
+   // wall16.updateScale();
+    double wall17[] = {95.0,36.0,95.0,42.0,96.0,42.0,96.0,36.0};
+    //wall17.updateScale();
+    Objects pol1 = new Objects();
+    pol1.draw(0.0,0.0,0.0,1,120,1,120,0);
+    pol1.updateScale();
+   Objects pol2 = new Objects();
+    pol2.draw(0.0,1.0,1.0,1.0,1.0,121.0,0.0,121.0);
+    pol2.updateScale();
+    Objects pol3 = new Objects();
+   pol3.draw(0,0,0,1,1,1,1,0);
+    Polygon pol4 = Objects.draw(1.1,0,1.1,1,2,1,2,0);
+    Polygon pol5 = Objects.draw(1.0,121.0,119.0,121.0,119.0,120.0,1.0,120.0);
+    Polygon pol6 = Objects.draw(30.0,37.0,55.0,37.0,55.0,36.0,30.0,36.0);
+    Polygon pol7 = Objects.draw(55.0,36.0,55.0,12.0,56.0,12.0,56.0,36.0);
+    Polygon pol8 = Objects.draw(30.0,37.0,30.0,42.0,31.0,42.0,31.0,37.0);
+    Polygon pol9 = Objects.draw(31.0,42.0,31.0,41.0,55.0,41.0,55.0,42.0);
+    Polygon pol10 = Objects.draw(55.0,41.0,55.0,87.0,56.0,87.0,56.0,41.0);
+    Polygon pol11 = Objects.draw(56.0,12.0,60.0,12.0,60.0,11.0,56.0,11.0);
+    Polygon pol12 = Objects.draw(60.0,12.0,60.0,36.0,61.0,36.0,61.0,12.0);
+    Polygon pol13 = Objects.draw(61.0,36.0,61.0,37.0,95.0,37.0,95.0,36.0);
+    Polygon pol14 = Objects.draw(60.0,41.0,60.0,87.0,61.0,87.0,61.0,41.0);
+    Polygon pol15 = Objects.draw(56.0,87.0,56.0,88.0,60.0,88.0,60.0,87.0);
+    Polygon pol16 = Objects.draw(61.0,41.0,61.0,42.0,95.0,42.0,95.0,41.0);
+    Polygon pol17 = Objects.draw(95.0,36.0,95.0,42.0,96.0,42.0,96.0,36.0);
+    
+    
+ /*   Objects polygon1 = new Objects(0.0,0.0,0.0,1,120,1,120,0); 
+   polygon1.setStroke(Color.BLACK);
+   // polygon1.updateScale();   
+   Objects polygon2 = new Objects(0.0,1.0,1.0,1.0,1.0,121.0,0.0,121.0);
+    polygon2.setStroke(Color.BLACK);
+   // polygon2.updateScale();
+    Objects polygon3= new Objects(0,0,0,1,1,1,1,0); 
+    polygon3.setStroke(Color.BLACK);
+   // polygon3.updateScale();
+    Objects polygon4 = new Objects(1.1,0,1.1,1,2,1,2,0); 
+    polygon4.setStroke(Color.BLACK);
+   // polygon4.updateScale();
+    Objects polygon5 = new Objects(1.0,121.0,119.0,121.0,119.0,120.0,1.0,120.0); 
+    polygon5.setStroke(Color.BLACK);
+   // polygon5.updateScale();
+    Objects polygon6 = new Objects(30.0,37.0,55.0,37.0,55.0,36.0,30.0,36.0); 
+    polygon6.setStroke(Color.BLACK);
+   // polygon6.updateScale();
+    Objects polygon7 = new Objects(55.0,36.0,55.0,12.0,56.0,12.0,56.0,36.0);
+    polygon7.setStroke(Color.BLACK);
+    //polygon7.updateScale();
+    Objects polygon8 = new Objects(30.0,37.0,30.0,42.0,31.0,42.0,31.0,37.0);
+    polygon8.setStroke(Color.BLACK);
+ //   polygon8.updateScale();
+    Objects polygon9 = new Objects(31.0,42.0,31.0,41.0,55.0,41.0,55.0,42.0); 
+    polygon9.setStroke(Color.BLACK);
+ //   polygon9.updateScale();
+    Objects polygon10 = new Objects(55.0,41.0,55.0,87.0,56.0,87.0,56.0,41.0);
+    polygon10.setStroke(Color.BLACK);
+  //  polygon10.updateScale();
+    Objects polygon11 = new Objects(56.0,12.0,60.0,12.0,60.0,11.0,56.0,11.0); 
+    polygon11.setStroke(Color.BLACK);
+  //  polygon11.updateScale();
+    Objects polygon12 = new Objects(60.0,12.0,60.0,36.0,61.0,36.0,61.0,12.0); 
+    polygon12.setStroke(Color.BLACK);
+//    polygon12.updateScale();
+    Objects polygon13 = new Objects(61.0,36.0,61.0,37.0,95.0,37.0,95.0,36.0); 
+    polygon13.setStroke(Color.BLACK);
+   // polygon13.updateScale();
+    Objects polygon14 = new Objects(60.0,41.0,60.0,87.0,61.0,87.0,61.0,41.0); 
+    polygon14.setStroke(Color.BLACK);
+    //polygon14.updateScale();
+    Objects polygon15 = new Objects(56.0,87.0,56.0,88.0,60.0,88.0,60.0,87.0); 
+    polygon15.setStroke(Color.BLACK);
+    //polygon15.updateScale();
+    Objects polygon16 = new Objects(61.0,41.0,61.0,42.0,95.0,42.0,95.0,41.0); 
+    polygon16.setStroke(Color.BLACK);
+   // polygon16.updateScale();
+    Objects polygon17 = new Objects(95.0,36.0,95.0,42.0,96.0,42.0,96.0,36.0);
+    polygon17.setStroke(Color.BLACK);
+  //  polygon17.updateScale();
+    Polygon polygon18 = new Polygon(57.0,13.0,57.0,17.0,59.0,17.0,59.0,13.0);
+    polygon18.setStroke(Color.BLACK);
+ //   polygon18.updateScale();
+    Polygon polygon19 = new Polygon(89.0,38.0,94.0,38.0,94.0,40.0,89.0,40.0);
+    polygon19.setStroke(Color.BLACK);
+  //  polygon19.updateScale();
+    Polygon polygon20 = new Polygon(57.0,67.0,57.0,77.0,59.0,77.0,59.0,67.0);
+    polygon20.setStroke(Color.BLACK);
+  //  polygon20.updateScale();
+  */
     //Floors 
     Button Floor1 = new Button("Floor1");
     Floor1.setFont(Font.font("Times New Roman", FontWeight.BOLD, 30));
     Floor1.setTranslateX(750);
     Floor1.setTranslateY(329);
-    Floor1.setTextFill(Color.WHITE);
+    Floor1.setTextFill(Color.WHITE);      
     Floor1.setMinWidth(vBox.getPrefWidth());
     Floor1.setMinHeight(vBox.getPrefHeight());
     Floor1.setStyle("-fx-border-color: white;-fx-border-width:3px;-fx-background-color: BLACK");
@@ -394,7 +543,7 @@ public static void start3(Stage s)
     Floor3.setFont(Font.font("Times New Roman", FontWeight.BOLD, 30));
     Floor3.setTranslateX(750);
     Floor3.setTranslateY(450);
-    Floor3.setTextFill(Color.WHITE);
+    Floor3.setTextFill(Color.WHITE);      
     Floor3.setMinWidth(vBox.getPrefWidth());
     Floor3.setMinHeight(vBox.getPrefHeight());
     Floor3.setStyle("-fx-border-color: white;-fx-border-width:3px;-fx-background-color: BLACK");
@@ -415,7 +564,7 @@ public static void start3(Stage s)
     Floor2.setFont(Font.font("Times New Roman", FontWeight.BOLD, 30));
     Floor2.setTranslateX(750);
     Floor2.setTranslateY(390);
-    Floor2.setTextFill(Color.WHITE);
+    Floor2.setTextFill(Color.WHITE); 
      
     Floor2.setMinWidth(vBox.getPrefWidth());
     Floor2.setMinHeight(vBox.getPrefHeight());
@@ -460,24 +609,27 @@ public static void start3(Stage s)
 	Line l = new Line(70,60,70,140);
 	Line l2 = new Line(40,100,90,100);*/
 	
-	
+
 	  Group root = new Group();
 	  
-      Scene scene = new Scene(root, 970, 630, Color.BURLYWOOD);
-     root.getChildren().addAll(Floor2,Floor3,Floor1,map);
+      Scene scene = new Scene(root, 970, 630,Color.BURLYWOOD);
+      
+   // root.getChildren().addAll(map,line1,line2,line3,line4,line5,line6,line7,line8,line9,line10,line11,line12,line13,line14,line15,line16,line17,line18,line19,line20,line21,line22,line23,line24,line25,line26,line27,,line29,line30,line31,line32,line33,line34,line35,line36,line37,line38,line39,line40,line41,line42,line43,line44,line45,line46,line47,line48,line49,line50,line51,line52,line53,line54,line55,line56,line57,line58,line59,line60,line61,line62,line63,line64,line65,line66,line67,line68);
+  // root.getChildren().addAll(map,polygon1,polygon2,polygon3,polygon4,polygon5,polygon6,polygon7,polygon8,polygon9,polygon10,polygon11,polygon12,,polygon14,polygon15,polygon16,polygon17,polygon18,polygon19,polygon20);
+     root.getChildren().addAll(map,pol1,pol2,pol3,pol4,pol5,pol6,pol7,pol8,pol9,pol10,pol11,pol12,pol13,pol14,pol15,pol16,pol17);
 	s.setScene(scene);
     s.setTitle("Map ");
-    s.setResizable(false);
+  //  s.setResizable(false);
     s.show();
 }
 	
 }
 
-class Title extends StackPane {
+class Title extends StackPane{
 	public Title(String name) {
 		Text text = new Text(name);
 		text.setFill(Color.BLACK);
-		text.setFont(Font.font("Chiller", FontWeight.EXTRA_BOLD, 70));
+		text.setFont(Font.font("Chiller",FontWeight.EXTRA_BOLD, 70));
 	//	setAlignment(Pos.CENTER);
 		getChildren().addAll(text);
 	}
