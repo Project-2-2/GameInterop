@@ -169,6 +169,8 @@ public class MapWindow extends Application {
 
 	public Polygon draw(double x1,double y1,double x2,double y2, double x3, double y3 , double x4,double y4) {
 		Polygon map = new Polygon(x1*scale,y1*scale,x2*scale,y2*scale,x3*scale,y3*scale,x4*scale,y4*scale);
+		map.setStroke(Color.BLACK);
+		map.setFill(Color.TRANSPARENT);
 		
 		return map;}
 	
