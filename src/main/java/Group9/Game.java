@@ -43,6 +43,7 @@ public class Game {
     private List<IntruderContainer> intruders = new ArrayList<>();
 
     private Map<AgentContainer<?>, Boolean> actionSuccess = new HashMap<>();
+    private Set<AgentContainer<?>> justTeleported = new HashSet<>();
 
     public Game(GameMap gameMap, int teamSize)
     {
@@ -163,20 +164,28 @@ public class Game {
             agentContainer.move(distance);
             Set<EffectArea> movedEffectAreas = gameMap.getEffectAreas(agentContainer);
             soundEffect = movedEffectAreas.stream().filter(e -> e instanceof SoundEffect).findAny();
+
+
             Optional<EffectArea> locationEffect = movedEffectAreas.stream().filter(e -> e instanceof ModifyLocationEffect).findAny();
 
-            if(soundEffect.isPresent())
+            if(!justTeleported.contains(agentContainer) && locationEffect.isPresent())
             {
-                SoundEffect s = (SoundEffect) soundEffect.get();
-                //TODO check whether a sound exists for more than one round or not
-                gameMap.getDynamicObjects().add(new Sound(s.getType(), agentContainer,
-                        s.get(agentContainer) * (distance / maxSprint), //TODO should be checked, but i am fairly certain that the radius is scaled linearly by speed of agent
-                        1));
-
+                agentContainer.moveTo(((ModifyLocationEffect) locationEffect.get()).get(agentContainer));
+                justTeleported.add(agentContainer);
+            }
+            else if(justTeleported.contains(agentContainer) && !locationEffect.isPresent())
+            {
+                justTeleported.remove(agentContainer);
             }
 
-            locationEffect.ifPresent(effectArea -> agentContainer.moveTo(((ModifyLocationEffect) effectArea).get(agentContainer)));
+            soundEffect.ifPresent(effectArea -> {
+                SoundEffect s = (SoundEffect) effectArea;
+                gameMap.getDynamicObjects().add(new Sound(s.getType(), agentContainer,
+                        s.get(agentContainer) * (distance / maxSprint), //TODO should be checked, but i am fairly certain that the radius is scaled linearly by speed of agent
+                        1 //TODO check whether a sound exists for more than one round or not
+                ));
 
+            });
             return true;
         }
         else if(action instanceof Rotate)
@@ -286,7 +295,7 @@ public class Game {
                 gameMap.isInMapObject(agentContainer, Window.class),
                 gameMap.isInMapObject(agentContainer, Door.class),
                 gameMap.isInMapObject(agentContainer, SentryTower.class),
-                false //TODO implement teleports
+                justTeleported.contains(agentContainer)
         );
     }
 
