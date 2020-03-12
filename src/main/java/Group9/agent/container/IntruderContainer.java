@@ -1,21 +1,16 @@
-package Group9.agent;
+package Group9.agent.container;
 
 import Interop.Action.IntruderAction;
 import Interop.Agent.Intruder;
 import Interop.Geometry.Vector;
 import Interop.Percept.IntruderPercepts;
 
-public class IntruderAgent extends AgentContainer<Intruder> implements Intruder {
+public class IntruderContainer extends AgentContainer<Intruder> {
 
     private int sprintCooldown = -1;
 
-    public IntruderAgent(Intruder intruder, Vector position, Vector direction) {
-        super(intruder, position, direction);
-    }
-
-    @Override
-    public IntruderAction getAction(IntruderPercepts percepts) {
-        return null;
+    public IntruderContainer(Intruder agent, Vector position, Vector direction) {
+        super(agent, position, direction);
     }
 
     public int getSprintCooldown()

@@ -1,6 +1,6 @@
 package Group9.map.dynamic;
 
-import Group9.agent.AgentContainer;
+import Group9.agent.container.AgentContainer;
 import Group9.math.Vector2;
 import Interop.Percept.Smell.SmellPerceptType;
 

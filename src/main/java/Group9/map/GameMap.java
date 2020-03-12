@@ -1,6 +1,6 @@
 package Group9.map;
 
-import Group9.agent.AgentContainer;
+import Group9.agent.container.AgentContainer;
 import Group9.map.area.EffectArea;
 import Group9.map.dynamic.DynamicObject;
 import Group9.map.objects.MapObject;
@@ -16,7 +16,6 @@ import Interop.Percept.Vision.ObjectPerceptType;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
@@ -58,7 +57,7 @@ public class GameMap {
 
     private int width, height;
 
-    public GameMap(ScenarioPercepts scenarioPercepts, List<MapObject> mapObjects, List<EffectArea> effects,
+    public GameMap(ScenarioPercepts scenarioPercepts, List<MapObject> mapObjects,
                    int width, int height,
                    Distance guardMaxMoveDistance,
                    int turnsInTargetAreaToWin, Distance intruderMaxMoveDistance, Distance intruderMaxSprintDistance,
@@ -296,7 +295,6 @@ public class GameMap {
         private int sprintCooldown;
 
         private List<MapObject> objects = new ArrayList<>();
-        private List<EffectArea> effects = new ArrayList<>();
 
         public Builder() {}
 
@@ -475,19 +473,13 @@ public class GameMap {
             return this;
         }
 
-        public Builder effect(EffectArea effect)
-        {
-            this.effects.add(effect);
-            return this;
-        }
-
         public GameMap build()
         {
             ScenarioPercepts scenarioPercepts = new ScenarioPercepts(gameMode, this.captureDistance, this.maxRotationAngle,
                     new SlowDownModifiers(this.windowSlowdownModifier, this.doorSlowdownModifier, this.sentrySlowdownModifier),
                     this.pheromoneRadius, this.pheromoneCooldown);
 
-            return new GameMap(scenarioPercepts, this.objects, this.effects, this.width, this.height,
+            return new GameMap(scenarioPercepts, this.objects, this.width, this.height,
                         this.guardMaxMoveDistance, this.winRounds, this.intruderMaxMoveDistance, this.intruderMaxSprintDistance,
                         this.sprintCooldown, this.numGuards, this.numIntruders, this.intruderViewRangeNormal, this.intruderViewRangeShaded,
                         this.guardViewRangeNormal, this.guardViewRangeShaded, this.sentryViewRange, this.yellSoundRadius,

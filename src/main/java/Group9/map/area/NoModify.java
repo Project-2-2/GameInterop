@@ -1,17 +1,16 @@
 package Group9.map.area;
 
-import Group9.agent.AgentContainer;
-import Group9.tree.PointContainer;
+import Group9.agent.container.AgentContainer;
 
-public class NoModify extends EffectArea {
+public class NoModify extends EffectArea<Double> {
 
     public NoModify() {
         super(null);
     }
 
     @Override
-    public double get(AgentContainer<?> agentContainer) {
-        return 1;
+    public Double get(AgentContainer<?> agentContainer) {
+        return 1D;
     }
 
 }

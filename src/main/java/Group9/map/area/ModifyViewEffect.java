@@ -1,11 +1,11 @@
 package Group9.map.area;
 
-import Group9.agent.AgentContainer;
+import Group9.agent.container.AgentContainer;
 import Group9.tree.PointContainer;
 import Interop.Agent.Guard;
 import Interop.Agent.Intruder;
 
-public class ModifyViewEffect extends EffectArea {
+public class ModifyViewEffect extends EffectArea<Double> {
 
     private double guardModifier;
     private double intruderModifier;
@@ -17,7 +17,7 @@ public class ModifyViewEffect extends EffectArea {
     }
 
     @Override
-    public double get(AgentContainer<?> agentContainer) {
+    public Double get(AgentContainer<?> agentContainer) {
 
         if(agentContainer.getAgent() instanceof Guard)
         {

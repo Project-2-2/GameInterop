@@ -1,13 +1,10 @@
 package Group9;
 
-import Group9.agent.AgentContainer;
-import Group9.agent.GuardAgent;
-import Group9.agent.IntruderAgent;
+import Group9.agent.container.AgentContainer;
+import Group9.agent.container.GuardContainer;
+import Group9.agent.container.IntruderContainer;
 import Group9.map.GameMap;
-import Group9.map.area.EffectArea;
-import Group9.map.area.ModifySpeedEffect;
-import Group9.map.area.ModifyViewEffect;
-import Group9.map.area.NoModify;
+import Group9.map.area.*;
 import Group9.map.objects.*;
 import Group9.map.dynamic.DynamicObject;
 import Group9.map.dynamic.Pheromone;
@@ -26,7 +23,6 @@ import Interop.Percept.IntruderPercepts;
 import Interop.Percept.Scenario.ScenarioGuardPercepts;
 import Interop.Percept.Scenario.ScenarioIntruderPercepts;
 import Interop.Percept.Scenario.ScenarioPercepts;
-import Interop.Percept.Scenario.SlowDownModifiers;
 import Interop.Percept.Smell.SmellPercept;
 import Interop.Percept.Smell.SmellPerceptType;
 import Interop.Percept.Smell.SmellPercepts;
@@ -36,7 +32,6 @@ import Interop.Percept.Sound.SoundPercepts;
 import Interop.Percept.Vision.ObjectPerceptType;
 
 import java.util.*;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 public class Game {
@@ -44,8 +39,8 @@ public class Game {
     private GameMap gameMap;
     private ScenarioPercepts scenarioPercepts;
 
-    private List<GuardAgent> guards = new ArrayList<>();
-    private List<IntruderAgent> intruders = new ArrayList<>();
+    private List<GuardContainer> guards = new ArrayList<>();
+    private List<IntruderContainer> intruders = new ArrayList<>();
 
     private Map<AgentContainer<?>, Boolean> actionSuccess = new HashMap<>();
 
@@ -58,12 +53,8 @@ public class Game {
         Spawn.Guard guardSpawn = gameMap.getObjects(Spawn.Guard.class).get(0);
         Spawn.Intruder intruderSpawn = gameMap.getObjects(Spawn.Intruder.class).get(0);
 
-        AgentsFactory.createGuards(teamSize).forEach(a -> {
-            this.guards.add(new GuardAgent(a, guardSpawn.generateRandomLocation(), new Vector(1, 1)));
-        });
-        AgentsFactory.createIntruders(teamSize).forEach(a -> {
-            this.intruders.add(new IntruderAgent(a, intruderSpawn.generateRandomLocation(), new Vector(1, 1)));
-        });
+        AgentsFactory.createGuards(teamSize).forEach(a -> this.guards.add(new GuardContainer(a, guardSpawn.generateRandomLocation(), new Vector(1, 1))));
+        AgentsFactory.createIntruders(teamSize).forEach(a -> this.intruders.add(new IntruderContainer(a, intruderSpawn.generateRandomLocation(), new Vector(1, 1))));
     }
 
     public void start()
@@ -81,9 +72,9 @@ public class Game {
 
         this.cooldown();
 
-        for(GuardAgent guard : this.guards)
+        for(GuardContainer guard : this.guards)
         {
-            final GuardAction action = guard.getAction(this.generateGuardPercepts(guard));
+            final GuardAction action = guard.getAgent().getAction(this.generateGuardPercepts(guard));
             actionSuccess.put(guard, executeAction(guard, action));
         }
 
@@ -109,16 +100,16 @@ public class Game {
         {
             return true;
         }
-
         //TODO --- cleanup
         Set<EffectArea> effectAreas = gameMap.getEffectAreas(agentContainer);
         Optional<EffectArea> modifySpeedEffect = effectAreas.stream().filter(e -> e instanceof ModifySpeedEffect).findAny();
+        Optional<EffectArea> soundEffect = effectAreas.stream().filter(e -> e instanceof SoundEffect).findAny();
         Optional<EffectArea> modifyViewEffect = effectAreas.stream().filter(e -> e instanceof ModifyViewEffect).findAny();
         //---
 
         if(action instanceof Move || action instanceof Sprint)
         {
-            final double slowdownModifier = modifySpeedEffect.orElseGet(NoModify::new).get(agentContainer);
+            final double slowdownModifier = (double) modifySpeedEffect.orElseGet(NoModify::new).get(agentContainer);
             double distance = ((action instanceof Move) ?
                     ((Move) action).getDistance().getValue() : ((Sprint) action).getDistance().getValue()) * slowdownModifier;
 
@@ -127,7 +118,7 @@ public class Game {
             final double minSprint = isGuard ?
                     gameMap.getGuardMaxMoveDistance().getValue() : gameMap.getIntruderMaxMoveDistance().getValue();
             final double maxSprint = isGuard ?
-                    Double.MAX_VALUE : gameMap.getIntruderMaxSprintDistance().getValue();
+                    gameMap.getGuardMaxMoveDistance().getValue() : gameMap.getIntruderMaxSprintDistance().getValue();
 
             boolean isSprinting = (distance > minSprint);
 
@@ -141,7 +132,7 @@ public class Game {
                 else
                 {
                     assert isIntruder;
-                    if(((IntruderAgent) agentContainer.getAgent()).getSprintCooldown() > 0 || distance > maxSprint)
+                    if(((IntruderContainer) agentContainer.getAgent()).getSprintCooldown() > 0 || distance > maxSprint)
                     {
                         return false;
                     }
@@ -165,10 +156,27 @@ public class Game {
 
             if(isSprinting)
             {
-                ((IntruderAgent) agentContainer.getAgent()).setSprintCooldown(gameMap.getSprintCooldown());
+                ((IntruderContainer) agentContainer.getAgent()).setSprintCooldown(gameMap.getSprintCooldown());
             }
 
+            //--- move and then get new effects
             agentContainer.move(distance);
+            Set<EffectArea> movedEffectAreas = gameMap.getEffectAreas(agentContainer);
+            soundEffect = movedEffectAreas.stream().filter(e -> e instanceof SoundEffect).findAny();
+            Optional<EffectArea> locationEffect = movedEffectAreas.stream().filter(e -> e instanceof ModifyLocationEffect).findAny();
+
+            if(soundEffect.isPresent())
+            {
+                SoundEffect s = (SoundEffect) soundEffect.get();
+                //TODO check whether a sound exists for more than one round or not
+                gameMap.getDynamicObjects().add(new Sound(s.getType(), agentContainer,
+                        s.get(agentContainer) * (distance / maxSprint), //TODO should be checked, but i am fairly certain that the radius is scaled linearly by speed of agent
+                        1));
+
+            }
+
+            locationEffect.ifPresent(effectArea -> agentContainer.moveTo(((ModifyLocationEffect) effectArea).get(agentContainer)));
+
             return true;
         }
         else if(action instanceof Rotate)
@@ -187,7 +195,6 @@ public class Game {
             gameMap.getDynamicObjects().add(new Sound(
                     SoundPerceptType.Yell,
                     agentContainer,
-                    agentContainer.getPosition(),
                     1, //TODO replace with correct values
                     1 //TODO replace with correct values
             ));
@@ -217,12 +224,12 @@ public class Game {
             Iterator<DynamicObject> iterator = gameMap.getDynamicObjects().iterator();
             while (iterator.hasNext()) {
                 DynamicObject e = iterator.next();
+                e.setLifetime(e.getLifetime() - 1);
                 if(e.getLifetime() == 0)
                 {
                     iterator.remove();
                 }
 
-                e.setLifetime(e.getLifetime() - 1);
             }
         }
 
@@ -236,7 +243,7 @@ public class Game {
 
     }
 
-    private GuardPercepts generateGuardPercepts(GuardAgent guard)
+    private GuardPercepts generateGuardPercepts(GuardContainer guard)
     {
         //TODO generate data structure for the specific agent
         return new GuardPercepts(
@@ -249,7 +256,7 @@ public class Game {
         );
     }
 
-    private IntruderPercepts generateIntruderPercepts(IntruderAgent intruder)
+    private IntruderPercepts generateIntruderPercepts(IntruderContainer intruder)
     {
 
         Vector2 direction = this.gameMap.getObjects(TargetArea.class).get(0).getContainer()

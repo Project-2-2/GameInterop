@@ -1,17 +1,15 @@
-package Group9.agent;
+package Group9.agent.container;
 
 import Group9.PiMath;
 import Group9.math.Vector2;
 import Group9.tree.PointContainer;
-import Interop.Geometry.Angle;
-import Interop.Geometry.Distance;
 import Interop.Geometry.Vector;
 
-public class AgentContainer<T> {
+public abstract class AgentContainer<T> {
 
     private T agent;
-    private PointContainer.Circle shape;
-    private Vector2 direction;
+    private PointContainer.Circle shape = null;
+    private Vector2 direction = null;
 
     public AgentContainer(T agent, Vector position, Vector direction)
     {
@@ -38,6 +36,11 @@ public class AgentContainer<T> {
     public Vector2 getDirection()
     {
         return direction;
+    }
+
+    public void moveTo(Vector2 position)
+    {
+        this.shape.translate(this.getPosition().sub(position));
     }
 
     public void move(double distance)
