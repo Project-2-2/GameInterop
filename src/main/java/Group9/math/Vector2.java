@@ -15,6 +15,10 @@ public class Vector2 {
         this.length = Math.sqrt(Math.pow(this.x, 2) + Math.pow(this.y, 2));
     }
 
+    public String toString(){
+        return "x = "+this.x+" y = "+this.y;
+    }
+
     public double getX()
     {
         return x;
