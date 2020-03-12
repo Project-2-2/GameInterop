@@ -53,14 +53,20 @@ public abstract class PointContainer {
 
         @Override
         public Vector2 getCenter() {
-            //TODO implement
-            return null;
+            return twoLinesIntersect(points[0], points[2], points[1], points[3]);
         }
 
         @Override
         public Quadrilateral clone() throws CloneNotSupportedException {
             return new Quadrilateral(this.points[0].clone(), this.points[1].clone(), this.points[2].clone(),
                     this.points[3].clone());
+        }
+
+
+
+        public static void main(String args[]){
+            Quadrilateral a = new Quadrilateral(new Vector2(1,1), new Vector2(2,2), new Vector2(1,4), new Vector2(8,12));
+            System.out.println(a.getCenter());
         }
     }
 
@@ -207,6 +213,49 @@ public abstract class PointContainer {
         }
 
         return c;
+    }
+
+    /**
+     * Calculate whether 2 lines intersect with each other
+     * @param vec1 start point of line 1.
+     * @param vec2 start point of line 2.
+     * @param vec3 start point of line 3.
+     * @param vec4 start point of line 4.
+     * @return the vector that points to the intersection point, returns null when no intersection is found
+     */
+    public Vector2 twoLinesIntersect(Vector2 vec1, Vector2 vec2, Vector2 vec3, Vector2 vec4){
+        //http://mathworld.wolfram.com/Line-LineIntersection.html
+        double x1 = vec1.getX();
+        double y1 = vec1.getY();
+        double x2 = vec2.getX();
+        double y2 = vec2.getY();
+        double x3 = vec3.getX();
+        double y3 = vec3.getY();
+        double x4 = vec4.getX();
+        double y4 = vec4.getY();
+        double parallelDenominator = determinant(x1-x2, y1-y2, x3-x4, y3-y4);
+        System.out.println(parallelDenominator);
+
+        if(parallelDenominator == 0.0){
+            return null;
+        }
+
+        double determinantLine1 = determinant(x1, y1, x2, y2);
+        double determinantLine2 = determinant(x3, y3, x4, y4);
+        double xValue = determinant(determinantLine1, x1-x2, determinantLine2, y1-y2);
+        double yValue = determinant(determinantLine1, x3-x4, determinantLine2, y3-y4);
+        double xToCheck = xValue/parallelDenominator;
+        double yToCheck = yValue/parallelDenominator;
+
+        if((((x1>=xToCheck&&x2<=xToCheck)||(x2>=xToCheck&&x1<=xToCheck))&&((y1>=yToCheck&&y2<=yToCheck)||(y2>=yToCheck&&y1<=yToCheck))) &&
+                (((x3>=xToCheck&&x4<=xToCheck)||(x4>=xToCheck&&x3<=xToCheck))&&((y3>=yToCheck&&y4<=yToCheck)||(y4>=yToCheck&&y3<=yToCheck)))){
+            return new Vector2(xToCheck,yToCheck);
+        }
+
+        return null;
+    }
+    private double determinant(double x1, double y1, double x2, double y2){
+        return (x1*y2)-(x2*y1);
     }
 
 }
