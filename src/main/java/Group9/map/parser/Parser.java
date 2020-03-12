@@ -79,7 +79,6 @@ public class Parser {
                         } break;
 
                         case "gamemode": {
-                            //TODO
                             builder.gameMode(Integer.parseInt(data[0]) == 0 ? GameMode.CaptureAllIntruders : GameMode.CaptureOneIntruder);
                         } break;
 
@@ -152,7 +151,7 @@ public class Parser {
                         } break;
 
                         case "viewrays": {
-                            //TODO you can calculate this... you know: math
+                            builder.viewRays(Integer.parseInt(data[0]));
                         } break;
 
                         case "viewrangeintrudernormal": {

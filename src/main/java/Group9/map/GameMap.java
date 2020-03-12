@@ -33,6 +33,22 @@ public class GameMap {
     private Distance intruderMaxMoveDistance;
     private Distance intruderMaxSprintDistance;
     private int sprintCooldown;
+    private int numGuards;
+    private int numIntruders;
+
+    private Distance intruderViewRangeNormal;
+    private Distance intruderViewRangeShaded;
+    private Distance guardViewRangeNormal;
+    private Distance guardViewRangeShaded;
+    private Distance[] sentryViewRange;
+
+    private Distance yellSoundRadius;
+    private Distance moveMaxSoundRadius;
+    private Distance windowSoundRadius;
+    private Distance doorSoundRadius;
+
+    private Angle viewAngle;
+    private int viewRays;
 
     private QuadTree<MapObject> quadTree;
     private List<MapObject> mapObjects;
@@ -47,7 +63,10 @@ public class GameMap {
                    int width, int height,
                    Distance guardMaxMoveDistance,
                    int turnsInTargetAreaToWin, Distance intruderMaxMoveDistance, Distance intruderMaxSprintDistance,
-                   int sprintCooldown)
+                   int sprintCooldown, int numGuards, int numIntruders, Distance intruderViewRangeNormal,
+                   Distance intruderViewRangeShaded, Distance guardViewRangeNormal, Distance guardViewRangeShaded,
+                   Distance[] sentryViewRange, Distance yellSoundRadius, Distance moveMaxSoundRadius,
+                   Distance windowSoundRadius, Distance doorSoundRadius, Angle viewAngle, int viewRays)
     {
         this.scenarioPercepts = scenarioPercepts;
 
@@ -63,6 +82,23 @@ public class GameMap {
 
         this.width = width;
         this.height = height;
+
+        this.numGuards = numGuards;
+        this.numIntruders = numIntruders;
+
+        this.intruderViewRangeNormal = intruderViewRangeNormal;
+        this.intruderViewRangeShaded = intruderViewRangeShaded;
+        this.guardViewRangeNormal = guardViewRangeNormal;
+        this.guardViewRangeShaded = guardViewRangeShaded;
+        this.sentryViewRange = sentryViewRange;
+
+        this.yellSoundRadius = yellSoundRadius;
+        this.moveMaxSoundRadius = moveMaxSoundRadius;
+        this.windowSoundRadius = windowSoundRadius;
+        this.doorSoundRadius = doorSoundRadius;
+
+        this.viewAngle = viewAngle;
+        this.viewRays = viewRays;
 
         this.quadTree = new QuadTree<>(width, height, 10000, MapObject::getContainer);
         AtomicInteger index = new AtomicInteger();
@@ -119,6 +155,58 @@ public class GameMap {
         return height;
     }
 
+    public int getNumGuards() {
+        return numGuards;
+    }
+
+    public int getNumIntruders() {
+        return numIntruders;
+    }
+
+    public Distance getIntruderViewRangeNormal() {
+        return intruderViewRangeNormal;
+    }
+
+    public Distance getIntruderViewRangeShaded() {
+        return intruderViewRangeShaded;
+    }
+
+    public Distance getGuardViewRangeNormal() {
+        return guardViewRangeNormal;
+    }
+
+    public Distance getGuardViewRangeShaded() {
+        return guardViewRangeShaded;
+    }
+
+    public Distance[] getSentryViewRange() {
+        return sentryViewRange;
+    }
+
+    public Distance getYellSoundRadius() {
+        return yellSoundRadius;
+    }
+
+    public Distance getMoveMaxSoundRadius() {
+        return moveMaxSoundRadius;
+    }
+
+    public Distance getWindowSoundRadius() {
+        return windowSoundRadius;
+    }
+
+    public Distance getDoorSoundRadius() {
+        return doorSoundRadius;
+    }
+
+    public Angle getViewAngle() {
+        return viewAngle;
+    }
+
+    public int getViewRays() {
+        return viewRays;
+    }
+
     public <T extends MapObject> List<T> getObjects(Class<T> clazz)
     {
         return this.mapObjects.stream()
@@ -165,8 +253,6 @@ public class GameMap {
 
     public static class Builder
     {
-
-        //TODO: GET DATA FROM BUILDER TO MAP
         private int height;
         private int width;
 
@@ -185,6 +271,7 @@ public class GameMap {
         private Distance guardViewRangeShaded;
         private Distance[] sentryViewRange = new Distance[2];
         private Angle viewAngle;
+        private int viewRays;
 
         private Distance yellSoundRadius;
         private Distance moveMaxSoundRadius;
@@ -283,6 +370,12 @@ public class GameMap {
         public Builder viewAngle(double angle)
         {
             this.viewAngle = Angle.fromDegrees(angle);
+            return this;
+        }
+
+        public Builder viewRays(int rays)
+        {
+            this.viewRays = rays;
             return this;
         }
         public Builder yellSoundRadius(double radius)
@@ -389,10 +482,13 @@ public class GameMap {
                     this.pheromoneRadius, this.pheromoneCooldown);
 
             return new GameMap(scenarioPercepts, this.objects, this.effects, this.width, this.height,
-                        this.guardMaxMoveDistance,
-                        this.winRounds, this.intruderMaxMoveDistance, this.intruderMaxSprintDistance, this.sprintCooldown
+                        this.guardMaxMoveDistance, this.winRounds, this.intruderMaxMoveDistance, this.intruderMaxSprintDistance,
+                        this.sprintCooldown, this.numGuards, this.numIntruders, this.intruderViewRangeNormal, this.intruderViewRangeShaded,
+                        this.guardViewRangeNormal, this.guardViewRangeShaded, this.sentryViewRange, this.yellSoundRadius,
+                        this.moveMaxSoundRadius, this.windowSoundRadius, this.doorSoundRadius, this.viewAngle, this.viewRays
                     );
         }
+
 
     }
 
