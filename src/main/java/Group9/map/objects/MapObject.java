@@ -41,4 +41,9 @@ public class MapObject implements Container {
         return (type == ObjectPerceptType.Door || type == ObjectPerceptType.SentryTower || type == ObjectPerceptType.Wall
                 || type == ObjectPerceptType.Window);
     }
+
+    public ObjectPerceptType getType() {
+        return type;
+    }
+
 }

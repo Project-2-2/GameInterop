@@ -5,6 +5,7 @@ import Group9.map.area.EffectArea;
 import Group9.map.dynamic.DynamicObject;
 import Group9.map.objects.MapObject;
 import Group9.math.Line;
+import Group9.math.Vector2;
 import Group9.tree.PointContainer;
 import Group9.tree.QuadTree;
 import Interop.Geometry.Angle;
@@ -16,9 +17,11 @@ import Interop.Percept.Vision.ObjectPerceptType;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class GameMap {
 
@@ -250,6 +253,43 @@ public class GameMap {
     {
         return isRayIntersecting(line, _SOLID_PERCEPTS);
     }
+
+    // returns a sorted list of map objects (from closer to start of line to furthest away). Objects after a solid object are not included
+    public List<MapObject> objectsSeen(Line line) {
+        // get stream of objects that intersect line
+        Stream<MapObject> intersectingMapObjects = this.mapObjects.stream().filter(mo -> PointContainer.intersect(mo.getContainer(), line));
+
+        // compares objects by how close they are to start of line
+        Comparator<MapObject> closerComparator = new Comparator<MapObject>() {
+            @Override
+            public int compare(MapObject o1, MapObject o2) {
+                // NOTE: checking with center probably not a good idea
+                //       TODO: change to interesction point of object and line instead of center
+                boolean compare = line.getStart().distance(o1.getContainer().getCenter()) > line.getStart().distance(o2.getContainer().getCenter());
+                if (compare) {
+                    // o1 is further away from start of line
+                    return 1;
+                } else {
+                    // o2 is further away from start of line
+                    return -1;
+                }
+                // TODO: might need to swap 1 and -1..
+            }
+        };
+
+        // chomp off objects after opaque object is found
+        List<MapObject> retList = new ArrayList<MapObject>();
+        for (MapObject o : intersectingMapObjects.sorted(closerComparator).collect(Collectors.toList())) {
+            retList.add(o);
+            if (o.getType().isOpaque() || o.getType().isAgent()) {
+                break;
+            }
+        }
+
+        return retList;
+    }
+
+
 
     public static class Builder
     {
