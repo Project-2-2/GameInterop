@@ -288,8 +288,6 @@ public class GameMap {
         return retList;
     }
 
-
-
     public static class Builder
     {
         private int height;

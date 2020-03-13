@@ -5,6 +5,8 @@ import Group9.math.Vector2;
 import Interop.Geometry.Vector;
 
 import java.util.Arrays;
+import java.util.Comparator;
+import java.util.Optional;
 
 public abstract class PointContainer {
 
@@ -67,6 +69,67 @@ public abstract class PointContainer {
         public static void main(String args[]){
             Quadrilateral a = new Quadrilateral(new Vector2(1,1), new Vector2(2,2), new Vector2(1,4), new Vector2(8,12));
             System.out.println(a.getCenter());
+        }
+
+
+        public static class Rectangle extends Quadrilateral {
+            private double topY, bottomY, leftmostX, rightmostX;
+
+            public Rectangle(Vector2 a, Vector2 b, Vector2 c, Vector2 d) {
+                super(a, b, c, d);
+            }
+
+            public Rectangle(double topY, double bottomY, double leftmostX, double rightmostX) {
+                super(  new Vector2(leftmostX, topY),
+                        new Vector2(rightmostX, topY),
+                        new Vector2(rightmostX, bottomY),
+                        new Vector2(leftmostX, bottomY)
+                );
+
+                this.topY = topY;
+                this.bottomY = bottomY;
+                this.leftmostX = leftmostX;
+                this.rightmostX = rightmostX;
+            }
+
+            public double getHorizonalSize() {
+                return Math.abs(rightmostX - leftmostX);
+            }
+
+            public double getVerticalSize() {
+                return Math.abs(topY - bottomY);
+            }
+
+            public double getTopY() {
+                return topY;
+            }
+
+            public double getBottomY() {
+                return bottomY;
+            }
+
+            public double getLeftmostX() {
+                return leftmostX;
+            }
+
+            public double getRightmostX() {
+                return rightmostX;
+            }
+        }
+
+        /**
+         * Returns the smallest rectangle (whose sides are parallel to x and y axises) containing the Quadrilateral
+         * Idea: https://imgur.com/a/NOwvwRM
+         * @return
+         */
+        public static Quadrilateral.Rectangle containingRectangle(Quadrilateral q) {
+            // not efficient, but probably sufficiently efficient
+            double topY = Arrays.stream(q.getPoints()).min(Comparator.comparing(Vector2::getY)).get().getY();
+            double bottomY = Arrays.stream(q.getPoints()).max(Comparator.comparing(Vector2::getY)).get().getY();
+            double rightmostX = Arrays.stream(q.getPoints()).max(Comparator.comparing(Vector2::getX)).get().getX();
+            double leftmostX = Arrays.stream(q.getPoints()).min(Comparator.comparing(Vector2::getX)).get().getX();
+
+            return new Quadrilateral.Rectangle(topY, bottomY, leftmostX, rightmostX);
         }
     }
 
@@ -189,7 +252,7 @@ public abstract class PointContainer {
         return false;
     }
 
-    private static boolean isPointInside(Quadrilateral q, Vector2 point)
+    public static boolean isPointInside(Quadrilateral q, Vector2 point)
     {
         // check if any of the points are contained in the other polygon
         int num = 4;
