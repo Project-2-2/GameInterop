@@ -432,7 +432,7 @@ public static void start3(Stage s)
    // wall16.updateScale();
     double wall17[] = {95.0,36.0,95.0,42.0,96.0,42.0,96.0,36.0};
     //wall17.updateScale();
-    Objects pol1 = new Objects();
+    /*Objects pol1 = new Objects();
     pol1.draw(0.0,0.0,0.0,1,120,1,120,0);
     pol1.updateScale();
    Objects pol2 = new Objects();
@@ -453,7 +453,7 @@ public static void start3(Stage s)
     Polygon pol14 = Objects.draw(60.0,41.0,60.0,87.0,61.0,87.0,61.0,41.0);
     Polygon pol15 = Objects.draw(56.0,87.0,56.0,88.0,60.0,88.0,60.0,87.0);
     Polygon pol16 = Objects.draw(61.0,41.0,61.0,42.0,95.0,42.0,95.0,41.0);
-    Polygon pol17 = Objects.draw(95.0,36.0,95.0,42.0,96.0,42.0,96.0,36.0);
+    Polygon pol17 = Objects.draw(95.0,36.0,95.0,42.0,96.0,42.0,96.0,36.0);*/
     
     
  /*   Objects polygon1 = new Objects(0.0,0.0,0.0,1,120,1,120,0); 
@@ -616,7 +616,7 @@ public static void start3(Stage s)
       
    // root.getChildren().addAll(map,line1,line2,line3,line4,line5,line6,line7,line8,line9,line10,line11,line12,line13,line14,line15,line16,line17,line18,line19,line20,line21,line22,line23,line24,line25,line26,line27,,line29,line30,line31,line32,line33,line34,line35,line36,line37,line38,line39,line40,line41,line42,line43,line44,line45,line46,line47,line48,line49,line50,line51,line52,line53,line54,line55,line56,line57,line58,line59,line60,line61,line62,line63,line64,line65,line66,line67,line68);
   // root.getChildren().addAll(map,polygon1,polygon2,polygon3,polygon4,polygon5,polygon6,polygon7,polygon8,polygon9,polygon10,polygon11,polygon12,,polygon14,polygon15,polygon16,polygon17,polygon18,polygon19,polygon20);
-     root.getChildren().addAll(map,pol1,pol2,pol3,pol4,pol5,pol6,pol7,pol8,pol9,pol10,pol11,pol12,pol13,pol14,pol15,pol16,pol17);
+     //root.getChildren().addAll(map,pol1,pol2,pol3,pol4,pol5,pol6,pol7,pol8,pol9,pol10,pol11,pol12,pol13,pol14,pol15,pol16,pol17);
 	s.setScene(scene);
     s.setTitle("Map ");
   //  s.setResizable(false);

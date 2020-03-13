@@ -13,7 +13,7 @@ public abstract class EffectArea<T> implements Container {
         this.pointContainer = pointContainer;
     }
 
-    abstract public T get(AgentContainer<?> agentContainer); //TODO
+    abstract public T get(AgentContainer<?> agentContainer);
 
     @Override
     public PointContainer getContainer() {

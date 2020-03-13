@@ -266,17 +266,13 @@ public class GameMap {
         Comparator<MapObject> closerComparator = new Comparator<MapObject>() {
             @Override
             public int compare(MapObject o1, MapObject o2) {
-                // NOTE: checking with center probably not a good idea
-                //       TODO: change to interesction point of object and line instead of center
-                boolean compare = line.getStart().distance(o1.getContainer().getCenter()) > line.getStart().distance(o2.getContainer().getCenter());
-                if (compare) {
-                    // o1 is further away from start of line
-                    return 1;
-                } else {
-                    // o2 is further away from start of line
-                    return -1;
-                }
-                // TODO: might need to swap 1 and -1..
+                //TODO: change to interesction point of object and line instead of center
+                // Note (Jan): This should sort ascending now which is what we want, right? otherwise just add a - in front of the method to
+                // invert the results
+                return Double.compare(
+                        line.getStart().distance(o1.getContainer().getCenter()),
+                        line.getStart().distance(o2.getContainer().getCenter())
+                );
             }
         };
 
