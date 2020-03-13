@@ -3,14 +3,12 @@ package Group9;
 import Group9.agent.container.AgentContainer;
 import Group9.agent.container.GuardContainer;
 import Group9.agent.container.IntruderContainer;
-import Group9.gui.Agent;
 import Group9.map.GameMap;
 import Group9.map.area.*;
 import Group9.map.objects.*;
 import Group9.map.dynamic.DynamicObject;
 import Group9.map.dynamic.Pheromone;
 import Group9.map.dynamic.Sound;
-import Group9.math.Line;
 import Group9.math.Vector2;
 import Group9.tree.PointContainer;
 import Interop.Action.*;
@@ -156,8 +154,14 @@ public class Game {
 
             //TODO we are currently only checking whether a single line is intersecting with something but not whether
             // or not we are too wide
-            Line line = new Line(agentContainer.getPosition(), end);
-            if(gameMap.isRayIntersecting(line, ObjectPerceptType::isSolid))
+            PointContainer.Line line = new PointContainer.Line(agentContainer.getPosition(), end);
+            Vector2 temp = line.getNormal().mul(agentContainer.getShape().getRadius());
+            Vector2 pointA = temp.add(line.getStart());
+            Vector2 pointC = temp.add(line.getEnd());
+            Vector2 pointB = temp.flip().add(line.getStart());
+            Vector2 pointD = temp.flip().add(line.getEnd());
+            PointContainer.Quadrilateral quadrilateral = new PointContainer.Quadrilateral(pointA, pointB, pointC, pointD);
+            if(gameMap.isMoveIntersecting(quadrilateral, ObjectPerceptType::isSolid))
             {
                 return false;
             }
@@ -168,7 +172,7 @@ public class Game {
             }
 
             //--- move and then get new effects
-            gameMap.getDynamicObjects().add(new Sound(SoundPerceptType.Noise, agentContainer, 1, 1)); //TODO replace with correct values
+            gameMap.getDynamicObjects().add(new Sound(SoundPerceptType.Noise, agentContainer, gameMap.getMoveMaxSoundRadius().getValue(), 1));
             agentContainer.move(distance);
             Set<EffectArea> movedEffectAreas = gameMap.getEffectAreas(agentContainer);
             soundEffect = movedEffectAreas.stream().filter(e -> e instanceof SoundEffect).findAny();
@@ -216,8 +220,8 @@ public class Game {
             gameMap.getDynamicObjects().add(new Sound(
                     SoundPerceptType.Yell,
                     agentContainer,
-                    1, //TODO replace with correct values
-                    1 //TODO replace with correct values
+                    gameMap.getYellSoundRadius().getValue(),
+                    1
             ));
             return true;
         }
@@ -244,7 +248,7 @@ public class Game {
                     agentContainer,
                     agentContainer.getPosition(),
                     scenarioPercepts.getRadiusPheromone().getValue(),
-                    scenarioPercepts.getPheromoneCooldown()
+                    gameMap.getPheromoneExpireRounds()
             ));
             return true;
         }

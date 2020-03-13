@@ -1,7 +1,6 @@
 package Group9.tree;
 
 import Group9.Game;
-import Group9.math.Line;
 import Group9.math.Vector2;
 import Interop.Geometry.Vector;
 
@@ -186,6 +185,72 @@ public abstract class PointContainer {
             return new Circle(center.clone(), this.getRadius());
         }
     }
+
+    public static class Line extends PointContainer{
+
+        private Vector2 start;
+        private Vector2 end;
+
+        public Line(Vector2 start, Vector2 end)
+        {
+            super();
+            if(start.getX() <= end.getX())
+            {
+                this.start = start;
+                this.end = end;
+            }
+            else
+            {
+                this.start = end;
+                this.end = start;
+            }
+
+        }
+
+        public Vector2 getStart()
+        {
+            return this.start;
+        }
+
+        public Vector2 getEnd()
+        {
+            return this.end;
+        }
+
+        public Vector2 getNormal()
+        {
+            double dx = end.getX() - start.getX();
+            double dy = end.getY() - start.getY();
+            return new Vector2(-dy, dx).normalise();
+        }
+
+        public boolean intersect(Line other)
+        {
+            return PointContainer.twoLinesIntersect(this.getStart(),this.getEnd(),other.getStart(),other.getEnd()) != null;
+        }
+
+        @Override
+        public String toString() {
+            return "Line{" +
+                    "start=" + start +
+                    ", end=" + end +
+                    '}';
+        }
+
+        @Override
+        public void translate(Vector2 vector) {
+            this.start = this.start.add(vector);
+            this.end = this.end.add(vector);
+
+        }
+
+        @Override
+        public Vector2 getCenter() {
+            //TODO think
+            return null;//new Vector2(start.getX()-end.getX(),start.getY()-end.getY());
+        }
+    }
+
 
     @Override
     public PointContainer clone() throws CloneNotSupportedException {
@@ -405,11 +470,4 @@ public abstract class PointContainer {
     private static double determinant(double x1, double y1, double x2, double y2){
         return (x1*y2)-(x2*y1);
     }
-
-    public static void main(String[] args) {
-        Circle coolCircle = new Circle(new Vector2(4,4),2);
-        Line notSoCoolLine = new Line(new Vector2(0,2), new Vector2(6,2));
-        System.out.print(Arrays.toString(circleLineIntersect(coolCircle, notSoCoolLine)));
-    }
-
 }

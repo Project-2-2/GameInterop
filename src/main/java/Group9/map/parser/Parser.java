@@ -28,11 +28,7 @@ public class Parser {
                     return;
                 }
 
-                if(trimmed.startsWith("//"))
-                {
-
-                }
-                else
+                if(!trimmed.startsWith("//"))
                 {
                     System.out.println(trimmed);
                     String[] split = trimmed.split("=");
@@ -42,39 +38,39 @@ public class Parser {
                     switch (type.toLowerCase())
                     {
                         case "wall": {
-                            builder.object(new Wall(quadrilateralFromData(data)));
+                            builder.wall((quadrilateralFromData(data)));
                         } break;
 
                         case "targetarea": {
-                            builder.object(new TargetArea(quadrilateralFromData(data)));
+                            builder.targetArea(quadrilateralFromData(data));
                         } break;
 
                         case "spawnareaintruders": {
-                            builder.object(new Spawn.Intruder(quadrilateralFromData(data)));
+                            builder.spawnAreaIntruders(quadrilateralFromData(data));
                         } break;
 
                         case "spawnareaguards": {
-                            builder.object(new Spawn.Guard(quadrilateralFromData(data)));
+                            builder.spawnAreaGuards(quadrilateralFromData(data));
                         } break;
 
                         case "teleport": {
-                            builder.object(new TeleportArea(quadrilateralFromData(data)));
+                            builder.teleport(quadrilateralFromData(data));
                         } break;
 
                         case "shaded": {
-                            builder.object(new ShadedArea(quadrilateralFromData(data)));
+                            builder.shaded(quadrilateralFromData(data));
                         } break;
 
                         case "door": {
-                            builder.object(new Door(quadrilateralFromData(data)));
+                            builder.door(quadrilateralFromData(data));
                         } break;
 
                         case "window": {
-                            builder.object(new Window(quadrilateralFromData(data)));
+                            builder.window(quadrilateralFromData(data));
                         } break;
 
                         case "sentry": {
-                            builder.object(new SentryTower(quadrilateralFromData(data)));
+                            builder.sentry(quadrilateralFromData(data));
                         } break;
 
                         case "gamemode": {
@@ -187,6 +183,9 @@ public class Parser {
 
                         case "doorsoundradius": {
                             builder.doorSoundRadius(Double.parseDouble(data[0]));
+                        } break;
+                        case "pheromoneexpirerounds": {
+                            builder.pheromoneExpireRounds(Integer.parseInt(data[0]));
                         } break;
                     }
                 }
