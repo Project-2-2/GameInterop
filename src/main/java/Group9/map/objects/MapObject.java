@@ -3,6 +3,7 @@ package Group9.map.objects;
 import Group9.map.area.EffectArea;
 import Group9.tree.Container;
 import Group9.tree.PointContainer;
+import Interop.Percept.Vision.ObjectPerceptType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,15 +13,23 @@ public class MapObject implements Container {
     private final PointContainer area;
     private final List<EffectArea> effects;
 
-    public MapObject(PointContainer area)
+    private ObjectPerceptType type;
+
+    public MapObject(PointContainer area, ObjectPerceptType type)
     {
-        this(area, new ArrayList<>());
+        this(area, new ArrayList<>(), type);
+        this.type = type;
     }
 
-    public MapObject(PointContainer area, List<EffectArea> effects)
+    public MapObject(PointContainer area, List<EffectArea> effects, ObjectPerceptType type)
     {
         this.area = area;
         this.effects = effects;
+        this.type = type;
+    }
+
+    public ObjectPerceptType getType() {
+        return type;
     }
 
     @Override
@@ -31,4 +40,14 @@ public class MapObject implements Container {
     public List<EffectArea> getEffects() {
         return this.effects;
     }
+
+    public boolean has(Class<EffectArea> clazz)
+    {
+        return this.effects.stream().anyMatch(e -> clazz.isAssignableFrom(e.getClass()));
+    }
+
+    public PointContainer getArea() {
+        return area;
+    }
+
 }

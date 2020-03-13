@@ -1,9 +1,10 @@
 package Group9.map.area;
 
+import Group9.agent.container.AgentContainer;
 import Group9.tree.Container;
 import Group9.tree.PointContainer;
 
-public abstract class EffectArea implements Container {
+public abstract class EffectArea<T> implements Container {
 
     private final PointContainer pointContainer;
 
@@ -12,10 +13,11 @@ public abstract class EffectArea implements Container {
         this.pointContainer = pointContainer;
     }
 
-    abstract void applyEffect(); //TODO
+    abstract public T get(AgentContainer<?> agentContainer);
 
     @Override
     public PointContainer getContainer() {
         return pointContainer;
     }
+
 }

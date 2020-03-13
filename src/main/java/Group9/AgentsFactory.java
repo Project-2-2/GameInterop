@@ -1,8 +1,11 @@
 package Group9;
 
+import Group9.agent.ExplorerAgent;
+import Group9.agent.container.ExplorerContainer;
 import Interop.Agent.Guard;
 import Interop.Agent.Intruder;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -19,6 +22,11 @@ public class AgentsFactory {
         return Collections.emptyList();
     }
     static public List<Guard> createGuards(int number) {
-        return Collections.emptyList();
+        List<Guard> guards = new ArrayList<>();
+        for(int i = 0; i < number; i++)
+        {
+            guards.add(new ExplorerAgent());
+        }
+        return guards;
     }
 }
