@@ -62,12 +62,6 @@ public abstract class PointContainer {
                     this.points[3].clone());
         }
 
-
-
-        public static void main(String args[]){
-            Quadrilateral a = new Quadrilateral(new Vector2(1,1), new Vector2(2,2), new Vector2(1,4), new Vector2(8,12));
-            System.out.println(a.getCenter());
-        }
     }
 
     public static class Circle extends PointContainer
@@ -129,8 +123,8 @@ public abstract class PointContainer {
         }
         else if(containerA instanceof Circle)
         {
-            //TODO should be the same as :CircleIntersection
-            throw new IllegalArgumentException("Implement circle intersection test");
+             return circleLineIntersect((Circle)containerA, other).length != 0;
+            //throw new IllegalArgumentException("Implement circle intersection test");
         }
         else
         {
@@ -171,8 +165,12 @@ public abstract class PointContainer {
                 return true;
             }
 
-            //TODO :CircleIntersection
-
+            for(Line a : quadrilateral.getLines()) {
+                if(intersect(circle,a)){
+                    return true;
+                }
+            }
+            return false;
         }
         else if(containerA instanceof Circle && containerB instanceof Circle)
         {
@@ -186,7 +184,6 @@ public abstract class PointContainer {
             throw new IllegalStateException();
         }
 
-        return false;
     }
 
     private static boolean isPointInside(Quadrilateral q, Vector2 point)
@@ -215,6 +212,44 @@ public abstract class PointContainer {
         return c;
     }
 
+    public static Vector2[] circleLineIntersect(Circle circle, Line line){
+        //https://mathworld.wolfram.com/Circle-LineIntersection.html
+        Vector2[] returnArray = new Vector2[0];
+        double r = circle.getRadius();
+        Vector2 centerCircle = circle.getCenter();
+
+        double dx = line.getEnd().getX() - line.getStart().getX(); //- 2*centerCircle.getX();
+        double dy = line.getEnd().getY() - line.getStart().getY(); //- 2*centerCircle.getY();
+        double dr = Math.sqrt(dx*dx + dy*dy);
+
+        double sgndy =  dy >= 0 ? 1 : -1;
+
+        double determinant = determinant(line.getStart().getX()-centerCircle.getX(),line.getStart().getY()-centerCircle.getY(),
+                line.getEnd().getX()-centerCircle.getX(),line.getEnd().getY()-centerCircle.getY());
+
+        double discriminant = r*r * dr*dr - (determinant*determinant);
+
+        //TODO: Maybe decide the right case using an EPSILON value to make close calls for the tangent lines more clear
+        if(discriminant == 0) {
+            returnArray = new Vector2[1];
+            double returnX = (determinant * dy) / (dr*dr);
+            double returnY = (-determinant * dx) / (dr*dr);
+            returnArray[0] = new Vector2(returnX+centerCircle.getX(), returnY+centerCircle.getY());
+
+        }  else if(discriminant > 0) {
+            returnArray = new Vector2[2];
+            double returnX1 = ((determinant * dy) - (sgndy * dx * Math.sqrt(discriminant)))/(dr*dr);
+            double returnX2 = ((determinant * dy) + (sgndy * dx * Math.sqrt(discriminant)))/(dr*dr);
+            double sqrtD = Math.abs(dy) * Math.sqrt(discriminant);
+            double returnY1 = ((-determinant * dx) - sqrtD)/(dr*dr);
+            double returnY2 = ((-determinant * dx) + sqrtD)/(dr*dr);
+            returnArray[0] = new Vector2(returnX1+centerCircle.getX(), returnY1+centerCircle.getY());
+            returnArray[1] = new Vector2(returnX2+centerCircle.getX(), returnY2+centerCircle.getY());
+        }
+
+        return returnArray;
+    }
+
     /**
      * Calculate whether 2 lines intersect with each other
      * @param vec1 start point of line 1.
@@ -223,7 +258,7 @@ public abstract class PointContainer {
      * @param vec4 start point of line 4.
      * @return the vector that points to the intersection point, returns null when no intersection is found
      */
-    public Vector2 twoLinesIntersect(Vector2 vec1, Vector2 vec2, Vector2 vec3, Vector2 vec4){
+    public static Vector2 twoLinesIntersect(Vector2 vec1, Vector2 vec2, Vector2 vec3, Vector2 vec4){
         //http://mathworld.wolfram.com/Line-LineIntersection.html
         double x1 = vec1.getX();
         double y1 = vec1.getY();
@@ -254,8 +289,26 @@ public abstract class PointContainer {
 
         return null;
     }
-    private double determinant(double x1, double y1, double x2, double y2){
+
+    /**
+     * matrix defined as
+     * | a b |
+     * | c d |
+     * note,
+     * @param x1 a or d
+     * @param y1 c or b
+     * @param x2 b or c
+     * @param y2 d or a
+     * @return The determinant of a 2x2 matrix
+     */
+    private static double determinant(double x1, double y1, double x2, double y2){
         return (x1*y2)-(x2*y1);
+    }
+
+    public static void main(String[] args) {
+        Circle coolCircle = new Circle(new Vector2(4,4),2);
+        Line notSoCoolLine = new Line(new Vector2(0,2), new Vector2(6,2));
+        System.out.print(Arrays.toString(circleLineIntersect(coolCircle, notSoCoolLine)));
     }
 
 }
