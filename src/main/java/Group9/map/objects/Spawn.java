@@ -40,6 +40,7 @@ public abstract class Spawn extends MapObject  {
         // worst case scenario we take center as "random" location
         Vector2 retVector = rectangle.getCenter();
 
+        assert retVector != null;
         boolean foundInside = false;
         int tries = 0;
         while (!foundInside && tries < 1000) {

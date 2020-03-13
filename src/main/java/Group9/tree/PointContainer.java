@@ -115,6 +115,7 @@ public abstract class PointContainer {
             public double getRightmostX() {
                 return rightmostX;
             }
+
         }
 
         /**
@@ -338,7 +339,6 @@ public abstract class PointContainer {
         double x4 = vec4.getX();
         double y4 = vec4.getY();
         double parallelDenominator = determinant(x1-x2, y1-y2, x3-x4, y3-y4);
-        System.out.println(parallelDenominator);
 
         if(parallelDenominator == 0.0){
             return null;
@@ -346,15 +346,15 @@ public abstract class PointContainer {
 
         double determinantLine1 = determinant(x1, y1, x2, y2);
         double determinantLine2 = determinant(x3, y3, x4, y4);
-        double xValue = determinant(determinantLine1, x1-x2, determinantLine2, y1-y2);
-        double yValue = determinant(determinantLine1, x3-x4, determinantLine2, y3-y4);
+        double xValue = determinant(determinantLine1, x1-x2, determinantLine2, x3-x4);
+        double yValue = determinant(determinantLine1, y1-y2, determinantLine2, y3-y4);
         double xToCheck = xValue/parallelDenominator;
         double yToCheck = yValue/parallelDenominator;
 
-        if((((x1>=xToCheck&&x2<=xToCheck)||(x2>=xToCheck&&x1<=xToCheck))&&((y1>=yToCheck&&y2<=yToCheck)||(y2>=yToCheck&&y1<=yToCheck))) &&
-                (((x3>=xToCheck&&x4<=xToCheck)||(x4>=xToCheck&&x3<=xToCheck))&&((y3>=yToCheck&&y4<=yToCheck)||(y4>=yToCheck&&y3<=yToCheck)))){
-            return new Vector2(xToCheck,yToCheck);
-        }
+        if (((x1 >= xToCheck && x2 <= xToCheck) || (x2 >= xToCheck && x1 <= xToCheck)) && ((y1 >= yToCheck && y2 <= yToCheck) || (y2 >= yToCheck && y1 <= yToCheck)))
+            if (((x3 >= xToCheck && x4 <= xToCheck) || (x4 >= xToCheck && x3 <= xToCheck)) && ((y3 >= yToCheck && y4 <= yToCheck) || (y4 >= yToCheck && y3 <= yToCheck))) {
+                return new Vector2(xToCheck, yToCheck);
+            }
 
         return null;
     }
