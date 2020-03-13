@@ -53,7 +53,6 @@ public class Game {
 
     private Map<AgentContainer<?>, Boolean> actionSuccess = new HashMap<>();
     private Set<AgentContainer<?>> justTeleported = new HashSet<>();
-    private Map<AgentContainer<?>, Integer> pheromoneCooldown = new HashMap<>();
 
     public Game(GameMap gameMap, int teamSize)
     {
@@ -144,16 +143,12 @@ public class Game {
                 }
                 else
                 {
-                    assert isIntruder;
-                    if(((IntruderContainer) agentContainer.getAgent()).getSprintCooldown() > 0 || distance > maxSprint)
+                    if(agentContainer.getCooldown(AgentContainer.Cooldown.SPRINTING) > 0 || distance > maxSprint)
                     {
                         return false;
                     }
                 }
             }
-
-            //---
-
 
             //---
 
@@ -169,7 +164,7 @@ public class Game {
 
             if(isSprinting)
             {
-                ((IntruderContainer) agentContainer.getAgent()).setSprintCooldown(gameMap.getSprintCooldown());
+                agentContainer.addCooldown(AgentContainer.Cooldown.SPRINTING, gameMap.getSprintCooldown());
             }
 
             //--- move and then get new effects
@@ -228,7 +223,11 @@ public class Game {
         }
         else if(action instanceof DropPheromone)
         {
-            //--- check whether
+            //--- check cooldown
+            if(agentContainer.hasCooldown(AgentContainer.Cooldown.PHEROMONE))
+            {
+                return false;
+            }
 
             //--- check whether there is already one in this place
             List<DynamicObject> pheromones = gameMap.getDynamicObjects(Pheromone.class);
@@ -275,12 +274,10 @@ public class Game {
         }
 
         // --- sprint cooldown
-        this.intruders.forEach(e -> {
-            if(e.getSprintCooldown() > 0)
-            {
-                e.setSprintCooldown(e.getSprintCooldown() - 1);
-            }
-        });
+        {
+            this.intruders.forEach(AgentContainer::cooldown);
+            this.guards.forEach(AgentContainer::cooldown);
+        }
 
     }
 
@@ -314,7 +311,7 @@ public class Game {
                         this.gameMap.getTurnsInTargetAreaToWin(),
                         this.gameMap.getIntruderMaxMoveDistance(),
                         this.gameMap.getIntruderMaxSprintDistance(),
-                        intruder.getSprintCooldown()
+                        intruder.getCooldown(AgentContainer.Cooldown.SPRINTING)
                 ),
                 this.actionSuccess.getOrDefault(intruder, true)
         );
@@ -350,8 +347,6 @@ public class Game {
 
     private <T> SmellPercepts generateSmellPercepts(AgentContainer<T> agentContainer)
     {
-        //TODO verify that 'agentContainer.getClass().isAssignableFrom(e.getSource().getClass()' is checking that they
-        // actually belong to the same team
         return new SmellPercepts(this.gameMap.getDynamicObjects().stream()
                 .filter(e -> e instanceof Pheromone && agentContainer.getClass().isAssignableFrom(e.getSource().getClass()))
                 .filter(e -> PointContainer.intersect(e.getAsCircle(), agentContainer.getShape()))

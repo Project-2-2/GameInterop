@@ -5,11 +5,17 @@ import Group9.math.Vector2;
 import Group9.tree.PointContainer;
 import Interop.Geometry.Vector;
 
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+
 public abstract class AgentContainer<T> {
 
     private T agent;
     private PointContainer.Circle shape = null;
     private Vector2 direction = null;
+
+    public Map<Cooldown, Integer> cooldowns = new HashMap<>();
 
     public AgentContainer(T agent, Vector position, Vector direction)
     {
@@ -64,6 +70,44 @@ public abstract class AgentContainer<T> {
                 x * Math.sin(theta) + y * Math.cos(theta)
         );
         return this.direction;
+    }
+
+    public int getCooldown(Cooldown cooldown)
+    {
+        return this.cooldowns.getOrDefault(cooldown, -1);
+    }
+
+    public boolean hasCooldown(Cooldown cooldown)
+    {
+        return this.cooldowns.containsKey(cooldown);
+    }
+
+    public void addCooldown(Cooldown cooldown, int rounds)
+    {
+        this.cooldowns.put(cooldown, rounds);
+    }
+
+    public void cooldown()
+    {
+        Iterator<Map.Entry<Cooldown, Integer>> iterator = this.cooldowns.entrySet().iterator();
+        while (iterator.hasNext())
+        {
+            Map.Entry<Cooldown, Integer> entry = iterator.next();
+            if(entry.getValue() - 1 == 0)
+            {
+                iterator.remove();
+            }
+            else
+            {
+                this.cooldowns.put(entry.getKey(), entry.getValue() - 1);
+            }
+        }
+    }
+
+    public enum Cooldown
+    {
+        SPRINTING,
+        PHEROMONE
     }
 
     public static class DataContainer
