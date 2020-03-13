@@ -58,8 +58,10 @@ public class Game {
         Spawn.Guard guardSpawn = gameMap.getObjects(Spawn.Guard.class).get(0);
         Spawn.Intruder intruderSpawn = gameMap.getObjects(Spawn.Intruder.class).get(0);
 
-        AgentsFactory.createGuards(teamSize).forEach(a -> this.guards.add(new GuardContainer(a, guardSpawn.generateRandomLocation(), new Vector(1, 1))));
-        AgentsFactory.createIntruders(teamSize).forEach(a -> this.intruders.add(new IntruderContainer(a, intruderSpawn.generateRandomLocation(), new Vector(1, 1))));
+        AgentsFactory.createGuards(teamSize).forEach(a -> this.guards.add(new GuardContainer(a,
+                guardSpawn.getContainer().getAsQuadrilateral().generateRandomLocation().toVexing(), new Vector(1, 1))));
+        AgentsFactory.createIntruders(teamSize).forEach(a -> this.intruders.add(new IntruderContainer(a,
+                intruderSpawn.getContainer().getAsQuadrilateral().generateRandomLocation().toVexing(), new Vector(1, 1))));
     }
 
     public void start()

@@ -7,6 +7,7 @@ import Interop.Geometry.Vector;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Optional;
+import java.util.Random;
 
 public abstract class PointContainer {
 
@@ -66,11 +67,30 @@ public abstract class PointContainer {
                     this.points[3].clone());
         }
 
+        public Vector2 generateRandomLocation()
+        {
+            // @performance this is pretty bad.. but I guess it'll do for now.
+            Random r = new Random();
+            Rectangle rectangle = containingRectangle(this);
 
+            // worst case scenario we take center as "random" location
+            Vector2 retVector = rectangle.getCenter();
 
-        public static void main(String args[]){
-            Quadrilateral a = new Quadrilateral(new Vector2(1,1), new Vector2(2,2), new Vector2(1,4), new Vector2(8,12));
-            System.out.println(a.getCenter());
+            assert retVector != null;
+            boolean foundInside = false;
+            int tries = 0;
+            while (!foundInside && tries < 1000) {
+                double ranX = rectangle.getLeftmostX() + rectangle.getHorizonalSize() * r.nextDouble();
+                double ranY = rectangle.getBottomY() + rectangle.getVerticalSize() * r.nextDouble();
+
+                if (PointContainer.isPointInside(rectangle, new Vector2(ranX, ranY))) {
+                    foundInside = true;
+                    retVector = new Vector2(ranX, ranY);
+                }
+                tries++;
+            }
+
+            return retVector;
         }
 
 
@@ -203,6 +223,16 @@ public abstract class PointContainer {
             throw new IllegalArgumentException();
         }
 
+    }
+
+    public PointContainer.Quadrilateral getAsQuadrilateral()
+    {
+        return (PointContainer.Quadrilateral) this;
+    }
+
+    public PointContainer.Circle getAsCircle()
+    {
+        return (PointContainer.Circle) this;
     }
 
     public static boolean intersect(PointContainer containerA, PointContainer containerB)

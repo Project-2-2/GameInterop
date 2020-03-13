@@ -74,7 +74,7 @@ public class Vector2 {
         return Utils.clockAngle(this.x, this. y);
     }
 
-    public Vector toAnnoying()
+    public Vector toVexing()
     {
         return new Vector(this.x, this.y);
     }
