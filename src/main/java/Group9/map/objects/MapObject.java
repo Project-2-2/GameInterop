@@ -46,4 +46,8 @@ public class MapObject implements Container {
         return this.effects.stream().anyMatch(e -> clazz.isAssignableFrom(e.getClass()));
     }
 
+    public PointContainer getArea() {
+        return area;
+    }
+
 }
