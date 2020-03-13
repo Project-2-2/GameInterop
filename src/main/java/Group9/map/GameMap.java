@@ -3,7 +3,7 @@ package Group9.map;
 import Group9.agent.container.AgentContainer;
 import Group9.map.area.EffectArea;
 import Group9.map.dynamic.DynamicObject;
-import Group9.map.objects.MapObject;
+import Group9.map.objects.*;
 import Group9.math.Line;
 import Group9.tree.PointContainer;
 import Group9.tree.QuadTree;
@@ -51,6 +51,8 @@ public class GameMap {
     private Angle viewAngle;
     private int viewRays;
 
+    private int pheromoneExpireRounds;
+
     private QuadTree<MapObject> quadTree;
     private List<MapObject> mapObjects;
 
@@ -65,7 +67,7 @@ public class GameMap {
                    int sprintCooldown, int numGuards, int numIntruders, Distance intruderViewRangeNormal,
                    Distance intruderViewRangeShaded, Distance guardViewRangeNormal, Distance guardViewRangeShaded,
                    Distance[] sentryViewRange, Distance yellSoundRadius, Distance moveMaxSoundRadius,
-                   Distance windowSoundRadius, Distance doorSoundRadius, Angle viewAngle, int viewRays)
+                   Distance windowSoundRadius, Distance doorSoundRadius, Angle viewAngle, int viewRays, int pheromoneExpireRounds)
     {
         this.scenarioPercepts = scenarioPercepts;
 
@@ -97,6 +99,8 @@ public class GameMap {
 
         this.viewAngle = viewAngle;
         this.viewRays = viewRays;
+
+        this.pheromoneExpireRounds = pheromoneExpireRounds;
 
         this.quadTree = new QuadTree<>(width, height, 10000, MapObject::getContainer);
         AtomicInteger index = new AtomicInteger();
@@ -203,6 +207,10 @@ public class GameMap {
 
     public int getViewRays() {
         return viewRays;
+    }
+
+    public int getPheromoneExpireRounds(){
+        return  pheromoneExpireRounds;
     }
 
     public <T extends MapObject> List<T> getObjects(Class<T> clazz)
@@ -325,6 +333,7 @@ public class GameMap {
         private Distance pheromoneRadius;
         private int pheromoneCooldown;
         private int sprintCooldown;
+        private int pheromoneExpireRounds;
 
         private List<MapObject> objects = new ArrayList<>();
 
@@ -499,11 +508,63 @@ public class GameMap {
             return this;
         }
 
-        public Builder object(MapObject object)
+        public Builder pheromoneExpireRounds(int expiration){
+            this.pheromoneExpireRounds = expiration;
+            return this;
+        }
+
+        public Builder wall(PointContainer.Quadrilateral quadrilateral){
+            this.object(new Wall(quadrilateral));
+            return this;
+        }
+
+        public Builder targetArea(PointContainer.Quadrilateral quadrilateral){
+            this.object(new TargetArea(quadrilateral));
+            return this;
+        }
+
+        public Builder spawnAreaIntruders(PointContainer.Quadrilateral quadrilateral){
+            this.object(new Spawn.Intruder(quadrilateral));
+            return this;
+        }
+
+        public Builder spawnAreaGuards(PointContainer.Quadrilateral quadrilateral){
+            this.object(new Spawn.Guard(quadrilateral));
+            return this;
+        }
+
+        public Builder teleport(PointContainer.Quadrilateral quadrilateral){
+            this.object(new TeleportArea(quadrilateral));
+            return this;
+        }
+
+        public Builder shaded(PointContainer.Quadrilateral quadrilateral){
+            this.object(new ShadedArea(quadrilateral,guardViewRangeShaded.getValue()/guardViewRangeNormal.getValue(),
+                    intruderViewRangeShaded.getValue()/intruderViewRangeNormal.getValue()));
+            return this;
+        }
+
+        public Builder door(PointContainer.Quadrilateral quadrilateral){
+            this.object(new Door(quadrilateral));
+            return this;
+        }
+
+        public Builder window(PointContainer.Quadrilateral quadrilateral){
+            this.object(new Window(quadrilateral));
+            return this;
+        }
+
+        public Builder sentry(PointContainer.Quadrilateral quadrilateral){
+            this.object(new SentryTower(quadrilateral, sentrySlowdownModifier));
+            return this;
+        }
+
+        private Builder object(MapObject object)
         {
             this.objects.add(object);
             return this;
         }
+
 
         public GameMap build()
         {
@@ -515,7 +576,7 @@ public class GameMap {
                         this.guardMaxMoveDistance, this.winRounds, this.intruderMaxMoveDistance, this.intruderMaxSprintDistance,
                         this.sprintCooldown, this.numGuards, this.numIntruders, this.intruderViewRangeNormal, this.intruderViewRangeShaded,
                         this.guardViewRangeNormal, this.guardViewRangeShaded, this.sentryViewRange, this.yellSoundRadius,
-                        this.moveMaxSoundRadius, this.windowSoundRadius, this.doorSoundRadius, this.viewAngle, this.viewRays
+                        this.moveMaxSoundRadius, this.windowSoundRadius, this.doorSoundRadius, this.viewAngle, this.viewRays, this.pheromoneExpireRounds
                     );
         }
 

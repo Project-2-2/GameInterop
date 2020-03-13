@@ -9,10 +9,10 @@ import java.util.Arrays;
 
 public class SentryTower extends MapObject {
 
-    public SentryTower(PointContainer area) {
+    public SentryTower(PointContainer area, double sentrySlowdownModifier) {
         super(area, Arrays.asList(
                 new ModifyViewEffect(area, 1, 1), //TODO correct values...
-                new ModifySpeedEffect(area, 1,1) //TODO correct values...
+                new ModifySpeedEffect(area, sentrySlowdownModifier,sentrySlowdownModifier)
         ), ObjectPerceptType.SentryTower);
     }
 

@@ -214,8 +214,8 @@ public class Game {
             gameMap.getDynamicObjects().add(new Sound(
                     SoundPerceptType.Yell,
                     agentContainer,
-                    1, //TODO replace with correct values
-                    1 //TODO replace with correct values
+                    gameMap.getYellSoundRadius().getValue(),
+                    1
             ));
             return true;
         }
@@ -229,7 +229,7 @@ public class Game {
                     agentContainer,
                     agentContainer.getPosition(),
                     scenarioPercepts.getRadiusPheromone().getValue(),
-                    scenarioPercepts.getPheromoneCooldown()
+                    gameMap.getPheromoneExpireRounds()
             ));
             return true;
         }

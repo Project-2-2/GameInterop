@@ -7,9 +7,9 @@ import Interop.Percept.Vision.ObjectPerceptType;
 import java.util.Arrays;
 
 public class ShadedArea extends MapObject {
-    public ShadedArea(PointContainer area) {
+    public ShadedArea(PointContainer area, double guardModifier, double intruderModifier) {
         super(area, Arrays.asList(
-            new ModifyViewEffect(area, 1, 1) //TODO replace with correct values
+            new ModifyViewEffect(area, guardModifier, intruderModifier)
         ), ObjectPerceptType.ShadedArea);
     }
 }
