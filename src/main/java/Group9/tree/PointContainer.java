@@ -55,7 +55,9 @@ public abstract class PointContainer {
 
         @Override
         public Vector2 getCenter() {
-            return twoLinesIntersect(points[0], points[2], points[1], points[3]);
+            Vector2 center = twoLinesIntersect(points[0], points[2], points[1], points[3]);
+            assert center != null;
+            return center;
         }
 
         @Override

@@ -10,6 +10,7 @@ import Interop.Percept.Scenario.GameMode;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 
 public class Parser {
 
@@ -49,11 +50,11 @@ public class Parser {
                         } break;
 
                         case "spawnareaintruders": {
-                            builder.object(new Spawn.Intruder(quadrilateralFromData(data), null));
+                            builder.object(new Spawn.Intruder(quadrilateralFromData(data)));
                         } break;
 
                         case "spawnareaguards": {
-                            builder.object(new Spawn.Guard(quadrilateralFromData(data), null));
+                            builder.object(new Spawn.Guard(quadrilateralFromData(data)));
                         } break;
 
                         case "teleport": {

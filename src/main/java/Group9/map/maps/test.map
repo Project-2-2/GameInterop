@@ -26,6 +26,7 @@ yellSoundRadius = 30.0
 maxMoveSoundRadius = 10.0
 windowSoundRadius = 10.0
 doorSoundRadius = 5.0
+pheromoneExpireRounds = 3
 
 
 // teleport = x1,y1,x2,y2,x3,y3,x4,y4

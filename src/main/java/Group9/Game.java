@@ -14,6 +14,7 @@ import Group9.math.Vector2;
 import Interop.Action.*;
 import Interop.Agent.Guard;
 import Interop.Agent.Intruder;
+import Interop.Geometry.Angle;
 import Interop.Geometry.Direction;
 import Interop.Geometry.Distance;
 import Interop.Geometry.Vector;
@@ -29,7 +30,10 @@ import Interop.Percept.Smell.SmellPercepts;
 import Interop.Percept.Sound.SoundPercept;
 import Interop.Percept.Sound.SoundPerceptType;
 import Interop.Percept.Sound.SoundPercepts;
+import Interop.Percept.Vision.FieldOfView;
 import Interop.Percept.Vision.ObjectPerceptType;
+import Interop.Percept.Vision.ObjectPercepts;
+import Interop.Percept.Vision.VisionPrecepts;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -72,12 +76,7 @@ public class Game {
     {
 
         this.cooldown();
-
-        for(GuardContainer guard : this.guards)
-        {
-            final GuardAction action = guard.getAgent().getAction(this.generateGuardPercepts(guard));
-            actionSuccess.put(guard, executeAction(guard, action));
-        }
+        // Note: Intruders move first.
 
         //TODO we can ignore this for now since the ExplorerAgent is implementing the Guard interface, so we currently
         //  only have to support that
@@ -86,6 +85,12 @@ public class Game {
         {
             final IntruderAction action = intruder.getAction(this.generateIntruderPercepts(intruder));
         }*/
+
+        for(GuardContainer guard : this.guards)
+        {
+            final GuardAction action = guard.getAgent().getAction(this.generateGuardPercepts(guard));
+            actionSuccess.put(guard, executeAction(guard, action));
+        }
 
     }
 
@@ -161,6 +166,7 @@ public class Game {
             }
 
             //--- move and then get new effects
+            // TODO generate sound at start of movement
             agentContainer.move(distance);
             Set<EffectArea> movedEffectAreas = gameMap.getEffectAreas(agentContainer);
             soundEffect = movedEffectAreas.stream().filter(e -> e instanceof SoundEffect).findAny();
@@ -201,6 +207,8 @@ public class Game {
         }
         else if(action instanceof Yell)
         {
+            // TODO Only guards can yell
+            // TODO Every agent perceives yell
             gameMap.getDynamicObjects().add(new Sound(
                     SoundPerceptType.Yell,
                     agentContainer,
@@ -211,6 +219,8 @@ public class Game {
         }
         else if(action instanceof DropPheromone)
         {
+            //TODO check whether there is already one in this place
+            // TODO Pheromones have a radius, which decreases linearly with time
             DropPheromone dropPheromone = (DropPheromone) action;
             gameMap.getDynamicObjects().add(new Pheromone(
                     SmellPerceptType.Pheromone1, //TODO there is currently not a way to figure out which one it is...
@@ -252,11 +262,12 @@ public class Game {
 
     }
 
+
     private GuardPercepts generateGuardPercepts(GuardContainer guard)
     {
         //TODO generate data structure for the specific agent
         return new GuardPercepts(
-                null,
+                generateVisionPercepts(guard),
                 generateSoundPercepts(guard),
                 generateSmellPercepts(guard),
                 generateAreaPercepts(guard),
@@ -274,7 +285,7 @@ public class Game {
         //TODO generate data structure for the specific agent
         return new IntruderPercepts(
                 Direction.fromClockAngle(new Vector(direction.getX(), direction.getY())),
-                null,
+                generateVisionPercepts(intruder),
                 generateSoundPercepts(intruder),
                 generateSmellPercepts(intruder),
                 generateAreaPercepts(intruder),
@@ -287,6 +298,11 @@ public class Game {
                 ),
                 this.actionSuccess.getOrDefault(intruder, true)
         );
+    }
+
+    private <T> VisionPrecepts generateVisionPercepts(AgentContainer<T> agentContainer)
+    {
+        return new VisionPrecepts(new FieldOfView(new Distance(1), Angle.fromDegrees(1)), new ObjectPercepts(new HashSet<>()));
     }
 
     private <T> AreaPercepts generateAreaPercepts(AgentContainer<T> agentContainer)
@@ -317,6 +333,7 @@ public class Game {
     {
         //TODO verify that 'agentContainer.getClass().isAssignableFrom(e.getSource().getClass()' is checking that they
         // actually belong to the same team
+        //TODO Check distance
         return new SmellPercepts(this.gameMap.getDynamicObjects().stream()
                 .filter(e -> e instanceof Pheromone && agentContainer.getClass().isAssignableFrom(e.getSource().getClass()))
                 .map(dynamicObject -> {

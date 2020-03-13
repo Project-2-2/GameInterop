@@ -14,19 +14,19 @@ public abstract class Spawn extends MapObject  {
 
     private PointContainer.Quadrilateral area;
 
-    public Spawn(PointContainer.Quadrilateral area, List<EffectArea> effects) {
-        super(area, effects, ObjectPerceptType.EmptySpace);
+    public Spawn(PointContainer.Quadrilateral area) {
+        super(area, ObjectPerceptType.EmptySpace);
         this.area = area;
     }
 
     public static class Intruder extends Spawn {
-        public Intruder(PointContainer.Quadrilateral area, List<EffectArea> effects) {
-            super(area, effects);
+        public Intruder(PointContainer.Quadrilateral area) {
+            super(area);
         }
     }
     public static class Guard extends Spawn {
-        public Guard(PointContainer.Quadrilateral area, List<EffectArea> effects) {
-            super(area, effects);
+        public Guard(PointContainer.Quadrilateral area) {
+            super(area);
         }
     }
 
