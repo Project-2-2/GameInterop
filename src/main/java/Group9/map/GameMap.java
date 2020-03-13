@@ -224,6 +224,10 @@ public class GameMap {
         return dynamicObjects;
     }
 
+    public <A extends DynamicObject<?>> List<DynamicObject> getDynamicObjects(Class<A> clazz) {
+        return getDynamicObjects().stream().filter(e -> clazz.isAssignableFrom(e.getClass())).collect(Collectors.toList());
+    }
+
     public <T, A extends MapObject> boolean isInMapObject(AgentContainer<T> agentContainer, Class<A> clazz) {
         return this.mapObjects.stream()
                 .filter(e -> clazz.isAssignableFrom(e.getClass()))
@@ -232,7 +236,6 @@ public class GameMap {
 
     public Set<EffectArea> getEffectAreas(AgentContainer<?> agent)
     {
-        // @performance: this looks kinda like
         return this.mapObjects.stream()
                 .filter(e -> !e.getEffects().isEmpty())
                 .filter(e -> PointContainer.intersect(agent.getShape(), e.getContainer()))

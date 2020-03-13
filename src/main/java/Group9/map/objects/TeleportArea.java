@@ -15,7 +15,7 @@ public class TeleportArea extends MapObject {
                 new ModifyLocationEffect(area) {
                     @Override
                     public Vector2 get(AgentContainer<?> agentContainer) {
-                        return area.getCenter(); //TODO randomise
+                        return area.getAsQuadrilateral().generateRandomLocation();
                     }
                 }
         ), ObjectPerceptType.Teleport);

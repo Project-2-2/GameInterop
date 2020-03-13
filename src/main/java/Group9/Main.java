@@ -12,8 +12,11 @@ public class Main {
 
     public static void main(String[] args) {
 
-        GameMap gameMap = Parser.parseFile("./src/main/java/Group9/map/maps/test.map");
 
+        System.out.println(new Line(new Vector2(0, 0), new Vector2(10, 10)).getNormal());
+        if(true) return;
+
+        GameMap gameMap = Parser.parseFile("./src/main/java/Group9/map/maps/test.map");
         Game game = new Game(gameMap, 3);
         game.start();
 

@@ -3,6 +3,7 @@ package Group9;
 import Group9.agent.container.AgentContainer;
 import Group9.agent.container.GuardContainer;
 import Group9.agent.container.IntruderContainer;
+import Group9.gui.Agent;
 import Group9.map.GameMap;
 import Group9.map.area.*;
 import Group9.map.objects.*;
@@ -11,6 +12,7 @@ import Group9.map.dynamic.Pheromone;
 import Group9.map.dynamic.Sound;
 import Group9.math.Line;
 import Group9.math.Vector2;
+import Group9.tree.PointContainer;
 import Interop.Action.*;
 import Interop.Agent.Guard;
 import Interop.Agent.Intruder;
@@ -40,6 +42,9 @@ import java.util.stream.Collectors;
 
 public class Game {
 
+    //TODO remove seed for demo
+    public final static Random _RANDOM = new Random(1L);
+
     private GameMap gameMap;
     private ScenarioPercepts scenarioPercepts;
 
@@ -48,6 +53,7 @@ public class Game {
 
     private Map<AgentContainer<?>, Boolean> actionSuccess = new HashMap<>();
     private Set<AgentContainer<?>> justTeleported = new HashSet<>();
+    private Map<AgentContainer<?>, Integer> pheromoneCooldown = new HashMap<>();
 
     public Game(GameMap gameMap, int teamSize)
     {
@@ -80,13 +86,11 @@ public class Game {
         this.cooldown();
         // Note: Intruders move first.
 
-        //TODO we can ignore this for now since the ExplorerAgent is implementing the Guard interface, so we currently
-        //  only have to support that
-        /*
-        for(IntruderAgent intruder : this.intruders)
+        for(IntruderContainer intruder : this.intruders)
         {
-            final IntruderAction action = intruder.getAction(this.generateIntruderPercepts(intruder));
-        }*/
+            final IntruderAction action = intruder.getAgent().getAction(this.generateIntruderPercepts(intruder));
+            actionSuccess.put(intruder, executeAction(intruder, action));
+        }
 
         for(GuardContainer guard : this.guards)
         {
@@ -108,12 +112,13 @@ public class Game {
         {
             return true;
         }
-        //TODO --- cleanup
+        //@performance cleanup
         Set<EffectArea> effectAreas = gameMap.getEffectAreas(agentContainer);
         Optional<EffectArea> modifySpeedEffect = effectAreas.stream().filter(e -> e instanceof ModifySpeedEffect).findAny();
         Optional<EffectArea> soundEffect = effectAreas.stream().filter(e -> e instanceof SoundEffect).findAny();
         Optional<EffectArea> modifyViewEffect = effectAreas.stream().filter(e -> e instanceof ModifyViewEffect).findAny();
         //---
+
 
         if(action instanceof Move || action instanceof Sprint)
         {
@@ -168,7 +173,7 @@ public class Game {
             }
 
             //--- move and then get new effects
-            // TODO generate sound at start of movement
+            gameMap.getDynamicObjects().add(new Sound(SoundPerceptType.Noise, agentContainer, 1, 1)); //TODO replace with correct values
             agentContainer.move(distance);
             Set<EffectArea> movedEffectAreas = gameMap.getEffectAreas(agentContainer);
             soundEffect = movedEffectAreas.stream().filter(e -> e instanceof SoundEffect).findAny();
@@ -189,8 +194,8 @@ public class Game {
             soundEffect.ifPresent(effectArea -> {
                 SoundEffect s = (SoundEffect) effectArea;
                 gameMap.getDynamicObjects().add(new Sound(s.getType(), agentContainer,
-                        s.get(agentContainer) * (distance / maxSprint), //TODO should be checked, but i am fairly certain that the radius is scaled linearly by speed of agent
-                        1 //TODO check whether a sound exists for more than one round or not
+                        s.get(agentContainer) * (distance / maxSprint),
+                        1
                 ));
 
             });
@@ -209,8 +214,10 @@ public class Game {
         }
         else if(action instanceof Yell)
         {
-            // TODO Only guards can yell
-            // TODO Every agent perceives yell
+            if(!(agentContainer.getAgent() instanceof Guard))
+            {
+                return false;
+            }
             gameMap.getDynamicObjects().add(new Sound(
                     SoundPerceptType.Yell,
                     agentContainer,
@@ -221,9 +228,18 @@ public class Game {
         }
         else if(action instanceof DropPheromone)
         {
-            //TODO check whether there is already one in this place
-            // TODO Pheromones have a radius, which decreases linearly with time
+            //--- check whether
+
+            //--- check whether there is already one in this place
+            List<DynamicObject> pheromones = gameMap.getDynamicObjects(Pheromone.class);
+            if(pheromones.stream()
+                    .filter(e -> e.getSource().getClass().isAssignableFrom(agentContainer.getClass()))
+                    .anyMatch(e -> PointContainer.intersect(e.getAsCircle(), agentContainer.getShape())))
+            {
+                return false;
+            }
             DropPheromone dropPheromone = (DropPheromone) action;
+
             gameMap.getDynamicObjects().add(new Pheromone(
                     SmellPerceptType.Pheromone1, //TODO there is currently not a way to figure out which one it is...
                     agentContainer,
@@ -250,7 +266,11 @@ public class Game {
                 {
                     iterator.remove();
                 }
-
+                else if(e instanceof Pheromone)
+                {
+                    Pheromone p = (Pheromone)e;
+                    e.setRadius(p.getInitialRadius() * (p.getLifetime() / (double) p.getInitialLifetime()));
+                }
             }
         }
 
@@ -267,7 +287,6 @@ public class Game {
 
     private GuardPercepts generateGuardPercepts(GuardContainer guard)
     {
-        //TODO generate data structure for the specific agent
         return new GuardPercepts(
                 generateVisionPercepts(guard),
                 generateSoundPercepts(guard),
@@ -284,7 +303,6 @@ public class Game {
         Vector2 direction = this.gameMap.getObjects(TargetArea.class).get(0).getContainer()
                                             .getCenter().sub(intruder.getDirection()).normalise();
 
-        //TODO generate data structure for the specific agent
         return new IntruderPercepts(
                 Direction.fromClockAngle(new Vector(direction.getX(), direction.getY())),
                 generateVisionPercepts(intruder),
@@ -325,7 +343,6 @@ public class Game {
                     Sound sound = (Sound) dynamicObject;
                     return new SoundPercept(
                             sound.getType(),
-                            //TODO check whether this is correct or not...
                             Direction.fromRadians(dynamicObject.getCenter().getClockDirection() - agentContainer.getPosition().getClockDirection())
                     );
                 }).collect(Collectors.toUnmodifiableSet()));
@@ -335,9 +352,9 @@ public class Game {
     {
         //TODO verify that 'agentContainer.getClass().isAssignableFrom(e.getSource().getClass()' is checking that they
         // actually belong to the same team
-        //TODO Check distance
         return new SmellPercepts(this.gameMap.getDynamicObjects().stream()
                 .filter(e -> e instanceof Pheromone && agentContainer.getClass().isAssignableFrom(e.getSource().getClass()))
+                .filter(e -> PointContainer.intersect(e.getAsCircle(), agentContainer.getShape()))
                 .map(dynamicObject -> {
                     Pheromone pheromone = (Pheromone) dynamicObject;
                     return new SmellPercept(

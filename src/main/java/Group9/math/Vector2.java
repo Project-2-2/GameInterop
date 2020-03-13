@@ -15,10 +15,6 @@ public class Vector2 {
         this.length = Math.sqrt(Math.pow(this.x, 2) + Math.pow(this.y, 2));
     }
 
-    public String toString(){
-        return "x = "+this.x+" y = "+this.y;
-    }
-
     public double getX()
     {
         return x;
@@ -82,6 +78,15 @@ public class Vector2 {
     public static Vector2 from(Vector point)
     {
         return new Vector2(point.getX(), point.getY());
+    }
+
+    @Override
+    public String toString() {
+        return "Vector2{" +
+                "x=" + x +
+                ", y=" + y +
+                ", length=" + length +
+                '}';
     }
 
     @Override
