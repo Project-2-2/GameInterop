@@ -36,6 +36,14 @@ public class Point extends Vector {
         return new Interop.Geometry.Point(x, y);
     }
 
+    public double getY() {
+        return y;
+    }
+
+    public double getX() {
+        return x;
+    }
+
     public String toString() {
         return "Point{" +
             "x=" + x +

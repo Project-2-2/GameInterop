@@ -10,6 +10,11 @@ public class LineSegment {
         this.b = b;
     }
 
+    public LineSegment(Point a, Direction direction, double lenght){
+        double x = ((lenght*Math.sin(direction.getDegrees()));
+        Point b = new Point()
+    }
+
     public Point getA() {
         return a;
     }
