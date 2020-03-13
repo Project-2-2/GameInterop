@@ -7,15 +7,27 @@ public class DynamicObject<T> extends PointContainer.Circle {
 
     private T source;
     private int lifetime;
+    private double radius;
 
     public DynamicObject(T source, Vector2 center, double radius, int lifetime) {
-        super(center, radius);
+        super(center, -1);
+        this.radius = radius;
         this.source = source;
         this.lifetime = lifetime;
     }
 
     public T getSource() {
         return source;
+    }
+
+    @Override
+    public double getRadius()
+    {
+        return this.radius;
+    }
+
+    public void setRadius(double radius) {
+        this.radius = radius;
     }
 
     public int getLifetime() {

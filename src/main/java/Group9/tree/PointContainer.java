@@ -1,5 +1,6 @@
 package Group9.tree;
 
+import Group9.Game;
 import Group9.math.Line;
 import Group9.math.Vector2;
 import Interop.Geometry.Vector;
@@ -70,7 +71,6 @@ public abstract class PointContainer {
         public Vector2 generateRandomLocation()
         {
             // @performance this is pretty bad.. but I guess it'll do for now.
-            Random r = new Random();
             Rectangle rectangle = containingRectangle(this);
 
             // worst case scenario we take center as "random" location
@@ -80,8 +80,8 @@ public abstract class PointContainer {
             boolean foundInside = false;
             int tries = 0;
             while (!foundInside && tries < 1000) {
-                double ranX = rectangle.getLeftmostX() + rectangle.getHorizonalSize() * r.nextDouble();
-                double ranY = rectangle.getBottomY() + rectangle.getVerticalSize() * r.nextDouble();
+                double ranX = rectangle.getLeftmostX() + rectangle.getHorizonalSize() * Game._RANDOM.nextDouble();
+                double ranY = rectangle.getBottomY() + rectangle.getVerticalSize() * Game._RANDOM.nextDouble();
 
                 if (PointContainer.isPointInside(rectangle, new Vector2(ranX, ranY))) {
                     foundInside = true;
@@ -183,7 +183,7 @@ public abstract class PointContainer {
 
         @Override
         public Circle clone() throws CloneNotSupportedException {
-            return new Circle(center.clone(), this.radius);
+            return new Circle(center.clone(), this.getRadius());
         }
     }
 

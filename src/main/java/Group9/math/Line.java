@@ -35,8 +35,23 @@ public class Line {
         return this.end;
     }
 
+    public Vector2 getNormal()
+    {
+        double dx = end.getX() - start.getX();
+        double dy = end.getY() - start.getY();
+        return new Vector2(-dy, dx).normalise();
+    }
+
     public boolean intersect(Line other)
     {
         return PointContainer.twoLinesIntersect(this.getStart(),this.getEnd(),other.getStart(),other.getEnd()) != null;
+    }
+
+    @Override
+    public String toString() {
+        return "Line{" +
+                "start=" + start +
+                ", end=" + end +
+                '}';
     }
 }
