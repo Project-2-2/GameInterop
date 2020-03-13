@@ -4,7 +4,6 @@ import Group9.agent.container.AgentContainer;
 import Group9.map.area.EffectArea;
 import Group9.map.dynamic.DynamicObject;
 import Group9.map.objects.*;
-import Group9.math.Line;
 import Group9.tree.PointContainer;
 import Group9.tree.QuadTree;
 import Interop.Geometry.Angle;
@@ -251,25 +250,31 @@ public class GameMap {
                 .collect(Collectors.toUnmodifiableSet());
     }
 
-    public boolean isRayIntersecting(Line line, Predicate<ObjectPerceptType> filter)
+    public boolean isMoveIntersecting(PointContainer.Quadrilateral agentMove, Predicate<ObjectPerceptType> filter){
+        return this.mapObjects.stream()
+                .filter(e -> filter.test(e.getType()))
+                .anyMatch(e -> PointContainer.intersect(e.getContainer(), agentMove));
+    }
+
+    public boolean isRayIntersecting(PointContainer.Line line, Predicate<ObjectPerceptType> filter)
     {
         return this.mapObjects.stream()
                 .filter(e -> filter.test(e.getType()))
                 .anyMatch(e -> PointContainer.intersect(e.getContainer(), line));
     }
 
-    public boolean isRayIntersecting(Line line, List<ObjectPerceptType> types)
+    public boolean isRayIntersecting(PointContainer.Line line, List<ObjectPerceptType> types)
     {
         return isRayIntersecting(line, types::contains);
     }
 
-    public boolean isRayIntersectingSolidObject(Line line)
+    public boolean isRayIntersectingSolidObject(PointContainer.Line line)
     {
         return isRayIntersecting(line, ObjectPerceptType::isSolid);
     }
 
     // returns a sorted list of map objects (from closer to start of line to furthest away). Objects after a solid object are not included
-    public List<MapObject> objectsSeen(Line line) {
+    public List<MapObject> objectsSeen(PointContainer.Line line) {
         // get stream of objects that intersect line
         Stream<MapObject> intersectingMapObjects = this.mapObjects.stream().filter(mo -> PointContainer.intersect(mo.getContainer(), line));
 

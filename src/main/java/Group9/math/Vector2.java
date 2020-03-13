@@ -41,6 +41,10 @@ public class Vector2 {
         return new Vector2(this.x * x, this.y * y);
     }
 
+    public Vector2 mul(double n){
+        return new Vector2(this.x * n, this.y * n);
+    }
+
     public Vector2 add(Vector2 add)
     {
         return this.add(add.getX(), add.getY());
@@ -59,6 +63,10 @@ public class Vector2 {
     public Vector2 sub(double x, double y)
     {
         return this.add(-x, -y);
+    }
+
+    public Vector2 flip() {
+        return this.mul(-1);
     }
 
     public double distance(Vector2 other)
