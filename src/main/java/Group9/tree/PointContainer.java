@@ -224,11 +224,6 @@ public abstract class PointContainer {
             return new Vector2(-dy, dx).normalise();
         }
 
-        public boolean intersect(Line other)
-        {
-            return PointContainer.twoLinesIntersect(this.getStart(),this.getEnd(),other.getStart(),other.getEnd()) != null;
-        }
-
         @Override
         public String toString() {
             return "Line{" +
@@ -265,31 +260,6 @@ public abstract class PointContainer {
         throw new CloneNotSupportedException();
     }
 
-    public static boolean intersect(PointContainer containerA, Line other)
-    {
-        if(containerA instanceof Quadrilateral)
-        {
-            for (Line a : ((Quadrilateral) containerA).getLines()) {
-                if(a.intersect(other))
-                {
-                    return true;
-                }
-            }
-
-            return false;
-        }
-        else if(containerA instanceof Circle)
-        {
-             return circleLineIntersect((Circle)containerA, other).length != 0;
-            //throw new IllegalArgumentException("Implement circle intersection test");
-        }
-        else
-        {
-            throw new IllegalArgumentException();
-        }
-
-    }
-
     public PointContainer.Quadrilateral getAsQuadrilateral()
     {
         return (PointContainer.Quadrilateral) this;
@@ -303,41 +273,56 @@ public abstract class PointContainer {
     public static boolean intersect(PointContainer containerA, PointContainer containerB)
     {
 
-        if (containerA instanceof Quadrilateral && containerB instanceof Quadrilateral)
+        if (containerA instanceof Quadrilateral || containerB instanceof Quadrilateral)
         {
 
-            //--- check if any of the lines intersect
-            Quadrilateral ca = (Quadrilateral) containerA;
-            Quadrilateral cb = (Quadrilateral) containerB;
-            for(Line a : ca.getLines()) {
-                for(Line b : cb.getLines())
+            Quadrilateral quadrilateral = (containerA instanceof Quadrilateral) ? (Quadrilateral) containerA : (Quadrilateral) containerB;
+
+            if(containerA instanceof Quadrilateral && containerB instanceof Quadrilateral)
+            {
+                Quadrilateral other = (quadrilateral == containerB) ? (Quadrilateral) containerA : (Quadrilateral) containerB;
+                for(Line a : quadrilateral.getLines()) {
+                    for(Line b : other.getLines())
+                    {
+                        if(intersect(a, b))
+                        {
+                            return true;
+                        }
+                    }
+                }
+
+                return Arrays.stream(quadrilateral.getPoints()).anyMatch(point -> isPointInside(other, point))
+                        || Arrays.stream(other.getPoints()).anyMatch(point -> isPointInside(quadrilateral, point));
+            }
+            else if(containerA instanceof Circle || containerB instanceof Circle)
+            {
+                Circle circle = (containerA instanceof Circle) ? (Circle) containerA : (Circle) containerB;
+
+                if(isPointInside(quadrilateral, circle.getCenter()))
                 {
-                    if(a.intersect(b))
+                    return true;
+                }
+
+                for(Line a : quadrilateral.getLines())
+                {
+                    if(circleLineIntersect(circle, a).length != 0)
+                    {
+                        return true;
+                    }
+                }
+            }
+            else if(containerA instanceof Line || containerB instanceof Line)
+            {
+                Line line = (containerA instanceof Line) ? (Line) containerA : (Line) containerB;
+                for(Line a : quadrilateral.getLines())
+                {
+                    if(intersect(a, line))
                     {
                         return true;
                     }
                 }
             }
 
-            return Arrays.stream(ca.getPoints()).anyMatch(point -> isPointInside(cb, point))
-                    || Arrays.stream(cb.getPoints()).anyMatch(point -> isPointInside(ca, point));
-        }
-        else if((containerA instanceof Circle || containerB instanceof Circle) && (containerA instanceof Quadrilateral || containerB instanceof Quadrilateral))
-        {
-            Circle circle = (containerA instanceof Circle) ? (Circle) containerA : (Circle) containerB;
-            Quadrilateral quadrilateral = (containerA instanceof Quadrilateral) ? (Quadrilateral) containerA : (Quadrilateral) containerB;
-
-            if(isPointInside(quadrilateral, circle.getCenter()))
-            {
-                return true;
-            }
-
-            for(Line a : quadrilateral.getLines()) {
-                if(intersect(circle,a)){
-                    return true;
-                }
-            }
-            return false;
         }
         else if(containerA instanceof Circle && containerB instanceof Circle)
         {
@@ -346,10 +331,24 @@ public abstract class PointContainer {
 
             return a.getCenter().distance(b.getCenter()) < Math.min(a.getRadius(), b.getRadius());
         }
-        else
+        else if(containerA instanceof Line || containerB instanceof Line)
         {
-            throw new IllegalStateException();
+            Line line = (containerA instanceof Line) ? (Line) containerA : (Line) containerB;
+
+            if(containerA instanceof Line && containerB instanceof Line)
+            {
+                Line other = (line == containerA) ? (Line) containerB : (Line) containerA;
+                return PointContainer.twoLinesIntersect(line.getStart(), line.getEnd(), other.getStart(), other.getEnd()) != null;
+            }
+            else if(containerA instanceof Circle || containerB instanceof Circle)
+            {
+                Circle circle = (containerA instanceof Circle) ? (Circle) containerA : (Circle) containerB;
+                return circleLineIntersect(circle, line).length != 0;
+            }
+
         }
+
+        throw new IllegalArgumentException();
 
     }
 
