@@ -244,7 +244,7 @@ public class Game {
             DropPheromone dropPheromone = (DropPheromone) action;
 
             gameMap.getDynamicObjects().add(new Pheromone(
-                    SmellPerceptType.Pheromone1, //TODO there is currently not a way to figure out which one it is...
+                    dropPheromone.getType(), 
                     agentContainer,
                     agentContainer.getPosition(),
                     scenarioPercepts.getRadiusPheromone().getValue(),
