@@ -11,8 +11,8 @@ public class LineSegment {
     }
 
     public LineSegment(Point a, Direction direction, double lenght){
-        double x = ((lenght*Math.sin(direction.getDegrees()));
-        Point b = new Point()
+        double x = ((lenght*Math.sin(direction.getDegrees())));
+        //b = new Point();
     }
 
     public Point getA() {
