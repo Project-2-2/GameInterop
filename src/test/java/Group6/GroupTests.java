@@ -1,5 +1,6 @@
 package Group6;
 
+import Group6.Agent.AgentsTests;
 import Group6.WorldState.Scenario;
 import Group6.WorldState.ScenarioTest;
 import SimpleUnitTest.SimpleUnitTest;
@@ -16,6 +17,7 @@ public class GroupTests extends SimpleUnitTest {
 
     public static void main(String[] args) {
         ScenarioTest.main(args);
+        AgentsTests.main(args);
     }
 
 }
