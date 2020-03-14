@@ -4,10 +4,7 @@ import Group9.Game;
 import Group9.math.Vector2;
 import Interop.Geometry.Vector;
 
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.Optional;
-import java.util.Random;
+import java.util.*;
 
 public abstract class PointContainer {
 
@@ -454,6 +451,32 @@ public abstract class PointContainer {
 
         return null;
     }
+
+    public static Vector2 twoLinesIntersect(Line a, Line b) {
+        return twoLinesIntersect(a.getStart(), a.getEnd(), b.getStart(), b.getEnd());
+    }
+
+    public static List<Vector2> intersectionPoints(PointContainer pointContainer, Line l) {
+        List<Vector2> intersectionPoints = new ArrayList<Vector2>();
+
+        if (pointContainer instanceof Line) {
+            intersectionPoints.add(twoLinesIntersect((Line) pointContainer,l));
+        } else if (pointContainer instanceof Circle) {
+            Collections.addAll(intersectionPoints, circleLineIntersect((Circle) pointContainer, l));
+        } else if (pointContainer instanceof Quadrilateral) {
+            Quadrilateral q = (Quadrilateral) pointContainer;
+
+            for (Line ql : q.getLines()) {
+                Vector2 intersectPoint = twoLinesIntersect(ql, l);
+                if (intersectPoint != null) {
+                    intersectionPoints.add(intersectPoint);
+                }
+            }
+        }
+
+        return intersectionPoints;
+    }
+
 
     /**
      * matrix defined as

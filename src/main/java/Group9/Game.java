@@ -323,7 +323,7 @@ public class Game {
 
     private <T> VisionPrecepts generateVisionPercepts(AgentContainer<T> agentContainer)
     {
-        return new VisionPrecepts(new FieldOfView(new Distance(1), Angle.fromDegrees(1)), new ObjectPercepts(new HashSet<>()));
+        return new VisionPrecepts(new FieldOfView(new Distance(1), Angle.fromDegrees(1)), new ObjectPercepts(gameMap.getObjectPerceptsForAgent(agentContainer)));
     }
 
     private <T> AreaPercepts generateAreaPercepts(AgentContainer<T> agentContainer)

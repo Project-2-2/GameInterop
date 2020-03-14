@@ -1,5 +1,6 @@
 package Group9.math;
 
+import Interop.Geometry.Angle;
 import Interop.Geometry.Vector;
 import Interop.Utils.Utils;
 
@@ -67,6 +68,18 @@ public class Vector2 {
 
     public Vector2 flip() {
         return this.mul(-1);
+    }
+
+    /**
+     * returns (new) vector rotated anticlockwise by 'angle' radians
+     * See: https://matthew-brett.github.io/teaching/rotation_2d.html
+     *      https://en.wikipedia.org/wiki/Rotation_matrix
+     */
+    public Vector2 rotated(Angle angle) {
+        double new_x = Math.cos(angle.getRadians()) * x  -  Math.sin(angle.getRadians()) * y;
+        double new_y = Math.sin(angle.getRadians()) * x  +  Math.cos(angle.getRadians()) * y;
+
+        return new Vector2(new_x, new_y);
     }
 
     public double distance(Vector2 other)

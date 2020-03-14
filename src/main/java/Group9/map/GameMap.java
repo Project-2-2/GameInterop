@@ -2,8 +2,11 @@ package Group9.map;
 
 import Group9.agent.container.AgentContainer;
 import Group9.map.area.EffectArea;
+import Group9.map.area.ModifyViewEffect;
 import Group9.map.dynamic.DynamicObject;
 import Group9.map.objects.*;
+import Group9.map.objects.Window;
+import Group9.math.Vector2;
 import Group9.tree.PointContainer;
 import Group9.tree.QuadTree;
 import Interop.Geometry.Angle;
@@ -11,12 +14,14 @@ import Interop.Geometry.Distance;
 import Interop.Percept.Scenario.GameMode;
 import Interop.Percept.Scenario.ScenarioPercepts;
 import Interop.Percept.Scenario.SlowDownModifiers;
+import Interop.Percept.Vision.FieldOfView;
+import Interop.Percept.Vision.ObjectPercept;
 import Interop.Percept.Vision.ObjectPerceptType;
+import Interop.Percept.Vision.VisionPrecepts;
 
-import java.util.ArrayList;
-import java.util.Comparator;
+import java.awt.*;
+import java.util.*;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -273,6 +278,8 @@ public class GameMap {
         return isRayIntersecting(line, ObjectPerceptType::isSolid);
     }
 
+    // Not in use
+    // TODO-low-priority: delete me?
     // returns a sorted list of map objects (from closer to start of line to furthest away). Objects after a solid object are not included
     public List<MapObject> objectsSeen(PointContainer.Line line) {
         // get stream of objects that intersect line
@@ -303,6 +310,83 @@ public class GameMap {
 
         return retList;
     }
+
+    /**
+     * returns a set of ObjectPercepts that are found in a line (ObjectPercepts after opaque objects are excluded)
+     * @param line
+     * @return
+     */
+    public Set<ObjectPercept> getObjectPerceptsInLine(PointContainer.Line line) {
+        // get list of objects that intersect line
+        List<MapObject> intersectingMapObjects = this.mapObjects.stream().filter(mo -> PointContainer.intersect(mo.getContainer(), line)).collect(Collectors.toList());
+
+        // all points where line and objects intersect sorted by proximity to start of line
+        Map<Vector2, MapObject> objectPoints = new TreeMap<Vector2, MapObject>(new Comparator<Vector2>() {
+            @Override
+            public int compare(Vector2 v1, Vector2 v2) {
+                return Double.compare(
+                        line.getStart().distance(v1),
+                        line.getStart().distance(v2));
+            }
+        });
+
+        for (MapObject mo : intersectingMapObjects) {
+            for (Vector2 point : PointContainer.intersectionPoints(mo.getContainer(), line)) {
+                objectPoints.put(point, mo);
+            }
+        }
+
+        // we build Set<ObjectPercepts> removing ObjectPercepts that come after opaque ObjectPercepts
+        Set<ObjectPercept> retSet = new HashSet<ObjectPercept>();
+
+        for (Map.Entry<Vector2, MapObject> entry : objectPoints.entrySet()) {
+            retSet.add(new ObjectPercept(entry.getValue().getType(), entry.getKey().toVexing()));
+
+            if (entry.getValue().getType().isOpaque())
+                break;
+        }
+
+        return retSet;
+    }
+
+
+    /**
+     * Returns the set of all objects visible by an agent
+     * It casts rays starting from the clockwise-most to the anticlock-wise most.
+     * Assuming Direction of an agent points to the middle of the this field of view
+     * (so Direction divides the field of view exactly into two equal sections)
+     * @param agentContainer
+     * @param <T>
+     * @return
+     * @see Interop.Percept.Vision.FieldOfView
+     */
+    public <T> Set<ObjectPercept> getObjectPerceptsForAgent(AgentContainer<T> agentContainer) {
+        // sane default (TODO: Is naive java-fu below working?)
+        double range = guardViewRangeNormal.getValue();
+
+        // we check if we are in an area that would modify our vision
+        Optional<ModifyViewEffect> viewAffectedArea = getEffectAreas(agentContainer).stream()
+                .filter(a -> a instanceof ModifyViewEffect)
+                .map(a -> (ModifyViewEffect) a).findAny();
+
+        // if we are, we apply that effect
+        if (viewAffectedArea.isPresent())
+            range = viewAffectedArea.get().get(agentContainer);
+
+
+        Vector2 ray = agentContainer.getDirection().normalise().mul(range).rotated(Angle.fromRadians(-viewAngle.getRadians()/2));
+
+        Vector2 startOfRay = agentContainer.getPosition();
+        double stepAngle = viewAngle.getRadians() / viewRays;
+        Set<ObjectPercept> objectsInSight = new HashSet<ObjectPercept>();
+        for (int rayNum = 0; rayNum <= viewRays; rayNum++) {
+            Vector2 endOfRay = startOfRay.add(ray.rotated(Angle.fromRadians(stepAngle * rayNum)));
+            objectsInSight.addAll(getObjectPerceptsInLine(new PointContainer.Line(startOfRay, endOfRay)));
+        }
+
+        return objectsInSight;
+    }
+
 
     public static class Builder
     {
