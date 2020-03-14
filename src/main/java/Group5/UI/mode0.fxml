@@ -6,8 +6,18 @@
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
             prefHeight="700.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/10.0.2"
             xmlns:fx="http://javafx.com/fxml/1"
-            style="-fx-background-color: black;" fx:controller="Group5.UI.DummyController"
-            onKeyPressed="#keyHandler" focusTraversable="true">
+            style="-fx-background-color: black;" fx:controller="Group5.GameController.GameRunner" focusTraversable="true">
     <MapViewer fx:id="mapViewer" style="-fx-background-color: black" AnchorPane.bottomAnchor="10"
                AnchorPane.leftAnchor="10" AnchorPane.rightAnchor="10" AnchorPane.topAnchor="10" />
 </AnchorPane>
+
+<!--Leaving the code below in case of going back to the DummyController-->
+
+<!--<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"-->
+<!--            prefHeight="700.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/10.0.2"-->
+<!--            xmlns:fx="http://javafx.com/fxml/1"-->
+<!--            style="-fx-background-color: black;" fx:controller="Group5.UI.DummyController"-->
+<!--            onKeyPressed="#keyHandler" focusTraversable="true">-->
+<!--    <MapViewer fx:id="mapViewer" style="-fx-background-color: black" AnchorPane.bottomAnchor="10"-->
+<!--               AnchorPane.leftAnchor="10" AnchorPane.rightAnchor="10" AnchorPane.topAnchor="10" />-->
+<!--</AnchorPane>-->

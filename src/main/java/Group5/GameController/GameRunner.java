@@ -105,15 +105,15 @@ public class GameRunner {
         //mapInfo.readMap(file.getPath());
         String src = "src/main/java/Group5/Maps/testmap.txt";
         mapInfo.readMap(src);
-        mapInfo.spawnAgents();  
+        mapInfo.spawnAgents();
 
-       // this.update();
-        //this.startTimer();
-        /*
-        mapViewer.setFocusTraversable(true);
-        mapViewer.requestFocus();
-
-         */
+        // Check if the MapViewer for the UI has been initialized.
+        if (this.mapViewer != null){
+            this.update();
+            this.startTimer();
+            mapViewer.setFocusTraversable(true);
+            mapViewer.requestFocus();
+        }
     }
 
     private void startTimer() {
