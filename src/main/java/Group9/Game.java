@@ -60,10 +60,10 @@ public class Game {
         Spawn.Intruder intruderSpawn = gameMap.getObjects(Spawn.Intruder.class).get(0);
 
         AgentsFactory.createGuards(teamSize).forEach(a -> this.guards.add(new GuardContainer(a,
-                guardSpawn.getContainer().getAsQuadrilateral().generateRandomLocation().toVexing(), new Vector2.Random().normalise().toVexing(),
+                guardSpawn.getContainer().getAsPolygon().generateRandomLocation().toVexing(), new Vector2.Random().normalise().toVexing(),
                 new FieldOfView(gameMap.getGuardViewRangeNormal(), gameMap.getViewAngle()))));
         AgentsFactory.createIntruders(teamSize).forEach(a -> this.intruders.add(new IntruderContainer(a,
-                intruderSpawn.getContainer().getAsQuadrilateral().generateRandomLocation().toVexing(), new Vector2.Random().normalise().toVexing(),
+                intruderSpawn.getContainer().getAsPolygon().generateRandomLocation().toVexing(), new Vector2.Random().normalise().toVexing(),
                 new FieldOfView(gameMap.getIntruderViewRangeNormal(), gameMap.getViewAngle()))));
     }
 
@@ -72,7 +72,9 @@ public class Game {
 
         while (true)
         {
+            System.out.print("a");
             this.turn();
+            System.out.println("b");
         }
 
     }
@@ -92,7 +94,8 @@ public class Game {
         for(GuardContainer guard : this.guards)
         {
             final GuardAction action = guard.getAgent().getAction(this.generateGuardPercepts(guard));
-            actionSuccess.put(guard, executeAction(guard, action));
+            boolean success = executeAction(guard, action);
+            actionSuccess.put(guard, success);
         }
 
     }
@@ -350,7 +353,8 @@ public class Game {
                     Sound sound = (Sound) dynamicObject;
                     return new SoundPercept(
                             sound.getType(),
-                            Direction.fromRadians(dynamicObject.getCenter().getClockDirection() - agentContainer.getPosition().getClockDirection())
+                            Direction.fromRadians(1)
+                            //Direction.fromRadians((dynamicObject.getCenter().getClockDirection() - agentContainer.getPosition().getClockDirection()) % Utils.TAU) //TODO broken
                     );
                 }).collect(Collectors.toUnmodifiableSet()));
     }

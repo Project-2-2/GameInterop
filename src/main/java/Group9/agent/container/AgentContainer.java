@@ -26,6 +26,8 @@ public abstract class AgentContainer<T> {
         this.shape = new PointContainer.Circle(Vector2.from(position), 0.5);
         this.direction = Vector2.from(direction);
         this.normalFOV = normalFOV;
+
+        assert (this.direction.length() - 1) < 1E-9;
     }
 
     public T getAgent()
@@ -69,7 +71,7 @@ public abstract class AgentContainer<T> {
 
     public void move(double distance)
     {
-        this.shape.translate(this.shape.getCenter().add(this.direction.mul(distance, distance)));
+        this.shape.translate(this.direction.mul(distance, distance));
     }
 
     /**

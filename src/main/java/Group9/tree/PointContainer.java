@@ -2,7 +2,6 @@ package Group9.tree;
 
 import Group9.Game;
 import Group9.math.Vector2;
-import Interop.Utils.Utils;
 
 import java.util.*;
 
@@ -12,22 +11,38 @@ public abstract class PointContainer {
 
     abstract public Vector2 getCenter();
 
-    public static class Quadrilateral extends PointContainer {
+    /**
+     * This class supports non-self-intersecting closed polygons of arbitrary size >= 3.
+     */
+    public static class Polygon extends PointContainer {
 
-        private Vector2[] points = new Vector2[4];
-        private Line[] lines = new Line[4];
+        private Vector2[] points;
+        private Line[] lines;
 
-        public Quadrilateral(Vector2 a, Vector2 b, Vector2 c, Vector2 d)
+        public Polygon(Vector2 ...points)
         {
-            this.points[0] = a;
-            this.points[1] = b;
-            this.points[2] = c;
-            this.points[3] = d;
+            if(points.length < 3)
+            {
+                throw new IllegalArgumentException("A polygon must consist of at least 3 points");
+            }
 
-            this.lines[0] = new Line(a, b);
-            this.lines[1] = new Line(b, c);
-            this.lines[2] = new Line(c, d);
-            this.lines[3] = new Line(d, a);
+            this.points = points;
+            this.lines = new Line[this.points.length];
+            for(int i = 0; i < this.points.length; i++)
+            {
+                this.lines[i] = new Line(this.points[i], this.points[(i + 1) % this.points.length]);
+            }
+        }
+
+        public double getArea()
+        {
+            double area = 0;
+            for(int i = 0; i < points.length; i++)
+            {
+                area += (points[i].getX() * points[(i + 1) % points.length].getY()
+                        - points[(i + 1) % points.length].getX() * points[i].getY());
+            }
+            return Math.abs(area) * 0.5;
         }
 
         public Vector2[] getPoints() {
@@ -39,48 +54,32 @@ public abstract class PointContainer {
             return this.lines;
         }
 
-        @Override
-        public void translate(Vector2 vector) {
-            for (int i = 0; i < this.points.length; i++) {
-                this.points[i] = this.points[i].add(vector);
+        public List<Vector2[]> getTriangles()
+        {
+            List<Vector2[]> triangles = new ArrayList<>();
+
+            for(int i = 1; i <= this.points.length - 2; i++)
+            {
+                triangles.add(new Vector2[] {
+                        this.points[0], this.points[i], this.points[(i + 1)]
+                });
             }
 
-            this.lines[0] = new Line(this.points[0], this.points[1]);
-            this.lines[1] = new Line(this.points[1], this.points[2]);
-            this.lines[2] = new Line(this.points[2], this.points[3]);
-            this.lines[3] = new Line(this.points[3], this.points[0]);
-        }
-
-        @Override
-        public Vector2 getCenter() {
-            Vector2 center = twoLinesIntersect(points[0], points[2], points[1], points[3]);
-            assert center != null;
-            return center;
-        }
-
-        @Override
-        public Quadrilateral clone() throws CloneNotSupportedException {
-            return new Quadrilateral(this.points[0].clone(), this.points[1].clone(), this.points[2].clone(),
-                    this.points[3].clone());
+            return triangles;
         }
 
         public Vector2 generateRandomLocation()
         {
-
             //--- follows: https://www.cs.princeton.edu/~funk/tog02.pdf @ 4.2
-            //--- pick one of the two possible triangles
+
             // TODO if we wanted to make this actually uniform, we would need to calculate the area of the triangles
             //  and weight them appropriately... (low priority)
-            Vector2 A = points[0];
-            Vector2 B = points[1];
-            Vector2 C = points[2];
+            List<Vector2[]> triangles = getTriangles();
+            Vector2[] triangle = triangles.get(Math.round(Game._RANDOM.nextFloat() * (triangles.size() - 1)));
 
-            if(Game._RANDOM.nextBoolean())
-            {
-                B = points[2];
-                C = points[3];
-            }
-
+            Vector2 A = triangle[0];
+            Vector2 B = triangle[1];
+            Vector2 C = triangle[2];
             double r1 = Game._RANDOM.nextDouble();
             double r2 = Game._RANDOM.nextDouble();
 
@@ -88,12 +87,102 @@ public abstract class PointContainer {
             final Vector2 r =  A.mul(1 - Math.sqrt(r1))
                     .add(B.mul((1 - r2) * Math.sqrt(r1)))
                     .add(C.mul(Math.sqrt(r1)*r2));
-                    //|| isInTriangle(q.points[0], q.points[2], q.points[3], point);
+            //|| isInTriangle(q.points[0], q.points[2], q.points[3], point);
 
-            assert PointContainer.isPointInside(this, r);
+            assert isPointInside(r);
             return r;
         }
 
+        /**
+         * Splits the Polygon into triangles and uses a Barycentric technique to check whether it is in one of the
+         * triangles.
+         *
+         * @link https://blackpawn.com/texts/pointinpoly/default.html
+         * @param point
+         * @return true, if inside, otherwise false.
+         */
+        private boolean isPointInside(Vector2 point)
+        {
+            return getTriangles().stream().anyMatch(e -> isInTriangle(e[0], e[1], e[2], point));
+        }
+
+        private static boolean isInTriangle(Vector2 A, Vector2 B, Vector2 C, Vector2 P)
+        {
+            Vector2 v0 = C.sub(A);
+            Vector2 v1 = B.sub(A);
+            Vector2 v2 = P.sub(A);
+
+            double dot00 = v0.dot(v0);
+            double dot01 = v0.dot(v1);
+            double dot02 = v0.dot(v2);
+            double dot11 = v1.dot(v1);
+            double dot12 = v1.dot(v2);
+
+            double invDenom = 1D / (dot00 * dot11 - dot01 * dot01);
+            double u = (dot11 * dot02 - dot01 * dot12) * invDenom;
+            double v = (dot00 * dot12 - dot01 * dot02) * invDenom;
+
+            return (u >= 0) && (v >= 0) && (u + v < 1);
+        }
+
+        @Override
+        public void translate(Vector2 vector) {
+            for (int i = 0; i < this.points.length; i++) {
+                this.points[i] = this.points[i].add(vector);
+            }
+
+            for(int i = 0; i < points.length; i++)
+            {
+                lines[i] = new Line(points[i], points[(i + 1) % points.length]);
+            }
+        }
+
+        @Override
+        public Vector2 getCenter() {
+            final double divisor = 6D * this.getArea();
+            double cx = 0;
+            for(int i = 0; i < points.length; i++)
+            {
+                cx += (points[i].getX() + points[(i + 1) % points.length].getX())
+                        * (points[i].getX() * points[(i + 1) % points.length].getY()
+                        - points[(i + 1) % points.length].getX() * points[i].getY());
+            }
+
+            double cy = 0;
+            for(int i = 0; i < points.length; i++)
+            {
+                cy += (points[i].getY() + points[(i + 1) % points.length].getY())
+                        * (points[i].getX() * points[(i + 1) % points.length].getY()
+                        - points[(i + 1) % points.length].getX() * points[i].getY());
+            }
+
+
+            return new Vector2(cx/divisor, cy/divisor);
+        }
+
+        @Override
+        public PointContainer.Polygon clone() {
+            return new Polygon(this.points);
+        }
+
+        @Override
+        public String toString() {
+            return "Polygon{" +
+                    "points=" + Arrays.toString(points) +
+                    ", lines=" + Arrays.toString(lines) +
+                    '}';
+        }
+    }
+
+    public static class Quadrilateral extends Polygon {
+
+        private Vector2[] points = new Vector2[4];
+        private Line[] lines = new Line[4];
+
+        public Quadrilateral(Vector2 a, Vector2 b, Vector2 c, Vector2 d)
+        {
+            super(a, b, c, d);
+        }
 
         public static class Rectangle extends Quadrilateral {
             private double topY, bottomY, leftmostX, rightmostX;
@@ -245,25 +334,34 @@ public abstract class PointContainer {
         public Vector2 getCenter() {
             return this.start.add(this.end).mul(0.5);
         }
+
+        @Override
+        public PointContainer.Line clone() {
+            return new Line(this.start, this.end);
+        }
     }
 
 
     @Override
     public PointContainer clone() throws CloneNotSupportedException {
-        if(this instanceof Circle)
+        if(this instanceof Line)
+        {
+            return ((Line) this).clone();
+        }
+        else if(this instanceof Circle)
         {
             return ((Circle) this).clone();
         }
-        else if(this instanceof Quadrilateral)
+        else if(this instanceof Polygon)
         {
-            return ((Quadrilateral) this).clone();
+            return ((Polygon) this).clone();
         }
         throw new CloneNotSupportedException();
     }
 
-    public PointContainer.Quadrilateral getAsQuadrilateral()
+    public PointContainer.Polygon getAsPolygon()
     {
-        return (PointContainer.Quadrilateral) this;
+        return (PointContainer.Polygon) this;
     }
 
     public PointContainer.Circle getAsCircle()
@@ -274,15 +372,15 @@ public abstract class PointContainer {
     public static boolean intersect(PointContainer containerA, PointContainer containerB)
     {
 
-        if (containerA instanceof Quadrilateral || containerB instanceof Quadrilateral)
+        if (containerA instanceof Polygon || containerB instanceof Polygon)
         {
 
-            Quadrilateral quadrilateral = (containerA instanceof Quadrilateral) ? (Quadrilateral) containerA : (Quadrilateral) containerB;
+            Polygon polygon = (containerA instanceof Polygon) ? (Polygon) containerA : (Polygon) containerB;
 
-            if(containerA instanceof Quadrilateral && containerB instanceof Quadrilateral)
+            if(containerA instanceof Polygon && containerB instanceof Polygon)
             {
-                Quadrilateral other = (quadrilateral == containerB) ? (Quadrilateral) containerA : (Quadrilateral) containerB;
-                for(Line a : quadrilateral.getLines()) {
+                Polygon other = (polygon == containerB) ? (Polygon) containerA : (Polygon) containerB;
+                for(Line a : polygon.getLines()) {
                     for(Line b : other.getLines())
                     {
                         if(intersect(a, b))
@@ -292,19 +390,19 @@ public abstract class PointContainer {
                     }
                 }
 
-                return Arrays.stream(quadrilateral.getPoints()).anyMatch(point -> isPointInside(other, point))
-                        || Arrays.stream(other.getPoints()).anyMatch(point -> isPointInside(quadrilateral, point));
+                return Arrays.stream(polygon.getPoints()).anyMatch(other::isPointInside)
+                        || Arrays.stream(other.getPoints()).anyMatch(polygon::isPointInside);
             }
             else if(containerA instanceof Circle || containerB instanceof Circle)
             {
                 Circle circle = (containerA instanceof Circle) ? (Circle) containerA : (Circle) containerB;
 
-                if(isPointInside(quadrilateral, circle.getCenter()))
+                if(polygon.isPointInside(circle.getCenter()))
                 {
                     return true;
                 }
 
-                for(Line a : quadrilateral.getLines())
+                for(Line a : polygon.getLines())
                 {
                     if(circleLineIntersect(circle, a).length != 0)
                     {
@@ -317,7 +415,7 @@ public abstract class PointContainer {
             else if(containerA instanceof Line || containerB instanceof Line)
             {
                 Line line = (containerA instanceof Line) ? (Line) containerA : (Line) containerB;
-                for(Line a : quadrilateral.getLines())
+                for(Line a : polygon.getLines())
                 {
                     if(intersect(a, line))
                     {
@@ -354,40 +452,6 @@ public abstract class PointContainer {
 
         throw new IllegalArgumentException();
 
-    }
-
-    /**
-     * Splits the quadrilateral into two triangles and uses a Barycentric technique to check whether it is in one of the
-     * triangles.
-     *
-     * @link https://blackpawn.com/texts/pointinpoly/default.html
-     * @param q
-     * @param point
-     * @return true, if inside, otherwise false.
-     */
-    private static boolean isPointInside(Quadrilateral q, Vector2 point)
-    {
-        return isInTriangle(q.points[0], q.points[1], q.points[2], point)
-                || isInTriangle(q.points[0], q.points[2], q.points[3], point);
-    }
-
-    private static boolean isInTriangle(Vector2 A, Vector2 B, Vector2 C, Vector2 P)
-    {
-        Vector2 v0 = C.sub(A);
-        Vector2 v1 = B.sub(A);
-        Vector2 v2 = P.sub(A);
-
-        double dot00 = v0.dot(v0);
-        double dot01 = v0.dot(v1);
-        double dot02 = v0.dot(v2);
-        double dot11 = v1.dot(v1);
-        double dot12 = v1.dot(v2);
-
-        double invDenom = 1D / (dot00 * dot11 - dot01 * dot01);
-        double u = (dot11 * dot02 - dot01 * dot12) * invDenom;
-        double v = (dot00 * dot12 - dot01 * dot02) * invDenom;
-
-        return (u >= 0) && (v >= 0) && (u + v < 1);
     }
 
     private static Vector2[] circleLineIntersect(Circle circle, Line line){
@@ -478,8 +542,8 @@ public abstract class PointContainer {
             intersectionPoints.add(twoLinesIntersect((Line) pointContainer,l));
         } else if (pointContainer instanceof Circle) {
             Collections.addAll(intersectionPoints, circleLineIntersect((Circle) pointContainer, l));
-        } else if (pointContainer instanceof Quadrilateral) {
-            Quadrilateral q = (Quadrilateral) pointContainer;
+        } else if (pointContainer instanceof Polygon) {
+            Polygon q = (Polygon) pointContainer;
 
             for (Line ql : q.getLines()) {
                 Vector2 intersectPoint = twoLinesIntersect(ql, l);
