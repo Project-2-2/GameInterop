@@ -1,5 +1,6 @@
 package Group9.math;
 
+import Group9.Game;
 import Interop.Geometry.Angle;
 import Interop.Geometry.Vector;
 import Interop.Utils.Utils;
@@ -114,5 +115,13 @@ public class Vector2 {
     @Override
     public Vector2 clone() {
         return new Vector2(this.x, this.y);
+    }
+
+
+    public static class Random extends Vector2
+    {
+        public Random() {
+            super(Game._RANDOM.nextInt(), Game._RANDOM.nextInt());
+        }
     }
 }
