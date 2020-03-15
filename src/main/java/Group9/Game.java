@@ -68,37 +68,78 @@ public class Game {
                 new FieldOfView(gameMap.getIntruderViewRangeNormal(), gameMap.getViewAngle()))));
     }
 
-    public void start()
+    public Team start()
     {
-
-        while (true)
+        Team team = null;
+        while (team == null)
         {
-            System.out.print("a");
-            this.turn();
-            System.out.println("b");
+            team = this.turn();
         }
 
+        return team;
     }
 
-    public void turn()
+    public Team checkForWinner()
+    {
+        final long intrudersCaptured = intruders.stream().filter(IntruderContainer::isCaptured).count();
+        final long intrudersWins = intruders.stream().filter(e -> e.getZoneCounter() >= gameMap.getTurnsInTargetAreaToWin()).count();
+
+        if(intrudersWins > 0)
+        {
+            return Team.INTRUDERS;
+        }
+
+        switch (gameMap.getScenarioPercepts().getGameMode())
+        {
+            case CaptureOneIntruder:
+                if(intrudersCaptured > 0)
+                {
+                    return Team.GUARDS;
+                }
+
+                break;
+            case CaptureAllIntruders:
+                if(intrudersCaptured == intruders.size() && !intruders.isEmpty())
+                {
+                    return Team.GUARDS;
+                }
+                break;
+        }
+        return null;
+    }
+
+    public Team turn()
     {
 
         this.cooldown();
-        // Note: Intruders move first.
+        Team winner = null;
 
+        // Note: Intruders move first.
         for(IntruderContainer intruder : this.intruders)
         {
-            final IntruderAction action = intruder.getAgent().getAction(this.generateIntruderPercepts(intruder));
-            actionSuccess.put(intruder, executeAction(intruder, action));
+            if(!(intruder.isCaptured()))
+            {
+                final IntruderAction action = intruder.getAgent().getAction(this.generateIntruderPercepts(intruder));
+                actionSuccess.put(intruder, executeAction(intruder, action));
+
+                if((winner = checkForWinner()) != null)
+                {
+                    return winner;
+                }
+            }
         }
 
         for(GuardContainer guard : this.guards)
         {
             final GuardAction action = guard.getAgent().getAction(this.generateGuardPercepts(guard));
-            boolean success = executeAction(guard, action);
-            actionSuccess.put(guard, success);
+            actionSuccess.put(guard, executeAction(guard, action));
+            if((winner = checkForWinner()) != null)
+            {
+                return winner;
+            }
         }
 
+        return winner;
     }
 
     private <T> boolean executeAction(AgentContainer<T> agentContainer, Action action)
@@ -204,6 +245,26 @@ public class Game {
                 ));
 
             });
+
+            //--- check if intruder is in target area
+            if(isIntruder)
+            {
+                IntruderContainer intruderContainer = (IntruderContainer) agentContainer;
+                if(gameMap.getObjects(TargetArea.class).stream().anyMatch(e -> PointContainer.intersect(e.getContainer(), agentContainer.getShape())))
+                {
+                    intruderContainer.setZoneCounter(intruderContainer.getZoneCounter() + 1);
+                }
+                else
+                {
+                    intruderContainer.setZoneCounter(0);
+                }
+            }
+            else
+            {
+                this.intruders.stream()
+                        .filter(e -> e.getPosition().distance(agentContainer.getPosition()) <= gameMap.getScenarioPercepts().getCaptureDistance().getValue())
+                        .forEach(e -> e.setCaptured(true));
+            }
             return true;
         }
         else if(action instanceof Rotate)
@@ -291,7 +352,6 @@ public class Game {
 
     }
 
-
     private GuardPercepts generateGuardPercepts(GuardContainer guard)
     {
         return new GuardPercepts(
@@ -370,6 +430,13 @@ public class Game {
                             new Distance(dynamicObject.getCenter().distance(agentContainer.getPosition()))
                     );
                 }).collect(Collectors.toUnmodifiableSet()));
+    }
+
+
+    public enum Team
+    {
+        INTRUDERS,
+        GUARDS
     }
 
 }
