@@ -4,7 +4,7 @@ import Group9.agent.container.AgentContainer;
 import Group9.tree.Container;
 import Group9.tree.PointContainer;
 
-public abstract class EffectArea<T> implements Container {
+public abstract class EffectArea<T> implements Container<PointContainer> {
 
     private final PointContainer pointContainer;
 

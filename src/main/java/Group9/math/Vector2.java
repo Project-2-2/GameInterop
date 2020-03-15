@@ -38,6 +38,12 @@ public class Vector2 {
         return this.length;
     }
 
+    public double dot(Vector2 other)
+    {
+        return (this.x * other.getX() + this.y * other.getY());
+    }
+
+
     public Vector2 mul(double x, double y)
     {
         return new Vector2(this.x * x, this.y * y);

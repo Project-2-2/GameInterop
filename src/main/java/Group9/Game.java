@@ -38,7 +38,7 @@ import java.util.stream.Collectors;
 public class Game {
 
     //TODO remove seed for demo
-    public final static Random _RANDOM = new Random(1L);
+    public final static Random _RANDOM = new Random();
 
     private GameMap gameMap;
     private ScenarioPercepts scenarioPercepts;

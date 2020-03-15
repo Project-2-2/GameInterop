@@ -1,7 +1,7 @@
 package Group9.tree;
 
-public interface Container {
+public interface Container<T> {
 
-    PointContainer getContainer();
+    T getContainer();
 
 }

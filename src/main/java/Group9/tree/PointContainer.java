@@ -2,8 +2,9 @@ package Group9.tree;
 
 import Group9.Game;
 import Group9.math.Vector2;
-import Interop.Geometry.Vector;
+import Interop.Utils.Utils;
 
+import java.beans.VetoableChangeSupport;
 import java.util.*;
 
 public abstract class PointContainer {
@@ -71,22 +72,24 @@ public abstract class PointContainer {
 
             // worst case scenario we take center as "random" location
             Vector2 retVector = rectangle.getCenter();
-
-            assert retVector != null;
-            boolean foundInside = false;
-            int tries = 0;
-            while (!foundInside && tries < 1000) {
-                double ranX = rectangle.getLeftmostX() + rectangle.getHorizonalSize() * Game._RANDOM.nextDouble();
-                double ranY = rectangle.getBottomY() + rectangle.getVerticalSize() * Game._RANDOM.nextDouble();
-
-                if (PointContainer.isPointInside(rectangle, new Vector2(ranX, ranY))) {
-                    foundInside = true;
-                    retVector = new Vector2(ranX, ranY);
+            double radius = Double.MAX_VALUE;
+            for(Vector2 p : this.points)
+            {
+                if(retVector.distance(p) < radius)
+                {
+                    radius = retVector.distance(p) - 0.1;
                 }
-                tries++;
             }
 
-            return retVector;
+            double a = Game._RANDOM.nextDouble() * Utils.TAU;
+            double r = radius * Math.sqrt(Game._RANDOM.nextDouble());
+
+            double x = r * Math.cos(a);
+            double y = r * Math.sin(a);
+
+            assert isPointInside(this, retVector.add(x, y));
+
+            return retVector.add(x, y);
         }
 
 
@@ -351,33 +354,41 @@ public abstract class PointContainer {
 
     }
 
-    public static boolean isPointInside(Quadrilateral q, Vector2 point)
+    /**
+     * Splits the quadrilateral into two triangles and uses a Barycentric technique to check whether it is in one of the
+     * triangles.
+     *
+     * @link https://blackpawn.com/texts/pointinpoly/default.html
+     * @param q
+     * @param point
+     * @return true, if inside, otherwise false.
+     */
+    private static boolean isPointInside(Quadrilateral q, Vector2 point)
     {
-        // check if any of the points are contained in the other polygon
-        int num = 4;
-        int j = num -1;
-        boolean c = false;
-
-        for(int i = 0; i < num; i++)
-        {
-            /*if ((q.points[i].getY() > point.getY()) != (q.points[j].getY() > point.getY()))
-                if (point.getX() < q.points[i].getX() + (q.points[j].getX() - q.points[i].getX()) * (point.getY() - q.points[i].getY()) /
-                        (q.points[j].getY() - q.points[i].getY())) {
-                    c = !c;
-                }*/
-            if (q.points[i].getY() < point.getY() && q.points[j].getY() >= point.getY()
-                    ||  q.points[j].getY() < point.getY() && q.points[i].getY() >= point.getY()) {
-                if (q.points[i].getY() + (point.getY() - q.points[i].getY())/(q.points[j].getY() - q.points[i].getY())*(q.points[j].getX()-q.points[i].getX()) < point.getX()) {
-                    c = !c;
-                }
-            }
-            j = i;
-        }
-
-        return c;
+        return isInTriangle(q.points[0], q.points[1], q.points[2], point)
+                || isInTriangle(q.points[0], q.points[2], q.points[3], point);
     }
 
-    public static Vector2[] circleLineIntersect(Circle circle, Line line){
+    private static boolean isInTriangle(Vector2 A, Vector2 B, Vector2 C, Vector2 P)
+    {
+        Vector2 v0 = C.sub(A);
+        Vector2 v1 = B.sub(A);
+        Vector2 v2 = P.sub(A);
+
+        double dot00 = v0.dot(v0);
+        double dot01 = v0.dot(v1);
+        double dot02 = v0.dot(v2);
+        double dot11 = v1.dot(v1);
+        double dot12 = v1.dot(v2);
+
+        double invDenom = 1D / (dot00 * dot11 - dot01 * dot01);
+        double u = (dot11 * dot02 - dot01 * dot12) * invDenom;
+        double v = (dot00 * dot12 - dot01 * dot02) * invDenom;
+
+        return (u >= 0) && (v >= 0) && (u + v < 1);
+    }
+
+    private static Vector2[] circleLineIntersect(Circle circle, Line line){
         //https://mathworld.wolfram.com/Circle-LineIntersection.html
         Vector2[] returnArray = new Vector2[0];
         double r = circle.getRadius();
@@ -423,7 +434,7 @@ public abstract class PointContainer {
      * @param vec4 start point of line 4.
      * @return the vector that points to the intersection point, returns null when no intersection is found
      */
-    public static Vector2 twoLinesIntersect(Vector2 vec1, Vector2 vec2, Vector2 vec3, Vector2 vec4){
+    private static Vector2 twoLinesIntersect(Vector2 vec1, Vector2 vec2, Vector2 vec3, Vector2 vec4){
         //http://mathworld.wolfram.com/Line-LineIntersection.html
         double x1 = vec1.getX();
         double y1 = vec1.getY();
@@ -454,7 +465,7 @@ public abstract class PointContainer {
         return null;
     }
 
-    public static Vector2 twoLinesIntersect(Line a, Line b) {
+    private static Vector2 twoLinesIntersect(Line a, Line b) {
         return twoLinesIntersect(a.getStart(), a.getEnd(), b.getStart(), b.getEnd());
     }
 

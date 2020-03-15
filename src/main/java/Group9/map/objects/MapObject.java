@@ -8,7 +8,7 @@ import Interop.Percept.Vision.ObjectPerceptType;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MapObject implements Container {
+public class MapObject implements Container<PointContainer> {
 
     private final PointContainer area;
     private final List<EffectArea> effects;
