@@ -2,6 +2,8 @@ package Interop.Percept.Vision;
 
 import Interop.Utils.Require;
 
+import java.util.stream.Collectors;
+
 /**
  * Represents perception of the world by vision.
  *
@@ -32,10 +34,14 @@ public final class VisionPrecepts {
      */
     private void requireObjectPerceptsToBeInFieldOfView(FieldOfView fieldOfView, ObjectPercepts objectPercepts) {
         ObjectPercepts objectPerceptsInFieldOfView = objectPercepts.getInFieldOfView(fieldOfView);
+
+        System.out.println(objectPercepts.getNotInFieldOfView(fieldOfView).getAll().stream().map(e -> String.format("(%.2f,%.2f)", e.getPoint().getX(), e.getPoint().getY())).collect(Collectors.joining(",")));
+        System.out.println("---");
+        System.out.println(objectPerceptsInFieldOfView.getAll().stream().map(e -> String.format("(%.2f,%.2f)", e.getPoint().getX(), e.getPoint().getY())).collect(Collectors.joining(",")));
         if(objectPerceptsInFieldOfView.getAll().size() != objectPercepts.getAll().size()) {
             throw new RuntimeException(
                 "Some object percepts are not in the field of view!\n" +
-                objectPercepts.getNotInFieldOfView(fieldOfView)
+                        objectPercepts.getNotInFieldOfView(fieldOfView)
             );
         }
     }
