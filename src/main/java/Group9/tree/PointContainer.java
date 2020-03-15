@@ -66,30 +66,32 @@ public abstract class PointContainer {
 
         public Vector2 generateRandomLocation()
         {
-            Rectangle rectangle = containingRectangle(this);
 
-            double radius = Double.MAX_VALUE;
-            for(Vector2 p : this.points)
+            //--- follows: https://www.cs.princeton.edu/~funk/tog02.pdf @ 4.2
+            //--- pick one of the two possible triangles
+            // TODO if we wanted to make this actually uniform, we would need to calculate the area of the triangles
+            //  and weight them appropriately... (low priority)
+            Vector2 A = points[0];
+            Vector2 B = points[1];
+            Vector2 C = points[2];
+
+            if(Game._RANDOM.nextBoolean())
             {
-                if(getCenter().distance(p) < radius)
-                {
-                    radius = getCenter().distance(p);
-                }
+                B = points[2];
+                C = points[3];
             }
 
-            // @performance this is bad.. but I guess it'll do for now.
-            // TODO this will do fine for now and often finds a valid point within 10 iterations or so which is decent.
-            Vector2 randomPoint = null;
-            do
-            {
-                double a = Game._RANDOM.nextDouble() * Utils.TAU;
-                double r = radius * Math.sqrt(Game._RANDOM.nextDouble());
-                randomPoint = rectangle.getCenter().add(r * Math.cos(a), r * Math.sin(a));
-            } while (!PointContainer.isPointInside(this, randomPoint));
+            double r1 = Game._RANDOM.nextDouble();
+            double r2 = Game._RANDOM.nextDouble();
 
-            assert randomPoint != null && isPointInside(this, randomPoint);
+            //--- P = A * sqrt(r1) + B * (1-r2)*sqrt(r1) + C * sqrt(r1)*r2
+            final Vector2 r =  A.mul(1 - Math.sqrt(r1))
+                    .add(B.mul((1 - r2) * Math.sqrt(r1)))
+                    .add(C.mul(Math.sqrt(r1)*r2));
+                    //|| isInTriangle(q.points[0], q.points[2], q.points[3], point);
 
-            return randomPoint;
+            assert PointContainer.isPointInside(this, r);
+            return r;
         }
 
 
