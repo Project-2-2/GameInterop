@@ -19,6 +19,7 @@ import Interop.Percept.Vision.FieldOfView;
 import Interop.Percept.Vision.ObjectPercept;
 import Interop.Percept.Vision.ObjectPerceptType;
 import Interop.Percept.Vision.VisionPrecepts;
+import Interop.Utils.Utils;
 
 import java.awt.*;
 import java.util.*;
@@ -319,7 +320,9 @@ public class GameMap {
      */
     public Set<ObjectPercept> getObjectPerceptsInLine(PointContainer.Line line) {
         // get list of objects that intersect line
-        List<MapObject> intersectingMapObjects = this.mapObjects.stream().filter(mo -> PointContainer.intersect(mo.getContainer(), line)).collect(Collectors.toList());
+        List<MapObject> intersectingMapObjects = this.mapObjects.stream()
+                .filter(mo -> PointContainer.intersect(mo.getContainer(), line))
+                .collect(Collectors.toList());
 
         // all points where line and objects intersect sorted by proximity to start of line
         Map<Vector2, MapObject> objectPoints = new TreeMap<Vector2, MapObject>(new Comparator<Vector2>() {
@@ -338,13 +341,14 @@ public class GameMap {
         }
 
         // we build Set<ObjectPercepts> removing ObjectPercepts that come after opaque ObjectPercepts
-        Set<ObjectPercept> retSet = new HashSet<ObjectPercept>();
+        Set<ObjectPercept> retSet = new HashSet<>();
 
         for (Map.Entry<Vector2, MapObject> entry : objectPoints.entrySet()) {
             retSet.add(new ObjectPercept(entry.getValue().getType(), entry.getKey().toVexing()));
-
             if (entry.getValue().getType().isOpaque())
+            {
                 break;
+            }
         }
 
         return retSet;
@@ -367,15 +371,11 @@ public class GameMap {
         final double viewAngle = fov.getViewAngle().getRadians();
 
         Vector2 ray = agentContainer.getDirection().normalise().mul(range).rotated(-viewAngle/2);
-
-        // TODO Okay, the problem actually was that the points were not relative to the agent. I already moved them back
-        //   in regards to direct position but the angle is still wrong. You might wanna have another look at that, or
-        //   if the angle is actually correct something else might be off.
-
         Vector2 startOfRay = agentContainer.getPosition();
-        double stepAngle = viewAngle / viewRays;
+
+        double stepAngle = viewAngle / viewRays ;
         Set<ObjectPercept> objectsInSight = new HashSet<>();
-        for (int rayNum = 0; rayNum <= viewRays; rayNum++) {
+        for (int rayNum = 0; rayNum < viewRays; rayNum++) {
             Vector2 endOfRay = startOfRay.add(ray.rotated((stepAngle * rayNum)));
             objectsInSight.addAll(
                     getObjectPerceptsInLine(new PointContainer.Line(startOfRay, endOfRay))
@@ -383,10 +383,11 @@ public class GameMap {
                             .map(e -> {
                                 Vector point =  Vector2.from(e.getPoint())
                                         .sub(agentContainer.getPosition()) // move relative to agent
-                                        //.rotated(viewAngle/2) //TODO rotate back
+                                        .rotated(agentContainer.getDirection().getClockDirection()) // rotate back
                                         .toVexing();
                                 return new ObjectPercept(e.getType(), point);
                             })
+                            .filter(e -> fov.isInView(e.getPoint()))
                             .collect(Collectors.toList())
             );
         }
