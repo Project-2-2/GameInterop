@@ -1,36 +1,22 @@
 package Group9.gui;
-import java.awt.Label;
-//import java.awt.Polygon;
-import javafx.application.Application; 
-import javafx.scene.Scene; 
-import javafx.scene.control.Button; 
-import javafx.scene.layout.*; 
-import javafx.scene.paint.Color; 
-import javafx.scene.shape.Polygon; 
-import javafx.scene.control.*; 
-import javafx.stage.Stage; 
+
 import javafx.application.Application;
 import javafx.event.EventHandler;
-import javafx.geometry.Pos;
 import javafx.scene.Group;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.Labeled;
-import javafx.scene.control.Menu;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
-import javafx.scene.shape.Ellipse;
-import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+
+//import java.awt.Polygon;
 
 
 public class MenuWindow extends Application {
@@ -613,7 +599,7 @@ public static void start3(Stage s)
 	  Group root = new Group();
 	  
       Scene scene = new Scene(root, 970, 630,Color.BURLYWOOD);
-      
+
    // root.getChildren().addAll(map,line1,line2,line3,line4,line5,line6,line7,line8,line9,line10,line11,line12,line13,line14,line15,line16,line17,line18,line19,line20,line21,line22,line23,line24,line25,line26,line27,,line29,line30,line31,line32,line33,line34,line35,line36,line37,line38,line39,line40,line41,line42,line43,line44,line45,line46,line47,line48,line49,line50,line51,line52,line53,line54,line55,line56,line57,line58,line59,line60,line61,line62,line63,line64,line65,line66,line67,line68);
   // root.getChildren().addAll(map,polygon1,polygon2,polygon3,polygon4,polygon5,polygon6,polygon7,polygon8,polygon9,polygon10,polygon11,polygon12,,polygon14,polygon15,polygon16,polygon17,polygon18,polygon19,polygon20);
      //root.getChildren().addAll(map,pol1,pol2,pol3,pol4,pol5,pol6,pol7,pol8,pol9,pol10,pol11,pol12,pol13,pol14,pol15,pol16,pol17);

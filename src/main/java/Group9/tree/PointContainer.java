@@ -4,7 +4,6 @@ import Group9.Game;
 import Group9.math.Vector2;
 import Interop.Utils.Utils;
 
-import java.beans.VetoableChangeSupport;
 import java.util.*;
 
 public abstract class PointContainer {
@@ -67,29 +66,30 @@ public abstract class PointContainer {
 
         public Vector2 generateRandomLocation()
         {
-            // @performance this is pretty bad.. but I guess it'll do for now.
             Rectangle rectangle = containingRectangle(this);
 
-            // worst case scenario we take center as "random" location
-            Vector2 retVector = rectangle.getCenter();
             double radius = Double.MAX_VALUE;
             for(Vector2 p : this.points)
             {
-                if(retVector.distance(p) < radius)
+                if(getCenter().distance(p) < radius)
                 {
-                    radius = retVector.distance(p) - 0.1;
+                    radius = getCenter().distance(p);
                 }
             }
 
-            double a = Game._RANDOM.nextDouble() * Utils.TAU;
-            double r = radius * Math.sqrt(Game._RANDOM.nextDouble());
+            // @performance this is bad.. but I guess it'll do for now.
+            // TODO this will do fine for now and often finds a valid point within 10 iterations or so which is decent.
+            Vector2 randomPoint = null;
+            do
+            {
+                double a = Game._RANDOM.nextDouble() * Utils.TAU;
+                double r = radius * Math.sqrt(Game._RANDOM.nextDouble());
+                randomPoint = rectangle.getCenter().add(r * Math.cos(a), r * Math.sin(a));
+            } while (!PointContainer.isPointInside(this, randomPoint));
 
-            double x = r * Math.cos(a);
-            double y = r * Math.sin(a);
+            assert randomPoint != null && isPointInside(this, randomPoint);
 
-            assert isPointInside(this, retVector.add(x, y));
-
-            return retVector.add(x, y);
+            return randomPoint;
         }
 
 

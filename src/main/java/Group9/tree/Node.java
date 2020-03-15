@@ -2,7 +2,10 @@ package Group9.tree;
 
 import Group9.math.Vector2;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 class Node<T> {
 

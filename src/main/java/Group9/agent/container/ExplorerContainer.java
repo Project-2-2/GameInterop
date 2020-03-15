@@ -1,10 +1,8 @@
 package Group9.agent.container;
 
 import Group9.math.graph.Graph;
-import Interop.Action.GuardAction;
 import Interop.Agent.Guard;
 import Interop.Geometry.Vector;
-import Interop.Percept.GuardPercepts;
 import Interop.Percept.Vision.FieldOfView;
 
 public class ExplorerContainer extends AgentContainer<Guard> {

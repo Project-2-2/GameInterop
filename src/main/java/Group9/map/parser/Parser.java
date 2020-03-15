@@ -1,8 +1,6 @@
 package Group9.map.parser;
 
 import Group9.map.GameMap;
-import Group9.map.objects.TargetArea;
-import Group9.map.objects.*;
 import Group9.math.Vector2;
 import Group9.tree.PointContainer;
 import Interop.Percept.Scenario.GameMode;
@@ -10,7 +8,6 @@ import Interop.Percept.Scenario.GameMode;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 
 public class Parser {
 

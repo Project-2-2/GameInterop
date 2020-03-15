@@ -2,10 +2,8 @@ package Group9.map;
 
 import Group9.agent.container.AgentContainer;
 import Group9.map.area.EffectArea;
-import Group9.map.area.ModifyViewEffect;
 import Group9.map.dynamic.DynamicObject;
 import Group9.map.objects.*;
-import Group9.map.objects.Window;
 import Group9.math.Vector2;
 import Group9.tree.PointContainer;
 import Group9.tree.QuadTree;
@@ -18,12 +16,8 @@ import Interop.Percept.Scenario.SlowDownModifiers;
 import Interop.Percept.Vision.FieldOfView;
 import Interop.Percept.Vision.ObjectPercept;
 import Interop.Percept.Vision.ObjectPerceptType;
-import Interop.Percept.Vision.VisionPrecepts;
-import Interop.Utils.Utils;
 
-import java.awt.*;
 import java.util.*;
-import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -226,14 +220,6 @@ public class GameMap {
                 .map(object -> (T) object).collect(Collectors.toList());
     }
 
-    public QuadTree<MapObject> getQuadTree() {
-        return quadTree;
-    }
-
-    public List<MapObject> getMapObjects() {
-        return mapObjects;
-    }
-
     public List<DynamicObject> getDynamicObjects() {
         return dynamicObjects;
     }
@@ -261,56 +247,6 @@ public class GameMap {
         return this.mapObjects.stream()
                 .filter(e -> filter.test(e.getType()))
                 .anyMatch(e -> PointContainer.intersect(e.getContainer(), agentMove));
-    }
-
-    public boolean isRayIntersecting(PointContainer.Line line, Predicate<ObjectPerceptType> filter)
-    {
-        return this.mapObjects.stream()
-                .filter(e -> filter.test(e.getType()))
-                .anyMatch(e -> PointContainer.intersect(e.getContainer(), line));
-    }
-
-    public boolean isRayIntersecting(PointContainer.Line line, List<ObjectPerceptType> types)
-    {
-        return isRayIntersecting(line, types::contains);
-    }
-
-    public boolean isRayIntersectingSolidObject(PointContainer.Line line)
-    {
-        return isRayIntersecting(line, ObjectPerceptType::isSolid);
-    }
-
-    // Not in use
-    // TODO-low-priority: delete me?
-    // returns a sorted list of map objects (from closer to start of line to furthest away). Objects after a solid object are not included
-    public List<MapObject> objectsSeen(PointContainer.Line line) {
-        // get stream of objects that intersect line
-        Stream<MapObject> intersectingMapObjects = this.mapObjects.stream().filter(mo -> PointContainer.intersect(mo.getContainer(), line));
-
-        // compares objects by how close they are to start of line
-        Comparator<MapObject> closerComparator = new Comparator<MapObject>() {
-            @Override
-            public int compare(MapObject o1, MapObject o2) {
-                //TODO: change to interesction point of object and line instead of center
-                // Note (Jan): This should sort ascending now which is what we want, right? otherwise just add a - in front of the method to
-                // invert the results
-                return Double.compare(
-                        line.getStart().distance(o1.getContainer().getCenter()),
-                        line.getStart().distance(o2.getContainer().getCenter())
-                );
-            }
-        };
-
-        // chomp off objects after opaque object is found
-        List<MapObject> retList = new ArrayList<MapObject>();
-        for (MapObject o : intersectingMapObjects.sorted(closerComparator).collect(Collectors.toList())) {
-            retList.add(o);
-            if (o.getType().isOpaque() || o.getType().isAgent()) {
-                break;
-            }
-        }
-
-        return retList;
     }
 
     /**

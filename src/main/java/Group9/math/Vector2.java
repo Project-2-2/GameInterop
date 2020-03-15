@@ -1,7 +1,6 @@
 package Group9.math;
 
 import Group9.Game;
-import Interop.Geometry.Angle;
 import Interop.Geometry.Vector;
 import Interop.Utils.Utils;
 

@@ -1,14 +1,7 @@
 package Group9.map.objects;
 
-import Group9.map.area.EffectArea;
-import Group9.math.Vector2;
 import Group9.tree.PointContainer;
-import Interop.Geometry.Vector;
 import Interop.Percept.Vision.ObjectPerceptType;
-
-import java.awt.*;
-import java.util.List;
-import java.util.Random;
 
 public abstract class Spawn extends MapObject  {
 
