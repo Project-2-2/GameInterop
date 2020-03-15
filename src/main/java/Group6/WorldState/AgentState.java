@@ -1,7 +1,6 @@
 package Group6.WorldState;
 
-import Group6.Geometry.Direction;
-import Group6.Geometry.Point;
+import Group6.Geometry.*;
 
 public abstract class AgentState {
 
@@ -11,7 +10,7 @@ public abstract class AgentState {
     private boolean justTeleported;
     private boolean wasLastActionExecuted;
 
-    public AgentState(Point location, Direction direction, int cooldown, boolean justTeleported, boolean wasLastActionExecuted) {
+    protected AgentState(Point location, Direction direction, int cooldown, boolean justTeleported, boolean wasLastActionExecuted) {
         this.location = location;
         this.direction = direction;
         this.cooldown = cooldown;
@@ -37,6 +36,21 @@ public abstract class AgentState {
 
     public boolean wasLastActionExecuted() {
         return wasLastActionExecuted;
+    }
+
+    public void rejectAction() {
+        wasLastActionExecuted = false;
+    }
+
+    public void move(Distance distance) {
+        Vector displacement = new Vector(0, distance.getValue()).rotate(direction.getRadians());
+        location = location.add(displacement).toPoint();
+        wasLastActionExecuted = true;
+    }
+
+    public void rotate(Angle angle) {
+        direction = direction.getChangedBy(angle);
+        wasLastActionExecuted = true;
     }
 
 }

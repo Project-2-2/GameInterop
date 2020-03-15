@@ -33,7 +33,7 @@ public class RandomIntruderTest extends SimpleUnitTest {
 
             assertInstanceOf(action, Rotate.class);
             assertTrue(((Rotate)action).getAngle().getRadians() > 0);
-            
+
         });
 
     }

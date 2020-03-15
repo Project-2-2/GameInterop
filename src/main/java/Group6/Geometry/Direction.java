@@ -24,6 +24,10 @@ public final class Direction extends Angle {
         }
     }
 
+    public Direction getChangedBy(Angle angle) {
+        return new Direction(Utils.mod(getRadians() + angle.getRadians(), Utils.TAU));
+    }
+
     public static Direction fromRadians(double radians) {
         return new Direction(radians);
     }
@@ -38,6 +42,10 @@ public final class Direction extends Angle {
 
     public static Direction fromClockAngle(Point point) {
         return new Direction(Utils.clockAngle(point.getX(), point.getY()));
+    }
+
+    public static Direction random() {
+        return Direction.fromRadians(Group6.Utils.randomBetween(0, Utils.TAU));
     }
 
     public Interop.Geometry.Direction toInteropDirection() {

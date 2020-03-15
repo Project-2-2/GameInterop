@@ -1,8 +1,7 @@
 package Group6;
 
 import Group6.Agent.AgentsTests;
-import Group6.WorldState.Scenario;
-import Group6.WorldState.ScenarioTest;
+import Group6.WorldState.WorldStateTest;
 import SimpleUnitTest.SimpleUnitTest;
 
 import java.nio.file.Paths;
@@ -16,7 +15,7 @@ public class GroupTests extends SimpleUnitTest {
         .concat("/src/test/java/Group6/Resources");
 
     public static void main(String[] args) {
-        ScenarioTest.main(args);
+        WorldStateTest.main(args);
         AgentsTests.main(args);
     }
 

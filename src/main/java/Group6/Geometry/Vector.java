@@ -110,6 +110,10 @@ public class Vector {
         return this.divide(length);
     }
 
+    public Point toPoint() {
+        return new Point(this);
+    }
+
     public boolean isEqualTo(Vector vector, double tolerance) {
         Vector absDiff = this.subtract(vector).abs();
         return absDiff.x <= tolerance
