@@ -23,6 +23,7 @@ public class Agent extends Circle implements GameObject
 	static boolean guard3 = false;
 	static  boolean intruder1 = false;
 	static boolean intruder2 = false;
+	//useless comment
 	
 	
 	public Agent(double x,double y,double r, boolean guard)
