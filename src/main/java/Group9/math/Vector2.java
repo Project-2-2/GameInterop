@@ -71,15 +71,16 @@ public class Vector2 {
     }
 
     /**
-     * returns (new) vector rotated anticlockwise by 'angle' radians
      * See: https://matthew-brett.github.io/teaching/rotation_2d.html
      *      https://en.wikipedia.org/wiki/Rotation_matrix
+     * @param radians
+     * @return (new) vector rotated anticlockwise by 'angle' radians
      */
-    public Vector2 rotated(Angle angle) {
-        double new_x = Math.cos(angle.getRadians()) * x  -  Math.sin(angle.getRadians()) * y;
-        double new_y = Math.sin(angle.getRadians()) * x  +  Math.cos(angle.getRadians()) * y;
-
-        return new Vector2(new_x, new_y);
+    public Vector2 rotated(double radians) {
+        return new Vector2(
+                Math.cos(radians) * x  -  Math.sin(radians) * y,
+                Math.sin(radians) * x  +  Math.cos(radians) * y
+        );
     }
 
     public double distance(Vector2 other)

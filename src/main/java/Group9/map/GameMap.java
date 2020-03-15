@@ -11,6 +11,7 @@ import Group9.tree.PointContainer;
 import Group9.tree.QuadTree;
 import Interop.Geometry.Angle;
 import Interop.Geometry.Distance;
+import Interop.Geometry.Vector;
 import Interop.Percept.Scenario.GameMode;
 import Interop.Percept.Scenario.ScenarioPercepts;
 import Interop.Percept.Scenario.SlowDownModifiers;
@@ -365,14 +366,29 @@ public class GameMap {
         final double range = fov.getRange().getValue();
         final double viewAngle = fov.getViewAngle().getRadians();
 
-        Vector2 ray = agentContainer.getDirection().normalise().mul(range).rotated(Angle.fromRadians(-viewAngle/2));
+        Vector2 ray = agentContainer.getDirection().normalise().mul(range).rotated(-viewAngle/2);
+
+        // TODO Okay, the problem actually was that the points were not relative to the agent. I already moved them back
+        //   in regards to direct position but the angle is still wrong. You might wanna have another look at that, or
+        //   if the angle is actually correct something else might be off.
 
         Vector2 startOfRay = agentContainer.getPosition();
         double stepAngle = viewAngle / viewRays;
         Set<ObjectPercept> objectsInSight = new HashSet<>();
         for (int rayNum = 0; rayNum <= viewRays; rayNum++) {
-            Vector2 endOfRay = startOfRay.add(ray.rotated(Angle.fromRadians(stepAngle * rayNum)));
-            objectsInSight.addAll(getObjectPerceptsInLine(new PointContainer.Line(startOfRay, endOfRay)));
+            Vector2 endOfRay = startOfRay.add(ray.rotated((stepAngle * rayNum)));
+            objectsInSight.addAll(
+                    getObjectPerceptsInLine(new PointContainer.Line(startOfRay, endOfRay))
+                            .stream()
+                            .map(e -> {
+                                Vector point =  Vector2.from(e.getPoint())
+                                        .sub(agentContainer.getPosition()) // move relative to agent
+                                        //.rotated(viewAngle/2) //TODO rotate back
+                                        .toVexing();
+                                return new ObjectPercept(e.getType(), point);
+                            })
+                            .collect(Collectors.toList())
+            );
         }
 
         return objectsInSight;
