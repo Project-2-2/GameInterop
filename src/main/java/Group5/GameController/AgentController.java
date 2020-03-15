@@ -15,9 +15,9 @@ public class AgentController {
 
     private Point position;
     private double radius;
-    //the direction an agent is walking
-    private Vector2D direction;
-    private  Angle angle;
+    private Vector2D direction;  //the direction an agent is walking
+    private Angle angle;
+    private double viewRange;
 
 
     private double maxAngleRotation;
@@ -138,8 +138,6 @@ public class AgentController {
     }
 
 
-
-
     public boolean teleport(){
         Point newLocation =GameRunner.teleportValidility(position,radius);
         if (newLocation.equals(position)){
@@ -207,6 +205,75 @@ public class AgentController {
 
     }
 
+    /**
+     *
+     * @param agents all the agents
+     * @return the objects that they can see
+     */
+    private ArrayList<ArrayList<Area>> vision(ArrayList<AgentController> agents) {
+        double angle;
+        double currentX, currentY, targetX, targetY;
+        ArrayList<Area> areas = Area.getAreas();
+        ArrayList<ArrayList<Area>> perceivedObjects = new ArrayList<>();
 
+        for (AgentController agent : agents) {
+            perceivedObjects.add(new ArrayList<>());
+
+            currentX = agent.getPosition().getX();
+            currentY = agent.getPosition().getY();
+            angle = agent.angle.getDegrees();
+
+            for (double i=-22.5; i <=22.5; i++){
+                Vector2D point1 = new Vector2D(currentX, currentY);
+                if (angle + i > 360) {
+
+                    targetX = viewRange * Math.cos(angle + i - 360) + currentX;
+                    targetY = viewRange * Math.sin(angle + i - 360) + currentY;
+
+                }else if (angle + i < 0) {
+                    targetX = viewRange * Math.cos(angle + i + 360) + currentX;
+                    targetY = viewRange * Math.sin(angle + i + 360) + currentY;
+
+                }else{
+                    targetX = viewRange * Math.cos(angle + i) + currentX;
+                    targetY = viewRange * Math.sin(angle + i) + currentY;
+
+                }
+                Vector2D point2 = new Vector2D(targetX, targetY);
+                Vector2D[] vector1 = {point1, point2};
+                ArrayList<ArrayList<Vector2D>> positions;
+                for (Area area : areas) {
+                    positions = area.getVectorPosition();
+                    for (ArrayList<Vector2D> arr: positions) {
+                        Vector2D[] vector2 = {arr.get(0), arr.get(1)};
+
+                        if (Sat.hasCollided(vector1, vector2)) {
+                            perceivedObjects.get(-1).add(area);
+                        }
+                    }
+                }
+            }
+            Area.bubbleSort(perceivedObjects, agent);
+            checkPerceivedObjects(perceivedObjects);
+        }
+        return perceivedObjects;
+    }
+
+    /**
+     * Checks which object you can see
+     */
+    private void checkPerceivedObjects(ArrayList<ArrayList<Area>> perceivedObjects) {
+        boolean seeFarther = true; // false if there is an area in front that is not opaque
+
+        for (ArrayList<Area> areas: perceivedObjects) {
+            for (Area area : areas) {
+                if (!seeFarther) {
+                    areas.remove(area);
+                } else if (area.isOpaque()) {
+                    seeFarther = false;
+                }
+            }
+        }
+    }
 
 }

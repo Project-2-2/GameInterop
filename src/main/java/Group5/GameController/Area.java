@@ -1,6 +1,12 @@
 package Group5.GameController;
 
 import Interop.Geometry.Point;
+import javafx.css.converter.DeriveColorConverter;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Vector;
 
 public class Area {
     protected int leftBoundary;
@@ -17,6 +23,10 @@ public class Area {
     protected int y3;
     protected int y4;
 
+    protected boolean opaque;
+
+    protected static ArrayList<Area> areas; //stores all the objects/area
+
     public Area(){
         leftBoundary=0;
         rightBoundary=1;
@@ -24,7 +34,7 @@ public class Area {
         bottomBoundary=1;
     }
 
-    public Area(int x1, int y1, int x2, int y2, int x3, int y3, int x4, int y4){
+    public Area(int x1, int y1, int x2, int y2, int x3, int y3, int x4, int y4, boolean opaque){
         leftBoundary=Math.min(Math.min(x1,x2),Math.min(x3,x4));
         rightBoundary=Math.max(Math.max(x1,x2),Math.max(x3,x4));
         topBoundary=Math.min(Math.max(y1,y2),Math.max(y3,y4));
@@ -37,7 +47,44 @@ public class Area {
         this.y2=y2;
         this.y3=y3;
         this.y4=y4;
+        this.opaque = opaque;
 
+        areas.add(this);
+    }
+
+    public boolean isOpaque() {
+        return this.opaque;
+    }
+
+    public ArrayList<Integer> getPosition() {
+        ArrayList<Integer> positions = new ArrayList<>();
+        positions.add(this.x1);
+        positions.add(this.y1);
+        positions.add(this.x2);
+        positions.add(this.y2);
+        positions.add(this.x3);
+        positions.add(this.y3);
+        positions.add(this.x4);
+        positions.add(this.y4);
+        return positions;
+    }
+
+    /**
+     *
+     * @return a list of vectors that represents the sides of an area
+     */
+    public ArrayList<ArrayList<Vector2D>> getVectorPosition() {
+        ArrayList<ArrayList<Vector2D>> positions = new ArrayList<>();
+        positions.get(0).add(new Vector2D(this.x1,this.y1));
+        positions.get(0).add(new Vector2D(this.x2,this.y2));
+        positions.get(1).add(new Vector2D(this.x2,this.y2));
+        positions.get(1).add(new Vector2D(this.x3,this.y3));
+        positions.get(2).add(new Vector2D(this.x3,this.y3));
+        positions.get(2).add(new Vector2D(this.x4,this.y4));
+        positions.get(3).add(new Vector2D(this.x4,this.y4));
+        positions.get(3).add(new Vector2D(this.x1,this.y1));
+
+        return positions;
     }
 
     /*
@@ -102,6 +149,35 @@ public class Area {
         vectors[2] = leftTop;
         vectors[3] = rightTop;
         return vectors;
+    }
+
+    public static ArrayList<Area> getAreas() {
+        return areas;
+    }
+
+    //sorts area by their distance with the agent
+    public static void bubbleSort(ArrayList<ArrayList<Area>> perceived, AgentController agent) {
+        int n = perceived.size();
+        for (ArrayList<Area> arr: perceived) {
+            for (int i = 0; i < n - 1; i++) {
+                for (int j = 0; j < n - i - 1; j++) {
+                    if (arr.get(j).getDistance(agent) > arr.get(j + 1).getDistance(agent)) {
+                        Area temp = arr.get(j);
+                        arr.set(j, arr.get(j + 1));
+                        arr.set(j + 1, temp);
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * @param agent
+     * @return the distance between an agent and area
+     */
+    public double getDistance(AgentController agent) {
+        return Math.sqrt(Math.pow(agent.getPosition().getX(), this.getX())+
+                Math.pow(agent.getPosition().getY(), this.getY()));
     }
 
 }

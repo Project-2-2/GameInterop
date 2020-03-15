@@ -52,9 +52,6 @@ class Sat {
         }
         return circlePolygon;
 
-
-
-
     }
 
     public static Boolean hasCollided(Vector2D[] poly1, Vector2D[] poly2) {
@@ -124,4 +121,5 @@ class Sat {
         return projection1.getX() <= projection2.getY() &&
                 projection2.getX() <= projection1.getY();
     }
+
 }

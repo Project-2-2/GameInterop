@@ -105,8 +105,7 @@ public class MapInfo {
                 // in case multiple parameters
                 String[] items=value.split(" ");
                 Area tmp;
-                switch(id)
-                {
+                switch(id) {
                     case "name":
                         name = value;
                         break;
