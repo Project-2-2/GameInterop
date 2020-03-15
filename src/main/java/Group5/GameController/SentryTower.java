@@ -8,6 +8,8 @@ public class SentryTower extends Area {
     //everything belows this distance can't be seen inside the sentry
     Distance minDistance = new Distance(2);
 
+    private static double SlowDownModifer;
+
     private Area insideAreaSentry;
 
     public SentryTower(int x1, int y1, int x2, int y2, int x3, int y3, int x4, int y4,int ix1, int iy1, int ix2, int iy2, int ix3, int iy3, int ix4, int iy4){
@@ -29,5 +31,13 @@ public class SentryTower extends Area {
      */
     public static void visionInTower(){
 
+    }
+
+    public static double getSlowDownModifer() {
+        return SlowDownModifer;
+    }
+
+    protected static void setSlowDownModifer(double slowDownModifer) {
+        SlowDownModifer = slowDownModifer;
     }
 }

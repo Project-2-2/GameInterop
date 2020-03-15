@@ -44,6 +44,12 @@ public class AgentController {
         direction = new Vector2D(x,y);
     }
 
+
+    /**
+     * call this method to do a movement
+     * @param distance
+     * @param maxDistance
+     */
     public void move(Distance distance, Distance maxDistance){
         if (distance.getValue()>maxDistance.getValue()){
             return;
@@ -56,9 +62,81 @@ public class AgentController {
         if(GameRunner.moveValidility(position,newPosition)){
             position = newPosition;
         }
-
-
     }
+
+
+    /**
+     * call this method as an agent if you want to do a movement that includes opening a door
+     * you don't have to call the normal move method after this
+     * @param distance
+     * @param maxDistance
+     */
+    public void openDoor(Distance distance, Distance maxDistance){
+        Distance newMaxDistance = new Distance(maxDistance.getValue()*Door.getSlowDownModifier());
+        if (distance.getValue()>newMaxDistance.getValue()){
+            return;
+        }
+        double newX= position.getX()+distance.getValue()*Math.cos(angle.getRadians());
+        double newY= position.getY()+distance.getValue()*Math.sin(angle.getRadians());
+
+        Point newPosition = new Point(newX,newY);
+
+        //opens the door if there is really a door
+        if (GameRunner.openDoorValidility(position,newPosition)){
+            move(distance,newMaxDistance);
+            return;
+        }
+        move(distance,maxDistance);
+    }
+
+    /**
+     * call this method as an agent if you want to do a movement that includes opening a window
+     * you don't have to call the normal move method after this
+     * @param distance
+     * @param maxDistance
+     */
+    public void openWindow(Distance distance, Distance maxDistance){
+        Distance newMaxDistance = new Distance(maxDistance.getValue()*Window.getSlowDownModifier());
+        if (distance.getValue()>newMaxDistance.getValue()){
+            return;
+        }
+        double newX= position.getX()+distance.getValue()*Math.cos(angle.getRadians());
+        double newY= position.getY()+distance.getValue()*Math.sin(angle.getRadians());
+
+        Point newPosition = new Point(newX,newY);
+
+        //opens the door if there is really a door
+        if (GameRunner.openWindowValidility(position,newPosition)){
+            move(distance,newMaxDistance);
+            return;
+        }
+        move(distance,maxDistance);
+    }
+
+    /**
+     * call this method as an agent if you want to do a movement that includes entering a sentry
+     * you don't have to call the normal move method after this
+     * @param distance
+     * @param maxDistance
+     */
+    public void enterSentry(Distance distance, Distance maxDistance){
+        Distance newMaxDistance = new Distance(maxDistance.getValue()*SentryTower.getSlowDownModifer());
+        if (distance.getValue()>newMaxDistance.getValue()){
+            return;
+        }
+        double newX= position.getX()+distance.getValue()*Math.cos(angle.getRadians());
+        double newY= position.getY()+distance.getValue()*Math.sin(angle.getRadians());
+
+        Point newPosition = new Point(newX,newY);
+
+        //opens the door if there is really a door
+        if (GameRunner.enterSentry(position,newPosition)){
+            move(distance,newMaxDistance);
+            return;
+        }
+        move(distance,maxDistance);
+    }
+
 
 
 

@@ -105,7 +105,7 @@ public class GameRunner {
         //mapInfo.readMap(file.getPath());
         String src = "src/main/java/Group5/Maps/testmap.txt";
         mapInfo.readMap(src);
-        mapInfo.spawnAgents();  
+        mapInfo.initialize();
 
        // this.update();
         //this.startTimer();
@@ -147,7 +147,7 @@ public class GameRunner {
      * checks if movement is valid
      * returns the postion after movement
      */
-    public static boolean moveValidility(Point from, Point to){
+    protected static boolean moveValidility(Point from, Point to){
         ArrayList<Area> walls= mapInfo.walls;
 
         //for now give the agent a radius of 1
@@ -161,6 +161,63 @@ public class GameRunner {
             }
         }
         return true;
+    }
+
+    protected static boolean openDoorValidility(Point from, Point to){
+        ArrayList<Door> doors= mapInfo.doors;
+        //for now give the agent a radius of 1
+        Vector2D[] movment = movementShape(from,to,1);
+
+        for(int i =0; i<doors.size();i++){
+            Vector2D[] doorVectors = doors.get(i).getAreaVectors();
+            System.out.println("collision detected");
+            if (Sat.hasCollided(movment,doorVectors)||doors.get(i).isHit(to)){
+                if (!doors.get(i).doorClosed()){
+                    return false;
+                }
+                doors.get(i).openDoor();
+                return true;
+            }
+        }
+        return false;
+    }
+
+    protected static boolean openWindowValidility(Point from, Point to){
+        ArrayList<Window> windows= mapInfo.windows;
+        //for now give the agent a radius of 1
+        Vector2D[] movment = movementShape(from,to,1);
+
+        for(int i =0; i<windows.size();i++){
+            Vector2D[] windowVectors = windows.get(i).getAreaVectors();
+            System.out.println("collision detected");
+            if (Sat.hasCollided(movment,windowVectors)||windows.get(i).isHit(to)){
+                if (!windows.get(i).windowClosed()){
+                    return false;
+                }
+                windows.get(i).openWindow();
+                return true;
+            }
+        }
+        return false;
+    }
+
+
+    protected static boolean enterSentry(Point from, Point to){
+        ArrayList<SentryTower> sentryTowers= mapInfo.sentryTowers;
+        //for now give the agent a radius of 1
+        Vector2D[] movment = movementShape(from,to,1);
+
+        for(int i =0; i<sentryTowers.size();i++){
+            Vector2D[] sentryVectors = sentryTowers.get(i).getAreaVectors();
+            System.out.println("collision detected");
+            if (Sat.hasCollided(movment,sentryVectors)||sentryTowers.get(i).isHit(to)){
+                if (!sentryTowers.get(i).enterTower(to)){
+                    return false;
+                }
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
