@@ -14,9 +14,17 @@ public class Agent extends Circle implements GameObject
 	final double x;
 	final double y;
 	final double r;
-	final static double speed = 1.4;
+	final static double speed = 1.4;//for both guard and intruder
+	final static double sprint = 4;//maxSprintDistanceIntruder 
 	final Duration Timestep = Duration.seconds(0.1);
-	boolean guard = false;
+	static boolean guard = false;
+	static boolean guard1 = false;
+	static boolean guard2 = false;
+	static boolean guard3 = false;
+	static  boolean intruder1 = false;
+	static boolean intruder2 = false;
+	
+	
 	public Agent(double x,double y,double r, boolean guard)
 	{
 		this.x = x;
@@ -25,16 +33,16 @@ public class Agent extends Circle implements GameObject
 		setCenterX(x);
 		setCenterY(y);
 		setRadius(r);
-		if(guard == true)
-		{
-			setFill(Color.RED);
-			setStroke(Color.BLACK);
-		}else 
-		{
-			setFill(Color.BLUE);
-			setStroke(Color.BLACK);
-		}
-		
+		if(guard1== true)
+		{setFill(Color.BROWN);}
+		else if(guard2 == true)
+		{setFill(Color.CHOCOLATE);}
+		else if(guard3 == true)
+		{setFill(Color.CORAL);}
+		else if(intruder1 == true)
+		{setFill(Color.BLUEVIOLET);}
+		else if(intruder2 == true)
+		{setFill(Color.DARKCYAN);}
 		
 		
 	}
