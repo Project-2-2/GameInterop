@@ -360,25 +360,16 @@ public class GameMap {
      * @return
      * @see Interop.Percept.Vision.FieldOfView
      */
-    public <T> Set<ObjectPercept> getObjectPerceptsForAgent(AgentContainer<T> agentContainer) {
+    public <T> Set<ObjectPercept> getObjectPerceptsForAgent(AgentContainer<T> agentContainer, FieldOfView fov) {
         // sane default (TODO: Is naive java-fu below working?)
-        double range = guardViewRangeNormal.getValue();
+        final double range = fov.getRange().getValue();
+        final double viewAngle = fov.getViewAngle().getRadians();
 
-        // we check if we are in an area that would modify our vision
-        Optional<ModifyViewEffect> viewAffectedArea = getEffectAreas(agentContainer).stream()
-                .filter(a -> a instanceof ModifyViewEffect)
-                .map(a -> (ModifyViewEffect) a).findAny();
-
-        // if we are, we apply that effect
-        if (viewAffectedArea.isPresent())
-            range = viewAffectedArea.get().get(agentContainer);
-
-
-        Vector2 ray = agentContainer.getDirection().normalise().mul(range).rotated(Angle.fromRadians(-viewAngle.getRadians()/2));
+        Vector2 ray = agentContainer.getDirection().normalise().mul(range).rotated(Angle.fromRadians(-viewAngle/2));
 
         Vector2 startOfRay = agentContainer.getPosition();
-        double stepAngle = viewAngle.getRadians() / viewRays;
-        Set<ObjectPercept> objectsInSight = new HashSet<ObjectPercept>();
+        double stepAngle = viewAngle / viewRays;
+        Set<ObjectPercept> objectsInSight = new HashSet<>();
         for (int rayNum = 0; rayNum <= viewRays; rayNum++) {
             Vector2 endOfRay = startOfRay.add(ray.rotated(Angle.fromRadians(stepAngle * rayNum)));
             objectsInSight.addAll(getObjectPerceptsInLine(new PointContainer.Line(startOfRay, endOfRay)));

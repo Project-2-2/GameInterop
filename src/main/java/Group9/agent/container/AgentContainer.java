@@ -1,27 +1,31 @@
 package Group9.agent.container;
 
 import Group9.PiMath;
+import Group9.map.area.EffectArea;
+import Group9.map.area.ModifyViewEffect;
 import Group9.math.Vector2;
 import Group9.tree.PointContainer;
+import Interop.Geometry.Distance;
 import Interop.Geometry.Vector;
+import Interop.Percept.Vision.FieldOfView;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.*;
 
 public abstract class AgentContainer<T> {
 
     private T agent;
+    private FieldOfView normalFOV;
     private PointContainer.Circle shape = null;
     private Vector2 direction = null;
 
     public Map<Cooldown, Integer> cooldowns = new HashMap<>();
 
-    public AgentContainer(T agent, Vector position, Vector direction)
+    public AgentContainer(T agent, Vector position, Vector direction, FieldOfView normalFOV)
     {
         this.agent = agent;
         this.shape = new PointContainer.Circle(Vector2.from(position), 0.5);
         this.direction = Vector2.from(direction);
+        this.normalFOV = normalFOV;
     }
 
     public T getAgent()
@@ -42,6 +46,20 @@ public abstract class AgentContainer<T> {
     public Vector2 getDirection()
     {
         return direction;
+    }
+
+    public FieldOfView getFOV(Set<EffectArea> areas)
+    {
+        Optional<ModifyViewEffect> viewAffectedArea = areas.stream()
+                .filter(a -> a instanceof ModifyViewEffect)
+                .map(a -> (ModifyViewEffect) a).findAny();
+
+        if(viewAffectedArea.isPresent())
+        {
+            return new FieldOfView(new Distance(viewAffectedArea.get().get(this)), normalFOV.getViewAngle());
+        }
+
+        return this.normalFOV;
     }
 
     public void moveTo(Vector2 position)
@@ -108,6 +126,13 @@ public abstract class AgentContainer<T> {
     {
         SPRINTING,
         PHEROMONE
+    }
+
+    public enum FOVType
+    {
+        NORMAL,
+        SHADED,
+        SENTRY
     }
 
     public static class DataContainer

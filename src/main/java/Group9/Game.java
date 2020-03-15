@@ -30,10 +30,7 @@ import Interop.Percept.Smell.SmellPercepts;
 import Interop.Percept.Sound.SoundPercept;
 import Interop.Percept.Sound.SoundPerceptType;
 import Interop.Percept.Sound.SoundPercepts;
-import Interop.Percept.Vision.FieldOfView;
-import Interop.Percept.Vision.ObjectPerceptType;
-import Interop.Percept.Vision.ObjectPercepts;
-import Interop.Percept.Vision.VisionPrecepts;
+import Interop.Percept.Vision.*;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -62,9 +59,11 @@ public class Game {
         Spawn.Intruder intruderSpawn = gameMap.getObjects(Spawn.Intruder.class).get(0);
 
         AgentsFactory.createGuards(teamSize).forEach(a -> this.guards.add(new GuardContainer(a,
-                guardSpawn.getContainer().getAsQuadrilateral().generateRandomLocation().toVexing(), new Vector(1, 1))));
+                guardSpawn.getContainer().getAsQuadrilateral().generateRandomLocation().toVexing(), new Vector(1, 1),
+                new FieldOfView(gameMap.getGuardViewRangeNormal(), gameMap.getViewAngle()))));
         AgentsFactory.createIntruders(teamSize).forEach(a -> this.intruders.add(new IntruderContainer(a,
-                intruderSpawn.getContainer().getAsQuadrilateral().generateRandomLocation().toVexing(), new Vector(1, 1))));
+                intruderSpawn.getContainer().getAsQuadrilateral().generateRandomLocation().toVexing(), new Vector(1, 1),
+                new FieldOfView(gameMap.getIntruderViewRangeNormal(), gameMap.getViewAngle()))));
     }
 
     public void start()
@@ -154,16 +153,18 @@ public class Game {
 
             //TODO we are currently only checking whether a single line is intersecting with something but not whether
             // or not we are too wide
-            PointContainer.Line line = new PointContainer.Line(agentContainer.getPosition(), end);
-            Vector2 temp = line.getNormal().mul(agentContainer.getShape().getRadius());
-            Vector2 pointA = temp.add(line.getStart());
-            Vector2 pointC = temp.add(line.getEnd());
-            Vector2 pointB = temp.flip().add(line.getStart());
-            Vector2 pointD = temp.flip().add(line.getEnd());
-            PointContainer.Quadrilateral quadrilateral = new PointContainer.Quadrilateral(pointA, pointB, pointC, pointD);
-            if(gameMap.isMoveIntersecting(quadrilateral, ObjectPerceptType::isSolid))
             {
-                return false;
+                PointContainer.Line line = new PointContainer.Line(agentContainer.getPosition(), end);
+                Vector2 temp = line.getNormal().mul(agentContainer.getShape().getRadius());
+                Vector2 pointA = temp.add(line.getStart());
+                Vector2 pointC = temp.add(line.getEnd());
+                Vector2 pointB = temp.flip().add(line.getStart());
+                Vector2 pointD = temp.flip().add(line.getEnd());
+                PointContainer.Quadrilateral quadrilateral = new PointContainer.Quadrilateral(pointA, pointB, pointC, pointD);
+                if(gameMap.isMoveIntersecting(quadrilateral, ObjectPerceptType::isSolid))
+                {
+                    return false;
+                }
             }
 
             if(isSprinting)
@@ -323,7 +324,11 @@ public class Game {
 
     private <T> VisionPrecepts generateVisionPercepts(AgentContainer<T> agentContainer)
     {
-        return new VisionPrecepts(new FieldOfView(new Distance(1), Angle.fromDegrees(1)), new ObjectPercepts(gameMap.getObjectPerceptsForAgent(agentContainer)));
+        final FieldOfView fov = agentContainer.getFOV(gameMap.getEffectAreas(agentContainer));
+        return new VisionPrecepts(
+                fov,
+                new ObjectPercepts(gameMap.getObjectPerceptsForAgent(agentContainer, fov))
+        );
     }
 
     private <T> AreaPercepts generateAreaPercepts(AgentContainer<T> agentContainer)

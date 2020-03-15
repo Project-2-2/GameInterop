@@ -238,8 +238,7 @@ public abstract class PointContainer {
 
         @Override
         public Vector2 getCenter() {
-            //TODO think
-            return null;//new Vector2(start.getX()-end.getX(),start.getY()-end.getY());
+            return this.start.add(this.end).mul(0.5);
         }
     }
 
@@ -307,6 +306,8 @@ public abstract class PointContainer {
                         return true;
                     }
                 }
+
+                return false;
             }
             else if(containerA instanceof Line || containerB instanceof Line)
             {
@@ -318,6 +319,7 @@ public abstract class PointContainer {
                         return true;
                     }
                 }
+                return false;
             }
 
         }
