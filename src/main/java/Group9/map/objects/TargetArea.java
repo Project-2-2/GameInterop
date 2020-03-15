@@ -5,7 +5,7 @@ import Interop.Percept.Vision.ObjectPerceptType;
 
 public class TargetArea extends MapObject {
 
-    public TargetArea(PointContainer.Quadrilateral area) {
+    public TargetArea(PointContainer.Polygon area) {
         super(area, ObjectPerceptType.TargetArea);
     }
 

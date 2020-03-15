@@ -32,6 +32,7 @@ import Interop.Percept.Vision.FieldOfView;
 import Interop.Percept.Vision.ObjectPerceptType;
 import Interop.Percept.Vision.ObjectPercepts;
 import Interop.Percept.Vision.VisionPrecepts;
+import Interop.Utils.Utils;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -164,7 +165,7 @@ public class Game {
                 Vector2 pointC = temp.add(line.getEnd());
                 Vector2 pointB = temp.flip().add(line.getStart());
                 Vector2 pointD = temp.flip().add(line.getEnd());
-                PointContainer.Quadrilateral quadrilateral = new PointContainer.Quadrilateral(pointA, pointB, pointC, pointD);
+                PointContainer.Polygon quadrilateral = new PointContainer.Polygon(pointA, pointB, pointC, pointD);
                 if(gameMap.isMoveIntersecting(quadrilateral, ObjectPerceptType::isSolid))
                 {
                     return false;
@@ -353,9 +354,7 @@ public class Game {
                     Sound sound = (Sound) dynamicObject;
                     return new SoundPercept(
                             sound.getType(),
-                            Direction.fromRadians(1)
-                            //Direction.fromRadians((dynamicObject.getCenter().getClockDirection() - agentContainer.getPosition().getClockDirection()) % Utils.TAU) //TODO broken
-                    );
+                            Direction.fromRadians(Utils.mod(dynamicObject.getCenter().getClockDirection() - agentContainer.getPosition().getClockDirection(), Utils.TAU))                    );
                 }).collect(Collectors.toUnmodifiableSet()));
     }
 

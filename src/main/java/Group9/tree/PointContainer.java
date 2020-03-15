@@ -7,9 +7,44 @@ import java.util.*;
 
 public abstract class PointContainer {
 
+    /**
+     * Move the container by applying `x_i = x_i + vector.x` and `y_i = y_i + vector.y`
+     * @param vector
+     */
     abstract public void translate(Vector2 vector);
 
+    /**
+     * Returns the center of the container.
+     * @return
+     */
     abstract public Vector2 getCenter();
+
+    @Override
+    public PointContainer clone() throws CloneNotSupportedException {
+        if(this instanceof Line)
+        {
+            return ((Line) this).clone();
+        }
+        else if(this instanceof Circle)
+        {
+            return ((Circle) this).clone();
+        }
+        else if(this instanceof Polygon)
+        {
+            return ((Polygon) this).clone();
+        }
+        throw new CloneNotSupportedException();
+    }
+
+    public PointContainer.Polygon getAsPolygon()
+    {
+        return (PointContainer.Polygon) this;
+    }
+
+    public PointContainer.Circle getAsCircle()
+    {
+        return (PointContainer.Circle) this;
+    }
 
     /**
      * This class supports non-self-intersecting closed polygons of arbitrary size >= 3.
@@ -174,78 +209,6 @@ public abstract class PointContainer {
         }
     }
 
-    public static class Quadrilateral extends Polygon {
-
-        private Vector2[] points = new Vector2[4];
-        private Line[] lines = new Line[4];
-
-        public Quadrilateral(Vector2 a, Vector2 b, Vector2 c, Vector2 d)
-        {
-            super(a, b, c, d);
-        }
-
-        public static class Rectangle extends Quadrilateral {
-            private double topY, bottomY, leftmostX, rightmostX;
-
-            public Rectangle(Vector2 a, Vector2 b, Vector2 c, Vector2 d) {
-                super(a, b, c, d);
-            }
-
-            public Rectangle(double topY, double bottomY, double leftmostX, double rightmostX) {
-                super(  new Vector2(leftmostX, topY),
-                        new Vector2(rightmostX, topY),
-                        new Vector2(rightmostX, bottomY),
-                        new Vector2(leftmostX, bottomY)
-                );
-
-                this.topY = topY;
-                this.bottomY = bottomY;
-                this.leftmostX = leftmostX;
-                this.rightmostX = rightmostX;
-            }
-
-            public double getHorizonalSize() {
-                return Math.abs(rightmostX - leftmostX);
-            }
-
-            public double getVerticalSize() {
-                return Math.abs(topY - bottomY);
-            }
-
-            public double getTopY() {
-                return topY;
-            }
-
-            public double getBottomY() {
-                return bottomY;
-            }
-
-            public double getLeftmostX() {
-                return leftmostX;
-            }
-
-            public double getRightmostX() {
-                return rightmostX;
-            }
-
-        }
-
-        /**
-         * Returns the smallest rectangle (whose sides are parallel to x and y axises) containing the Quadrilateral
-         * Idea: https://imgur.com/a/NOwvwRM
-         * @return
-         */
-        public static Quadrilateral.Rectangle containingRectangle(Quadrilateral q) {
-            // not efficient, but probably sufficiently efficient
-            double topY = Arrays.stream(q.getPoints()).min(Comparator.comparing(Vector2::getY)).get().getY();
-            double bottomY = Arrays.stream(q.getPoints()).max(Comparator.comparing(Vector2::getY)).get().getY();
-            double rightmostX = Arrays.stream(q.getPoints()).max(Comparator.comparing(Vector2::getX)).get().getX();
-            double leftmostX = Arrays.stream(q.getPoints()).min(Comparator.comparing(Vector2::getX)).get().getX();
-
-            return new Quadrilateral.Rectangle(topY, bottomY, leftmostX, rightmostX);
-        }
-    }
-
     public static class Circle extends PointContainer
     {
         private Vector2 center;
@@ -272,7 +235,7 @@ public abstract class PointContainer {
         }
 
         @Override
-        public Circle clone() throws CloneNotSupportedException {
+        public Circle clone() {
             return new Circle(center.clone(), this.getRadius());
         }
     }
@@ -339,34 +302,6 @@ public abstract class PointContainer {
         public PointContainer.Line clone() {
             return new Line(this.start, this.end);
         }
-    }
-
-
-    @Override
-    public PointContainer clone() throws CloneNotSupportedException {
-        if(this instanceof Line)
-        {
-            return ((Line) this).clone();
-        }
-        else if(this instanceof Circle)
-        {
-            return ((Circle) this).clone();
-        }
-        else if(this instanceof Polygon)
-        {
-            return ((Polygon) this).clone();
-        }
-        throw new CloneNotSupportedException();
-    }
-
-    public PointContainer.Polygon getAsPolygon()
-    {
-        return (PointContainer.Polygon) this;
-    }
-
-    public PointContainer.Circle getAsCircle()
-    {
-        return (PointContainer.Circle) this;
     }
 
     public static boolean intersect(PointContainer containerA, PointContainer containerB)
@@ -454,6 +389,27 @@ public abstract class PointContainer {
 
     }
 
+    public static List<Vector2> intersectionPoints(PointContainer pointContainer, Line l) {
+        List<Vector2> intersectionPoints = new ArrayList<Vector2>();
+
+        if (pointContainer instanceof Line) {
+            intersectionPoints.add(twoLinesIntersect((Line) pointContainer,l));
+        } else if (pointContainer instanceof Circle) {
+            Collections.addAll(intersectionPoints, circleLineIntersect((Circle) pointContainer, l));
+        } else if (pointContainer instanceof Polygon) {
+            Polygon q = (Polygon) pointContainer;
+
+            for (Line ql : q.getLines()) {
+                Vector2 intersectPoint = twoLinesIntersect(ql, l);
+                if (intersectPoint != null) {
+                    intersectionPoints.add(intersectPoint);
+                }
+            }
+        }
+
+        return intersectionPoints;
+    }
+
     private static Vector2[] circleLineIntersect(Circle circle, Line line){
         //https://mathworld.wolfram.com/Circle-LineIntersection.html
         Vector2[] returnArray = new Vector2[0];
@@ -534,28 +490,6 @@ public abstract class PointContainer {
     private static Vector2 twoLinesIntersect(Line a, Line b) {
         return twoLinesIntersect(a.getStart(), a.getEnd(), b.getStart(), b.getEnd());
     }
-
-    public static List<Vector2> intersectionPoints(PointContainer pointContainer, Line l) {
-        List<Vector2> intersectionPoints = new ArrayList<Vector2>();
-
-        if (pointContainer instanceof Line) {
-            intersectionPoints.add(twoLinesIntersect((Line) pointContainer,l));
-        } else if (pointContainer instanceof Circle) {
-            Collections.addAll(intersectionPoints, circleLineIntersect((Circle) pointContainer, l));
-        } else if (pointContainer instanceof Polygon) {
-            Polygon q = (Polygon) pointContainer;
-
-            for (Line ql : q.getLines()) {
-                Vector2 intersectPoint = twoLinesIntersect(ql, l);
-                if (intersectPoint != null) {
-                    intersectionPoints.add(intersectPoint);
-                }
-            }
-        }
-
-        return intersectionPoints;
-    }
-
 
     /**
      * matrix defined as

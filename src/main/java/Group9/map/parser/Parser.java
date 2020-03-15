@@ -197,9 +197,9 @@ public class Parser {
 
     }
 
-    private static PointContainer.Quadrilateral quadrilateralFromData(String[] data)
+    private static PointContainer.Polygon quadrilateralFromData(String[] data)
     {
-        return new PointContainer.Quadrilateral(
+        return new PointContainer.Polygon(
                 new Vector2(Double.parseDouble(data[0]), Double.parseDouble(data[1])),
                 new Vector2(Double.parseDouble(data[2]), Double.parseDouble(data[3])),
                 new Vector2(Double.parseDouble(data[4]), Double.parseDouble(data[5])),

@@ -8,7 +8,7 @@ import java.util.Arrays;
 
 public class Door extends MapObject {
 
-    public Door(PointContainer.Quadrilateral area) {
+    public Door(PointContainer.Polygon area) {
         super(area, Arrays.asList(
                 new ModifySpeedEffect(area, 1, 1)
         ), ObjectPerceptType.Door);

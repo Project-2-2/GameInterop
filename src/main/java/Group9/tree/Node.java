@@ -19,7 +19,7 @@ class Node<T> {
     private final int maxSize;
     private final int maxDepth;
 
-    private PointContainer.Quadrilateral quadrilateral;
+    private PointContainer.Polygon quadrilateral;
 
     public Node(final Vector2 center, double width, double height, int maxSize, final int maxDepth)
     {
@@ -29,7 +29,7 @@ class Node<T> {
         this.maxSize = maxSize;
         this.maxDepth = maxDepth;
 
-        this.quadrilateral = new PointContainer.Quadrilateral(
+        this.quadrilateral = new PointContainer.Polygon(
                 center.add(width / 2, height / 2),
                 center.add(width / 2, -height / 2),
                 center.add(-width / 2, -height / 2),

@@ -5,7 +5,7 @@ import Interop.Percept.Vision.ObjectPerceptType;
 
 public class Wall extends MapObject {
 
-    public Wall(PointContainer.Quadrilateral area) {
+    public Wall(PointContainer.Polygon area) {
         super(area, ObjectPerceptType.Wall);
     }
 

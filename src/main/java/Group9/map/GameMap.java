@@ -243,7 +243,7 @@ public class GameMap {
                 .collect(Collectors.toUnmodifiableSet());
     }
 
-    public boolean isMoveIntersecting(PointContainer.Quadrilateral agentMove, Predicate<ObjectPerceptType> filter){
+    public boolean isMoveIntersecting(PointContainer.Polygon agentMove, Predicate<ObjectPerceptType> filter){
         return this.mapObjects.stream()
                 .filter(e -> filter.test(e.getType()))
                 .anyMatch(e -> PointContainer.intersect(e.getContainer(), agentMove));
@@ -549,48 +549,48 @@ public class GameMap {
             return this;
         }
 
-        public Builder wall(PointContainer.Quadrilateral quadrilateral){
+        public Builder wall(PointContainer.Polygon quadrilateral){
             this.object(new Wall(quadrilateral));
             return this;
         }
 
-        public Builder targetArea(PointContainer.Quadrilateral quadrilateral){
+        public Builder targetArea(PointContainer.Polygon quadrilateral){
             this.object(new TargetArea(quadrilateral));
             return this;
         }
 
-        public Builder spawnAreaIntruders(PointContainer.Quadrilateral quadrilateral){
+        public Builder spawnAreaIntruders(PointContainer.Polygon quadrilateral){
             this.object(new Spawn.Intruder(quadrilateral));
             return this;
         }
 
-        public Builder spawnAreaGuards(PointContainer.Quadrilateral quadrilateral){
+        public Builder spawnAreaGuards(PointContainer.Polygon quadrilateral){
             this.object(new Spawn.Guard(quadrilateral));
             return this;
         }
 
-        public Builder teleport(PointContainer.Quadrilateral quadrilateral){
+        public Builder teleport(PointContainer.Polygon quadrilateral){
             this.object(new TeleportArea(quadrilateral));
             return this;
         }
 
-        public Builder shaded(PointContainer.Quadrilateral quadrilateral){
+        public Builder shaded(PointContainer.Polygon quadrilateral){
             this.object(new ShadedArea(quadrilateral,guardViewRangeShaded.getValue()/guardViewRangeNormal.getValue(),
                     intruderViewRangeShaded.getValue()/intruderViewRangeNormal.getValue()));
             return this;
         }
 
-        public Builder door(PointContainer.Quadrilateral quadrilateral){
+        public Builder door(PointContainer.Polygon quadrilateral){
             this.object(new Door(quadrilateral));
             return this;
         }
 
-        public Builder window(PointContainer.Quadrilateral quadrilateral){
+        public Builder window(PointContainer.Polygon quadrilateral){
             this.object(new Window(quadrilateral));
             return this;
         }
 
-        public Builder sentry(PointContainer.Quadrilateral quadrilateral){
+        public Builder sentry(PointContainer.Polygon quadrilateral){
             this.object(new SentryTower(quadrilateral, sentrySlowdownModifier));
             return this;
         }
