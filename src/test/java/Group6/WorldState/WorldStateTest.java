@@ -12,7 +12,7 @@ public class WorldStateTest extends SimpleUnitTest {
 
         System.out.println("\n\nWorld State Test\n");
 
-        xit("allows to create world state from a scenario", () -> {
+        it("allows to create world state from a scenario", () -> {
             Scenario scenario = new Scenario(GroupTests.resources + "/scenario.txt");
             new WorldState(
                 scenario,

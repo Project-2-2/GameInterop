@@ -1,5 +1,7 @@
 package Group6.Geometry;
 
+import Group6.Utils;
+
 public class LineSegment {
 
     private Point a;
@@ -55,11 +57,15 @@ public class LineSegment {
         return maxY;
     }
 
+    /**
+     * @link https://silentmatt.com/rectangle-intersection/
+     * @link https://martin-thoma.com/how-to-check-if-two-line-segments-intersect/#Where_do_two_line_segments_intersect
+     */
     public boolean isIntersecting(LineSegment lineSegment) {
-        return a.getX() <= lineSegment.b.getX()
-            && lineSegment.a.getX() >= b.getX()
-            && a.getY() <= lineSegment.b.getY()
-            && lineSegment.a.getY() >= b.getY();
+        return minX <= lineSegment.maxX
+            && maxX >= lineSegment.minX
+            && minY <= lineSegment.maxY
+            && maxY >= lineSegment.minY;
     }
 
 }
