@@ -1,6 +1,7 @@
 package Group9;
 
 import Group9.agent.ExplorerAgent;
+import Group9.agent.container.ExplorerContainer;
 import Interop.Agent.Guard;
 import Interop.Agent.Intruder;
 
@@ -20,6 +21,7 @@ public class AgentsFactory {
     static public List<Intruder> createIntruders(int number) {
         return Collections.emptyList();
     }
+
     static public List<Guard> createGuards(int number) {
         List<Guard> guards = new ArrayList<>();
         for(int i = 0; i < number; i++)

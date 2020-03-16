@@ -292,7 +292,7 @@ public class GameMap {
 
 
     /**
-     * Returns the set of all objects visible by an agent
+     * Returns the set of all objects visible by an agent relative to the agent.
      * It casts rays starting from the clockwise-most to the anticlock-wise most.
      * Assuming Direction of an agent points to the middle of the this field of view
      * (so Direction divides the field of view exactly into two equal sections)
@@ -302,7 +302,6 @@ public class GameMap {
      * @see Interop.Percept.Vision.FieldOfView
      */
     public <T> Set<ObjectPercept> getObjectPerceptsForAgent(AgentContainer<T> agentContainer, FieldOfView fov) {
-        // sane default (TODO: Is naive java-fu below working?)
         final double range = fov.getRange().getValue();
         final double viewAngle = fov.getViewAngle().getRadians();
 

@@ -427,8 +427,7 @@ public abstract class PointContainer {
 
         double discriminant = r*r * dr*dr - (determinant*determinant);
 
-        //TODO: Maybe decide the right case using an EPSILON value to make close calls for the tangent lines more clear
-        if(discriminant == 0) {
+        if(Math.abs(discriminant) < Math.ulp(0)) {
             returnArray = new Vector2[1];
             double returnX = (determinant * dy) / (dr*dr);
             double returnY = (-determinant * dx) / (dr*dr);

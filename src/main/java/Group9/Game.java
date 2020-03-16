@@ -39,7 +39,6 @@ import java.util.stream.Collectors;
 
 public class Game {
 
-    //TODO remove seed for demo
     public final static Random _RANDOM = new Random();
 
     private GameMap gameMap;
@@ -139,7 +138,7 @@ public class Game {
             }
         }
 
-        return winner;
+        return null;
     }
 
     private <T> boolean executeAction(AgentContainer<T> agentContainer, Action action)
@@ -193,13 +192,9 @@ public class Game {
                 }
             }
 
-            //---
-
-            final Vector2 end = agentContainer.getPosition().add(agentContainer.getDirection().mul(distance, distance));
-
-            //TODO we are currently only checking whether a single line is intersecting with something but not whether
-            // or not we are too wide
+            //--- check for movement collision
             {
+                final Vector2 end = agentContainer.getPosition().add(agentContainer.getDirection().mul(distance, distance));
                 PointContainer.Line line = new PointContainer.Line(agentContainer.getPosition(), end);
                 Vector2 temp = line.getNormal().mul(agentContainer.getShape().getRadius());
                 Vector2 pointA = temp.add(line.getStart());
@@ -259,6 +254,7 @@ public class Game {
                     intruderContainer.setZoneCounter(0);
                 }
             }
+            //--- check if guard is close enough to capture
             else
             {
                 this.intruders.stream()
