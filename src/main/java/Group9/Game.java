@@ -270,7 +270,7 @@ public class Game {
         else if(action instanceof Rotate)
         {
             Rotate rotate = (Rotate) action;
-            if(gameMap.getScenarioPercepts().getMaxRotationAngle().getRadians() > rotate.getAngle().getRadians())
+            if(gameMap.getScenarioPercepts().getMaxRotationAngle().getRadians() < rotate.getAngle().getRadians())
             {
                 return false;
             }
