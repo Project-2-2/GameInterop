@@ -18,13 +18,7 @@ public class Agent extends Circle implements GameObject
 	final static double sprint = 4;//maxSprintDistanceIntruder 
 	final Duration Timestep = Duration.seconds(0.1);
 	static boolean guard = false;
-	static boolean guard1 = false;
-	static boolean guard2 = false;
-	static boolean guard3 = false;
-	static  boolean intruder1 = false;
-	static boolean intruder2 = false;
-	//useless comment
-	
+
 	
 	public Agent(double x,double y,double r, boolean guard)
 	{
@@ -34,16 +28,8 @@ public class Agent extends Circle implements GameObject
 		setCenterX(x);
 		setCenterY(y);
 		setRadius(r);
-		if(guard1== true)
-		{setFill(Color.BROWN);}
-		else if(guard2 == true)
-		{setFill(Color.CHOCOLATE);}
-		else if(guard3 == true)
-		{setFill(Color.CORAL);}
-		else if(intruder1 == true)
-		{setFill(Color.BLUEVIOLET);}
-		else if(intruder2 == true)
-		{setFill(Color.DARKCYAN);}
+		if(guard == true) {setFill(Color.RED);setStroke(Color.BLACK);}
+		else {setFill(Color.BLUE);}
 		
 		
 	}
@@ -52,11 +38,11 @@ public class Agent extends Circle implements GameObject
 	@Override
 	public void updateScale() {
 		// TODO Auto-generated method stub
-		
 		double scale = Scale.scale;
-		setCenterX(x*scale);
-		setCenterY(y*scale);
-		setRadius(r*scale);
+       setCenterX(x*scale);
+       setCenterY(y*scale);
+       setRadius(r*scale);
+       
 	}
 	
 	public static void move(Scene scene, Agent x) {
