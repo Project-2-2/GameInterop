@@ -15,7 +15,6 @@ import javafx.stage.Stage;
 
 public class Map extends Application {
 
-
 	@Override
 	public void start(Stage s) throws Exception {
 		VBox vBox = new VBox();
@@ -33,27 +32,27 @@ public class Map extends Application {
 	    InternalWall wall2 = new InternalWall(0.0,1.0,1.0,1.0,1.0,121.0,0.0,121.0);
 	    wall2.updateScale();
 	    InternalWall wall3 = new InternalWall(120.0,1.0,120.0,121.0,119.0,121.0,119.0,1.0);
-	   wall3.updateScale();
+	    wall3.updateScale();
 	    InternalWall wall4 = new InternalWall(120.1,1.0,121.0,121.0,121.0,121.0,121.0,1.0);
 	    wall4.updateScale();
 	    InternalWall wall5 = new InternalWall(0,0,0,1,1,1,1,0);
 	    wall5.updateScale();
 	    InternalWall wall6 = new InternalWall(1.1,0,1.1,1,2,1,2,0);
-	   wall6.updateScale();
-	    Polygon wall7 = draw(1.0,121.0,119.0,121.0,119.0,120.0,1.0,120.0);
-	   // wall7.updateScale();
-	    Polygon wall8 = draw(30.0,37.0,55.0,37.0,55.0,36.0,30.0,36.0);
-	  //  wall8.updateScale();
-	    Polygon wall9 = draw(55.0,36.0,55.0,12.0,56.0,12.0,56.0,36.0);
-	//    wall9.updateScale();
+	    wall6.updateScale();
+	    InternalWall wall7 = new InternalWall(1.0,121.0,119.0,121.0,119.0,120.0,1.0,120.0);
+	    wall7.updateScale();
+	    InternalWall wall8 = new InternalWall(30.0,37.0,55.0,37.0,55.0,36.0,30.0,36.0);
+	    wall8.updateScale();
+	    InternalWall wall9 = new InternalWall(55.0,36.0,55.0,12.0,56.0,12.0,56.0,36.0);
+	    wall9.updateScale();
 	    InternalWall wall10 = new InternalWall(30.0,37.0,30.0,42.0,31.0,42.0,31.0,37.0);
 	    wall10.updateScale();
-	    Polygon wall11 = draw(31.0,42.0,31.0,41.0,55.0,41.0,55.0,42.0);
-	    //wall11.updateScale();
+	    InternalWall wall11 = new InternalWall(31.0,42.0,31.0,41.0,55.0,41.0,55.0,42.0);
+	    wall11.updateScale();
 	    InternalWall wall12 = new InternalWall(55.0,41.0,55.0,87.0,56.0,87.0,56.0,41.0);
 	    wall12.updateScale();
-	    Polygon wall13 = draw(56.0,12.0,60.0,12.0,60.0,11.0,56.0,11.0);
-	   // wall13.updateScale();
+	    InternalWall wall13 = new InternalWall(56.0,12.0,60.0,12.0,60.0,11.0,56.0,11.0);
+	    wall13.updateScale();
 	    InternalWall wall14 = new InternalWall(60.0,12.0,60.0,36.0,61.0,36.0,61.0,12.0);
 	    wall14.updateScale();
 	    InternalWall wall15 = new InternalWall(61.0,36.0,61.0,37.0,95.0,37.0,95.0,36.0);
@@ -92,7 +91,7 @@ public class Map extends Application {
 	     root.getChildren().addAll(map,wall1,wall2,wall3,wall4,wall5,wall6,wall7,wall8,wall9,wall10,wall11,wall12,wall13,wall14,wall15,wall16,wall17,wall18,wall19,target,areaGuard,areaIntruders,guard1,guard2,guard3,intruder1,intruder2);
 	      s.setScene(scene);
 	    s.setTitle("Map ");
-	 // s.setResizable(false);
+	 s.setResizable(false);
 	    s.show();
 	}
 	
@@ -102,7 +101,4 @@ public class Map extends Application {
 	     map.setStroke(Color.BLACK);
 		return map;
 	}
-	
-	
-
 }
