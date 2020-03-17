@@ -2,10 +2,7 @@ package Group6.Controller;
 
 import Group6.Geometry.Angle;
 import Group6.Geometry.Distance;
-import Group6.WorldState.AgentState;
-import Group6.WorldState.GuardState;
-import Group6.WorldState.IntruderState;
-import Group6.WorldState.WorldState;
+import Group6.WorldState.*;
 import Group6.Percept.AgentPerceptsBuilder;
 import Interop.Action.*;
 
@@ -14,12 +11,16 @@ public class Controller {
     private AgentPerceptsBuilder agentPerceptsBuilder;
     private boolean debug = true;
 
+    public Controller(AgentPerceptsBuilder agentPerceptsBuilder) {
+        this.agentPerceptsBuilder = agentPerceptsBuilder;
+    }
+
     public Controller(AgentPerceptsBuilder agentPerceptsBuilder, boolean debug) {
         this.agentPerceptsBuilder = agentPerceptsBuilder;
         this.debug = debug;
     }
 
-    public void nextTurn(WorldState worldState) {
+    public void executeTurn(WorldState worldState) {
 
         for (IntruderState intruderState: worldState.getIntruderStates()) {
             try {
@@ -49,7 +50,7 @@ public class Controller {
 
     }
 
-    public void executeAction(WorldState worldState, AgentState agentState, Action action) {
+    private void executeAction(WorldState worldState, AgentState agentState, Action action) {
 
         if(action instanceof Move) {
             agentState.move(new Distance(((Move)action).getDistance()));

@@ -15,7 +15,7 @@ public class VisionPerceptsBuilder {
         return new VisionPrecepts(
             new FieldOfView(
                 new Distance(0),
-                Angle.fromRadians(45)
+                Angle.fromDegrees(45)
             ),
             new ObjectPercepts(Collections.emptySet())
         );

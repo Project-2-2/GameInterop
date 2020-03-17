@@ -15,6 +15,20 @@ public class AgentPerceptsBuilder {
     private AreaPerceptsBuilder areaPerceptsBuilder;
     private ScenarioPerceptsBuilder scenarioPerceptsBuilder;
 
+    public AgentPerceptsBuilder(
+        VisionPerceptsBuilder visionPerceptsBuilder,
+        SoundPerceptsBuilder soundPerceptsBuilder,
+        SmellPreceptsBuilder smellPreceptsBuilder,
+        AreaPerceptsBuilder areaPerceptsBuilder,
+        ScenarioPerceptsBuilder scenarioPerceptsBuilder
+    ) {
+        this.visionPerceptsBuilder = visionPerceptsBuilder;
+        this.soundPerceptsBuilder = soundPerceptsBuilder;
+        this.smellPreceptsBuilder = smellPreceptsBuilder;
+        this.areaPerceptsBuilder = areaPerceptsBuilder;
+        this.scenarioPerceptsBuilder = scenarioPerceptsBuilder;
+    }
+
     public IntruderPercepts buildIntruderPercepts(WorldState worldState, IntruderState agentState) {
         return new IntruderPercepts(
             Direction.fromRadians(0),
