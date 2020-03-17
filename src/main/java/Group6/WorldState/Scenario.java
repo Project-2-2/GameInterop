@@ -7,6 +7,7 @@ package Group6.WorldState;
 
 import Group6.Geometry.Point;
 import Group6.Geometry.Quadrilateral;
+import Interop.Percept.Scenario.GameMode;
 
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
@@ -26,7 +27,7 @@ public class Scenario {
     private final Path filePath;
     private final static Charset ENCODING = StandardCharsets.UTF_8;
 
-    private int gameMode;
+    private GameMode gameMode;
     private int height;
     private int width;
     private int numGuards;
@@ -116,7 +117,16 @@ public class Scenario {
                 try {
                     switch (id) {
                         case "gameMode":
-                            gameMode = Integer.parseInt(value);
+                            switch (Integer.parseInt(value)) {
+                                case 0:
+                                    gameMode = GameMode.CaptureAllIntruders;
+                                    break;
+                                case 1:
+                                    gameMode = GameMode.CaptureOneIntruder;
+                                    break;
+                                default:
+                                    throw new RuntimeException("Wrong game mode: " + value + " !");
+                            }
                             break;
                         case "height":
                             height = Integer.parseInt(value);
@@ -272,7 +282,7 @@ public class Scenario {
         return mapDoc;
     }
 
-    public int getGameMode() {
+    public GameMode getGameMode() {
         return gameMode;
     }
 
