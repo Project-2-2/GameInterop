@@ -6,6 +6,7 @@
 package Group6.WorldState;
 
 import Group6.Geometry.Angle;
+import Group6.Geometry.Collection.Quadrilaterals;
 import Group6.Geometry.Distance;
 import Group6.Geometry.Point;
 import Group6.Geometry.Quadrilateral;
@@ -412,28 +413,28 @@ public class Scenario {
         return targetArea;
     }
 
-    public ArrayList<Quadrilateral> getWalls() {
-        return walls;
+    public Quadrilaterals getWalls() {
+        return new Quadrilaterals(walls);
     }
 
-    public ArrayList<Quadrilateral> getDoors() {
-        return doors;
+    public Quadrilaterals getDoors() {
+        return new Quadrilaterals(doors);
     }
 
-    public ArrayList<Quadrilateral> getWindows() {
-        return windows;
+    public Quadrilaterals getWindows() {
+        return new Quadrilaterals(windows);
     }
 
-    public ArrayList<Quadrilateral> getSentryTowers() {
-        return sentryTowers;
+    public Quadrilaterals getSentryTowers() {
+        return new Quadrilaterals(sentryTowers);
     }
 
     public ArrayList<Teleport> getTeleports() {
         return teleports;
     }
 
-    public ArrayList<Quadrilateral> getShadedAreas() {
-        return shadedAreas;
+    public Quadrilaterals getShadedAreas() {
+        return new Quadrilaterals(shadedAreas);
     }
 
     static private class ScenarioException extends RuntimeException {
