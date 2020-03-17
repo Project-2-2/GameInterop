@@ -23,7 +23,7 @@ public class AgentPerceptsBuilder {
             smellPreceptsBuilder.buildPercepts(worldState, agentState),
             areaPerceptsBuilder.buildPrecepts(worldState, agentState),
             scenarioPerceptsBuilder.buildIntruderPercepts(worldState, agentState),
-            true
+            agentState.wasLastActionExecuted()
         );
     }
 
@@ -34,7 +34,7 @@ public class AgentPerceptsBuilder {
             smellPreceptsBuilder.buildPercepts(worldState, agentState),
             areaPerceptsBuilder.buildPrecepts(worldState, agentState),
             scenarioPerceptsBuilder.buildGuardPercepts(worldState, agentState),
-            true
+            agentState.wasLastActionExecuted()
         );
     }
 
