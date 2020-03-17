@@ -68,4 +68,42 @@ public class LineSegment {
             && maxY >= lineSegment.minY;
     }
 
+    public Point getIntersectionPointWith(LineSegment lineSegment) {
+
+        if(!this.isIntersecting(lineSegment)) {
+            throw new RuntimeException(
+                "There is no intersection point if two line segments do not intersect!\n" +
+                "This: " + this + "\n" +
+                "Given:" + lineSegment
+            );
+        }
+
+        double x1 = a.getX();
+        double y1 = a.getY();
+
+        double x2 = b.getX();
+        double y2 = b.getY();
+
+        double x3 = lineSegment.getA().getX();
+        double y3 = lineSegment.getA().getY();
+
+        double x4 = lineSegment.getB().getX();
+        double y4 = lineSegment.getB().getY();
+
+        // @link https://en.wikipedia.org/wiki/Line%E2%80%93line_intersection#Given_two_points_on_each_line
+        double divisor = (x1-x2)*(y3-y4)-(y1-y2)*(x3-x4);
+        double x = ((x1*y2-y1*x2)*(x3-x4)-(x1-x2)*(x3*y4-y3*x4)) / divisor;
+        double y = ((x1*y2-y1*x2)*(y3-y4)-(y1-y2)*(x3*y4-y3*x4)) / divisor;
+
+        return new Point(x, y);
+
+    }
+
+    public String toString() {
+        return "LineSegment{" +
+            "a=" + a +
+            ", b=" + b +
+            '}';
+    }
+
 }
