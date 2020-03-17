@@ -45,6 +45,8 @@ public class Controller {
             }
         }
 
+        worldState.nextTurn();
+
     }
 
     public void executeAction(WorldState worldState, AgentState agentState, Action action) {

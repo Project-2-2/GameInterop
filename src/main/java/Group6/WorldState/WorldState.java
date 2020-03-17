@@ -8,9 +8,11 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Consumer;
 
 public class WorldState {
 
+    private int turn = 0;
     private Scenario scenario;
     private List<IntruderState> intruderStates;
     private List<GuardState> guardStates;
@@ -39,6 +41,16 @@ public class WorldState {
             guardStates.add(GuardState.spawnGuard(scenario, guard));
         }
 
+    }
+
+    public int getTurn() {
+        return turn;
+    }
+
+    public void nextTurn() {
+        turn++;
+        getIntruderStates().forEach(IntruderState::nextTurn);
+        getGuardStates().forEach(GuardState::nextTurn);
     }
 
     public Scenario getScenario() {

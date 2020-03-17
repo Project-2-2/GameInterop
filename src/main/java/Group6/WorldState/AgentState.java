@@ -30,6 +30,14 @@ public abstract class AgentState {
         return cooldown;
     }
 
+    public boolean hasCooldown() {
+        return cooldown > 0;
+    }
+
+    public void nextTurn() {
+        if(hasCooldown()) cooldown--;
+    }
+
     public boolean isJustTeleported() {
         return justTeleported;
     }
@@ -43,14 +51,25 @@ public abstract class AgentState {
     }
 
     public void move(Distance distance) {
+        if(hasCooldown()) throw new IllegalActionDuringCooldown("Move");
         Vector displacement = new Vector(0, distance.getValue()).rotate(direction.getRadians());
         location = location.add(displacement).toPoint();
         wasLastActionExecuted = true;
     }
 
     public void rotate(Angle angle) {
+        if(hasCooldown()) throw new IllegalActionDuringCooldown("Rotate");
         direction = direction.getChangedBy(angle);
         wasLastActionExecuted = true;
+    }
+
+    class IllegalActionDuringCooldown extends RuntimeException {
+        public IllegalActionDuringCooldown(String action) {
+            super(
+                "Following action: " + action + " can not be executed during cooldown!\n" +
+                "Cooldown left: " + cooldown
+            );
+        }
     }
 
 }
