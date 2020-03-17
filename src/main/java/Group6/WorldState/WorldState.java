@@ -17,6 +17,8 @@ public class WorldState {
     private List<IntruderState> intruderStates;
     private List<GuardState> guardStates;
     private Set<Pheromone> pheromones = new HashSet<>();
+    private Set<Sound> soundsToPerceiveNow = new HashSet<>();
+    private Set<Sound> soundsToPerceiveInNextTurn = new HashSet<>();
 
     public WorldState(Scenario scenario, List<IntruderState> intruderStates, List<GuardState> guardStates) {
         this.scenario = scenario;
@@ -51,6 +53,14 @@ public class WorldState {
         turn++;
         getIntruderStates().forEach(IntruderState::nextTurn);
         getGuardStates().forEach(GuardState::nextTurn);
+        // TODO: Is the following code correct?
+        // From guidelines: Turn system: World state is updated after each action issued by an agent
+        soundsToPerceiveNow = soundsToPerceiveInNextTurn;
+        soundsToPerceiveInNextTurn = new HashSet<>();
+    }
+
+    public void addSound(Sound sound) {
+        soundsToPerceiveInNextTurn.add(sound);
     }
 
     public Scenario getScenario() {
@@ -67,6 +77,10 @@ public class WorldState {
 
     public Set<Pheromone> getPheromones() {
         return pheromones;
+    }
+
+    public Set<Sound> getSounds() {
+        return soundsToPerceiveNow;
     }
 
 }
