@@ -7,12 +7,12 @@ import Interop.Percept.Sound.SoundPerceptType;
 public class Sound {
 
     private Point source;
-    private Distance distance;
+    private Distance audibleInRadius;
     private SoundPerceptType type;
 
-    public Sound(Point source, Distance distance, SoundPerceptType type) {
+    public Sound(Point source, Distance audibleInRadius, SoundPerceptType type) {
         this.source = source;
-        this.distance = distance;
+        this.audibleInRadius = audibleInRadius;
         this.type = type;
     }
 
@@ -20,8 +20,8 @@ public class Sound {
         return source;
     }
 
-    public Distance getDistance() {
-        return distance;
+    public Distance getAudibleInRadius() {
+        return audibleInRadius;
     }
 
     public SoundPerceptType getType() {
