@@ -1,5 +1,7 @@
 package Group6.WorldState;
 
+import Group6.Geometry.Quadrilateral;
+import Interop.Agent.Guard;
 import Interop.Agent.Intruder;
 import Group6.Geometry.Direction;
 import Group6.Geometry.Point;
@@ -15,6 +17,16 @@ public class IntruderState extends AgentState {
 
     public Intruder getIntruder() {
         return intruder;
+    }
+
+    static IntruderState spawnIntruder(Scenario scenario, Intruder intruder) {
+        // TODO: add check between other world state elements
+        Quadrilateral spawnArea = scenario.getSpawnAreaIntruders();
+        return new IntruderState(
+            intruder,
+            spawnArea.getRandomPointInside(),
+            Direction.random()
+        );
     }
 
 }

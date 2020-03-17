@@ -1,5 +1,10 @@
 package Group6.WorldState;
 
+import Group6.Agent.Factory.AgentsFactories;
+import Interop.Agent.Guard;
+import Interop.Agent.Intruder;
+
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -15,6 +20,25 @@ public class WorldState {
         this.scenario = scenario;
         this.intruderStates = intruderStates;
         this.guardStates = guardStates;
+    }
+
+    public WorldState(Scenario scenario, AgentsFactories agentsFactory, String intruderType, String guardType) {
+
+        this.scenario = scenario;
+
+        intruderStates = new ArrayList<>();
+        guardStates = new ArrayList<>();
+
+        List<Intruder> intruders = agentsFactory.createIntruders(intruderType, scenario.getNumIntruders());
+        for(Intruder intruder: intruders) {
+            intruderStates.add(IntruderState.spawnIntruder(scenario, intruder));
+        }
+
+        List<Guard> guards = agentsFactory.createGuards(guardType, scenario.getNumGuards());
+        for(Guard guard: guards) {
+            guardStates.add(GuardState.spawnGuard(scenario, guard));
+        }
+
     }
 
     public Scenario getScenario() {

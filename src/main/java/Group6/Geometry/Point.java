@@ -20,6 +20,10 @@ public class Point extends Vector {
         this(interopPoint.getX(), interopPoint.getY());
     }
 
+    public Point(Vector vector) {
+        this(vector.getX(), vector.getY());
+    }
+
     public Direction getClockDirection() {
         return Direction.fromClockAngle(toInteropPoint());
     }
@@ -42,6 +46,14 @@ public class Point extends Vector {
 
     public double getX() {
         return x;
+    }
+
+    public boolean isEqualTo(Vector vector) {
+        return super.isEqualTo(vector, Tolerance.epsilon);
+    }
+
+    public boolean isEqualTo(Vector vector, double tolerance) {
+        return super.isEqualTo(vector, tolerance);
     }
 
     public String toString() {
