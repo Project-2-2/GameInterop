@@ -43,7 +43,8 @@ public class Pheromone extends Polygon implements GameObject{
 	@Override
 	public void updateScale() {
 		// TODO Auto-generated method stub
-		
+		double scale = Scale.scale;
+		getPoints().addAll(x1*scale,y1*scale,x2*scale,y2*scale,x3*scale,y3*scale,x4*scale,y4*scale,x5*scale,y5*scale);
 		
 	} 
 } 
