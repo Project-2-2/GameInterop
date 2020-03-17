@@ -3,6 +3,7 @@ package Group5.GameController;
 import Interop.Agent.Guard;
 import Interop.Geometry.Angle;
 import Interop.Geometry.Point;
+import Interop.Percept.Scenario.SlowDownModifiers;
 
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
@@ -37,6 +38,8 @@ public class MapInfo {
     protected double maxMoveDistanceIntruder;
     protected double baseSpeedGuard;
     protected double maxSprintDistanceIntruder;
+    //slowdown Modifier interop class
+    public SlowDownModifiers slowDownModifiers;
     protected int gameMode;
     //TODO
     protected double captureDistance;
@@ -50,7 +53,6 @@ public class MapInfo {
     //TODO
     protected double radiusPheromone;
 
-    //TODO ALL THE SLOWDOWNN MODIFIERS
     protected double slowDownModifierWindow;
     protected double slowDownDoor;
     protected double slowDownSentryTower;
@@ -64,7 +66,7 @@ public class MapInfo {
     protected double viewRangeGuardNormal;
     protected double viewRangeGuardShaded;
 
-    //TODO BUT CAN ONLY BE DONE IS SOUND IS IMPLEMENTED
+    //TODO BUT CAN ONLY BE DONE IZ SOUND IS IMPLEMENTED
     protected double[] viewRangeSentry;
     protected double yellSoundRadius;
     protected double maxMoveSoundRadius;
@@ -103,8 +105,7 @@ public class MapInfo {
                 // in case multiple parameters
                 String[] items=value.split(" ");
                 Area tmp;
-                switch(id)
-                {
+                switch(id) {
                     case "name":
                         name = value;
                         break;
@@ -234,6 +235,19 @@ public class MapInfo {
                 }
             }
         }
+    }
+
+    protected void initialize(){
+        spawnAgents();
+        setSlowDownModifiers();
+
+    }
+
+    private void setSlowDownModifiers(){
+        slowDownModifiers = new SlowDownModifiers(slowDownModifierWindow,slowDownDoor,slowDownSentryTower);
+        Door.setSlowDownModifier(slowDownDoor);
+        SentryTower.setSlowDownModifer(slowDownSentryTower);
+        Window.setSlowDownModifier(slowDownModifierWindow);
     }
 
     protected void spawnAgents(){

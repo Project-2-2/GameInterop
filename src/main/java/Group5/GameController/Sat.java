@@ -24,7 +24,8 @@ class Sat {
                 new Vector2D(800, 400)};
         Vector2D[] test = {new Vector2D(0,45),new Vector2D(100,100)};
 
-        System.out.println(Sat.hasCollided(tank,test));
+
+        System.out.println(Sat.hasCollided(shell,circleToPolygon(shell,new Point(1,1),15)));
 
 
     }
@@ -41,18 +42,15 @@ class Sat {
         ArrayList<Vector2D> edges = polyToEdges(compare);
         Vector2D[] circlePolygon = new Vector2D[edges.size()];
         for (int i = 0; i<edges.size();i++){
-            System.out.println(edges.get(i).toPoint().getClockDirection().getRadians());
-            System.out.println(Math.atan2(edges.get(i).getX(),edges.get(i).getY()));
-            System.out.println(Math.atan2(compare[i].getX()-compare[i+1].getX(),compare[i].getY()-compare[i+1].getY()));
+           // System.out.println(edges.get(i).toPoint().getClockDirection().getRadians());
+           // System.out.println(Math.atan2(edges.get(i).getX(),edges.get(i).getY()));
+//            System.out.println(Math.atan2(compare[i].getX()-compare[i+1].getX(),compare[i].getY()-compare[i+1].getY()));
             double x = p.getX()+radius*Math.cos(edges.get(i).toPoint().getClockDirection().getRadians());
             double y = p.getY()+radius*Math.sin(edges.get(i).toPoint().getClockDirection().getRadians());
             System.out.println("x: " + x + " y: "+ y);
             circlePolygon[i] = new Vector2D(x,y);
         }
         return circlePolygon;
-
-
-
 
     }
 
@@ -123,4 +121,5 @@ class Sat {
         return projection1.getX() <= projection2.getY() &&
                 projection2.getX() <= projection1.getY();
     }
+
 }
