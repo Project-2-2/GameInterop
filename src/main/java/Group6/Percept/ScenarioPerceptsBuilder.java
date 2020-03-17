@@ -9,32 +9,37 @@ import Interop.Percept.Scenario.*;
 
 public class ScenarioPerceptsBuilder {
 
-    public ScenarioPercepts buildPercepts(WorldState worldState, AgentState agentState) {
-        Scenario scenario = worldState.getScenario();
+    public ScenarioPercepts buildPercepts(Scenario scenario, AgentState agentState) {
         return new ScenarioPercepts(
             scenario.getGameMode(),
-            new Distance(1),
-            Angle.fromRadians(1),
-            new SlowDownModifiers(1,1,1),
-            new Distance(1),
-            1
+            scenario.getCaptureDistance().toInteropDistance(),
+            scenario.getMaxRotationAngle().toInteropAngle(),
+            new SlowDownModifiers(
+                scenario.getSlowDownModifierWindow(),
+                scenario.getSlowDownModifierDoor(),
+                scenario.getSlowDownModifierSentryTower()
+            ),
+            scenario.getRadiusPheromone().toInteropDistance(),
+            scenario.getPheromoneCooldown()
         );
     }
 
     public ScenarioIntruderPercepts buildIntruderPercepts(WorldState worldState, AgentState agentState) {
+        Scenario scenario = worldState.getScenario();
         return new ScenarioIntruderPercepts(
-            buildPercepts(worldState, agentState),
-            1,
-            new Distance(1),
-            new Distance(1),
-            1
+            buildPercepts(scenario, agentState),
+            scenario.getWinConditionIntruderRounds(),
+            scenario.getMaxMoveDistanceIntruder().toInteropDistance(),
+            scenario.getMaxSprintDistanceIntruder().toInteropDistance(),
+            scenario.getSprintCooldown()
         );
     }
 
     public ScenarioGuardPercepts buildGuardPercepts(WorldState worldState, AgentState agentState) {
+        Scenario scenario = worldState.getScenario();
         return new ScenarioGuardPercepts(
-            buildPercepts(worldState, agentState),
-            new Distance(1)
+            buildPercepts(scenario, agentState),
+            scenario.getMaxMoveDistanceGuard().toInteropDistance()
         );
     }
 

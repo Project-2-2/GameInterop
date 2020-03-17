@@ -5,6 +5,8 @@
  */
 package Group6.WorldState;
 
+import Group6.Geometry.Angle;
+import Group6.Geometry.Distance;
 import Group6.Geometry.Point;
 import Group6.Geometry.Quadrilateral;
 import Interop.Percept.Scenario.GameMode;
@@ -302,28 +304,28 @@ public class Scenario {
         return numIntruders;
     }
 
-    public double getCaptureDistance() {
-        return captureDistance;
+    public Distance getCaptureDistance() {
+        return new Distance(captureDistance);
     }
 
     public int getWinConditionIntruderRounds() {
         return winConditionIntruderRounds;
     }
 
-    public double getMaxRotationAngle() {
-        return maxRotationAngle;
+    public Angle getMaxRotationAngle() {
+        return Angle.fromDegrees(maxRotationAngle);
     }
 
-    public double getMaxMoveDistanceIntruder() {
-        return maxMoveDistanceIntruder;
+    public Distance getMaxMoveDistanceIntruder() {
+        return new Distance(maxMoveDistanceIntruder);
     }
 
-    public double getMaxSprintDistanceIntruder() {
-        return maxSprintDistanceIntruder;
+    public Distance getMaxSprintDistanceIntruder() {
+        return new Distance(maxSprintDistanceIntruder);
     }
 
-    public double getMaxMoveDistanceGuard() {
-        return maxMoveDistanceGuard;
+    public Distance getMaxMoveDistanceGuard() {
+        return new Distance(maxMoveDistanceGuard);
     }
 
     public int getSprintCooldown() {
@@ -334,8 +336,8 @@ public class Scenario {
         return pheromoneCooldown;
     }
 
-    public double getRadiusPheromone() {
-        return radiusPheromone;
+    public Distance getRadiusPheromone() {
+        return new Distance(radiusPheromone);
     }
 
     public double getSlowDownModifierWindow() {
@@ -350,52 +352,52 @@ public class Scenario {
         return slowDownModifierSentryTower;
     }
 
-    public double getViewAngle() {
-        return viewAngle;
+    public Angle getViewAngle() {
+        return Angle.fromDegrees(viewAngle);
     }
 
     public int getViewRays() {
         return viewRays;
     }
 
-    public double getViewRangeIntruderNormal() {
-        return viewRangeIntruderNormal;
+    public Distance getViewRangeIntruderNormal() {
+        return new Distance(viewRangeIntruderNormal);
     }
 
-    public double getViewRangeIntruderShaded() {
-        return viewRangeIntruderShaded;
+    public Distance getViewRangeIntruderShaded() {
+        return new Distance(viewRangeIntruderShaded);
     }
 
-    public double getViewRangeGuardNormal() {
-        return viewRangeGuardNormal;
+    public Distance getViewRangeGuardNormal() {
+        return new Distance(viewRangeGuardNormal);
     }
 
-    public double getViewRangeGuardShaded() {
-        return viewRangeGuardShaded;
+    public Distance getViewRangeGuardShaded() {
+        return new Distance(viewRangeGuardShaded);
     }
 
-    public double getViewRangeSentryStart() {
-        return viewRangeSentryStart;
+    public Distance getViewRangeSentryStart() {
+        return new Distance(viewRangeSentryStart);
     }
 
-    public double getViewRangeSentryEnd() {
-        return viewRangeSentryEnd;
+    public Distance getViewRangeSentryEnd() {
+        return new Distance(viewRangeSentryEnd);
     }
 
-    public double getYellSoundRadius() {
-        return yellSoundRadius;
+    public Distance getYellSoundRadius() {
+        return new Distance(yellSoundRadius);
     }
 
-    public double getMaxMoveSoundRadius() {
-        return maxMoveSoundRadius;
+    public Distance getMaxMoveSoundRadius() {
+        return new Distance(maxMoveSoundRadius);
     }
 
-    public double getWindowSoundRadius() {
-        return windowSoundRadius;
+    public Distance getWindowSoundRadius() {
+        return new Distance(windowSoundRadius);
     }
 
-    public double getDoorSoundRadius() {
-        return doorSoundRadius;
+    public Distance getDoorSoundRadius() {
+        return new Distance(doorSoundRadius);
     }
 
     public Quadrilateral getSpawnAreaIntruders() {
