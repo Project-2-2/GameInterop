@@ -52,6 +52,24 @@ public class Area {
         areas.add(this);
     }
 
+    public Area(int x1, int y1, int x2, int y2, int x3, int y3, int x4, int y4){
+        leftBoundary=Math.min(Math.min(x1,x2),Math.min(x3,x4));
+        rightBoundary=Math.max(Math.max(x1,x2),Math.max(x3,x4));
+        topBoundary=Math.min(Math.max(y1,y2),Math.max(y3,y4));
+        bottomBoundary=Math.max(Math.max(y1,y2),Math.max(y3,y4));
+        this.x1=x1;
+        this.x2=x2;
+        this.x3=x3;
+        this.x4=x4;
+        this.y1=y1;
+        this.y2=y2;
+        this.y3=y3;
+        this.y4=y4;
+        this.opaque = opaque;
+
+        areas.add(this);
+    }
+
     public boolean isOpaque() {
         return this.opaque;
     }
@@ -161,11 +179,13 @@ public class Area {
         for (ArrayList<Area> arr: perceived) {
             for (int i = 0; i < n - 1; i++) {
                 for (int j = 0; j < n - i - 1; j++) {
+                    /*
                     if (arr.get(j).getDistance(agent) > arr.get(j + 1).getDistance(agent)) {
                         Area temp = arr.get(j);
                         arr.set(j, arr.get(j + 1));
                         arr.set(j + 1, temp);
                     }
+                    */
                 }
             }
         }
@@ -175,9 +195,10 @@ public class Area {
      * @param agent
      * @return the distance between an agent and area
      */
+    /*
     public double getDistance(AgentController agent) {
         return Math.sqrt(Math.pow(agent.getPosition().getX(), this.getX())+
                 Math.pow(agent.getPosition().getY(), this.getY()));
-    }
+    */
 
 }

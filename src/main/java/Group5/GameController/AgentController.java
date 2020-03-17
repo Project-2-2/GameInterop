@@ -43,8 +43,7 @@ public class AgentController {
         double y = vectorLength*Math.sin(angle.getRadians());
         direction = new Vector2D(x,y);
     }
-
-
+    
     /**
      * call this method to do a movement
      * @param distance
