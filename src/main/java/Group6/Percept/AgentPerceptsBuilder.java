@@ -30,8 +30,16 @@ public class AgentPerceptsBuilder {
     }
 
     public IntruderPercepts buildIntruderPercepts(WorldState worldState, IntruderState agentState) {
+        Direction targetDirectionAsPerceivedByAgent = agentState
+            .getPerceivedDirectionTo(
+                worldState
+                    .getScenario()
+                    .getTargetArea()
+                    .getCenter()
+            )
+            .toInteropDirection();
         return new IntruderPercepts(
-            Direction.fromRadians(0),
+            targetDirectionAsPerceivedByAgent,
             visionPerceptsBuilder.buildPercepts(worldState, agentState),
             soundPerceptsBuilder.buildPercepts(worldState, agentState),
             smellPreceptsBuilder.buildPercepts(worldState, agentState),

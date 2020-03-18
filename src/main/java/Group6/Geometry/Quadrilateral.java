@@ -69,6 +69,13 @@ public class Quadrilateral {
         return pointD;
     }
 
+    public Point getCenter() {
+        return new Point(
+            (getMinX() + getMaxX()) / 2,
+            (getMinY() + getMaxY()) / 2
+        );
+    }
+
     public LineSegment getSideAB() {
         return sideAB;
     }

@@ -25,7 +25,7 @@ public class Point extends Vector {
     }
 
     public Direction getClockDirection() {
-        return Direction.fromClockAngle(toInteropPoint());
+        return Direction.fromClockAngle(this);
     }
 
     public Distance getDistance(Point point) {

@@ -44,7 +44,15 @@ public class Angle {
         return Math.toDegrees(radians);
     }
 
-    public final Angle getDistance(Angle angle) {
+    public Angle sum(Angle angle) {
+        return Angle.fromRadians(this.radians + angle.radians);
+    }
+
+    public Angle substract(Angle angle) {
+        return Angle.fromRadians(this.radians - angle.radians);
+    }
+
+    public Angle getDistance(Angle angle) {
         return fromRadians(
             Utils.getDistanceBetweenAngles(getRadians(), angle.getRadians())
         );

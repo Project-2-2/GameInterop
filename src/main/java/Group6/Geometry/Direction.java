@@ -1,6 +1,5 @@
 package Group6.Geometry;
 
-import Interop.Geometry.Point;
 import Interop.Utils.Utils;
 
 /**
@@ -25,7 +24,11 @@ public final class Direction extends Angle {
     }
 
     public Direction getChangedBy(Angle angle) {
-        return new Direction(Utils.mod(getRadians() + angle.getRadians(), Utils.TAU));
+        return fromAngle(angle.sum(this));
+    }
+
+    public Direction getRelativeTo(Direction direction) {
+        return Direction.fromAngle(direction.substract(this));
     }
 
     public static Direction fromRadians(double radians) {
@@ -34,6 +37,10 @@ public final class Direction extends Angle {
 
     public static Direction fromDegrees(double degrees) {
         return fromRadians(Math.toRadians(degrees));
+    }
+
+    public static Direction fromAngle(Angle angle) {
+       return fromRadians(Utils.mod(angle.getRadians(), Utils.TAU));
     }
 
     public static Direction fromInteropDirection(Direction direction) {

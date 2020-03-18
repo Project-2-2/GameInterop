@@ -13,6 +13,7 @@ public class GeometryTest extends SimpleUnitTest {
 
         System.out.println("\n\nGeometry Test\n");
 
+        DirectionTest.main(args);
         LineSegmentTest.main(args);
         QuadrilateralTest.main(args);
 

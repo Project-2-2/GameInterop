@@ -26,6 +26,12 @@ public abstract class AgentState {
         return direction;
     }
 
+    public Direction getPerceivedDirectionTo(Point point) {
+        return direction.getRelativeTo(
+            point.subtract(location).toPoint().getClockDirection()
+        );
+    }
+
     public int getCooldown() {
         return cooldown;
     }
