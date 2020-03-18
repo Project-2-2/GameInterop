@@ -1,7 +1,9 @@
 package Group6.WorldState;
 
+import Group6.Geometry.Distance;
 import Group6.Geometry.Point;
 import Interop.Action.DropPheromone;
+import Interop.Percept.Smell.SmellPercept;
 import Interop.Percept.Smell.SmellPerceptType;
 
 public class Pheromone {
@@ -16,13 +18,13 @@ public class Pheromone {
     }
 
     private Team team;
-    private Point location;
+    private Point source;
     private int droppedAtTurn;
     private SmellPerceptType type;
 
-    public Pheromone(Team team, Point location, int droppedAtTurn, SmellPerceptType type) {
+    public Pheromone(Team team, Point source, int droppedAtTurn, SmellPerceptType type) {
         this.team = team;
-        this.location = location;
+        this.source = source;
         this.droppedAtTurn = droppedAtTurn;
         this.type = type;
     }
@@ -40,16 +42,45 @@ public class Pheromone {
         return team;
     }
 
-    public Point getLocation() {
-        return location;
+    public Point getSource() {
+        return source;
     }
 
     public int getDroppedAtTurn() {
         return droppedAtTurn;
     }
 
+    public int getAge(int currentTurn) {
+        if(currentTurn < droppedAtTurn) throw new RuntimeException("Age of a pheromone can not be negative!");
+        return currentTurn - droppedAtTurn;
+    }
+
     public SmellPerceptType getType() {
         return type;
+    }
+
+    public Distance getCurrentSmellRadius(WorldState worldState) {
+
+        double age = getAge(worldState.getTurn());
+        double expireRounds = worldState.getScenario().getPheromoneExpireRounds();
+        double maxRadius = worldState.getScenario().getRadiusPheromone().getValue();
+
+        double radiusReductionRatio = age / expireRounds;
+        double radiusReduction = maxRadius * radiusReductionRatio;
+
+        return new Distance(Math.max(0, maxRadius - radiusReduction));
+
+    }
+
+    public boolean canBeFeltFrom(WorldState worldState, Point point) {
+        return source.getDistance(point).getValue() <= getCurrentSmellRadius(worldState).getValue();
+    }
+
+    public SmellPercept toSmellPerceptOf(AgentState agentState) {
+        return new SmellPercept(
+            type,
+            source.getDistance(agentState.getLocation()).toInteropDistance()
+        );
     }
 
 }

@@ -43,6 +43,7 @@ public class Scenario {
     private double maxMoveDistanceGuard;
     private int sprintCooldown;
     private int pheromoneCooldown;
+    private int pheromoneExpireRounds;
     private double radiusPheromone;
     private double slowDownModifierWindow;
     private double slowDownModifierDoor;
@@ -166,6 +167,9 @@ public class Scenario {
                             break;
                         case "pheromoneCooldown":
                             pheromoneCooldown = Integer.parseInt(value);
+                            break;
+                        case "pheromoneExpireRounds":
+                            pheromoneExpireRounds = Integer.parseInt(value);
                             break;
                         case "radiusPheromone":
                             radiusPheromone = Double.parseDouble(value);
@@ -335,6 +339,10 @@ public class Scenario {
 
     public int getPheromoneCooldown() {
         return pheromoneCooldown;
+    }
+
+    public int getPheromoneExpireRounds() {
+        return pheromoneExpireRounds;
     }
 
     public Distance getRadiusPheromone() {

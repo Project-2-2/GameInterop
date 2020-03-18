@@ -11,6 +11,7 @@ maxSprintDistanceIntruder = 4.0
 maxMoveDistanceGuard = 1.4
 sprintCooldown = 2
 pheromoneCooldown = 3
+pheromoneExpireRounds = 5
 radiusPheromone = 5.0
 slowDownModifierWindow = 0.5
 slowDownModifierDoor = 0.5
