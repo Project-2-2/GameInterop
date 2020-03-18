@@ -1,9 +1,14 @@
 package Group9.map.objects;
 
+import Group9.gui.EmptySpace;
+import Group9.gui.InternalWallGui;
 import Group9.map.area.EffectArea;
 import Group9.tree.Container;
 import Group9.tree.PointContainer;
 import Interop.Percept.Vision.ObjectPerceptType;
+import javafx.scene.Group;
+import javafx.scene.Node;
+import javafx.scene.shape.Rectangle;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,6 +53,11 @@ public class MapObject implements Container<PointContainer> {
 
     public PointContainer getArea() {
         return area;
+    }
+    public Node getGui()
+    {
+        System.out.println(type + " has a problem XD");
+        return new EmptySpace();
     }
 
 }

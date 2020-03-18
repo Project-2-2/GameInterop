@@ -128,5 +128,14 @@ public class Vector2 {
         public Random() {
             super(Game._RANDOM.nextInt(), Game._RANDOM.nextInt());
         }
+    public double getAngle()
+    {
+        double angle = Math.asin(y);
+        if(x < 0)
+        {
+            angle = Math.PI - angle;
+        }
+        return angle;
+
     }
 }

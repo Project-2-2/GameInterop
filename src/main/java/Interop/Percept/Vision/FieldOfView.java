@@ -19,7 +19,7 @@ import Interop.Utils.Require;
  *        \ | /
  *         \|/
  *          V  <----- Angle
- *        Agent
+ *        AgentGui
  *    Coordinate: (0, 0)
  *
  */
