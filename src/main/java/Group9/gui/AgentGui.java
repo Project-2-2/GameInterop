@@ -1,5 +1,6 @@
 package Group9.gui;
 
+import Group9.math.Vector2;
 import javafx.event.EventHandler;
 import javafx.scene.*;
 import javafx.scene.input.KeyCode;
@@ -8,7 +9,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.util.Duration;
 
-public class AgentGui extends Circle implements GameObject
+public class AgentGui extends Group implements GameObject
 {
 	final double x;
 	final double y;
@@ -17,18 +18,23 @@ public class AgentGui extends Circle implements GameObject
 	final static double sprint = 4;//maxSprintDistanceIntruder 
 	final Duration Timestep = Duration.seconds(0.1);
 	static boolean guard = false;
+	final Circle head;
+	final VisionConeGui vision;
 
 	
-	public AgentGui(double x, double y, double r, boolean guard)
+	public AgentGui(double x, double y, double r, Vector2 direction, double range, boolean guard)
 	{
 		this.x = x;
 		this.y = y;
 		this.r = r;
-		setCenterX(x);
-		setCenterY(y);
-		setRadius(r);
-		if(guard == true) {setFill(Color.RED);setStroke(Color.BLACK);}
-		else {setFill(Color.BLUE);}
+		head = new Circle();
+		head.setCenterX(x);
+		head.setCenterY(y);
+		head.setRadius(r);
+		if(guard) {head.setFill(Color.BLUE);head.setStroke(Color.BLACK);}
+		else {head.setFill(Color.RED);}
+		vision = new VisionConeGui(direction, x, y, range);
+		getChildren().addAll(vision, head);
 		
 		
 	}
@@ -38,10 +44,14 @@ public class AgentGui extends Circle implements GameObject
 	public void updateScale() {
 		// TODO Auto-generated method stub
 		double scale = Scale.scale;
-       setCenterX(x*scale);
-       setCenterY(y*scale);
-       setRadius(r*scale);
+       head.setCenterX(x*scale);
+       head.setCenterY(y*scale);
+       head.setRadius(r*scale);
        
+	}
+	public Circle getHead()
+	{
+		return head;
 	}
 	
 	public static void move(Scene scene, AgentGui x) {
@@ -51,13 +61,13 @@ public class AgentGui extends Circle implements GameObject
 			public void handle(KeyEvent event) {
 				
 				if(event.getCode()== KeyCode.UP)
-				{x.setCenterY(x.getCenterY()-speed);}
+				{x.getHead().setCenterY(x.getHead().getCenterY()-speed);}
 				else if(event.getCode()== KeyCode.DOWN)
-				{x.setCenterY(x.getCenterY()+speed);}
+				{x.getHead().setCenterY(x.getHead().getCenterY()+speed);}
 				else if(event.getCode()== KeyCode.RIGHT)
-				{x.setCenterX(x.getCenterX()+speed);}
+				{x.getHead().setCenterX(x.getHead().getCenterX()+speed);}
 				else if(event.getCode()== KeyCode.LEFT)
-				{x.setCenterX(x.getCenterX()-speed);}
+				{x.getHead().setCenterX(x.getHead().getCenterX()-speed);}
 				
 			}
 			
