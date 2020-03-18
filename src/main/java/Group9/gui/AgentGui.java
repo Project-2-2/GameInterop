@@ -47,6 +47,7 @@ public class AgentGui extends Group implements GameObject
        head.setCenterX(x*scale);
        head.setCenterY(y*scale);
        head.setRadius(r*scale);
+       vision.updateScale();
        
 	}
 	public Circle getHead()

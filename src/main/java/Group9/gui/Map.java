@@ -1,5 +1,6 @@
 package Group9.gui;
 
+import Group9.math.Vector2;
 import javafx.application.Application;
 import javafx.scene.Group;
 import javafx.scene.Scene;
@@ -70,15 +71,15 @@ public class Map extends Application {
 	    target.updateScale();
 	    SpawnAreaGui.SpawnAreaIntruderGui areaIntruders = new SpawnAreaIntruderGui(57.0,67.0,57.0,77.0,59.0,77.0,59.0,67.0);
 	    areaIntruders.updateScale();
-	    AgentGui intruder1 = new AgentGui(58,68,0.5, null, 3.5,false);
+	    AgentGui intruder1 = new AgentGui(58,68,0.5, new Vector2(1,1), 3.5,false);
 	    intruder1.updateScale();
-	    AgentGui intruder2 = new AgentGui(58,70,0.5, null, 3.5,false);
+	    AgentGui intruder2 = new AgentGui(58,70,0.5, new Vector2(1,1), 3.5,false);
 	    intruder2.updateScale();
-	    AgentGui guard1 = new AgentGui(58,13.5,0.5, null, 3.5,true);
+	    AgentGui guard1 = new AgentGui(58,13.5,0.5, new Vector2(1,1), 3.5,true);
 	    guard1.updateScale();
-	    AgentGui guard2 = new AgentGui(58,14.7,0.5, null, 3.5,true);
+	    AgentGui guard2 = new AgentGui(58,14.7,0.5, new Vector2(1,1), 3.5,true);
 	    guard2.updateScale();
-	    AgentGui guard3 = new AgentGui(58,15.7,0.5, null, 3.5,true);
+	    AgentGui guard3 = new AgentGui(58,15.7,0.5, new Vector2(1,1), 3.5,true);
 	    guard3.updateScale();
 
 
