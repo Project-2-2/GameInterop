@@ -437,8 +437,8 @@ public class Scenario {
         return new Quadrilaterals(sentryTowers);
     }
 
-    public ArrayList<Teleport> getTeleports() {
-        return teleports;
+    public Teleports getTeleports() {
+        return new Teleports(teleports);
     }
 
     public Quadrilaterals getShadedAreas() {

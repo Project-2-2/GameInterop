@@ -1,6 +1,8 @@
 package Group6.WorldState;
 
 import Group6.Geometry.*;
+import Group6.Geometry.Collection.Quadrilaterals;
+import Group6.Geometry.Contract.Area;
 import Interop.Action.Action;
 import Interop.Action.DropPheromone;
 import Interop.Action.Move;
@@ -25,6 +27,10 @@ public abstract class AgentState {
 
     public Point getLocation() {
         return location;
+    }
+
+    public boolean isInside(Area area) {
+        return location.isInside(area);
     }
 
     public Direction getDirection() {
@@ -69,6 +75,10 @@ public abstract class AgentState {
     public void move(WorldState worldState, Move action) {
         requireNoCooldown(action);
         move(new Distance(((Move)action).getDistance()));
+        Teleports teleports = worldState.getScenario().getTeleports();
+        if(!isJustTeleported() && isInside(teleports)) {
+            teleport(teleports);
+        }
         markActionAsExecuted();
     }
 
@@ -76,6 +86,12 @@ public abstract class AgentState {
         Vector displacement = new Vector(0, distance.getValue()).rotate(direction.getRadians());
         location = location.add(displacement).toPoint();
         markActionAsExecuted();
+    }
+
+    protected void teleport(Teleports teleports) {
+        location = teleports.getTargetArea(location).getRandomPointInside();
+        direction = Direction.random();
+        justTeleported = true;
     }
 
     public void rotate(WorldState worldState, Rotate action) {

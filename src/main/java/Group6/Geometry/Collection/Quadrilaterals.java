@@ -1,18 +1,17 @@
 package Group6.Geometry.Collection;
 
-import Group6.Geometry.LineSegment;
+import Group6.Geometry.Contract.Area;
 import Group6.Geometry.Point;
 import Group6.Geometry.Quadrilateral;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class Quadrilaterals {
+public class Quadrilaterals implements Area {
 
     private List<Quadrilateral> quadrilaterals;
 
-    public Quadrilaterals(ArrayList<Quadrilateral> quadrilaterals) {
+    public Quadrilaterals(List<Quadrilateral> quadrilaterals) {
         this.quadrilaterals = Collections.unmodifiableList(quadrilaterals);
     }
 
@@ -20,9 +19,9 @@ public class Quadrilaterals {
         return quadrilaterals;
     }
 
-    public boolean isInside(Point point) {
+    public boolean hasInside(Point point) {
         for (Quadrilateral quadrilateral: quadrilaterals) {
-            if(quadrilateral.isInside(point)) return true;
+            if(quadrilateral.hasInside(point)) return true;
         }
         return false;
     }

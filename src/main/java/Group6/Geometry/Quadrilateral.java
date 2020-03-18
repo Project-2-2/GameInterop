@@ -1,13 +1,12 @@
 package Group6.Geometry;
 
+import Group6.Geometry.Contract.Area;
 import Group6.Utils;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Random;
-import java.util.concurrent.ThreadLocalRandom;
 
-public class Quadrilateral {
+public class Quadrilateral implements Area {
 
     private Point pointA;
     private Point pointB;
@@ -133,11 +132,11 @@ public class Quadrilateral {
                 Utils.randomBetween(minX, maxX),
                 Utils.randomBetween(minY, maxY)
             );
-        } while (!isInside(randomPoint));
+        } while (!hasInside(randomPoint));
         return randomPoint;
     }
 
-    public boolean isInside(Point point) {
+    public boolean hasInside(Point point) {
         if(!isInBoundingBox(point)) return false;
         int countIntersections = 0;
         LineSegment ray = new LineSegment(point, pointOutsideBoundingBox);

@@ -1,10 +1,5 @@
 package Group6.Geometry;
 
-import Group6.Agent.Factory.AgentsFactories;
-import Group6.GroupTests;
-import Group6.WorldState.Scenario;
-import Group6.WorldState.ScenarioTest;
-import Group6.WorldState.WorldState;
 import SimpleUnitTest.SimpleUnitTest;
 
 public class QuadrilateralTest extends SimpleUnitTest {
@@ -22,7 +17,7 @@ public class QuadrilateralTest extends SimpleUnitTest {
                 new Point(1,1)
             );
 
-            assertTrue(quadrilateral.isInside(new Point(0.5, 0.5)));
+            assertTrue(quadrilateral.hasInside(new Point(0.5, 0.5)));
 
         });
 
@@ -36,7 +31,7 @@ public class QuadrilateralTest extends SimpleUnitTest {
             );
 
             assertInstanceOf(quadrilateral.getRandomPointInside(), Point.class);
-            assertTrue(quadrilateral.isInside(quadrilateral.getRandomPointInside()));
+            assertTrue(quadrilateral.hasInside(quadrilateral.getRandomPointInside()));
 
         });
 

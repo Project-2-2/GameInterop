@@ -1,8 +1,6 @@
 package Group6.Geometry;
 
-import Group6.Geometry.Direction;
-import Group6.Geometry.Distance;
-import Interop.Utils.Require;
+import Group6.Geometry.Contract.Area;
 
 /**
  * Represents a point in the 2-dimensional, cartesian coordinate system.
@@ -34,6 +32,10 @@ public class Point extends Vector {
 
     public Distance getDistanceFromOrigin() {
         return getDistance(new Point(0, 0));
+    }
+
+    public boolean isInside(Area area) {
+        return area.hasInside(this);
     }
 
     public Interop.Geometry.Point toInteropPoint() {

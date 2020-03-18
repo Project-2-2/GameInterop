@@ -9,9 +9,9 @@ public class AreaPerceptsBuilder {
     public AreaPercepts buildPrecepts(WorldState worldState, AgentState agentState) {
         Scenario scenario = worldState.getScenario();
         return new AreaPercepts(
-            scenario.getWindows().isInside(agentState.getLocation()),
-            scenario.getDoors().isInside(agentState.getLocation()),
-            scenario.getSentryTowers().isInside(agentState.getLocation()),
+            agentState.isInside(scenario.getWindows()),
+            agentState.isInside(scenario.getDoors()),
+            agentState.isInside(scenario.getSentryTowers()),
             agentState.isJustTeleported()
         );
     }
