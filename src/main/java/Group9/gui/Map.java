@@ -11,7 +11,6 @@ import javafx.stage.Stage;
 
 public class Map extends Application {
 
-
 	@Override
 	public void start(Stage s) throws Exception {
 		VBox vBox = new VBox();
@@ -22,7 +21,7 @@ public class Map extends Application {
 	    map.setFill(Color.LIGHTGREEN);
 	    map.setStroke(Color.BLACK);
 	    map.setStrokeWidth(3);
-	    
+
 	    //Draw Map
 	    InternalWallGui wall1 = new InternalWallGui( 0.0,0.0,0.0,1.0,120.0,1.0,120.0,0.0);
 	    wall1.updateScale();
@@ -34,23 +33,23 @@ public class Map extends Application {
 	    wall4.updateScale();
 	    InternalWallGui wall5 = new InternalWallGui(0,0,0,1,1,1,1,0);
 	    wall5.updateScale();
-	    InternalWallGui wall6 = new InternalWallGui(1.1,0,1.1,1,2,1,2,0);
-	   wall6.updateScale();
-	    Polygon wall7 = draw(1.0,121.0,119.0,121.0,119.0,120.0,1.0,120.0);
-	   // wall7.updateScale();
-	    Polygon wall8 = draw(30.0,37.0,55.0,37.0,55.0,36.0,30.0,36.0);
-	  //  wall8.updateScale();
-	    Polygon wall9 = draw(55.0,36.0,55.0,12.0,56.0,12.0,56.0,36.0);
-	//    wall9.updateScale();
-	    InternalWallGui wall10 = new InternalWallGui(30.0,37.0,30.0,42.0,31.0,42.0,31.0,37.0);
+	    InternalWall wall6 = new InternalWall(1.1,0,1.1,1,2,1,2,0);
+	    wall6.updateScale();
+	    InternalWall wall7 = new InternalWall(1.0,121.0,119.0,121.0,119.0,120.0,1.0,120.0);
+	    wall7.updateScale();
+	    InternalWall wall8 = new InternalWall(30.0,37.0,55.0,37.0,55.0,36.0,30.0,36.0);
+	    wall8.updateScale();
+	    InternalWall wall9 = new InternalWall(55.0,36.0,55.0,12.0,56.0,12.0,56.0,36.0);
+	    wall9.updateScale();
+	    InternalWall wall10 = new InternalWall(30.0,37.0,30.0,42.0,31.0,42.0,31.0,37.0);
 	    wall10.updateScale();
-	    Polygon wall11 = draw(31.0,42.0,31.0,41.0,55.0,41.0,55.0,42.0);
-	    //wall11.updateScale();
-	    InternalWallGui wall12 = new InternalWallGui(55.0,41.0,55.0,87.0,56.0,87.0,56.0,41.0);
+	    InternalWall wall11 = new InternalWall(31.0,42.0,31.0,41.0,55.0,41.0,55.0,42.0);
+	    wall11.updateScale();
+	    InternalWall wall12 = new InternalWall(55.0,41.0,55.0,87.0,56.0,87.0,56.0,41.0);
 	    wall12.updateScale();
-	    Polygon wall13 = draw(56.0,12.0,60.0,12.0,60.0,11.0,56.0,11.0);
-	   // wall13.updateScale();
-	    InternalWallGui wall14 = new InternalWallGui(60.0,12.0,60.0,36.0,61.0,36.0,61.0,12.0);
+	    InternalWall wall13 = new InternalWall(56.0,12.0,60.0,12.0,60.0,11.0,56.0,11.0);
+	    wall13.updateScale();
+	    InternalWall wall14 = new InternalWall(60.0,12.0,60.0,36.0,61.0,36.0,61.0,12.0);
 	    wall14.updateScale();
 	    InternalWallGui wall15 = new InternalWallGui(61.0,36.0,61.0,37.0,95.0,37.0,95.0,36.0);
 	    wall15.updateScale();
@@ -63,8 +62,8 @@ public class Map extends Application {
 	    InternalWallGui wall19 = new InternalWallGui(95.0,36.0,95.0,42.0,96.0,42.0,96.0,36.0);
 	    wall19.updateScale();
 	    SpawnAreaGuardGui areaGuard = new SpawnAreaGuardGui(57.0,13.0,57.0,17.0,59.0,17.0,59.0,13.0);
-	    areaGuard.updateScale();   
-	    
+	    areaGuard.updateScale();
+
 	    targetAreaGui target = new targetAreaGui(89.0,38.0,94.0,38.0,94.0,40.0,89.0,40.0);
 	    target.updateScale();
 	    SpawnAreaIntrudersGui areaIntruders = new SpawnAreaIntrudersGui(57.0,67.0,57.0,77.0,59.0,77.0,59.0,67.0);
@@ -79,26 +78,18 @@ public class Map extends Application {
 	    guard2.updateScale();
 	    AgentGui guard3 = new AgentGui(58,15.7,0.5,true);
 	    guard3.updateScale();
-	    
-	    
+
+
 	    Group root = new Group();
-		  
+
 	      Scene scene = new Scene(root, 970, 630,Color.BURLYWOOD);
-	     
+
 	     root.getChildren().addAll(map,wall1,wall2,wall3,wall4,wall5,wall6,wall7,wall8,wall9,wall10,wall11,wall12,wall13,wall14,wall15,wall16,wall17,wall18,wall19,target,areaGuard,areaIntruders,guard1,guard2,guard3,intruder1,intruder2);
 	      s.setScene(scene);
 	    s.setTitle("Map ");
-	 // s.setResizable(false);
+	 s.setResizable(false);
 	    s.show();
 	}
-	
-	public static Polygon draw(double x1,double y1, double x2, double y2, double x3, double y3, double x4, double y4) {
-		Polygon map = new Polygon(x1*Scale.scale,y1*Scale.scale,x2*Scale.scale,y2*Scale.scale,x3*Scale.scale,y3*Scale.scale,x4*Scale.scale,y4*Scale.scale);
-		map.setFill(Color.WHITE);
-	     map.setStroke(Color.BLACK);
-		return map;
-	}
-	
-	
+
 
 }
