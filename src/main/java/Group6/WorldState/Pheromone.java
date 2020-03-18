@@ -55,6 +55,10 @@ public class Pheromone {
         return currentTurn - droppedAtTurn;
     }
 
+    public boolean isExpired(WorldState worldState) {
+        return getAge(worldState.getTurn()) > worldState.getScenario().getPheromoneExpireRounds();
+    }
+
     public SmellPerceptType getType() {
         return type;
     }

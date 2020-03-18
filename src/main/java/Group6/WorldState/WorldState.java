@@ -9,6 +9,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 public class WorldState {
 
@@ -53,10 +54,21 @@ public class WorldState {
         turn++;
         getIntruderStates().forEach(IntruderState::nextTurn);
         getGuardStates().forEach(GuardState::nextTurn);
+        propagateSoundsToNextTurn();
+        removeExpiredPheromones();
+    }
+
+    private void propagateSoundsToNextTurn() {
         // TODO: Is the following code correct?
         // From guidelines: Turn system: World state is updated after each action issued by an agent
         soundsToPerceiveNow = soundsToPerceiveInNextTurn;
         soundsToPerceiveInNextTurn = new HashSet<>();
+    }
+
+    private void removeExpiredPheromones() {
+        pheromones = pheromones.stream()
+            .filter((Pheromone pheromone) -> { return !pheromone.isExpired(this); })
+            .collect(Collectors.toSet());
     }
 
     public void addSound(Sound sound) {
