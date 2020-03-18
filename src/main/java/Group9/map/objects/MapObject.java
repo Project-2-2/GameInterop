@@ -56,7 +56,6 @@ public class MapObject implements Container<PointContainer> {
     }
     public Node getGui()
     {
-        System.out.println(type + " has a problem XD");
         return new EmptySpace();
     }
 
