@@ -212,13 +212,13 @@ public class MenuWindow extends Application {
                // TODO Auto-generated method stub
 
               if (event.getSource() == easy) {
-            	  MapWindow map = new MapWindow();
+                /*MapWindow map = new MapWindow();
                 try {
 					map.start(primaryStage);
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
-				}
+				}*/
 
                }
                if (event.getSource() == medium) {

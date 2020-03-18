@@ -19,7 +19,7 @@ public class SentryTower extends MapObject {
     }
     public SentryGui getGui()
     {
-        Vector2[] points = this.getArea().getAsQuadrilateral().getPoints();
+        Vector2[] points = this.getArea().getAsPolygon().getPoints();
         SentryGui sentry = new SentryGui(points[0].getX(), points[0].getY(), points[1].getX(), points[1].getY(), points[2].getX(), points[2].getY(), points[3].getX(), points[3].getY());
         return sentry;
     }

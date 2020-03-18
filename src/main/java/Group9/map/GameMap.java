@@ -220,6 +220,11 @@ public class GameMap {
                 .map(object -> (T) object).collect(Collectors.toList());
     }
 
+    public List<MapObject> getObjects()
+    {
+        return this.mapObjects;
+    }
+
     public List<DynamicObject> getDynamicObjects() {
         return dynamicObjects;
     }
