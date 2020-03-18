@@ -1,6 +1,7 @@
 package Group6.WorldState;
 
 import Group6.Geometry.*;
+import Interop.Utils.Require;
 
 public abstract class AgentState {
 
@@ -38,6 +39,11 @@ public abstract class AgentState {
 
     public boolean hasCooldown() {
         return cooldown > 0;
+    }
+
+    public void addCooldown(int length) {
+        Require.positive(length, "Cooldown length must be at least 1 turn.");
+        this.cooldown += length;
     }
 
     public void nextTurn() {

@@ -52,14 +52,59 @@ public class Controller {
 
     private void executeAction(WorldState worldState, AgentState agentState, Action action) {
 
+        if(action instanceof NoAction) {
+            return;
+        }
+
+        if(agentState.hasCooldown()) {
+            agentState.rejectAction();
+            return;
+        }
+
         if(action instanceof Move) {
             agentState.move(new Distance(((Move)action).getDistance()));
+            return;
         }
 
         if(action instanceof Rotate) {
             agentState.rotate(Angle.fromInteropAngle(((Rotate) action).getAngle()));
+            return;
         }
 
+        if(action instanceof DropPheromone) {
+            worldState.addPheromone(
+                Pheromone.createByAgent(worldState, agentState, (DropPheromone)action)
+            );
+            return;
+        }
+
+        if(action instanceof Yell) {
+            worldState.addSound(Sound.createYell(worldState.getScenario(), agentState));
+            return;
+        }
+
+        if(action instanceof Sprint) {
+            if(agentState instanceof IntruderState) {
+                ((IntruderState)agentState).sprint(
+                    new Distance(((Sprint)action).getDistance()),
+                    worldState.getScenario().getSprintCooldown()
+                );
+            } else {
+                agentState.rejectAction();
+            }
+            return;
+        }
+
+        throw new UnexpectedAction(action);
+
+    }
+
+    static class UnexpectedAction extends RuntimeException {
+        public UnexpectedAction(Action action) {
+            super(
+                "Unexpected action: " + action.getClass().getName()
+            );
+        }
     }
 
 }

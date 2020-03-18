@@ -1,5 +1,6 @@
 package Group6.WorldState;
 
+import Group6.Geometry.Distance;
 import Group6.Geometry.Quadrilateral;
 import Interop.Agent.Guard;
 import Interop.Agent.Intruder;
@@ -17,6 +18,11 @@ public class IntruderState extends AgentState {
 
     public Intruder getIntruder() {
         return intruder;
+    }
+
+    public void sprint(Distance distance, int cooldown) {
+        addCooldown(cooldown);
+        move(distance);
     }
 
     static IntruderState spawnIntruder(Scenario scenario, Intruder intruder) {

@@ -18,6 +18,14 @@ public class Sound {
         this.type = type;
     }
 
+    public static Sound createYell(Scenario scenario, AgentState agentState) {
+        return new Sound(
+            agentState.getLocation(),
+            scenario.getYellSoundRadius(),
+            SoundPerceptType.Yell
+        );
+    }
+
     public Point getSource() {
         return source;
     }

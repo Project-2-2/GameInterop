@@ -63,6 +63,10 @@ public class WorldState {
         soundsToPerceiveInNextTurn.add(sound);
     }
 
+    public void addPheromone(Pheromone pheromone) {
+        pheromones.add(pheromone);
+    }
+
     public Scenario getScenario() {
         return scenario;
     }
