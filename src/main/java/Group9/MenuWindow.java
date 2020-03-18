@@ -622,6 +622,7 @@ public static void start3(Stage s)
     @Override
     public Void apply(AgentContainer<?> agentContainer)
     {
+        //gameMap.getAgentVisionCone(agentContainer, agentContainer.getFOV(gameMap.getEffectAreas(agentContainer)))
         //game.kk;
         return null;
     }
