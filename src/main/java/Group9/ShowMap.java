@@ -1,5 +1,6 @@
 package Group9;
 
+import Group9.agent.container.AgentContainer;
 import Group9.gui.GameObject;
 import Group9.gui.InternalWallGui;
 import Group9.map.GameMap;
@@ -15,14 +16,13 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Function;
 
-public class ShowMap extends Application implements Function<Game, Void> {
-    public static void main(String[] args)
-    {
+public class ShowMap extends Application implements Function<AgentContainer<?>, Void> {
+    public static void main(String[] args) {
         launch();
     }
+
     @Override
-    public void start(Stage primaryStage)
-    {
+    public void start(Stage primaryStage) {
         GameMap gameMap = Parser.parseFile("./src/main/java/Group9/map/maps/test.map");
         Game game = new Game(gameMap, 3, this::apply);
 
@@ -31,12 +31,12 @@ public class ShowMap extends Application implements Function<Game, Void> {
         List<MapObject> mapObjects = gameMap.getObjects();
         mapObjects.forEach(m -> root.getChildren().add(m.getGui()));
         System.out.println(root.getChildren().get(0).getClass());
-        root.getChildren().forEach(c -> ((InternalWallGui)c).updateScale());
+        root.getChildren().forEach(c -> ((InternalWallGui) c).updateScale());
         primaryStage.show();
     }
 
     @Override
-    public Void apply(Game game) {
+    public Void apply(AgentContainer<?> agentContainer) {
         return null;
     }
 }

@@ -307,18 +307,10 @@ public class GameMap {
      * @see Interop.Percept.Vision.FieldOfView
      */
     public <T> Set<ObjectPercept> getObjectPerceptsForAgent(AgentContainer<T> agentContainer, FieldOfView fov) {
-        final double range = fov.getRange().getValue();
-        final double viewAngle = fov.getViewAngle().getRadians();
-
-        Vector2 ray = agentContainer.getDirection().normalise().mul(range).rotated(-viewAngle/2);
-        Vector2 startOfRay = agentContainer.getPosition();
-
-        double stepAngle = viewAngle / viewRays ;
         Set<ObjectPercept> objectsInSight = new HashSet<>();
-        for (int rayNum = 0; rayNum < viewRays; rayNum++) {
-            Vector2 endOfRay = startOfRay.add(ray.rotated((stepAngle * rayNum)));
+        for (Vector2[] ray : getAgentVisionCone(agentContainer, fov)) {
             objectsInSight.addAll(
-                    getObjectPerceptsInLine(new PointContainer.Line(startOfRay, endOfRay))
+                    getObjectPerceptsInLine(new PointContainer.Line(ray[0], ray[1]))
                             .stream()
                             .map(e -> {
                                 Vector point =  Vector2.from(e.getPoint())
@@ -332,6 +324,22 @@ public class GameMap {
             );
         }
 
+        return objectsInSight;
+    }
+
+    public <T> Set<Vector2[]> getAgentVisionCone(AgentContainer<T> agentContainer, FieldOfView fov) {
+        final double range = fov.getRange().getValue();
+        final double viewAngle = fov.getViewAngle().getRadians();
+
+        Vector2 ray = agentContainer.getDirection().normalise().mul(range).rotated(-viewAngle/2);
+        Vector2 startOfRay = agentContainer.getPosition();
+
+        double stepAngle = viewAngle / viewRays ;
+        Set<Vector2[]> objectsInSight = new HashSet<>();
+        for (int rayNum = 0; rayNum < viewRays; rayNum++) {
+            Vector2 endOfRay = startOfRay.add(ray.rotated((stepAngle * rayNum)));
+            objectsInSight.add(new Vector2[]{ startOfRay, endOfRay });
+        }
         return objectsInSight;
     }
 
