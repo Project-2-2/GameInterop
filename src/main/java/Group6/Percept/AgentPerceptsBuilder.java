@@ -4,6 +4,7 @@ import Group6.WorldState.GuardState;
 import Group6.WorldState.IntruderState;
 import Group6.WorldState.WorldState;
 import Interop.Geometry.Direction;
+import Interop.Percept.AreaPercepts;
 import Interop.Percept.GuardPercepts;
 import Interop.Percept.IntruderPercepts;
 
@@ -38,23 +39,25 @@ public class AgentPerceptsBuilder {
                     .getCenter()
             )
             .toInteropDirection();
+        AreaPercepts areaPercepts = areaPerceptsBuilder.buildPrecepts(worldState, agentState);
         return new IntruderPercepts(
             targetDirectionAsPerceivedByAgent,
-            visionPerceptsBuilder.buildPercepts(worldState, agentState),
+            visionPerceptsBuilder.buildPercepts(worldState, agentState, areaPercepts),
             soundPerceptsBuilder.buildPercepts(worldState, agentState),
             smellPreceptsBuilder.buildPercepts(worldState, agentState),
-            areaPerceptsBuilder.buildPrecepts(worldState, agentState),
+            areaPercepts,
             scenarioPerceptsBuilder.buildIntruderPercepts(worldState, agentState),
             agentState.wasLastActionExecuted()
         );
     }
 
     public GuardPercepts buildGuardPercepts(WorldState worldState, GuardState agentState) {
+        AreaPercepts areaPercepts = areaPerceptsBuilder.buildPrecepts(worldState, agentState);
         return new GuardPercepts(
-            visionPerceptsBuilder.buildPercepts(worldState, agentState),
+            visionPerceptsBuilder.buildPercepts(worldState, agentState, areaPercepts),
             soundPerceptsBuilder.buildPercepts(worldState, agentState),
             smellPreceptsBuilder.buildPercepts(worldState, agentState),
-            areaPerceptsBuilder.buildPrecepts(worldState, agentState),
+            areaPercepts,
             scenarioPerceptsBuilder.buildGuardPercepts(worldState, agentState),
             agentState.wasLastActionExecuted()
         );
