@@ -25,13 +25,13 @@ public class QuadrilateralTest extends ExtendedUnitTest {
 
         });
 
-        it("allows to check if point is inside", () -> {
+        it("allows to check if point is inside on simple quadrilateral", () -> {
 
             Quadrilateral quadrilateral = new Quadrilateral(
                 new Point(0,0),
                 new Point(1,0),
-                new Point(0,1),
-                new Point(1,1)
+                new Point(1,1),
+                new Point(0,1)
             );
 
             assertTrue(quadrilateral.hasInside(new Point(0.1, 0.1)));
@@ -41,6 +41,28 @@ public class QuadrilateralTest extends ExtendedUnitTest {
             assertTrue(quadrilateral.hasInside(new Point(0.7, 0.1)));
 
             assertFalse(quadrilateral.hasInside(new Point(2, 2)), "Point (2,2) is outside.");
+
+        });
+
+        it("allows to check if point is inside on more complex quadrilateral", () -> {
+
+            Quadrilateral quadrilateral = new Quadrilateral(
+                new Point(0, 0),
+                new Point(5, 0),
+                new Point(5, 5),
+                new Point(0, 5)
+            );
+
+            assertTrue(quadrilateral.hasInside(new Point(0, 0)), "Point (0,0) is inside.");
+            assertTrue(quadrilateral.hasInside(new Point(1, 4)), "The (1, 4) is inside.");
+            assertTrue(quadrilateral.hasInside(new Point(4, 1)), "The (4, 1) is inside.");
+            assertTrue(quadrilateral.hasInside(new Point(2, 2)), "The (2, 2) is inside.");
+            assertTrue(quadrilateral.hasInside(new Point(4, 4)), "The (2, 4) is inside.");
+            assertTrue(quadrilateral.hasInside(quadrilateral.getCenter()), "The center is inside.");
+
+            assertFalse(quadrilateral.hasInside(new Point(6, 6)), "Point (6,6) is outside.");
+            assertFalse(quadrilateral.hasInside(new Point(0, 6)), "Point (0,6) is outside.");
+            assertFalse(quadrilateral.hasInside(new Point(6, 0)), "Point (6,0) is outside.");
 
         });
 

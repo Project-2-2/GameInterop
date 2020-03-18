@@ -2,6 +2,8 @@ package Group6.Geometry;
 
 import Group6.Utils;
 
+import java.util.function.Function;
+
 public class LineSegment {
 
     private Point a;
@@ -58,25 +60,27 @@ public class LineSegment {
     }
 
     /**
-     * @link https://silentmatt.com/rectangle-intersection/
-     * @link https://martin-thoma.com/how-to-check-if-two-line-segments-intersect/#Where_do_two_line_segments_intersect
+     * @link https://en.wikipedia.org/wiki/Line–line_intersection
      */
     public boolean isIntersecting(LineSegment lineSegment) {
-        return minX <= lineSegment.maxX
-            && maxX >= lineSegment.minX
-            && minY <= lineSegment.maxY
-            && maxY >= lineSegment.minY;
+        Point intersection = getIntersectionPointWith(lineSegment);
+        if(intersection == null) return false;
+        return this.includes(intersection) && lineSegment.includes(intersection);
+    }
+
+    public boolean includes(Point point) {
+        // must be inside bounding box
+        if(minX > point.getX() || maxX < point.getX()) return false;
+        if(minY > point.getY() || maxY < point.getY()) return false;
+        // must fulfill line equation: (y−yA)(xB−xA)−(x−xA)(yB−yA) = 0
+        return Math.abs(
+            (point.getY() - a.getY()) * (b.getX() - a.getX())
+            -
+            (point.getX() - a.getX()) * (b.getY() - a.getY())
+        ) < Tolerance.epsilon;
     }
 
     public Point getIntersectionPointWith(LineSegment lineSegment) {
-
-        if(!this.isIntersecting(lineSegment)) {
-            throw new RuntimeException(
-                "There is no intersection point if two line segments do not intersect!\n" +
-                "This: " + this + "\n" +
-                "Given:" + lineSegment
-            );
-        }
 
         double x1 = a.getX();
         double y1 = a.getY();
@@ -92,6 +96,9 @@ public class LineSegment {
 
         // @link https://en.wikipedia.org/wiki/Line%E2%80%93line_intersection#Given_two_points_on_each_line
         double divisor = (x1-x2)*(y3-y4)-(y1-y2)*(x3-x4);
+
+        if(Math.abs(divisor) < Tolerance.epsilon) return null;
+
         double x = ((x1*y2-y1*x2)*(x3-x4)-(x1-x2)*(x3*y4-y3*x4)) / divisor;
         double y = ((x1*y2-y1*x2)*(y3-y4)-(y1-y2)*(x3*y4-y3*x4)) / divisor;
 

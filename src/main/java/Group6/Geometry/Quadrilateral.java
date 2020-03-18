@@ -136,14 +136,50 @@ public class Quadrilateral implements Area {
         return randomPoint;
     }
 
+    /**
+     * @link https://en.wikipedia.org/wiki/Point_in_polygon#Ray_casting_algorithm
+     */
     public boolean hasInside(Point point) {
+
         if(!isInBoundingBox(point)) return false;
+
+        // From Wikipedia:
+        // One simple way of finding whether the point is inside or outside a simple polygon is to test how many times
+        // a ray, starting from the point and going in any fixed direction, intersects the edges of the polygon.
+        // If the point is on the outside of the polygon the ray will intersect its edge an even number of times.
+        // If the point is on the inside of the polygon then it will intersect the edge an odd number of times.
         int countIntersections = 0;
+
         LineSegment ray = new LineSegment(point, pointOutsideBoundingBox);
         for (LineSegment side: getAllSides()) {
-            if(ray.isIntersecting(side)) countIntersections++;
+
+            if(!ray.isIntersecting(side)) {
+                continue;
+            }
+
+            Point intersection = ray.getIntersectionPointWith(side);
+
+            // From Wikipedia:
+            // If the ray passes exactly through a vertex of a polygon, then it will intersect 2 segments at their endpoints.
+            // A similar problem arises with horizontal segments that happen to fall on the ray.
+            // The issue is solved as follows: If the intersection point is a vertex of a tested polygon side,
+            // then the intersection counts only if the second vertex of the side lies below the ray.
+            // This is effectively equivalent to considering vertices on the ray as lying slightly above the ray.
+            if(intersection.isEqualTo(side.getA())) {
+                boolean isBelowRay = side.getB().getY() < intersection.getY();
+                if(isBelowRay) countIntersections++;
+            } else
+            if(intersection.isEqualTo(side.getB())) {
+                boolean isBelowRay = side.getA().getY() < intersection.getY();
+                if(isBelowRay) countIntersections++;
+            } else {
+                countIntersections++;
+            }
+
         }
+
         return countIntersections % 2 == 1;
+
     }
 
     private boolean isInBoundingBox(Point point) {
