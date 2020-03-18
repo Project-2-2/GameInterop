@@ -1,5 +1,6 @@
 package Group9;
 
+import Group9.agent.container.AgentContainer;
 import Group9.gui.Map;
 import javafx.application.Application;
 import javafx.event.EventHandler;
@@ -17,10 +18,12 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 
+import java.util.function.Function;
+
 //import java.awt.Polygon;
 
 
-public class MenuWindow extends Application {
+public class MenuWindow extends Application implements Function<AgentContainer<?>, Void> {
 
     public static void main(String[] args) {
         launch(args);
@@ -616,7 +619,12 @@ public static void start3(Stage s)
   //  s.setResizable(false);
     s.show();
 }
-
+    @Override
+    public Void apply(AgentContainer<?> agentContainer)
+    {
+        //game.kk;
+        return null;
+    }
 }
 
 class Title extends StackPane{
@@ -627,4 +635,5 @@ class Title extends StackPane{
 	//	setAlignment(Pos.CENTER);
 		getChildren().addAll(text);
 	}
+
 }
