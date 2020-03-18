@@ -1,5 +1,6 @@
 package Group9.map.objects;
 
+import Group9.gui.EmptySpace;
 import Group9.gui.InternalWallGui;
 import Group9.map.area.EffectArea;
 import Group9.tree.Container;
@@ -56,7 +57,7 @@ public class MapObject implements Container {
     public Node getGui()
     {
         System.out.println(type + " has a problem XD");
-        return new InternalWallGui();
+        return new EmptySpace();
     }
 
 }

@@ -3,7 +3,7 @@ package Group9.gui;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Polygon;
 
-public class Pheromone extends Polygon implements GameObject{
+public class PheromoneGui extends Polygon implements GameObject{
 
 	//star representation.
 	final double x1;
@@ -19,7 +19,7 @@ public class Pheromone extends Polygon implements GameObject{
 
 	final double radiusPheromone = 5;
 
-	public Pheromone(double x1,double y1,double x2, double y2, double x3, double y3, double x4,double y4, double x5,double y5)
+	public PheromoneGui(double x1,double y1,double x2, double y2, double x3, double y3, double x4,double y4, double x5,double y5)
 	{
 		super();
 		this.x1 = x1;
@@ -33,7 +33,7 @@ public class Pheromone extends Polygon implements GameObject{
 		this.y4 = y4;
 		this.y5 = y5;
 		getPoints().addAll(x1,y1,x2,y2,x3,y3,x4,y4,x5,y5);
-		if(Agent.guard== true)
+		if(AgentGui.guard== true)
 		{setFill(Color.RED);}
 		else {setFill(Color.BLUE);}
 

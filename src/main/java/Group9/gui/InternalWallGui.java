@@ -19,7 +19,7 @@ public class InternalWallGui extends Polygon implements GameObject {
     }
     public InternalWallGui()
     {
-        xs = ;
+        xs = null;
         ys = null;
     }
     public double findWidth(double x1, double x2, double x3, double x4)
