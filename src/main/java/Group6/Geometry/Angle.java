@@ -48,7 +48,7 @@ public class Angle {
         return Angle.fromRadians(this.radians + angle.radians);
     }
 
-    public Angle substract(Angle angle) {
+    public Angle subtract(Angle angle) {
         return Angle.fromRadians(this.radians - angle.radians);
     }
 

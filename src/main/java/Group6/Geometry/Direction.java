@@ -28,7 +28,7 @@ public final class Direction extends Angle {
     }
 
     public Direction getRelativeTo(Direction direction) {
-        return Direction.fromAngle(direction.substract(this));
+        return Direction.fromAngle(direction.subtract(this));
     }
 
     public static Direction fromRadians(double radians) {
