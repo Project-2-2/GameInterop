@@ -2,6 +2,7 @@ package Group6.WorldState;
 
 import Group6.Geometry.Distance;
 import Group6.Geometry.Quadrilateral;
+import Interop.Action.Sprint;
 import Interop.Agent.Guard;
 import Interop.Agent.Intruder;
 import Group6.Geometry.Direction;
@@ -20,9 +21,11 @@ public class IntruderState extends AgentState {
         return intruder;
     }
 
-    public void sprint(Distance distance, int cooldown) {
-        addCooldown(cooldown);
-        move(distance);
+    public void sprint(WorldState worldState, Sprint action) {
+        requireNoCooldown(action);
+        move(new Distance(action.getDistance()));
+        addCooldown(worldState.getScenario().getSprintCooldown());
+        markActionAsExecuted();
     }
 
     static IntruderState spawnIntruder(Scenario scenario, Intruder intruder) {

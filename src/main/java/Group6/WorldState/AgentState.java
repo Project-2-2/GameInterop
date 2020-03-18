@@ -1,6 +1,10 @@
 package Group6.WorldState;
 
 import Group6.Geometry.*;
+import Interop.Action.Action;
+import Interop.Action.DropPheromone;
+import Interop.Action.Move;
+import Interop.Action.Rotate;
 import Interop.Utils.Require;
 
 public abstract class AgentState {
@@ -62,17 +66,41 @@ public abstract class AgentState {
         wasLastActionExecuted = false;
     }
 
-    public void move(Distance distance) {
-        if(hasCooldown()) throw new IllegalActionDuringCooldown("Move");
+    public void move(WorldState worldState, Move action) {
+        requireNoCooldown(action);
+        move(new Distance(((Move)action).getDistance()));
+        markActionAsExecuted();
+    }
+
+    protected void move(Distance distance) {
         Vector displacement = new Vector(0, distance.getValue()).rotate(direction.getRadians());
         location = location.add(displacement).toPoint();
+        markActionAsExecuted();
+    }
+
+    public void rotate(WorldState worldState, Rotate action) {
+        requireNoCooldown(action);
+        direction = direction.getChangedBy(
+            Angle.fromInteropAngle(action.getAngle())
+        );
+        markActionAsExecuted();
+    }
+
+    public void dropPheromone(WorldState worldState, DropPheromone action) {
+        requireNoCooldown(action);
+        worldState.addPheromone(
+            Pheromone.createByAgent(worldState, this, (DropPheromone)action)
+        );
+        addCooldown(worldState.getScenario().getPheromoneCooldown());
+        markActionAsExecuted();
+    }
+
+    protected void markActionAsExecuted() {
         wasLastActionExecuted = true;
     }
 
-    public void rotate(Angle angle) {
-        if(hasCooldown()) throw new IllegalActionDuringCooldown("Rotate");
-        direction = direction.getChangedBy(angle);
-        wasLastActionExecuted = true;
+    protected void requireNoCooldown(Action action) {
+        if (hasCooldown()) throw new IllegalActionDuringCooldown(action.getClass().getName());
     }
 
     class IllegalActionDuringCooldown extends RuntimeException {

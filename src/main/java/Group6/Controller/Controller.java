@@ -62,47 +62,40 @@ public class Controller {
         }
 
         if(action instanceof Move) {
-            agentState.move(new Distance(((Move)action).getDistance()));
+            agentState.move(worldState, (Move)action);
             return;
         }
 
         if(action instanceof Rotate) {
-            agentState.rotate(Angle.fromInteropAngle(((Rotate) action).getAngle()));
+            agentState.rotate(worldState, (Rotate)action);
             return;
         }
 
         if(action instanceof DropPheromone) {
-            worldState.addPheromone(
-                Pheromone.createByAgent(worldState, agentState, (DropPheromone)action)
-            );
+            agentState.dropPheromone(worldState, (DropPheromone)action);
             return;
         }
 
         if(action instanceof Yell) {
-            worldState.addSound(Sound.createYell(worldState.getScenario(), agentState));
+            ((GuardState)agentState).yell(worldState, (Yell)action);
             return;
         }
 
-        if(action instanceof Sprint) {
-            if(agentState instanceof IntruderState) {
-                ((IntruderState)agentState).sprint(
-                    new Distance(((Sprint)action).getDistance()),
-                    worldState.getScenario().getSprintCooldown()
-                );
-            } else {
-                agentState.rejectAction();
-            }
+        if(action instanceof Sprint && agentState instanceof IntruderState) {
+            ((IntruderState)agentState).sprint(worldState, (Sprint)action);
             return;
         }
 
-        throw new UnexpectedAction(action);
+        throw new UnexpectedAction(action, agentState);
 
     }
 
     static class UnexpectedAction extends RuntimeException {
-        public UnexpectedAction(Action action) {
+        public UnexpectedAction(Action action, AgentState agentState) {
             super(
-                "Unexpected action: " + action.getClass().getName()
+                "Unexpected action: " + action.getClass().getName() + "\n" +
+                "Issued by: " + agentState.getClass().getName() + "\n" +
+                "Has cooldown: " + (agentState.hasCooldown() ? "yes" : "no")
             );
         }
     }
