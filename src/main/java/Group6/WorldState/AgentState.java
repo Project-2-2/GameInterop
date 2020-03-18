@@ -95,6 +95,10 @@ public abstract class AgentState {
         markActionAsExecuted();
     }
 
+    public void noAction() {
+        markActionAsExecuted();
+    }
+
     protected void markActionAsExecuted() {
         wasLastActionExecuted = true;
     }

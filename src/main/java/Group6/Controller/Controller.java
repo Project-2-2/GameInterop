@@ -53,6 +53,7 @@ public class Controller {
     private void executeAction(WorldState worldState, AgentState agentState, Action action) {
 
         if(action instanceof NoAction) {
+            agentState.noAction();
             return;
         }
 
