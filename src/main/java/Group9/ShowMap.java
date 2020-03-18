@@ -13,8 +13,9 @@ import javafx.stage.Stage;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.function.Function;
 
-public class ShowMap extends Application {
+public class ShowMap extends Application implements Function<Game, Void> {
     public static void main(String[] args)
     {
         launch();
@@ -22,13 +23,20 @@ public class ShowMap extends Application {
     @Override
     public void start(Stage primaryStage)
     {
+        GameMap gameMap = Parser.parseFile("./src/main/java/Group9/map/maps/test.map");
+        Game game = new Game(gameMap, 3, this::apply);
+
         Group root = new Group();
         primaryStage.setScene(new Scene(root, 1000, 1000));
-        GameMap gameMap = Parser.parseFile("./src/main/java/Group9/map/maps/test.map");
         List<MapObject> mapObjects = gameMap.getObjects();
         mapObjects.forEach(m -> root.getChildren().add(m.getGui()));
         System.out.println(root.getChildren().get(0).getClass());
         root.getChildren().forEach(c -> ((InternalWallGui)c).updateScale());
         primaryStage.show();
+    }
+
+    @Override
+    public Void apply(Game game) {
+        return null;
     }
 }

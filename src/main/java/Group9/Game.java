@@ -35,6 +35,7 @@ import Interop.Percept.Vision.VisionPrecepts;
 import Interop.Utils.Utils;
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class Game {
@@ -50,11 +51,19 @@ public class Game {
     private Map<AgentContainer<?>, Boolean> actionSuccess = new HashMap<>();
     private Set<AgentContainer<?>> justTeleported = new HashSet<>();
 
+    private Function<Game, Void> callback;
+
     public Game(GameMap gameMap, int teamSize)
+    {
+        this(gameMap, teamSize, null);
+    }
+
+    public Game(GameMap gameMap, int teamSize, Function<Game, Void> callback)
     {
 
         this.gameMap = gameMap;
         this.scenarioPercepts = gameMap.getScenarioPercepts();
+        this.callback = callback;
 
         Spawn.Guard guardSpawn = gameMap.getObjects(Spawn.Guard.class).get(0);
         Spawn.Intruder intruderSpawn = gameMap.getObjects(Spawn.Intruder.class).get(0);
@@ -65,6 +74,14 @@ public class Game {
         AgentsFactory.createIntruders(teamSize).forEach(a -> this.intruders.add(new IntruderContainer(a,
                 intruderSpawn.getContainer().getAsPolygon().generateRandomLocation().toVexing(), new Vector2.Random().normalise().toVexing(),
                 new FieldOfView(gameMap.getIntruderViewRangeNormal(), gameMap.getViewAngle()))));
+    }
+
+    public List<GuardContainer> getGuards() {
+        return guards;
+    }
+
+    public List<IntruderContainer> getIntruders() {
+        return intruders;
     }
 
     public Team start()
@@ -125,6 +142,7 @@ public class Game {
                 {
                     return winner;
                 }
+                this.callback.apply(this);
             }
         }
 
@@ -132,6 +150,7 @@ public class Game {
         {
             final GuardAction action = guard.getAgent().getAction(this.generateGuardPercepts(guard));
             actionSuccess.put(guard, executeAction(guard, action));
+            this.callback.apply(this);
             if((winner = checkForWinner()) != null)
             {
                 return winner;
