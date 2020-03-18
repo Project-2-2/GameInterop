@@ -26,8 +26,6 @@ import java.util.ArrayList;
  */
 public class Scenario {
 
-    private String mapDoc;
-    private final Path filePath;
     private final static Charset ENCODING = StandardCharsets.UTF_8;
 
     private GameMode gameMode;
@@ -72,9 +70,7 @@ public class Scenario {
     private ArrayList<Quadrilateral> shadedAreas;
 
     public Scenario(String mapFile) {
-        // set parameters
-        mapDoc = mapFile;
-
+        
         // initialize variables
         walls = new ArrayList<>(); // create list of walls
         shadedAreas = new ArrayList<>(); // create list of low-visability areas
@@ -83,13 +79,11 @@ public class Scenario {
         windows = new ArrayList<>();
         sentryTowers = new ArrayList<>();
 
-        // read scenario
-        filePath = Paths.get(mapDoc); // get path
-        readMap();
+        readMap(Paths.get(mapFile));
     }
 
-    public void readMap() {
-        try (Scanner scanner =  new Scanner(filePath, ENCODING.name())) {
+    public void readMap(Path filePath) {
+        try (Scanner scanner = new Scanner(filePath, ENCODING.name())) {
             while (scanner.hasNextLine()) {
                 parseLine(scanner.nextLine());
             }
@@ -283,10 +277,6 @@ public class Scenario {
             new Point(Integer.parseInt(items[4]), Integer.parseInt(items[5])),
             new Point(Integer.parseInt(items[6]), Integer.parseInt(items[7]))
         );
-    }
-
-    public String getMapDoc() {
-        return mapDoc;
     }
 
     public GameMode getGameMode() {
