@@ -8,6 +8,8 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
+import Group9.gui.SpawnAreaGui.SpawnAreaGuardGui;
+import Group9.gui.SpawnAreaGui.SpawnAreaIntruderGui;
 
 public class Map extends Application {
 
@@ -61,13 +63,14 @@ public class Map extends Application {
 	    wall18.updateScale();
 	    InternalWallGui wall19 = new InternalWallGui(95.0,36.0,95.0,42.0,96.0,42.0,96.0,36.0);
 	    wall19.updateScale();
-	    SpawnAreaGuardGui areaGuard = new SpawnAreaGuardGui(57.0,13.0,57.0,17.0,59.0,17.0,59.0,13.0);
+	   
+	    SpawnAreaGui.SpawnAreaGuardGui areaGuard = new SpawnAreaGuardGui(57.0,13.0,57.0,17.0,59.0,17.0,59.0,13.0);
 	    areaGuard.updateScale();
-
 	    targetAreaGui target = new targetAreaGui(89.0,38.0,94.0,38.0,94.0,40.0,89.0,40.0);
 	    target.updateScale();
-	    SpawnAreaIntrudersGui areaIntruders = new SpawnAreaIntrudersGui(57.0,67.0,57.0,77.0,59.0,77.0,59.0,67.0);
+	    SpawnAreaGui.SpawnAreaIntruderGui areaIntruders = new SpawnAreaIntruderGui(57.0,67.0,57.0,77.0,59.0,77.0,59.0,67.0);
 	    areaIntruders.updateScale();
+	   
 	    AgentGui intruder1 = new AgentGui(58,68,0.5,false);
 	    intruder1.updateScale();
 	    AgentGui intruder2 = new AgentGui(58,70,0.5,false);
