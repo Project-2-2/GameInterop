@@ -3,6 +3,7 @@ package Group9;
 import Group9.agent.container.AgentContainer;
 import Group9.agent.container.GuardContainer;
 import Group9.agent.container.IntruderContainer;
+import Group9.gui.InternalWallGui;
 import Group9.map.GameMap;
 import Group9.map.area.*;
 import Group9.map.dynamic.DynamicObject;
@@ -33,6 +34,8 @@ import Interop.Percept.Vision.ObjectPerceptType;
 import Interop.Percept.Vision.ObjectPercepts;
 import Interop.Percept.Vision.VisionPrecepts;
 import Interop.Utils.Utils;
+import javafx.scene.Group;
+import javafx.scene.Scene;
 
 import java.util.*;
 import java.util.function.Function;
@@ -451,6 +454,14 @@ public class Game {
     {
         INTRUDERS,
         GUARDS
+    }
+    public Group apply()
+    {
+        Group root = new Group();
+        List<MapObject> mapObjects = gameMap.getObjects();
+        mapObjects.forEach(m -> root.getChildren().add(m.getGui()));
+        root.getChildren().forEach(c -> ((InternalWallGui)c).updateScale());
+        return root;
     }
 
 }

@@ -11,8 +11,8 @@ import javafx.util.Duration;
 
 public class AgentGui extends Group implements GameObject
 {
-	final double x;
-	final double y;
+	double x;
+	double y;
 	final double r;
 	final static double speed = 1.4;//for both guard and intruder
 	final static double sprint = 4;//maxSprintDistanceIntruder 
@@ -54,7 +54,6 @@ public class AgentGui extends Group implements GameObject
 	{
 		return head;
 	}
-	
 	public static void move(Scene scene, AgentGui x) {
 		scene.setOnKeyPressed(new EventHandler<KeyEvent>() {
 
