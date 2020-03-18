@@ -66,7 +66,7 @@ public class MapInfo {
     protected double viewRangeGuardNormal;
     protected double viewRangeGuardShaded;
 
-    //TODO BUT CAN ONLY BE DONE IZ SOUND IS IMPLEMENTED
+    //TODO BUT CAN ONLY BE DONE IS SOUND IS IMPLEMENTED
     protected double[] viewRangeSentry;
     protected double yellSoundRadius;
     protected double maxMoveSoundRadius;
