@@ -23,7 +23,7 @@ public class IntruderState extends AgentState {
 
     public void sprint(WorldState worldState, Sprint action) {
         requireNoCooldown(action);
-        move(new Distance(action.getDistance()));
+        move(worldState, new Distance(action.getDistance()));
         addCooldown(worldState.getScenario().getSprintCooldown());
         markActionAsExecuted();
     }

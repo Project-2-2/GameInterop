@@ -74,18 +74,20 @@ public abstract class AgentState {
 
     public void move(WorldState worldState, Move action) {
         requireNoCooldown(action);
-        move(new Distance(((Move)action).getDistance()));
+        move(worldState, new Distance(((Move)action).getDistance()));
+        markActionAsExecuted();
+    }
+
+    protected void move(WorldState worldState, Distance distance) {
+
+        Vector displacement = new Vector(0, distance.getValue()).rotate(direction.getRadians());
+        location = location.add(displacement).toPoint();
+
         Teleports teleports = worldState.getScenario().getTeleports();
         if(!isJustTeleported() && isInside(teleports)) {
             teleport(teleports);
         }
-        markActionAsExecuted();
-    }
 
-    protected void move(Distance distance) {
-        Vector displacement = new Vector(0, distance.getValue()).rotate(direction.getRadians());
-        location = location.add(displacement).toPoint();
-        markActionAsExecuted();
     }
 
     protected void teleport(Teleports teleports) {
