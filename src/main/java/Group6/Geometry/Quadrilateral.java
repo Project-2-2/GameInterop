@@ -18,11 +18,11 @@ public class Quadrilateral implements Area {
     private LineSegment sideCD;
     private LineSegment sideDA;
 
-    private double minX;
-    private double maxX;
+    private double minX = Double.POSITIVE_INFINITY;
+    private double maxX = Double.NEGATIVE_INFINITY;
 
-    private double minY;
-    private double maxY;
+    private double minY = Double.POSITIVE_INFINITY;
+    private double maxY = Double.NEGATIVE_INFINITY;
 
     /**
      * Point outside the bounding box. Useful for ray casting algorithm.
@@ -70,8 +70,8 @@ public class Quadrilateral implements Area {
 
     public Point getCenter() {
         return new Point(
-            (getMinX() + getMaxX()) / 2,
-            (getMinY() + getMaxY()) / 2
+            getMinX() + ((getMaxX() - getMinX()) / 2),
+            getMinY() + ((getMaxY() - getMinY()) / 2)
         );
     }
 

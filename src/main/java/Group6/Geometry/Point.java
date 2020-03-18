@@ -7,9 +7,6 @@ import Group6.Geometry.Contract.Area;
  */
 public class Point extends Vector {
 
-    private double x;
-    private double y;
-
     public Point(double x, double y) {
         super(x, y);
     }
@@ -39,7 +36,7 @@ public class Point extends Vector {
     }
 
     public Interop.Geometry.Point toInteropPoint() {
-        return new Interop.Geometry.Point(x, y);
+        return new Interop.Geometry.Point(getX(), getY());
     }
 
     public boolean isEqualTo(Vector vector) {
@@ -52,8 +49,8 @@ public class Point extends Vector {
 
     public String toString() {
         return "Point{" +
-            "x=" + x +
-            ", y=" + y +
+            "x=" + getX() +
+            ", y=" + getY() +
             '}';
     }
 

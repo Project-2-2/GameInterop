@@ -8,6 +8,18 @@ import SimpleUnitTest.SimpleUnitTest;
 public class ExtendedUnitTest extends SimpleUnitTest {
 
     /**
+     * This method allows to assert that certain condition is true.
+     *
+     * @param condition The condition that must be true.
+     * @param explanation Explanation of the assertion.
+     *
+     * @throws AssertionFailed This exception with explanation of the assertion is thrown if condition is false.
+     */
+    protected static void assertFalse(boolean condition, String explanation) throws RuntimeException {
+        if(condition) throw new AssertionFailed("Assertion failed: \n" + explanation);
+    }
+
+    /**
      * This methods allows to assert that two doubles are equal with certain tolerance.
      *
      * @param actual The actual value.
