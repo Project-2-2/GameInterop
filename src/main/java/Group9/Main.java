@@ -15,6 +15,7 @@ public class Main {
         GameMap gameMap = Parser.parseFile("./src/main/java/Group9/map/maps/test.map");
 
         Game game = new Game(gameMap, 3);
+        game.start();
         //game.start();
 
         //\left(-60,-40\right),\left(-60,-39\right),\left(60,-39\right),\left(60,-40\right)

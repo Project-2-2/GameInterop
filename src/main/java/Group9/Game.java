@@ -51,14 +51,14 @@ public class Game {
     private Map<AgentContainer<?>, Boolean> actionSuccess = new HashMap<>();
     private Set<AgentContainer<?>> justTeleported = new HashSet<>();
 
-    private Function<Game, Void> callback;
+    private Function<AgentContainer<?>, Void> callback;
 
     public Game(GameMap gameMap, int teamSize)
     {
         this(gameMap, teamSize, null);
     }
 
-    public Game(GameMap gameMap, int teamSize, Function<Game, Void> callback)
+    public Game(GameMap gameMap, int teamSize, Function<AgentContainer<?>, Void> callback)
     {
 
         this.gameMap = gameMap;
@@ -137,12 +137,11 @@ public class Game {
             {
                 final IntruderAction action = intruder.getAgent().getAction(this.generateIntruderPercepts(intruder));
                 actionSuccess.put(intruder, executeAction(intruder, action));
-
+                if(this.callback != null) this.callback.apply(intruder);
                 if((winner = checkForWinner()) != null)
                 {
                     return winner;
                 }
-                this.callback.apply(this);
             }
         }
 
@@ -150,7 +149,7 @@ public class Game {
         {
             final GuardAction action = guard.getAgent().getAction(this.generateGuardPercepts(guard));
             actionSuccess.put(guard, executeAction(guard, action));
-            this.callback.apply(this);
+            if(this.callback != null) this.callback.apply(guard);
             if((winner = checkForWinner()) != null)
             {
                 return winner;
