@@ -25,7 +25,7 @@ public class ShowMap extends Application {
         Group root = new Group();
         primaryStage.setScene(new Scene(root, 1000, 1000));
         GameMap gameMap = Parser.parseFile("./src/main/java/Group9/map/maps/test.map");
-        List<MapObject> mapObjects = gameMap.getMapObjects();
+        List<MapObject> mapObjects = gameMap.getObjects();
         mapObjects.forEach(m -> root.getChildren().add(m.getGui()));
         System.out.println(root.getChildren().get(0).getClass());
         root.getChildren().forEach(c -> ((InternalWallGui)c).updateScale());
