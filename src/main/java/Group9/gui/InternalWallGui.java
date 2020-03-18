@@ -1,26 +1,26 @@
 package Group9.gui;
 
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Rectangle;
 
-public class InternalWall extends Rectangle implements GameObject {
-    final double x;
-    final double y;
-    final double width;
-    final double height;
-    public InternalWall(double x1, double y1, double x2, double y2, double x3, double y3, double x4, double y4)
+public class InternalWallGui extends Polygon implements GameObject {
+    final double[] xs;
+    final double[] ys;
+    public InternalWallGui(double x1, double y1, double x2, double y2, double x3, double y3, double x4, double y4)
     {
-        super();
-        width = findWidth(x1, x2, x3, x4);
-        height = findHeight(y1, y2, y3, y4);
-        this.x = findLowest(x1, x2, x3, x4);
-        this.y = findLowest(y1, y2, y3, y4);
-        setLayoutX(this.x);
-        setLayoutY(this.y);
-        setWidth(width);
-        setHeight(height);
+        super(x1, y1, x2, y2, x3, y3, x4, y4);
+        double[] xs = {x1, x2, x3, x4};
+        double[] ys = {y1, y2, y3, y4};
+        this.xs = xs;
+        this.ys = ys;
         setFill(Color.LAVENDER);
         setStroke(Color.BLACK);
+    }
+    public InternalWallGui()
+    {
+        xs = ;
+        ys = null;
     }
     public double findWidth(double x1, double x2, double x3, double x4)
     {
@@ -64,9 +64,11 @@ public class InternalWall extends Rectangle implements GameObject {
     public void updateScale()
     {
         double scale = Scale.scale;
-        setLayoutX(x*scale);
-        setLayoutY(y*scale);
-        setWidth(width*scale);
-        setHeight(height*scale);
+        this.getPoints().setAll(
+                xs[0]*scale, ys[0]*scale,
+                xs[1]*scale, ys[1]*scale,
+                xs[2]*scale, ys[2]*scale,
+                xs[3]*scale, ys[3]*scale
+        );
     }
 }

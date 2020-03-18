@@ -89,9 +89,9 @@ public class MenuWindow extends Application {
 
         };
         //Background image.
-        ImageView background = new ImageView("menuImg.jpg");
+        /*ImageView background = new ImageView("menuImg.jpg");
         background.setFitHeight(650);
-        background.setFitWidth(1000);
+        background.setFitWidth(1000);*/
         
         Title title = new Title ("Multi-agents Surveillance");
 		title.setTranslateX(120);
@@ -103,7 +103,7 @@ public class MenuWindow extends Application {
       
        	Group r = new Group();       
        	Scene scene = new Scene(r, 970, 630);
-        r.getChildren().add(background);
+        //r.getChildren().add(background);
         r.getChildren().addAll(title,start,quit);
         
         primaryStage.setScene(scene);

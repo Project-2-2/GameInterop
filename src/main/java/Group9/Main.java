@@ -15,12 +15,12 @@ public class Main {
     public static void main(String[] args) {
 
         // How to read in a map from a file
-        GameMap map = Parser.parseFile("./src/main/java/Group9/map/maps/test.map");
+        //GameMap map = Parser.parseFile("./src/main/java/Group9/map/maps/test.map");
 
         GameMap gameMap = Parser.parseFile("./src/main/java/Group9/map/maps/test.map");
 
         Game game = new Game(gameMap, 3);
-        game.start();
+        //game.start();
 
         //\left(-60,-40\right),\left(-60,-39\right),\left(60,-39\right),\left(60,-40\right)
 
