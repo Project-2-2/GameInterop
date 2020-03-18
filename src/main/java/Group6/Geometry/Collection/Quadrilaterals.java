@@ -5,13 +5,19 @@ import Group6.Geometry.Point;
 import Group6.Geometry.Quadrilateral;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class Quadrilaterals {
 
-    private ArrayList<Quadrilateral> quadrilaterals;
+    private List<Quadrilateral> quadrilaterals;
 
     public Quadrilaterals(ArrayList<Quadrilateral> quadrilaterals) {
-        this.quadrilaterals = quadrilaterals;
+        this.quadrilaterals = Collections.unmodifiableList(quadrilaterals);
+    }
+
+    public List<Quadrilateral> getAll() {
+        return quadrilaterals;
     }
 
     public boolean isInside(Point point) {
