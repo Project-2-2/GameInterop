@@ -14,6 +14,8 @@ public class Point extends Vector {
 
     public Point(double x, double y) {
         super(x, y);
+        this.x = x;
+        this.y = y;
     }
 
     public Point(Interop.Geometry.Point interopPoint) {

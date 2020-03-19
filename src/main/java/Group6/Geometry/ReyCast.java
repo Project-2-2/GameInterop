@@ -3,7 +3,7 @@ import Group6.WorldState.AgentState;
 import Interop.Percept.Vision.FieldOfView;
 import java.lang.Math;
 
-import java.util.Set;
+import java.util.*;
 
 /**
  *
@@ -27,113 +27,121 @@ import java.util.Set;
  *
  */
 public class ReyCast {
-    private Set<LineSegment> reys;
-    private int reyNum = 45;
-    private double reyLenght;
+
+    //reys forming the reyCast
+    private List<LineSegment> reys;
+
     //quadrants
-    private Angle a = new Angle(90);
-    private Angle b = new Angle(180);
-    private Angle c = new Angle(270);
-    private Angle d = new Angle(360);
-    private Angle e = new Angle(0);
+    private Angle a = new Angle(Math.toRadians(90));
+    private Angle b = new Angle(Math.toRadians(180));
+    private Angle c = new Angle(Math.toRadians(270));
+    private Angle d = new Angle(Math.toRadians(360));
+    private Angle e = new Angle(Math.toRadians(0));
 
-    private Point[] points = new Point[reyNum];
+    //variables needed
+    private Angle shiftRate;
+    private Angle initialShift;
+    private Direction reyDirection;
+    private Direction currDirection;
+    private int reyNum = 20; //set the number of reys here.
+    private double reyLenght;
 
-
-    private Angle reyAngle;
 
     public ReyCast(AgentState agentState, FieldOfView fieldofView) {
         reyLenght = fieldofView.getRange().getValue();
         reys = generateReys(agentState.getLocation(), agentState.getDirection(), reyNum, fieldofView);
-
-
     }
 
-    private Set<LineSegment> generateReys(Point agentLocation, Direction agentDirection, int reyNum, FieldOfView fieldofView) {
+
+    private List<LineSegment> generateReys(Point agentLocation, Direction agentDirection, int reyNum, FieldOfView fieldofView) {
+        //get agent location
         double x_a = agentLocation.getX();
         double y_a = agentLocation.getY();
 
-        double tempAnlge;
-        double newDegree;
-
+        //initialize to 0
         double x_b = 0;
         double y_b = 0;
 
+        //initialize variables needed
+        init(fieldofView, agentDirection);
 
-        //angle between rays
-        Angle shiftRate = new Angle(fieldofView.getViewAngle().getRadians() / reyNum);
-        //half of field of view angle
-        Angle initialShift = new Angle(fieldofView.getViewAngle().getDegrees() / 2);
+        //create B points of line segments
+        Point[] points = createPoints(x_b, y_b, x_a, y_a);
 
-        Direction reyDirection = Direction.fromDegrees(agentDirection.getDegrees()); //initial direction of the agent
-        Direction currDirection = Direction.fromDegrees(reyDirection.getDegrees() - initialShift.getDegrees()); //outer left ray
-
-        double currDirectionDegree = currDirection.getDegrees(); //amount of degrees of outer left ray
-        if (currDirectionDegree < 0){ // check if new degree is negative, if so, make positive
-            currDirectionDegree = currDirectionDegree + 360;
+        //create lineSegments
+        for(int i=0; i<reyNum; i++){
+            LineSegment lineSegment = new LineSegment(
+                    agentLocation,
+                    points[i]);
+            reys.add(lineSegment);
         }
-        double currAngleDegree = initialShift.getDegrees(); //degree of initial shift
 
+        return reys;
+    }
+
+
+    private Point[] createPoints(double x_b, double y_b, double x_a, double y_a){
+        Point[] points = new Point[reyNum];
         for (int i = 0; i < reyNum; i++) {
             //the direction is = to a, b, c, d or e
-            if (currDirectionDegree == a.getDegrees()) {
+            if (currDirection.getDegrees() == a.getDegrees()) {
                 x_b = x_a - reyLenght;
                 y_b = y_a;
-            } else if (currDirectionDegree == b.getDegrees()) {
+            } else if (currDirection.getDegrees() == b.getDegrees()) {
                 x_b = x_a;
                 y_b = y_a - reyLenght;
-            } else if (currDirectionDegree == c.getDegrees()) {
+            } else if (currDirection.getDegrees() == c.getDegrees()) {
                 x_b = x_a + reyLenght;
                 y_b = y_a;
-            } else if (currDirectionDegree == d.getDegrees() || currDirectionDegree == e.getDegrees()) {
+            } else if (currDirection.getDegrees() == d.getDegrees() || currDirection.getDegrees() == e.getDegrees()) {
                 x_b = x_a;
                 y_b = y_a + reyLenght;
             }
-            else if (currDirectionDegree > e.getDegrees() && currDirectionDegree < a.getDegrees()) {
-                if (currDirectionDegree <= 45) {
-                    tempAnlge = currDirectionDegree - e.getDegrees();
-                    x_b = x_a - deltaXS(tempAnlge);
-                    y_b = y_a + deltaYC(tempAnlge);
+            else if (currDirection.getDegrees() > e.getDegrees() && currDirection.getDegrees() < a.getDegrees()) {
+                if (currDirection.getDegrees() <= 45) {
+                    double tempAnlge = Math.abs(currDirection.getDegrees() - e.getDegrees());
+                    x_b = x_a + deltaXS(tempAnlge);
+                    y_b = y_a - deltaYC(tempAnlge);
                 }
                 else {
-                    tempAnlge = currDirectionDegree - a.getDegrees();
-                    x_b = x_a - deltaXC(tempAnlge);
-                    y_b = y_a + deltaYS(tempAnlge);
+                    double tempAnlge = Math.abs(currDirection.getDegrees() - a.getDegrees());
+                    x_b = x_a + deltaXC(tempAnlge);
+                    y_b = y_a - deltaYS(tempAnlge);
                 }
             }
-            else if (currDirectionDegree > a.getDegrees() && currDirectionDegree < b.getDegrees()) {
-                if (currDirectionDegree <= 135) { // check in which side of the a-b area
-                    tempAnlge = currDirectionDegree - a.getDegrees();
+            else if (currDirection.getDegrees() > a.getDegrees() && currDirection.getDegrees() < b.getDegrees()) {
+                if (currDirection.getDegrees() <= 135) { // check in which side of the a-b area
+                    double tempAnlge = Math.abs(currDirection.getDegrees() - a.getDegrees());
                     x_b = x_a - deltaXC(tempAnlge);
                     y_b = y_a - deltaYS(tempAnlge);
-                    }
+                }
                 else {
-                    tempAnlge = currDirectionDegree - b.getDegrees();
+                    double tempAnlge = Math.abs(currDirection.getDegrees() - b.getDegrees());
                     x_b = x_a - deltaXS(tempAnlge);
                     y_b = y_a - deltaYC(tempAnlge);
 
-                    }
                 }
-            else if (currDirectionDegree > b.getDegrees() && currDirectionDegree < c.getDegrees()) {
-                     if (currDirectionDegree <= 225) {
-                         tempAnlge = currDirectionDegree - b.getDegrees();
-                         x_b = x_a + deltaXS(tempAnlge);
-                         y_b = y_a - deltaYC(tempAnlge);
-                     }
-                     else {
-                         tempAnlge = currDirectionDegree - c.getDegrees();
-                         x_b = x_a + deltaXC(tempAnlge);
-                         y_b = y_a - deltaYS(tempAnlge);
-                     }
+            }
+            else if (currDirection.getDegrees() > b.getDegrees() && currDirection.getDegrees() < c.getDegrees()) {
+                if (currDirection.getDegrees() <= 225) {
+                    double tempAnlge = Math.abs(currDirection.getDegrees() - b.getDegrees());
+                    x_b = x_a + deltaXS(tempAnlge);
+                    y_b = y_a - deltaYC(tempAnlge);
                 }
-            else if (currDirectionDegree > c.getDegrees() && currDirectionDegree < d.getDegrees()) {
-                if (currDirectionDegree <= 315) {
-                    tempAnlge = currDirectionDegree - c.getDegrees();
+                else {
+                    double tempAnlge = Math.abs(currDirection.getDegrees() - c.getDegrees());
+                    x_b = x_a + deltaXC(tempAnlge);
+                    y_b = y_a - deltaYS(tempAnlge);
+                }
+            }
+            else if (currDirection.getDegrees() > c.getDegrees() && currDirection.getDegrees() < d.getDegrees()) {
+                if (currDirection.getDegrees() <= 315) {
+                    double tempAnlge = Math.abs(currDirection.getDegrees() - c.getDegrees());
                     x_b = x_a + deltaXC(tempAnlge);
                     y_b = y_a + deltaYS(tempAnlge);
                 }
                 else {
-                    tempAnlge = currDirectionDegree - d.getDegrees();
+                    double tempAnlge = Math.abs(currDirection.getDegrees() - d.getDegrees());
                     x_b = x_a + deltaXS(tempAnlge);
                     y_b = y_a + deltaYC(tempAnlge);
                 }
@@ -141,23 +149,27 @@ public class ReyCast {
 
 
 
-                points[i] = new Point(x_b, y_b);
-                newDegree= currDirectionDegree + currAngleDegree;
-                if( newDegree> 360){ //check if we crossed the 360 bound, then we just substract 360.
-                    newDegree = newDegree-360;
-                }
-                currDirectionDegree= newDegree;
-
-
-            }
-            return reys;
+            points[i] = new Point(x_b, y_b);
+            currDirection = currDirection.getChangedBy(shiftRate);
         }
+        return points;
+    }
+    private void init(FieldOfView fieldofView, Direction agentDirection){
+        //angle between rays
+        shiftRate = Angle.fromDegrees(0 - (fieldofView.getViewAngle().getDegrees() / reyNum));
+        //half of field of view angle
+        initialShift =  Angle.fromDegrees(fieldofView.getViewAngle().getDegrees() / 2);
+
+        reyDirection = Direction.fromDegrees(agentDirection.getDegrees()); //initial direction of the agent
+        currDirection = reyDirection.getChangedBy(initialShift); //outer left ray
+    }
+
 
         public double deltaXS ( double angle){
-            return Math.sin(angle) * reyLenght;
+            return Math.sin(Math.toRadians(angle)) * reyLenght;
         }
         public double deltaYC ( double angle){
-            return Math.cos(angle) * reyLenght;
+            return Math.cos(Math.toRadians(angle)) * reyLenght;
         }
         public double deltaXC ( double angle){
             return Math.cos(angle) * reyLenght;
@@ -166,13 +178,23 @@ public class ReyCast {
             return Math.sin(angle) * reyLenght;
         }
 
-        public Set<LineSegment> getReys () {
+        public List<LineSegment> getReys () {
             return reys;
         }
 
         public void setReys (Set < LineSegment > reys) {
             reys = reys;
         }
+
+    @Override
+    public String toString() {
+        String reycast = "Line Segments: \n";
+        for(int i=0; i<reyNum; i++){
+           String string =  reys.get(i).toString();
+            reycast = reycast.concat(i+": "+reys.get(i).toString()+"\n");
+        }
+        return reycast;
+    }
 }
 
 
