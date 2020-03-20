@@ -127,6 +127,73 @@ public class Area {
 
 
     /**
+     * Ionas call this method to get the intesection
+     * @param point1 one endpoint of the first vector
+     * @param point2 second endpoint of the first vector
+     * @param point3 one endpoint of the second vector
+     * @param point4 second endpoint of the second vector
+     * @return
+     */
+    public static Point getIntersection(Point point1, Point point2, Point point3, Point point4){
+
+        //if there is no colission
+        if (!Sat.hasCollided(new Vector2D[]{new Vector2D(point1),new Vector2D(point2)}, new Vector2D[]{new Vector2D(point3),new Vector2D(point4)})){
+            return new Point(0,0);
+        }
+
+        double tNom = ((point1.getX()-point3.getX())*(point3.getY()-point4.getY()))-((point1.getY()-point3.getY())*(point3.getX()-point4.getX()));
+        double tDenom = ((point1.getX()-point2.getX())*(point3.getY()-point4.getY()))-((point1.getY()-point2.getY())*(point3.getX()-point4.getX()));
+
+        double uNom = ((point1.getX()-point2.getX())*(point1.getY()-point3.getY()))-((point1.getY()-point2.getY())*(point1.getX()-point3.getX()));
+        double uDenom= ((point1.getX()-point2.getX())*(point3.getY()-point4.getY()))-((point1.getY()-point2.getY())*(point3.getX()-point4.getX()));
+
+        double t = tNom/tDenom;
+        double u = uNom/uDenom;
+
+        double xIntersect = point1.getX()+t*(point2.getX()-point1.getX());
+        double yIntersect = point1.getY()+t*(point2.getY()-point1.getY());
+
+        System.out.println(xIntersect);
+        System.out.println(yIntersect);
+
+        return new Point(xIntersect,yIntersect);
+    }
+
+    /**
+     * Ionas call this method to get the intesection
+     * @param point1 one endpoint of the first vector
+     * @param point2 second endpoint of the first vector
+     * @param point3 one endpoint of the second vector
+     * @param point4 second endpoint of the second vector
+     * @return
+     */
+    public static Point getIntersection(Vector2D point1, Vector2D point2, Vector2D point3, Point point4){
+
+        //if there is no colission
+        if (!Sat.hasCollided(new Vector2D[]{new Vector2D(point1),new Vector2D(point2)}, new Vector2D[]{new Vector2D(point3),new Vector2D(point4)})){
+            return new Point(0,0);
+        }
+
+        double tNom = ((point1.getX()-point3.getX())*(point3.getY()-point4.getY()))-((point1.getY()-point3.getY())*(point3.getX()-point4.getX()));
+        double tDenom = ((point1.getX()-point2.getX())*(point3.getY()-point4.getY()))-((point1.getY()-point2.getY())*(point3.getX()-point4.getX()));
+
+        double uNom = ((point1.getX()-point2.getX())*(point1.getY()-point3.getY()))-((point1.getY()-point2.getY())*(point1.getX()-point3.getX()));
+        double uDenom= ((point1.getX()-point2.getX())*(point3.getY()-point4.getY()))-((point1.getY()-point2.getY())*(point3.getX()-point4.getX()));
+
+        double t = tNom/tDenom;
+        double u = uNom/uDenom;
+
+        double xIntersect = point1.getX()+t*(point2.getX()-point1.getX());
+        double yIntersect = point1.getY()+t*(point2.getY()-point1.getY());
+
+        System.out.println(xIntersect);
+        System.out.println(yIntersect);
+
+        return new Point(xIntersect,yIntersect);
+    }
+
+
+    /**
      * CALL THIS METHOD FOR VISSION
      * You need to have the two ends of the vision vector
      * @param startVector
