@@ -2,11 +2,15 @@ package Group5.GameController;
 
 
 import Interop.Geometry.Angle;
-import Interop.Geometry.Direction;
 import Interop.Geometry.Distance;
 import Interop.Geometry.Point;
+import Interop.Percept.Vision.FieldOfView;
+import Interop.Percept.Vision.ObjectPercept;
+import Interop.Percept.Vision.ObjectPercepts;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * this class checks for every agent which movements it can do
@@ -17,7 +21,7 @@ public class AgentController {
     private double radius;
     private Vector2D direction;  //the direction an agent is walking
     private Angle angle;
-    private double viewRange;
+    private Distance viewDistance;
 
 
     private double maxAngleRotation;
@@ -184,7 +188,7 @@ public class AgentController {
             //rotateDegree = rotateDegree.rotate()
         }
 
-       // System.out.println("BIEM");
+        // System.out.println("BIEM");
         for (int i =0;i<22;i++){
             double angle = (Math.PI/180)*i*-1;
 
@@ -200,77 +204,73 @@ public class AgentController {
         }
 
         return rayCasts;
-
-
     }
 
     /**
      *
-     * @param agents all the agents
-     * @return the objects that they can see
+     * @param agent the agent you want to update vision
+     * @return An ObjectPercepts (object containing the perceived objects)
      */
-    private ArrayList<ArrayList<Area>> vision(ArrayList<AgentController> agents) {
-        double angle;
-        double currentX, currentY, targetX, targetY;
+    private ObjectPercepts vision(AgentController agent) {
+        double targetX, targetY;
         ArrayList<Area> areas = Area.getAreas();
-        ArrayList<ArrayList<Area>> perceivedObjects = new ArrayList<>();
+        ArrayList<ObjectPercept> perceivedObjects = new ArrayList<>();
 
-        for (AgentController agent : agents) {
-            perceivedObjects.add(new ArrayList<>());
+        double viewRange = agent.viewDistance.getValue();
 
-            currentX = agent.getPosition().getX();
-            currentY = agent.getPosition().getY();
-            angle = agent.angle.getDegrees();
+        FieldOfView fieldOfView = new FieldOfView(new Distance(5.0), Angle.fromRadians(Math.PI/4));
 
-            for (double i=-22.5; i <=22.5; i++){
-                Vector2D point1 = new Vector2D(currentX, currentY);
-                if (angle + i > 360) {
+        double currentX = agent.getPosition().getX();
+        double currentY = agent.getPosition().getY();
+        double angle = agent.angle.getDegrees();
 
-                    targetX = viewRange * Math.cos(angle + i - 360) + currentX;
-                    targetY = viewRange * Math.sin(angle + i - 360) + currentY;
+        for (double i=-22.5; i <=22.5; i++){
+            Vector2D point1 = new Vector2D(currentX, currentY);
 
-                }else if (angle + i < 0) {
-                    targetX = viewRange * Math.cos(angle + i + 360) + currentX;
-                    targetY = viewRange * Math.sin(angle + i + 360) + currentY;
+            if (angle + i > 360) {
+                targetX = viewRange * Math.cos(angle + i - 360) + currentX;
+                targetY = viewRange * Math.sin(angle + i - 360) + currentY;
 
-                }else{
-                    targetX = viewRange * Math.cos(angle + i) + currentX;
-                    targetY = viewRange * Math.sin(angle + i) + currentY;
+            }else if (angle + i < 0) {
+                targetX = viewRange * Math.cos(angle + i + 360) + currentX;
+                targetY = viewRange * Math.sin(angle + i + 360) + currentY;
 
-                }
-                Vector2D point2 = new Vector2D(targetX, targetY);
-                Vector2D[] vector1 = {point1, point2};
-                ArrayList<ArrayList<Vector2D>> positions;
-                for (Area area : areas) {
-                    positions = area.getVectorPosition();
-                    for (ArrayList<Vector2D> arr: positions) {
-                        Vector2D[] vector2 = {arr.get(0), arr.get(1)};
+            }else{
+                targetX = viewRange * Math.cos(angle + i) + currentX;
+                targetY = viewRange * Math.sin(angle + i) + currentY;
 
-                        if (Sat.hasCollided(vector1, vector2)) {
-                            perceivedObjects.get(-1).add(area);
-                        }
+            }
+            Vector2D point2 = new Vector2D(targetX, targetY);
+            Vector2D[] vector1 = {point1, point2};
+            ArrayList<ArrayList<Vector2D>> positions;
+            for (Area area : areas) {
+                positions = area.getVectorPosition();
+                for (ArrayList<Vector2D> arr: positions) {
+                    Vector2D[] vector2 = {arr.get(0), arr.get(1)};
+
+                    if (Sat.hasCollided(vector1, vector2)) {
+                        perceivedObjects.add(new ObjectPercept(area.getObjectsPerceptType(), new Point(0,0) ));
                     }
                 }
             }
-            Area.bubbleSort(perceivedObjects, agent);
-            checkPerceivedObjects(perceivedObjects);
         }
-        return perceivedObjects;
+        Area.bubbleSort(perceivedObjects, agent);
+        checkPerceivedObjects(perceivedObjects);
+        Set<ObjectPercept> toReturn = new HashSet<>(perceivedObjects);
+        return new ObjectPercepts(toReturn);
     }
 
     /**
      * Checks which object you can see
      */
-    private void checkPerceivedObjects(ArrayList<ArrayList<Area>> perceivedObjects) {
+    private void checkPerceivedObjects(ArrayList<ObjectPercept> perceivedObjects) {
         boolean seeFarther = true; // false if there is an area in front that is not opaque
 
-        for (ArrayList<Area> areas: perceivedObjects) {
-            for (Area area : areas) {
-                if (!seeFarther) {
-                    areas.remove(area);
-                } else if (area.isOpaque()) {
-                    seeFarther = false;
-                }
+        for (ObjectPercept object : perceivedObjects) {
+            if (!seeFarther) {
+                perceivedObjects.remove(object);
+            } else if (object.getType().isOpaque()) {
+                seeFarther = false;
             }
         }
     }

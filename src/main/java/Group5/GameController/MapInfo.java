@@ -1,7 +1,5 @@
 package Group5.GameController;
 
-import Interop.Agent.Guard;
-import Interop.Geometry.Angle;
 import Interop.Geometry.Point;
 import Interop.Percept.Scenario.SlowDownModifiers;
 

@@ -1,6 +1,5 @@
 package Group5.GameController;
 
-import Interop.Geometry.Angle;
 import Interop.Geometry.Point;
 
 public class Vector2D {

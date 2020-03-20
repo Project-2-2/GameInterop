@@ -11,7 +11,7 @@ public class IntruderController extends AgentController {
     private double radius;
     //the direction an agent is walking
     private Vector2D direction;
-    private  Angle angle;
+    private Angle angle;
 
     private Distance normalMoveDistance;
     private Distance sprintDistance;

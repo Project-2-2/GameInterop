@@ -2,9 +2,6 @@ package Group5.GameController;
 
 public class Door extends Area {
 
-
-
-
     private static double slowDownModifier;
 
     private boolean closed;
