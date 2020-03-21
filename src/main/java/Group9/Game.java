@@ -328,7 +328,7 @@ public class Game {
             DropPheromone dropPheromone = (DropPheromone) action;
 
             gameMap.getDynamicObjects().add(new Pheromone(
-                    dropPheromone.getType(), 
+                    dropPheromone.getType(),
                     agentContainer,
                     agentContainer.getPosition(),
                     scenarioPercepts.getRadiusPheromone().getValue(),
