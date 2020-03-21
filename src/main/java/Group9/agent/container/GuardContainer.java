@@ -12,7 +12,6 @@ public class GuardContainer extends AgentContainer<Guard> {
     }
     public GuardGui getGui(FieldOfView FOV)
     {
-        System.out.println("position: " + this.getShape().getCenter().getX() + ", " + this.getShape().getCenter().getY());
         GuardGui gui = new GuardGui(this.getShape().getCenter().getX(), this.getShape().getCenter().getY(), this.getShape().getRadius(), this.getDirection(), FOV.getRange().getValue());
         return gui;
     }

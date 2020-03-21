@@ -82,7 +82,7 @@ public class Map extends Application implements Function<AgentContainer<?>, Void
 		System.out.println("update");
 		Platform.runLater(() -> {
 			movingObjects.getChildren().clear();
-			//movingObjects.getChildren().add(game.getMovingObjects());
+			movingObjects.getChildren().add(game.getMovingObjects());
 		});
 		return null;
 	}
