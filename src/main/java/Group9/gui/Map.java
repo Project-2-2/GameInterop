@@ -72,7 +72,8 @@ public class Map extends Application implements Function<AgentContainer<?>, Void
 	public Void apply(AgentContainer<?> agentContainer)
 	{
 		System.out.println("update");
-		movingObjects = game.getMovingObjects();
+		movingObjects.getChildren().clear();
+		movingObjects.getChildren().add(game.getMovingObjects());
 		//game.apply(agentContainer);
 		return null;
 	}
