@@ -1,5 +1,6 @@
 package Group9.gui;
 
+import Interop.Percept.Smell.SmellPerceptType;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Polygon;
@@ -12,7 +13,7 @@ public class PheromoneGui extends Circle implements GameObject{
 
 	final double radiusPheromone;
 
-	public PheromoneGui(double x, double y, double radius, int color)
+	public PheromoneGui(double x, double y, double radius, SmellPerceptType color)
 	{
 		super();
 		this.x = x;
@@ -25,27 +26,27 @@ public class PheromoneGui extends Circle implements GameObject{
 		else {setStroke(Color.RED);}
 		switch (color)
 		{
-			case 1:
+			case Pheromone1:
 			{
 				setFill(Color.YELLOW);
 				break;
 			}
-			case 2:
+			case Pheromone2:
 			{
 				setFill(Color.PINK);
 				break;
 			}
-			case 3:
+			case Pheromone3:
 			{
 				setFill(Color.LIGHTBLUE);
 				break;
 			}
-			case 4:
+			case Pheromone4:
 			{
 				setFill(Color.GRAY);
 				break;
 			}
-			case 5:
+			case Pheromone5:
 			{
 				setFill(Color.GREEN);
 				break;

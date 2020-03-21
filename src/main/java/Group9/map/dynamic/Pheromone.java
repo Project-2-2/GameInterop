@@ -33,7 +33,8 @@ public class Pheromone extends DynamicObject<AgentContainer<?>> {
 
     public PheromoneGui getGui()
     {
-        PheromoneGui gui = new PheromoneGui(this.getCenter().getX(), this.getCenter().getY(), this.getRadius(), 0);
+        System.out.println("getPheromoneGui");
+        PheromoneGui gui = new PheromoneGui(this.getCenter().getX(), this.getCenter().getY(), this.getRadius(), type);
         return gui;
     }
 
