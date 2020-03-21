@@ -22,15 +22,15 @@ public class AgentGui extends Group implements GameObject
 	final VisionConeGui vision;
 
 	
-	public AgentGui(double x, double y, double r, Vector2 direction, double range, boolean guard)
+	public AgentGui(double x, double y, double radius, Vector2 direction, double range, boolean guard)
 	{
 		this.x = x;
 		this.y = y;
-		this.r = r;
+		this.r = radius;
 		head = new Circle();
 		head.setCenterX(x);
 		head.setCenterY(y);
-		head.setRadius(r);
+		head.setRadius(radius);
 		if(guard) {head.setFill(Color.BLUE);head.setStroke(Color.BLACK);}
 		else {head.setFill(Color.RED);}
 		vision = new VisionConeGui(direction, x, y, range);
