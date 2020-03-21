@@ -21,9 +21,9 @@ public class AgentController {
 
     private Point position;
     private double radius;
-    private Vector2D direction;  //the direction an agent is walking
+    private Point direction;  //the direction an agent is walking
     private Angle angle;
-    private boolean onSentryTower;
+    protected boolean onSentryTower;
     private String agentType;
     private static Distance intruderViewRange;
     private static Distance guardViewRange;
@@ -34,8 +34,7 @@ public class AgentController {
     protected AgentController(Point position, double radius, double maxRotation){
         this.position = position;
         this.radius = radius;
-        direction = new Vector2D(position);
-        direction = new Vector2D(2,2);
+        direction = new Point(position.getX(),position.getY());
         angle = position.getClockDirection();
         this.maxAngleRotation = maxRotation;
 
@@ -58,10 +57,10 @@ public class AgentController {
     }
 
     public void rotate(Angle angle){
-        double vectorLength = direction.length();
+        double vectorLength = Sat.length(direction);
         double x= vectorLength*Math.cos(angle.getRadians());
         double y = vectorLength*Math.sin(angle.getRadians());
-        direction = new Vector2D(x,y);
+        direction = new Point(x,y);
     }
 
     public Distance getViewRange() {
@@ -167,6 +166,7 @@ public class AgentController {
         //opens the door if there is really a door
         if (GameRunner.enterSentry(position,newPosition)){
             move(distance,newMaxDistance);
+            onSentryTower = true;
             return;
         }
         move(distance,maxDistance);
@@ -188,7 +188,7 @@ public class AgentController {
 
     public void vision(){
 
-        ArrayList<Vector2D> rayCasts = visionVectors();
+        ArrayList<Point> rayCasts = visionVectors();
 
         for (int i =0; i<rayCasts.size();i++){
 
@@ -202,10 +202,10 @@ public class AgentController {
      * these raycasts can be used to check for colission with objects
      * @return
      */
-    private ArrayList<Vector2D> visionVectors(){
+    private ArrayList<Point> visionVectors(){
 
-        Vector2D eye = new Vector2D(position);
-        ArrayList<Vector2D> rayCasts = new ArrayList<>(45);
+        Point eye = new Point(position.getX(),position.getY());
+        ArrayList<Point> rayCasts = new ArrayList<>(45);
         rayCasts.add(eye);
         for (int i =1;i<23;i++){
             double angle = (Math.PI/180)*i;
@@ -213,8 +213,8 @@ public class AgentController {
 
             //System.out.println("eye");
             //System.out.println(eye.toString());
-            Vector2D rotateDegree = new Vector2D(eye).add(new Vector2D(direction).mul(1000));
-            Vector2D rayCastVector = rotateDegree.rotate(angle);
+            Point rotateDegree = Sat.add(eye,Sat.mul(direction,1000));
+            Point rayCastVector = Sat.rotate(rotateDegree,angle);
             //System.out.println(rayCastVector.toString());
             rayCasts.add(rayCastVector);
             //rotateDegree = rotateDegree.rotate()
@@ -228,8 +228,8 @@ public class AgentController {
 
             //System.out.println("eye");
             //System.out.println(eye.toString());
-            Vector2D rotateDegree = new Vector2D(eye).add(new Vector2D(direction).mul(1000));
-            Vector2D rayCastVector = rotateDegree.rotate(angle);
+            Point rotateDegree = Sat.add(eye,Sat.mul(direction,1000));
+            Point rayCastVector = Sat.rotate(rotateDegree,angle);
             //System.out.println(rayCastVector.toString());
             rayCasts.add(rayCastVector);
             //rotateDegree = rotateDegree.rotate()

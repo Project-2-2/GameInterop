@@ -24,7 +24,7 @@ public class Area {
 
     protected ObjectPerceptType type;
 
-    protected static ArrayList<Area> areas; //stores all the objects/area
+    protected static ArrayList<Area> areas = new ArrayList<>(); //stores all the objects/area
 
     public Area(int x1, int y1, int x2, int y2, int x3, int y3, int x4, int y4){
         leftBoundary=Math.min(Math.min(x1,x2),Math.min(x3,x4));
@@ -66,16 +66,16 @@ public class Area {
     /**
      * @return a list of Points that represents the sides of an area
      */
-    public ArrayList<ArrayList<Vector2D>> getPositions() {
-        ArrayList<ArrayList<Vector2D>> positions = new ArrayList<>();
-        positions.get(0).add(new Vector2D(this.x1,this.y1));
-        positions.get(0).add(new Vector2D(this.x2,this.y2));
-        positions.get(1).add(new Vector2D(this.x2,this.y2));
-        positions.get(1).add(new Vector2D(this.x3,this.y3));
-        positions.get(2).add(new Vector2D(this.x3,this.y3));
-        positions.get(2).add(new Vector2D(this.x4,this.y4));
-        positions.get(3).add(new Vector2D(this.x4,this.y4));
-        positions.get(3).add(new Vector2D(this.x1,this.y1));
+    public ArrayList<ArrayList<Point>> getPositions() {
+        ArrayList<ArrayList<Point>> positions = new ArrayList<>();
+        positions.get(0).add(new Point(this.x1,this.y1));
+        positions.get(0).add(new Point(this.x2,this.y2));
+        positions.get(1).add(new Point(this.x2,this.y2));
+        positions.get(1).add(new Point(this.x3,this.y3));
+        positions.get(2).add(new Point(this.x3,this.y3));
+        positions.get(2).add(new Point(this.x4,this.y4));
+        positions.get(3).add(new Point(this.x4,this.y4));
+        positions.get(3).add(new Point(this.x1,this.y1));
 
         return positions;
     }
@@ -84,14 +84,18 @@ public class Area {
         Check whether a point is in the target area
     */
     public boolean isHit(double x,double y){
-        Vector2D[] movement = new Vector2D[]{new Vector2D(x,y)};
+        //Point[] movement = new Point[]{new Point(x,y)};
+        ArrayList<Point> movement = new ArrayList<>();
+        movement.add(new Point(x,y));
         return Sat.hasCollided(movement,getAreaVectors());
     }
 
 
 
     public boolean isHit(Point p){
-        Vector2D[] movement = new Vector2D[]{new Vector2D(p)};
+        //Point[] movement = new Point[]{new Point(p)};
+        ArrayList<Point> movement = new ArrayList<>();
+        movement.add(p);
         return Sat.hasCollided(movement,getAreaVectors());
     }
 
@@ -104,7 +108,7 @@ public class Area {
 
     */
     public boolean isHit(double x,double y,double radius){
-        Vector2D[] circlePolygon = Sat.circleToPolygon(this.getAreaVectors(),new Point(x,y),radius);
+        ArrayList<Point> circlePolygon = Sat.circleToPolygon(this.getAreaVectors(),new Point(x,y),radius);
         return Sat.hasCollided(this.getAreaVectors(),circlePolygon);
         //return (y-radius>bottomBoundary)&(y+radius<topBoundary)&(x-radius>leftBoundary)&(x+radius<rightBoundary);
     }
@@ -113,7 +117,7 @@ public class Area {
 
     */
     public boolean isHit(Point center,double radius){
-        Vector2D[] circlePolygon = Sat.circleToPolygon(this.getAreaVectors(),center,radius);
+        ArrayList<Point> circlePolygon = Sat.circleToPolygon(this.getAreaVectors(),center,radius);
         return Sat.hasCollided(this.getAreaVectors(),circlePolygon);
         //return (y-radius>bottomBoundary)&(y+radius<topBoundary)&(x-radius>leftBoundary)&(x+radius<rightBoundary);
     }
@@ -130,7 +134,7 @@ public class Area {
     public static Point getIntersectionPoint(Point point1, Point point2, Point point3, Point point4){
 
         //if there is no colission
-        if (!Sat.hasCollided(new Vector2D[]{new Vector2D(point1),new Vector2D(point2)}, new Vector2D[]{new Vector2D(point3),new Vector2D(point4)})){
+        if (!Sat.hasCollided(new ArrayList<Point>(List.of(point1,point2)),new ArrayList<Point>(List.of(point3,point4)))){
             return new Point(0,0);
         }
 
@@ -151,6 +155,7 @@ public class Area {
 
         return new Point(xIntersect,yIntersect);
     }
+
 
     /**
      * Ionas call this method to get the intesection
@@ -160,10 +165,11 @@ public class Area {
      * @param point4 second endpoint of the second vector
      * @return
      */
-    public static Point getIntersectionVector(Vector2D point1, Vector2D point2, Vector2D point3, Vector2D point4){
+    /*
+    public static Point getIntersectionVector(Point point1, Point point2, Point point3, Point point4){
 
         //if there is no colission
-        if (!Sat.hasCollided(new Vector2D[]{new Vector2D(point1),new Vector2D(point2)}, new Vector2D[]{new Vector2D(point3),new Vector2D(point4)})){
+        if (!Sat.hasCollided(new Point[]{new Point(point1),new Point(point2)}, new Point[]{new Point(point3),new Point(point4)})){
             return new Point(0,0);
         }
 
@@ -184,6 +190,9 @@ public class Area {
 
         return new Point(xIntersect,yIntersect);
     }
+
+     */
+
 
 
     /**
@@ -194,20 +203,21 @@ public class Area {
      * @return
      */
     public boolean isHit(Point startVector, Point endVector){
-        Vector2D[] rayVector = {new Vector2D(startVector),new Vector2D(endVector)};
+        ArrayList<Point> rayVector = new ArrayList<>(List.of(startVector,endVector));
         return Sat.hasCollided(this.getAreaVectors(),rayVector);
     }
 
-    public Vector2D[] getAreaVectors(){
-        Vector2D[] vectors = new Vector2D[4];
-        Vector2D leftBottom = new Vector2D(x1,y1);
-        Vector2D rightBottom = new Vector2D(x2,y2);
-        Vector2D leftTop = new Vector2D(x3,y3);
-        Vector2D rightTop = new Vector2D(x4,y4);
-        vectors[0] = leftBottom;
-        vectors[1] = rightBottom;
-        vectors[2] = leftTop;
-        vectors[3] = rightTop;
+    public ArrayList<Point> getAreaVectors(){
+        Point leftBottom = new Point(x1,y1);
+        Point rightBottom = new Point(x2,y2);
+        Point leftTop = new Point(x3,y3);
+        Point rightTop = new Point(x4,y4);
+
+        ArrayList<Point> vectors = new ArrayList<>();
+        vectors.add(leftBottom);
+        vectors.add(rightBottom);
+        vectors.add(leftTop);
+        vectors.add(rightTop);
         return vectors;
     }
 

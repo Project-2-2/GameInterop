@@ -11,6 +11,7 @@ import javafx.scene.layout.BorderPane;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -65,22 +66,25 @@ public class GameRunner {
 
     public static void main(String[] args) throws IOException {
 
+
         /*
         Point from = new Point(6,6);
         Point to = new Point (100,2);
         GameRunner poep = new GameRunner();
-        //Vector2D[] movement = poep.movementShape(from,to,5);
-        //movement = new Vector2D[]{new Vector2D(from)};
+        //Point[] movement = poep.movementShape(from,to,5);
+        //movement = new Point[]{new Point(from)};
 
         Area wall = new Area(5,5,10,5,5,10,10,10);
         Area wall2 = new Area(4,4,8,11,11,8,100,50);
 
 
-        System.out.println(wall.isHit(4,4,2));
+        System.out.println(wall.isHit(6,6));
 
         System.out.println(wall.isHit(wall2));
 
          */
+
+
 
         /*
         IntruderController poep = new IntruderController(new Point(1,1),1);
@@ -91,8 +95,11 @@ public class GameRunner {
 
 
 
+
         GameRunner runner = new GameRunner();
         runner.initialize();
+
+
 
 
 
@@ -151,9 +158,9 @@ public class GameRunner {
         ArrayList<Area> walls= mapInfo.walls;
 
         //for now give the agent a radius of 1
-        Vector2D[] movment = movementShape(from,to,1);
+        ArrayList<Point> movment = movementShape(from,to,1);
         for(int i =0; i<walls.size();i++){
-            Vector2D[] wallVectors = walls.get(i).getAreaVectors();
+            ArrayList<Point> wallVectors = walls.get(i).getAreaVectors();
             System.out.println("collision detected");
             if (Sat.hasCollided(movment,wallVectors)||walls.get(i).isHit(to)){
                 to = from;
@@ -171,26 +178,26 @@ public class GameRunner {
      * @param radius of the agent
      * @return
      */
-    private static Vector2D[] movementShape(Point from, Point to, double radius){
-        Vector2D start = new Vector2D(from);
-        Vector2D end = new Vector2D(to);
+    private static  ArrayList<Point> movementShape(Point from, Point to, double radius){
+        Point start = from;
+        Point end = to;
 
-        Vector2D direction = new Vector2D(start).add(end);
-        Vector2D directionOrthogonal = direction.orthogonal();
-        directionOrthogonal = directionOrthogonal.normalize();
-        directionOrthogonal = directionOrthogonal.absVector();
-        directionOrthogonal = directionOrthogonal.mul(radius);
+        Point direction = Sat.add(start,end);
+        Point directionOrthogonal = Sat.orthogonal(direction);
+        directionOrthogonal = Sat.normalize(directionOrthogonal);
+        directionOrthogonal = Sat.absVector(directionOrthogonal);
+        directionOrthogonal = Sat.mul(directionOrthogonal,radius);
 
-        Vector2D point1 = new Vector2D(start).add(directionOrthogonal);
+        Point point1 = Sat.add(start,directionOrthogonal);
         System.out.println(point1.getX());
-        Vector2D point2 = new Vector2D(start).add(directionOrthogonal.mul(-1));
+        Point point2 = Sat.add(start,Sat.mul(directionOrthogonal,-1));
         System.out.println(point2.getX());
-        Vector2D point3 = new Vector2D(end).add(directionOrthogonal);
+        Point point3 = Sat.add(end,directionOrthogonal);
         System.out.println(point3.getX());
-        Vector2D point4 = new Vector2D(end).add(directionOrthogonal.mul(-1));
+        Point point4 = Sat.add(end,Sat.mul(directionOrthogonal,-1));
         System.out.println(point4.getY());
 
-        Vector2D[] shape =  {point1,point2,point3,point4};
+        ArrayList<Point> shape =  new ArrayList<>(List.of(point1,point2,point3,point4));
 
         return shape;
 
@@ -235,7 +242,7 @@ public class GameRunner {
      * @param location the current location of the agent
      * @return
      */
-    protected Area visionCollision(Vector2D rayCast, Point location){
+    protected Area visionCollision(Point rayCast, Point location){
        // ArrayList<>
         return null;
 
@@ -244,10 +251,10 @@ public class GameRunner {
     protected static boolean openDoorValidility(Point from, Point to){
         ArrayList<Door> doors= mapInfo.doors;
         //for now give the agent a radius of 1
-        Vector2D[] movment = movementShape(from,to,1);
+        ArrayList<Point> movment = movementShape(from,to,1);
 
         for(int i =0; i<doors.size();i++){
-            Vector2D[] doorVectors = doors.get(i).getAreaVectors();
+            ArrayList<Point> doorVectors = doors.get(i).getAreaVectors();
             System.out.println("collision detected");
             if (Sat.hasCollided(movment,doorVectors)||doors.get(i).isHit(to)){
                 if (!doors.get(i).doorClosed()){
@@ -263,10 +270,10 @@ public class GameRunner {
     protected static boolean openWindowValidility(Point from, Point to){
         ArrayList<Window> windows= mapInfo.windows;
         //for now give the agent a radius of 1
-        Vector2D[] movment = movementShape(from,to,1);
+        ArrayList<Point> movment = movementShape(from,to,1);
 
         for(int i =0; i<windows.size();i++){
-            Vector2D[] windowVectors = windows.get(i).getAreaVectors();
+            ArrayList<Point> windowVectors = windows.get(i).getAreaVectors();
             System.out.println("collision detected");
             if (Sat.hasCollided(movment,windowVectors)||windows.get(i).isHit(to)){
                 if (!windows.get(i).windowClosed()){
@@ -283,10 +290,10 @@ public class GameRunner {
     protected static boolean enterSentry(Point from, Point to){
         ArrayList<SentryTower> sentryTowers= mapInfo.sentryTowers;
         //for now give the agent a radius of 1
-        Vector2D[] movment = movementShape(from,to,1);
+        ArrayList<Point> movment = movementShape(from,to,1);
 
         for(int i =0; i<sentryTowers.size();i++){
-            Vector2D[] sentryVectors = sentryTowers.get(i).getAreaVectors();
+            ArrayList<Point> sentryVectors = sentryTowers.get(i).getAreaVectors();
             System.out.println("collision detected");
             if (Sat.hasCollided(movment,sentryVectors)||sentryTowers.get(i).isHit(to)){
                 if (!sentryTowers.get(i).enterTower(to)){

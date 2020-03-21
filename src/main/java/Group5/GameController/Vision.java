@@ -9,6 +9,7 @@ import Interop.Percept.Vision.ObjectPercepts;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class Vision {
@@ -18,6 +19,13 @@ public class Vision {
      * @return An ObjectPercepts (object containing the perceived objects)
      */
     public ObjectPercepts vision(AgentController agent) {
+
+        if (GameRunner.enterSentry(agent.getPosition(),agent.getPosition())){
+            agent.onSentryTower=true;
+        }else{
+            agent.onSentryTower=false;
+        }
+
         ArrayList<ObjectPercept> perceivedObjects = getObjectPerceived(agent);
 
         bubbleSort(perceivedObjects, agent);
@@ -32,7 +40,7 @@ public class Vision {
         double targetX, targetY, viewRange, viewShift = 0, xShift = 0, yShift = 0; //viewShift only if we are on a sentry tower
         ArrayList<Area> areas = Area.getAreas();
         Point intersectionPoint;
-        ArrayList<ArrayList<Vector2D>> positions;
+        ArrayList<ArrayList<Point>> positions;
 
 
         double currentX = agent.getPosition().getX();
@@ -53,7 +61,7 @@ public class Vision {
                 yShift = viewShift * Math.sin(angle) + currentY;
 
             }
-            Vector2D point1 = new Vector2D(currentX+xShift, currentY+yShift);
+            Point point1 = new Point(currentX+xShift, currentY+yShift);
 
             if (angle + i > 360) {
                 targetX = viewRange * Math.cos(angle + i - 360) + currentX;
@@ -68,16 +76,16 @@ public class Vision {
                 targetY = viewRange * Math.sin(angle + i) + currentY;
 
             }
-            Vector2D point2 = new Vector2D(targetX, targetY);
-            Vector2D[] vector1 = {point1, point2};
+           Point point2 = new Point(targetX, targetY);
+            ArrayList<Point> vector1 = new ArrayList<>(List.of(point1, point2));
 
             for (Area area : areas) {
                 positions = area.getPositions();
-                for (ArrayList<Vector2D> arr: positions) {
-                    Vector2D[] vector2 = {arr.get(0), arr.get(1)};
+                for (ArrayList<Point> arr: positions) {
+                    ArrayList<Point> vector2 = new ArrayList<>(List.of(arr.get(0),arr.get(1)));
 
                     if (Sat.hasCollided(vector1, vector2)) {
-                        intersectionPoint = Area.getIntersectionVector(vector1[0], vector1[1], vector2[0], vector2[1]);
+                        intersectionPoint = Area.getIntersectionPoint(vector1.get(0), vector1.get(1), vector2.get(0), vector2.get(1));
                         toReturn.add(new ObjectPercept(area.getObjectsPerceptType(), intersectionPoint ));
                     }
                 }

@@ -18,14 +18,16 @@ class Sat {
 
     public static void main(String[] args) {
         //to convex shapes that will be checked for collision
-        Vector2D[] tank = {new Vector2D(0, 0), new Vector2D(200, 0), new Vector2D(200, 50),
-                new Vector2D(0, 50)};
-        Vector2D[] shell = {new Vector2D(10, 10), new Vector2D(400, 800), new Vector2D(800, 800),
-                new Vector2D(800, 400)};
-        Vector2D[] test = {new Vector2D(0,45),new Vector2D(100,100)};
+        Point[] tank = {new Point(0, 0), new Point(200, 0), new Point(200, 50),
+                new Point(0, 50)};
+        Point[] shell = {new Point(10, 10), new Point(400, 800), new Point(800, 800),
+                new Point(800, 400)};
+        Point[] test = {new Point(0,45),new Point(100,100)};
+
+        ArrayList<Point> poep=new ArrayList<>(List.of(new Point(10,10),new Point(400,800),new Point(800,800),new Point(800,400)));
 
 
-        System.out.println(Sat.hasCollided(shell,circleToPolygon(shell,new Point(1,1),15)));
+        System.out.println(Sat.hasCollided(poep,circleToPolygon(poep,new Point(1,1),15)));
 
 
     }
@@ -38,36 +40,36 @@ class Sat {
      * @param radius the radius of the circle
      * @return
      */
-    public static Vector2D[] circleToPolygon(Vector2D[] compare, Point p, double radius){
-        ArrayList<Vector2D> edges = polyToEdges(compare);
-        Vector2D[] circlePolygon = new Vector2D[edges.size()];
+    public static ArrayList<Point> circleToPolygon(ArrayList<Point> compare, Point p, double radius){
+        ArrayList<Point> edges = polyToEdges(compare);
+        ArrayList<Point> circlePolygon = new ArrayList<>();
         for (int i = 0; i<edges.size();i++){
            // System.out.println(edges.get(i).toPoint().getClockDirection().getRadians());
            // System.out.println(Math.atan2(edges.get(i).getX(),edges.get(i).getY()));
 //            System.out.println(Math.atan2(compare[i].getX()-compare[i+1].getX(),compare[i].getY()-compare[i+1].getY()));
-            double x = p.getX()+radius*Math.cos(edges.get(i).toPoint().getClockDirection().getRadians());
-            double y = p.getY()+radius*Math.sin(edges.get(i).toPoint().getClockDirection().getRadians());
+            double x = p.getX()+radius*Math.cos(edges.get(i).getClockDirection().getRadians());
+            double y = p.getY()+radius*Math.sin(edges.get(i).getClockDirection().getRadians());
             System.out.println("x: " + x + " y: "+ y);
-            circlePolygon[i] = new Vector2D(x,y);
+            circlePolygon.add(new Point(x,y));
         }
         return circlePolygon;
 
     }
 
-    public static Boolean hasCollided(Vector2D[] poly1, Vector2D[] poly2) {
+    public static Boolean hasCollided(ArrayList<Point> poly1, ArrayList<Point> poly2) {
             return runSAT(poly1, poly2);
     }
 
-    private static Boolean runSAT(Vector2D[] poly1, Vector2D[] poly2) {
+    private static Boolean runSAT(ArrayList<Point> poly1, ArrayList<Point> poly2) {
         // Implements the actual SAT algorithm
-        ArrayList<Vector2D> edges = polyToEdges(poly1);
+        ArrayList<Point> edges = polyToEdges(poly1);
         edges.addAll(polyToEdges(poly2));
-        Vector2D[] axes = new Vector2D[edges.size()];
+        Point[] axes = new Point[edges.size()];
         for (int i = 0; i < edges.size(); i++) {
-            axes[i] = edges.get(i).orthogonal();
+            axes[i] = orthogonal(edges.get(i));
         }
 
-        for (Vector2D axis : axes) {
+        for (Point axis : axes) {
             if (!overlap(project(poly1, axis), project(poly2, axis))) {
                 // The polys don't overlap on this axis so they can't be touching
                 return false;
@@ -81,17 +83,17 @@ class Sat {
     /**
      * Returns a vector going from point1 to point2
      */
-    private static Vector2D edgeVector(Vector2D point1, Vector2D point2) {
-        return new Vector2D(point2.getX() - point1.getX(), point2.getY() - point1.getY());
+    private static Point edgeVector(Point point1, Point point2) {
+        return new Point(point2.getX() - point1.getX(), point2.getY() - point1.getY());
     }
 
     /**
      * Returns an array of the edges of the poly as vectors
      */
-    private static ArrayList<Vector2D> polyToEdges(Vector2D[] poly) {
-        ArrayList<Vector2D> vectors = new ArrayList<>(poly.length);
-        for (int i = 0; i < poly.length; i++) {
-            vectors.add(edgeVector(poly[i], poly[(i + 1) % poly.length]));
+    private static ArrayList<Point> polyToEdges(ArrayList<Point> poly) {
+        ArrayList<Point> vectors = new ArrayList<>(poly.size());
+        for (int i = 0; i < poly.size(); i++) {
+            vectors.add(edgeVector(poly.get(i), poly.get((i + 1) % poly.size())));
         }
         return vectors;
     }
@@ -99,27 +101,104 @@ class Sat {
     /**
      * Returns the dot (or scalar) product of the two vectors
      */
-    private static double dotProduct(Vector2D vector1, Vector2D vector2) {
+    private static double dotProduct(Point vector1, Point vector2) {
         return vector1.getX() * vector2.getX() + vector1.getY() * vector2.getY();
     }
 
     /**
      * Returns a vector showing how much of the poly lies along the axis
      */
-    private static Vector2D project(Vector2D[] poly, Vector2D axis) {
+    private static Point project(ArrayList<Point> poly, Point axis) {
         List<Double> dots = new ArrayList<>();
-        for (Vector2D vector : poly) {
+        for (Point vector : poly) {
             dots.add(dotProduct(vector, axis));
         }
-        return new Vector2D(Collections.min(dots), Collections.max(dots));
+        return new Point(Collections.min(dots), Collections.max(dots));
     }
 
     /**
      * Returns a boolean indicating if the two projections overlap
      */
-    private static boolean overlap(Vector2D projection1, Vector2D projection2) {
+    private static boolean overlap(Point projection1, Point projection2) {
         return projection1.getX() <= projection2.getY() &&
                 projection2.getX() <= projection1.getY();
     }
+
+    /**
+     * Returns a new vector which is orthogonal to the current vector
+     */
+    public static Point orthogonal(Point p) {
+        return new Point(p.getY(), -p.getX());
+    }
+
+    public static Point add(Point original,Point other) {
+        double newX = original.getX() +other.getX();
+        double newY = original.getY() + other.getY();
+        return new Point(newX,newY);
+    }
+
+    /**
+     * @param factor to what factor we multiply the vector
+     * @return the multiplied vector.
+     */
+    public static Point mul(Point original,double factor) {
+        double newX = original.getX()*factor;
+        double newY = original.getY()*factor;
+        return (new Point(newX,newY));
+    }
+
+    public static  double lengthSquared(Point original) {
+        double xx = 0;
+        double yy = 0;
+        if (original.getX() != 0 ) {
+            xx = original.getX()*original.getX();
+        }
+        if (original.getY() != 0 ) {
+            yy = original.getY()*original.getY();
+        }
+        return xx + yy;
+    }
+
+    public static double length(Point original) {
+        return Math.sqrt(lengthSquared(original));
+    }
+
+    private static double distanceSquared(Point original,Point other) {
+        double dx = original.getX() - other.getX();
+        double dy = original.getY()-original.getY();
+        return dx*dx+dy*dy;
+    }
+    public static double distance(Point original,Point other) {
+        return Math.sqrt(distanceSquared(original,other));
+    }
+
+
+    /**
+     * rotates a vector
+     * @param angle RADIANS
+     * @return
+     */
+    public static Point rotate(Point original,double angle){
+        return new Point(original.getX()*Math.cos(angle)-original.getY()*Math.sin(angle),original.getY()*Math.cos(angle)+original.getX()*Math.sin(angle));
+    }
+
+    /**
+     * @return normalize the vector, multiplying by 1/its length.
+     */
+    public static Point normalize(Point original) {
+        return mul(original,1.0/length(original));
+    }
+
+    /**
+     * creates the absolute value vector
+     * @return
+     */
+    public static Point absVector(Point original){
+        double absX=Math.abs(original.getX());
+        double absY=Math.abs(original.getY());
+        return new Point(absX,absY);
+    }
+
+
 
 }
