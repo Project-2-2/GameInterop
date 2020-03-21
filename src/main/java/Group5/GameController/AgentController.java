@@ -23,8 +23,11 @@ public class AgentController {
     private double radius;
     private Vector2D direction;  //the direction an agent is walking
     private Angle angle;
-    private Distance viewDistance;
-
+    private boolean onSentryTower;
+    private String agentType;
+    private static Distance intruderViewRange;
+    private static Distance guardViewRange;
+    private static Distance[] towerViewRange; //need two distances
 
     private double maxAngleRotation;
 
@@ -42,12 +45,35 @@ public class AgentController {
         return position;
     }
 
+    protected Angle getAngle() {
+        return this.angle;
+    }
+
+    protected  boolean isOnSentryTower() {
+        return this.onSentryTower;
+    }
+
+    protected Distance[] getTowerViewRange() {
+        return towerViewRange;
+    }
 
     public void rotate(Angle angle){
         double vectorLength = direction.length();
         double x= vectorLength*Math.cos(angle.getRadians());
         double y = vectorLength*Math.sin(angle.getRadians());
         direction = new Vector2D(x,y);
+    }
+
+    public Distance getViewRange() {
+        Distance toReturn = null;
+        if (this.agentType.equals("guard")) {
+            toReturn = guardViewRange;
+
+        }else if (this.agentType.equals("intruder")) {
+            toReturn = intruderViewRange;
+        }
+
+        return toReturn;
     }
     
     /**
@@ -210,75 +236,6 @@ public class AgentController {
         }
 
         return rayCasts;
-    }
-
-    /**
-     *
-     * @param agent the agent you want to update vision
-     * @return An ObjectPercepts (object containing the perceived objects)
-     */
-    private ObjectPercepts vision(AgentController agent) {
-        double targetX, targetY;
-        ArrayList<Area> areas = Area.getAreas();
-        ArrayList<ObjectPercept> perceivedObjects = new ArrayList<>();
-
-        double viewRange = agent.viewDistance.getValue();
-
-        FieldOfView fieldOfView = new FieldOfView(new Distance(5.0), Angle.fromRadians(Math.PI/4));
-
-        double currentX = agent.getPosition().getX();
-        double currentY = agent.getPosition().getY();
-        double angle = agent.angle.getDegrees();
-
-        for (double i=-22.5; i <=22.5; i++){
-            Vector2D point1 = new Vector2D(currentX, currentY);
-
-            if (angle + i > 360) {
-                targetX = viewRange * Math.cos(angle + i - 360) + currentX;
-                targetY = viewRange * Math.sin(angle + i - 360) + currentY;
-
-            }else if (angle + i < 0) {
-                targetX = viewRange * Math.cos(angle + i + 360) + currentX;
-                targetY = viewRange * Math.sin(angle + i + 360) + currentY;
-
-            }else{
-                targetX = viewRange * Math.cos(angle + i) + currentX;
-                targetY = viewRange * Math.sin(angle + i) + currentY;
-
-            }
-            Vector2D point2 = new Vector2D(targetX, targetY);
-            Vector2D[] vector1 = {point1, point2};
-            ArrayList<ArrayList<Vector2D>> positions;
-            for (Area area : areas) {
-                positions = area.getVectorPosition();
-                for (ArrayList<Vector2D> arr: positions) {
-                    Vector2D[] vector2 = {arr.get(0), arr.get(1)};
-
-                    if (Sat.hasCollided(vector1, vector2)) {
-                        perceivedObjects.add(new ObjectPercept(area.getObjectsPerceptType(), new Point(0,0) ));
-                    }
-                }
-            }
-        }
-        Area.bubbleSort(perceivedObjects, agent);
-        checkPerceivedObjects(perceivedObjects);
-        Set<ObjectPercept> toReturn = new HashSet<>(perceivedObjects);
-        return new ObjectPercepts(toReturn);
-    }
-
-    /**
-     * Checks which object you can see
-     */
-    private void checkPerceivedObjects(ArrayList<ObjectPercept> perceivedObjects) {
-        boolean seeFarther = true; // false if there is an area in front that is not opaque
-
-        for (ObjectPercept object : perceivedObjects) {
-            if (!seeFarther) {
-                perceivedObjects.remove(object);
-            } else if (object.getType().isOpaque()) {
-                seeFarther = false;
-            }
-        }
     }
 
 }

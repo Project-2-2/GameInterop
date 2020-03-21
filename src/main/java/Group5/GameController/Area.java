@@ -64,10 +64,9 @@ public class Area {
     }
 
     /**
-     *
-     * @return a list of vectors that represents the sides of an area
+     * @return a list of Points that represents the sides of an area
      */
-    public ArrayList<ArrayList<Vector2D>> getVectorPosition() {
+    public ArrayList<ArrayList<Vector2D>> getPositions() {
         ArrayList<ArrayList<Vector2D>> positions = new ArrayList<>();
         positions.get(0).add(new Vector2D(this.x1,this.y1));
         positions.get(0).add(new Vector2D(this.x2,this.y2));
@@ -128,7 +127,7 @@ public class Area {
      * @param point4 second endpoint of the second vector
      * @return
      */
-    public static Point getIntersection(Point point1, Point point2, Point point3, Point point4){
+    public static Point getIntersectionPoint(Point point1, Point point2, Point point3, Point point4){
 
         //if there is no colission
         if (!Sat.hasCollided(new Vector2D[]{new Vector2D(point1),new Vector2D(point2)}, new Vector2D[]{new Vector2D(point3),new Vector2D(point4)})){
@@ -147,8 +146,8 @@ public class Area {
         double xIntersect = point1.getX()+t*(point2.getX()-point1.getX());
         double yIntersect = point1.getY()+t*(point2.getY()-point1.getY());
 
-        System.out.println(xIntersect);
-        System.out.println(yIntersect);
+        //System.out.println(xIntersect);
+        //System.out.println(yIntersect);
 
         return new Point(xIntersect,yIntersect);
     }
@@ -161,7 +160,7 @@ public class Area {
      * @param point4 second endpoint of the second vector
      * @return
      */
-    public static Point getIntersection(Vector2D point1, Vector2D point2, Vector2D point3, Point point4){
+    public static Point getIntersectionVector(Vector2D point1, Vector2D point2, Vector2D point3, Vector2D point4){
 
         //if there is no colission
         if (!Sat.hasCollided(new Vector2D[]{new Vector2D(point1),new Vector2D(point2)}, new Vector2D[]{new Vector2D(point3),new Vector2D(point4)})){
@@ -180,8 +179,8 @@ public class Area {
         double xIntersect = point1.getX()+t*(point2.getX()-point1.getX());
         double yIntersect = point1.getY()+t*(point2.getY()-point1.getY());
 
-        System.out.println(xIntersect);
-        System.out.println(yIntersect);
+        //System.out.println(xIntersect);
+        //System.out.println(yIntersect);
 
         return new Point(xIntersect,yIntersect);
     }
@@ -214,33 +213,6 @@ public class Area {
 
     public static ArrayList<Area> getAreas() {
         return areas;
-    }
-
-    //sorts area by their distance with the agent
-    public static void bubbleSort(ArrayList<ObjectPercept> perceived, AgentController agent) {
-        int n = perceived.size();
-        for (int i = 0; i < n - 1; i++) {
-            for (int j = 0; j < n - i - 1; j++) {
-                if (getDistance(perceived.get(j),(agent)) > getDistance(perceived.get(j + 1),agent)) {
-                    ObjectPercept temp = perceived.get(j);
-                    perceived.set(j, perceived.get(j + 1));
-                    perceived.set(j + 1, temp);
-                }
-
-            }
-        }
-
-    }
-
-    /**
-     * @param object ObjectPercept
-     * @param agent AgentController
-     * @return return distance between an agent and an object
-     */
-
-    public static double getDistance(ObjectPercept object, AgentController agent) {
-        return Math.sqrt(Math.pow(agent.getPosition().getX(), object.getPoint().getX()) +
-                Math.pow(agent.getPosition().getY(), object.getPoint().getY()));
     }
 
 }

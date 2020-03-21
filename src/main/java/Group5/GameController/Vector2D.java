@@ -29,7 +29,6 @@ public class Vector2D {
         return y;
     }
 
-
     public Vector2D add(Vector2D other) {
         double newX = x +other.getX();
         double newY = y + other.getY();
@@ -68,7 +67,6 @@ public class Vector2D {
     public Vector2D orthogonal() {
         return new Vector2D(y, -x);
     }
-
 
     /**
      * creates the absolute value vector
@@ -122,7 +120,6 @@ public class Vector2D {
         Point p = new Point(x,y);
         return p;
     }
-
 
     /**
      * rotates a vector
