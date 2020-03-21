@@ -52,6 +52,29 @@ wall = 540 540 695 540 695 545 540 545
 
 spawnAreaIntruders = 30 30 60 30 60 60 30 60
 spawnAreaGuards = 230 500 260 500 260 530 230 530
-teleport = 680 580 710 580 710 610 680 610
+teleport = 680 580 710 580 710 610 680 610 300 300
 shaded = 300 300 350 300 350 380 300 380
+
+
+maxMoveDistanceIntruder = 1.4
+maxSprintDistanceIntruder = 4.0
+maxMoveDistanceGuard = 1.4
+sprintCooldown = 2
+pheromoneCooldown = 3
+
+radiusPheromone = 5.0
+slowDownModifierWindow = 0.5
+slowDownModifierDoor = 0.5
+slowDownModifierSentryTower = 0.1
+viewAngle = 45.0
+viewRays = 45
+viewRangeIntruderNomal = 7.5
+viewRangeIntruderShaded = 4.0
+viewRangeGuardNomal = 6.0
+viewRangeGuardShaded = 3.5
+viewRangeSentry = 2.0 20.0
+yellSoundRadius = 30.0
+maxMoveSoundRadius = 10.0
+windowSoundRadius = 10.0
+doorSoundRadius = 5.0
 

@@ -1,11 +1,13 @@
 package Group5.GameController;
 
 
+import Interop.Action.DropPheromone;
 import Interop.Action.Move;
 import Interop.Action.NoAction;
 import Interop.Geometry.Angle;
 import Interop.Geometry.Distance;
 import Interop.Geometry.Point;
+import Interop.Percept.Smell.SmellPerceptType;
 import Interop.Percept.Vision.FieldOfView;
 import Interop.Percept.Vision.ObjectPercept;
 import Interop.Percept.Vision.ObjectPercepts;
@@ -19,10 +21,10 @@ import java.util.Set;
  */
 public class AgentController {
 
-    private Point position;
+    protected Point position;
     private double radius;
     private Point direction;  //the direction an agent is walking
-    private Angle angle;
+    protected Angle angle;
     protected boolean onSentryTower;
     private String agentType;
     private static Distance intruderViewRange;
@@ -31,12 +33,19 @@ public class AgentController {
 
     private double maxAngleRotation;
 
+    protected boolean pheroMoneCooldownTimer;
+    protected int pheroMoneCoolDownCounter;
+
+
+
     protected AgentController(Point position, double radius, double maxRotation){
         this.position = position;
         this.radius = radius;
         direction = new Point(position.getX(),position.getY());
         angle = position.getClockDirection();
         this.maxAngleRotation = maxRotation;
+        pheroMoneCooldownTimer=false;
+        pheroMoneCoolDownCounter=0;
 
     }
 
@@ -58,9 +67,15 @@ public class AgentController {
 
     public void rotate(Angle angle){
         double vectorLength = Sat.length(direction);
+        //System.out.println(angle.getRadians());
         double x= vectorLength*Math.cos(angle.getRadians());
+       // System.out.println(x);
         double y = vectorLength*Math.sin(angle.getRadians());
         direction = new Point(x,y);
+       // System.out.println(direction.toString());
+        angle=direction.getClockDirection();
+        this.angle=Angle.fromRadians(this.angle.getRadians()+angle.getRadians());
+       // System.out.println(angle.getRadians());
     }
 
     public Distance getViewRange() {
@@ -228,7 +243,7 @@ public class AgentController {
 
             //System.out.println("eye");
             //System.out.println(eye.toString());
-            Point rotateDegree = Sat.add(eye,Sat.mul(direction,1000));
+            Point rotateDegree = Sat.add(eye,Sat.mul(   direction,1000));
             Point rayCastVector = Sat.rotate(rotateDegree,angle);
             //System.out.println(rayCastVector.toString());
             rayCasts.add(rayCastVector);
@@ -236,6 +251,17 @@ public class AgentController {
         }
 
         return rayCasts;
+    }
+
+    //TODO smell has to be implemented
+    public void dropPheromone(DropPheromone dropPheromone, SmellPerceptType type){
+        if (pheroMoneCooldownTimer){
+            return;
+        }
+
+        pheroMoneCooldownTimer=true;
+
+
     }
 
 }

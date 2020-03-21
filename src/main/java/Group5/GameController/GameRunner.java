@@ -3,9 +3,14 @@ package Group5.GameController;
 
 import Group5.UI.DrawableDialogueBox;
 import Group5.UI.MapViewer;
+import Interop.Action.Move;
+import Interop.Geometry.Angle;
+import Interop.Geometry.Distance;
 import Interop.Geometry.Point;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
 
 import java.io.File;
@@ -47,6 +52,13 @@ public class GameRunner {
 //    private String getPath(){
 //        return this.mapDoc;
 //    }
+
+    private boolean paused;
+
+    // Pause the timer and simulation
+    public void pause() {
+        this.timer.cancel();
+    }
 
     final private static double FRAMES_PER_SECOND = 5;
 
@@ -110,8 +122,11 @@ public class GameRunner {
     public void initialize() throws IOException {
         //File file = DrawableDialogueBox.getFile();
         //mapInfo.readMap(file.getPath());
+
+        File file = DrawableDialogueBox.getFile();
         String src = "src/main/java/Group5/Maps/testmap.txt";
-        mapInfo.readMap(src);
+        //mapInfo.readMap(src);
+        mapInfo.readMap(file.getPath());
         mapInfo.initialize();
 
         // Check if the MapViewer for the UI has been initialized
@@ -122,6 +137,19 @@ public class GameRunner {
             mapViewer.requestFocus();
         }
     }
+
+    @FXML
+    public void keyHandler(KeyEvent event) {
+        if (event.getCode() == KeyCode.P && !paused) {
+            paused = true;
+            pause();
+        }
+        if (event.getCode() == KeyCode.R && paused) {
+            paused = false;
+            this.startTimer();
+        }
+    }
+
 
     private void startTimer() {
         this.timer = new Timer();
@@ -143,7 +171,13 @@ public class GameRunner {
     }
 
     private void update() throws IOException {
-        this.mapViewer.moveIntruder(10, 10, true);
+        coolDownTimers();
+
+
+        mapInfo.intruders.get(0).rotate(Angle.fromDegrees(90));
+        mapInfo.intruders.get(0).move(new Move(new Distance(1)));
+        //System.out.println(mapInfo.intruders.get(0).getPosition().toString());
+        //this.mapViewer.moveIntruder(10, 10, true);
     }
 
 
@@ -161,7 +195,7 @@ public class GameRunner {
         ArrayList<Point> movment = movementShape(from,to,1);
         for(int i =0; i<walls.size();i++){
             ArrayList<Point> wallVectors = walls.get(i).getAreaVectors();
-            System.out.println("collision detected");
+          //  System.out.println("collision detected");
             if (Sat.hasCollided(movment,wallVectors)||walls.get(i).isHit(to)){
                 to = from;
                 return false;
@@ -189,13 +223,13 @@ public class GameRunner {
         directionOrthogonal = Sat.mul(directionOrthogonal,radius);
 
         Point point1 = Sat.add(start,directionOrthogonal);
-        System.out.println(point1.getX());
+       // System.out.println(point1.getX());
         Point point2 = Sat.add(start,Sat.mul(directionOrthogonal,-1));
-        System.out.println(point2.getX());
+       // System.out.println(point2.getX());
         Point point3 = Sat.add(end,directionOrthogonal);
-        System.out.println(point3.getX());
+       // System.out.println(point3.getX());
         Point point4 = Sat.add(end,Sat.mul(directionOrthogonal,-1));
-        System.out.println(point4.getY());
+       // System.out.println(point4.getY());
 
         ArrayList<Point> shape =  new ArrayList<>(List.of(point1,point2,point3,point4));
 
@@ -303,6 +337,50 @@ public class GameRunner {
             }
         }
         return false;
+    }
+
+    private void coolDownTimers(){
+        coolDownSprint();
+        coolDownPheroMone();
+    }
+
+    private void coolDownSprint(){
+        for (int i =0; i<mapInfo.intruders.size();i++){
+            if (mapInfo.intruders.get(i).sprintCooldownTimer){
+                if (mapInfo.intruders.get(i).sprintCoolDownCounter<mapInfo.sprintCooldown){
+                    mapInfo.intruders.get(i).sprintCoolDownCounter++;
+                }else{
+                    mapInfo.intruders.get(i).sprintCoolDownCounter=0;
+                    mapInfo.intruders.get(i).sprintCooldownTimer=false;
+                }
+            }
+        }
+    }
+
+    private void coolDownPheroMone(){
+
+        for (int i =0; i<mapInfo.intruders.size();i++){
+            if (mapInfo.intruders.get(i).pheroMoneCooldownTimer){
+                if (mapInfo.intruders.get(i).pheroMoneCoolDownCounter<mapInfo.pheromoneCooldown){
+                    mapInfo.intruders.get(i).pheroMoneCoolDownCounter++;
+                }else{
+                    mapInfo.intruders.get(i).pheroMoneCoolDownCounter=0;
+                    mapInfo.intruders.get(i).pheroMoneCooldownTimer=false;
+                }
+            }
+        }
+
+        for (int i =0; i<mapInfo.guards.size();i++){
+            if (mapInfo.guards.get(i).pheroMoneCooldownTimer){
+                if (mapInfo.guards.get(i).pheroMoneCoolDownCounter<mapInfo.pheromoneCooldown){
+                    mapInfo.guards.get(i).pheroMoneCoolDownCounter++;
+                }else{
+                    mapInfo.guards.get(i).pheroMoneCoolDownCounter=0;
+                    mapInfo.guards.get(i).pheroMoneCooldownTimer=false;
+                }
+            }
+        }
+
     }
 
 }

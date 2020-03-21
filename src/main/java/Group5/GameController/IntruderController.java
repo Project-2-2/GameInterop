@@ -7,26 +7,29 @@ import Interop.Action.Sprint;
 import Interop.Geometry.Angle;
 import Interop.Geometry.Distance;
 import Interop.Geometry.Point;
+import Interop.Percept.Smell.SmellPerceptType;
 
 public class IntruderController extends AgentController {
 
 
-    private Point position;
-    private double radius;
-    //the direction an agent is walking
-    private Point direction;
-    private Angle angle;
+
 
     private Distance normalMoveDistance;
     private Distance sprintDistance;
 
     private double maxAngleRotation;
 
+    protected boolean sprintCooldownTimer;
+    protected int sprintCoolDownCounter;
+
+
 
     protected IntruderController(Point position, double radius, double moveDistance, double sprintDistance, double maxAngleRotation) {
         super(position, radius, maxAngleRotation);
         normalMoveDistance = new Distance(moveDistance);
         this.sprintDistance = new Distance(sprintDistance);
+        sprintCooldownTimer=false;
+        sprintCoolDownCounter=0;
     }
 
 
@@ -49,7 +52,7 @@ public class IntruderController extends AgentController {
     }
 
     public void sprint(Sprint sprint){
-        if(sprint.getDistance().getValue()>sprintDistance.getValue()){
+        if(sprint.getDistance().getValue()>sprintDistance.getValue()||sprintCooldownTimer){
             return;
         }
 
@@ -62,12 +65,15 @@ public class IntruderController extends AgentController {
             position = newPosition;
         }
 
+        sprintCooldownTimer=true;
+
 
 
     }
 
     //TODO smell has to be implemented
     public void dropPheromone(DropPheromone dropPheromone){
+        super.dropPheromone(dropPheromone, SmellPerceptType.Pheromone1);
 
     }
 

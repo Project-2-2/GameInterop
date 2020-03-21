@@ -7,15 +7,12 @@ import Interop.Action.Yell;
 import Interop.Geometry.Angle;
 import Interop.Geometry.Distance;
 import Interop.Geometry.Point;
+import Interop.Percept.Smell.SmellPerceptType;
 
 public class GuardController extends AgentController {
 
 
-    private Point position;
-    private double radius;
-    //the direction an agent is walking
-    private Point direction;
-    private Angle angle;
+
 
     private Distance normalMoveDistance;
 
@@ -55,6 +52,7 @@ public class GuardController extends AgentController {
 
     //TODO smell has to be implemented
     public void dropPheromone(DropPheromone dropPheromone){
+        super.dropPheromone(dropPheromone,SmellPerceptType.Pheromone2);
 
     }
 

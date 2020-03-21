@@ -44,9 +44,9 @@ public class MapInfo {
     //TODO
     protected int winConditionIntruderRounds;
     protected double maxRotationAngleDegrees;
-    //TODO
+
+
     protected int sprintCooldown;
-    //TODO
     protected int pheromoneCooldown;
     //TODO
     protected double radiusPheromone;
@@ -71,6 +71,15 @@ public class MapInfo {
     protected double windowSoundRadius;
     protected double doorSoundRadius;
 
+    public MapInfo (){
+        walls = new ArrayList<>();
+        teleports = new ArrayList<>();
+        shaded = new ArrayList<>();
+        doors = new ArrayList<>();
+        windows = new ArrayList<>();
+        sentryTowers = new ArrayList<>();
+    }
+
 
     protected ArrayList<GuardController> guards;
     protected ArrayList<IntruderController> intruders;
@@ -78,7 +87,6 @@ public class MapInfo {
     public void readMap(String filePath){
         try (Scanner scanner =  new Scanner(Paths.get(filePath), ENCODING.name())){
             while (scanner.hasNextLine()){
-                System.out.println("biem");
                 parseLine(scanner.nextLine());
             }
         }
@@ -155,7 +163,7 @@ public class MapInfo {
                         pheromoneCooldown = Integer.parseInt(value);
                         break;
                     case "radiusPheromone":
-                        radiusPheromone = Integer.parseInt(value);
+                        radiusPheromone = Double.parseDouble(value);
                         break;
                     case "slowDownModifierWindow":
                         slowDownModifierWindow = Double.parseDouble(value);
