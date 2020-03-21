@@ -24,5 +24,4 @@ public class Door extends MapObject {
         door = new DoorGui(points[0].getX(), points[0].getY(), points[1].getX(), points[1].getY(), points[2].getX(), points[2].getY(), points[3].getX(), points[3].getY());
         return door;
     }
-
 }

@@ -3,6 +3,10 @@ package Group9.gui;
 import Group9.Game;
 import Group9.agent.container.AgentContainer;
 import Group9.map.GameMap;
+import Group9.map.dynamic.DynamicObject;
+import Group9.map.dynamic.Pheromone;
+import Group9.map.dynamic.Sound;
+import Group9.map.objects.MapObject;
 import Group9.map.parser.Parser;
 import Group9.math.Vector2;
 import javafx.application.Application;
@@ -17,12 +21,16 @@ import javafx.stage.Stage;
 import Group9.gui.SpawnAreaGui.SpawnAreaGuardGui;
 import Group9.gui.SpawnAreaGui.SpawnAreaIntruderGui;
 
+import java.util.List;
 import java.util.function.Function;
 
 public class Map extends Application implements Function<AgentContainer<?>, Void> {
 
 	Game game;
+	GameMap gameMap;
 	Group movingObjects;
+
+
 	@Override
 	public void start(Stage s) throws Exception {
 		VBox vBox = new VBox();
@@ -35,12 +43,11 @@ public class Map extends Application implements Function<AgentContainer<?>, Void
 	    map.setStrokeWidth(3);
 
 	    //Draw Map
-		GameMap gameMap = Parser.parseFile("./src/main/java/Group9/map/maps/test.map");
-
+		gameMap = Parser.parseFile("./src/main/java/Group9/map/maps/test.map");
 		game = new Game(gameMap, 3, this::apply);
 
-		Group staticObjects = new Group(game.getStaticObjects());
-		movingObjects = new Group(game.getMovingObjects());
+		Group staticObjects = new Group(this.getStaticObjects());
+		movingObjects = new Group(this.getMovingObjects());
 
 
 	    Group root = new Group();
@@ -75,11 +82,40 @@ public class Map extends Application implements Function<AgentContainer<?>, Void
 		System.out.println("update");
 		Platform.runLater(() -> {
 			movingObjects.getChildren().clear();
-			movingObjects.getChildren().add(game.getMovingObjects());
+			//movingObjects.getChildren().add(game.getMovingObjects());
 		});
 		return null;
 	}
 
+	public Group getMovingObjects()
+	{
+		Group movingObjects = new Group();
+		game.getGuards().forEach(g -> movingObjects.getChildren().add(g.getGui(g.getFOV(gameMap.getEffectAreas(g)))));
+		game.getIntruders().forEach(i -> movingObjects.getChildren().add(i.getGui(i.getFOV(gameMap.getEffectAreas(i)))));
+		gameMap.getDynamicObjects().forEach(d -> {
+			if(d instanceof Pheromone)
+			{
+				movingObjects.getChildren().add(((Pheromone) d).getGui());
+			}
+			else if(d instanceof Sound)
+			{
+				movingObjects.getChildren().add(((Sound) d).getGui());
+			}
+			else
+			{
+				throw new IllegalStateException(String.format("Unsupported DynamicObject: %s", d.getClass().getName()));
+			}
+		});
+		return movingObjects;
+	}
+	public Group getStaticObjects()
+	{
+		Group staticObjects = new Group();
+		List<MapObject> mapObjects = gameMap.getObjects();
+		mapObjects.forEach(m -> staticObjects.getChildren().add(m.getGui()));
+		staticObjects.getChildren().forEach(c -> ((InternalWallGui)c).updateScale());
+		return staticObjects;
+	}
 
 }
 /*
