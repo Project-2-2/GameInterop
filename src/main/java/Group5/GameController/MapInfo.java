@@ -78,11 +78,13 @@ public class MapInfo {
     public void readMap(String filePath){
         try (Scanner scanner =  new Scanner(Paths.get(filePath), ENCODING.name())){
             while (scanner.hasNextLine()){
+                System.out.println("biem");
                 parseLine(scanner.nextLine());
             }
         }
         catch(Exception e)
         {
+            e.printStackTrace();
         }
     }
 

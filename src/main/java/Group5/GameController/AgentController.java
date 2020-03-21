@@ -1,6 +1,8 @@
 package Group5.GameController;
 
 
+import Interop.Action.Move;
+import Interop.Action.NoAction;
 import Interop.Geometry.Angle;
 import Interop.Geometry.Distance;
 import Interop.Geometry.Point;
@@ -65,6 +67,10 @@ public class AgentController {
         if(GameRunner.moveValidility(position,newPosition)){
             position = newPosition;
         }
+    }
+
+    public void noAction(NoAction noAction){
+        return;
     }
 
 

@@ -26,13 +26,6 @@ public class Area {
 
     protected static ArrayList<Area> areas; //stores all the objects/area
 
-    public Area(){
-        leftBoundary=0;
-        rightBoundary=1;
-        topBoundary=0;
-        bottomBoundary=1;
-    }
-
     public Area(int x1, int y1, int x2, int y2, int x3, int y3, int x4, int y4){
         leftBoundary=Math.min(Math.min(x1,x2),Math.min(x3,x4));
         rightBoundary=Math.max(Math.max(x1,x2),Math.max(x3,x4));
@@ -49,6 +42,7 @@ public class Area {
 
         areas.add(this);
     }
+
 
     public ObjectPerceptType getObjectsPerceptType() {
         return this.type;
