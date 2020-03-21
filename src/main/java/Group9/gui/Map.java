@@ -47,15 +47,31 @@ public class Map extends Application implements Function<AgentContainer<?>, Void
 
 	      Scene scene = new Scene(root, 970, 630,Color.BURLYWOOD);
 
-	      s.setScene(scene);
+	    s.setScene(scene);
 	    s.setTitle("Map ");
-	 s.setResizable(false);
+	 	s.setResizable(false);
 	    s.show();
+
+	    Thread thread = new Thread(new Runnable() {
+			@Override
+			public void run() {
+				while (true) {
+					game.turn();
+					try {
+						Thread.sleep(1000L);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				}
+			}
+		});
+	    thread.start();
 	    //game.start();
 	}
 	@Override
 	public Void apply(AgentContainer<?> agentContainer)
 	{
+		System.out.println("update");
 		movingObjects = game.getMovingObjects();
 		//game.apply(agentContainer);
 		return null;
