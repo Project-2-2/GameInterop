@@ -6,6 +6,7 @@ import Group9.map.GameMap;
 import Group9.map.parser.Parser;
 import Group9.math.Vector2;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.layout.VBox;
@@ -36,7 +37,7 @@ public class Map extends Application implements Function<AgentContainer<?>, Void
 	    //Draw Map
 		GameMap gameMap = Parser.parseFile("./src/main/java/Group9/map/maps/test.map");
 
-		game = new Game(gameMap, 3);
+		game = new Game(gameMap, 3, this::apply);
 
 		Group staticObjects = new Group(game.getStaticObjects());
 		movingObjects = new Group(game.getMovingObjects());
@@ -58,7 +59,7 @@ public class Map extends Application implements Function<AgentContainer<?>, Void
 				while (true) {
 					game.turn();
 					try {
-						Thread.sleep(1000L);
+						Thread.sleep(50L);
 					} catch (InterruptedException e) {
 						e.printStackTrace();
 					}
@@ -72,9 +73,10 @@ public class Map extends Application implements Function<AgentContainer<?>, Void
 	public Void apply(AgentContainer<?> agentContainer)
 	{
 		System.out.println("update");
-		movingObjects.getChildren().clear();
-		movingObjects.getChildren().add(game.getMovingObjects());
-		//game.apply(agentContainer);
+		Platform.runLater(() -> {
+			movingObjects.getChildren().clear();
+			movingObjects.getChildren().add(game.getMovingObjects());
+		});
 		return null;
 	}
 
