@@ -1,5 +1,9 @@
 package Group9.gui;
 
+import Group9.Game;
+import Group9.agent.container.AgentContainer;
+import Group9.map.GameMap;
+import Group9.map.parser.Parser;
 import Group9.math.Vector2;
 import javafx.application.Application;
 import javafx.scene.Group;
@@ -12,8 +16,12 @@ import javafx.stage.Stage;
 import Group9.gui.SpawnAreaGui.SpawnAreaGuardGui;
 import Group9.gui.SpawnAreaGui.SpawnAreaIntruderGui;
 
-public class Map extends Application {
+import java.util.function.Function;
 
+public class Map extends Application implements Function<AgentContainer<?>, Void> {
+
+	Game game;
+	Group movingObjects;
 	@Override
 	public void start(Stage s) throws Exception {
 		VBox vBox = new VBox();
@@ -26,7 +34,37 @@ public class Map extends Application {
 	    map.setStrokeWidth(3);
 
 	    //Draw Map
-	    InternalWallGui wall1 = new InternalWallGui( 0.0,0.0,0.0,1.0,120.0,1.0,120.0,0.0);
+		GameMap gameMap = Parser.parseFile("./src/main/java/Group9/map/maps/test.map");
+
+		game = new Game(gameMap, 3);
+
+		Group staticObjects = new Group(game.getStaticObjects());
+		movingObjects = new Group(game.getMovingObjects());
+
+
+	    Group root = new Group();
+	    root.getChildren().addAll(map, staticObjects, movingObjects);
+
+	      Scene scene = new Scene(root, 970, 630,Color.BURLYWOOD);
+
+	      s.setScene(scene);
+	    s.setTitle("Map ");
+	 s.setResizable(false);
+	    s.show();
+	    //game.start();
+	}
+	@Override
+	public Void apply(AgentContainer<?> agentContainer)
+	{
+		movingObjects = game.getMovingObjects();
+		//game.apply(agentContainer);
+		return null;
+	}
+
+
+}
+/*
+InternalWallGui wall1 = new InternalWallGui( 0.0,0.0,0.0,1.0,120.0,1.0,120.0,0.0);
 	    wall1.updateScale();
 	    InternalWallGui wall2 = new InternalWallGui(0.0,1.0,1.0,1.0,1.0,121.0,0.0,121.0);
 	    wall2.updateScale();
@@ -81,18 +119,4 @@ public class Map extends Application {
 	    guard2.updateScale();
 	    AgentGui guard3 = new AgentGui(58,15.7,0.5, new Vector2(1,1), 3.5,true);
 	    guard3.updateScale();
-
-
-	    Group root = new Group();
-
-	      Scene scene = new Scene(root, 970, 630,Color.BURLYWOOD);
-
-	     root.getChildren().addAll(map,wall1,wall2,wall3,wall4,wall5,wall6,wall7,wall8,wall9,wall10,wall11,wall12,wall13,wall14,wall15,wall16,wall17,wall18,wall19,target,areaGuard,areaIntruders,guard1,guard2,guard3,intruder1,intruder2);
-	      s.setScene(scene);
-	    s.setTitle("Map ");
-	 s.setResizable(false);
-	    s.show();
-	}
-
-
-}
+ */

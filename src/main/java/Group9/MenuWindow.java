@@ -23,7 +23,7 @@ import java.util.function.Function;
 //import java.awt.Polygon;
 
 
-public class MenuWindow extends Application implements Function<AgentContainer<?>, Void> {
+public class MenuWindow extends Application {
 
     public static void main(String[] args) {
         launch(args);
@@ -619,13 +619,7 @@ public static void start3(Stage s)
   //  s.setResizable(false);
     s.show();
 }
-    @Override
-    public Void apply(AgentContainer<?> agentContainer)
-    {
-        //gameMap.getAgentVisionCone(agentContainer, agentContainer.getFOV(gameMap.getEffectAreas(agentContainer)))
-        //game.kk;
-        return null;
-    }
+
 }
 
 class Title extends StackPane{

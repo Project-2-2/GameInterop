@@ -455,13 +455,29 @@ public class Game {
         INTRUDERS,
         GUARDS
     }
-    public Group apply()
+    public Group apply(AgentContainer<?> agentContainer)
     {
-        Group root = new Group();
+
+        gameMap.getAgentVisionCone(agentContainer, agentContainer.getFOV(gameMap.getEffectAreas(agentContainer)));
+
+        return null;
+    }
+    public Group getMovingObjects()
+    {
+        Group movingObjects = new Group();
+        guards.forEach(g -> movingObjects.getChildren().add(g.getGui(g.getFOV(gameMap.getEffectAreas(g)))));
+        intruders.forEach(i -> movingObjects.getChildren().add(i.getGui(i.getFOV(gameMap.getEffectAreas(i)))));
+        List<DynamicObject> dynamicObjects = gameMap.getDynamicObjects();
+        //dynamicObjects.forEach(d -> movingObjects.getChildren().add(d.getSource().getG));
+        return movingObjects;
+    }
+    public Group getStaticObjects()
+    {
+        Group staticObjects = new Group();
         List<MapObject> mapObjects = gameMap.getObjects();
-        mapObjects.forEach(m -> root.getChildren().add(m.getGui()));
-        root.getChildren().forEach(c -> ((InternalWallGui)c).updateScale());
-        return root;
+        mapObjects.forEach(m -> staticObjects.getChildren().add(m.getGui()));
+        staticObjects.getChildren().forEach(c -> ((InternalWallGui)c).updateScale());
+        return staticObjects;
     }
 
 }
