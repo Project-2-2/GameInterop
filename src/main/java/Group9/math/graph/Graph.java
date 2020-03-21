@@ -41,7 +41,7 @@ public class Graph<T> {
     }
 
 
-    public List<Vertex<T>> shortedPath(Vertex<T> source, Vertex<T> target)
+    public List<Vertex<T>> shortestPath(Vertex<T> source, Vertex<T> target)
     {
 
 
