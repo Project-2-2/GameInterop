@@ -9,6 +9,7 @@ import Interop.Action.Rotate;
 import Interop.Agent.Guard;
 import Interop.Geometry.Angle;
 import Interop.Percept.GuardPercepts;
+import Interop.Percept.Vision.ObjectPerceptType;
 
 public class ExplorerAgent implements Guard {
 
@@ -21,12 +22,10 @@ public class ExplorerAgent implements Guard {
         graph.add(new Vertex<>(new DataContainer(percepts)));
         if(percepts.wasLastActionExecuted())
         {
-            System.out.println("move");
             return new Move(percepts.getScenarioGuardPercepts().getMaxMoveDistanceGuard());
         }
         else
         {
-            System.out.println("rotate");
             return new Rotate(Angle.fromRadians(
                 percepts.getScenarioGuardPercepts().getScenarioPercepts().getMaxRotationAngle().getRadians() * Game._RANDOM.nextDouble()
             ));
