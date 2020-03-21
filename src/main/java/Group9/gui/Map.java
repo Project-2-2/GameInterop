@@ -21,6 +21,7 @@ import javafx.stage.Stage;
 import Group9.gui.SpawnAreaGui.SpawnAreaGuardGui;
 import Group9.gui.SpawnAreaGui.SpawnAreaIntruderGui;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
@@ -53,7 +54,7 @@ public class Map extends Application implements Function<AgentContainer<?>, Void
 	    Group root = new Group();
 	    root.getChildren().addAll(map, staticObjects, movingObjects);
 
-	      Scene scene = new Scene(root, 970, 630,Color.BURLYWOOD);
+	  	Scene scene = new Scene(root, 970, 630,Color.BURLYWOOD);
 
 	    s.setScene(scene);
 	    s.setTitle("Map ");
@@ -66,7 +67,7 @@ public class Map extends Application implements Function<AgentContainer<?>, Void
 				while (true) {
 					game.turn();
 					try {
-						Thread.sleep(50L);
+						Thread.sleep(1000L);
 					} catch (InterruptedException e) {
 						e.printStackTrace();
 					}
@@ -79,10 +80,9 @@ public class Map extends Application implements Function<AgentContainer<?>, Void
 	@Override
 	public Void apply(AgentContainer<?> agentContainer)
 	{
-		System.out.println("update");
 		Platform.runLater(() -> {
 			movingObjects.getChildren().clear();
-			movingObjects.getChildren().add(game.getMovingObjects());
+			movingObjects.getChildren().add(this.getMovingObjects());
 		});
 		return null;
 	}
@@ -90,9 +90,8 @@ public class Map extends Application implements Function<AgentContainer<?>, Void
 	public Group getMovingObjects()
 	{
 		Group movingObjects = new Group();
-		game.getGuards().forEach(g -> movingObjects.getChildren().add(g.getGui(g.getFOV(gameMap.getEffectAreas(g)))));
-		game.getIntruders().forEach(i -> movingObjects.getChildren().add(i.getGui(i.getFOV(gameMap.getEffectAreas(i)))));
-		gameMap.getDynamicObjects().forEach(d -> {
+		//@performance
+		new ArrayList<>(gameMap.getDynamicObjects()).forEach(d -> {
 			if(d instanceof Pheromone)
 			{
 				movingObjects.getChildren().add(((Pheromone) d).getGui());
@@ -106,6 +105,9 @@ public class Map extends Application implements Function<AgentContainer<?>, Void
 				throw new IllegalStateException(String.format("Unsupported DynamicObject: %s", d.getClass().getName()));
 			}
 		});
+
+		game.getGuards().forEach(g -> movingObjects.getChildren().add(g.getGui(g.getFOV(gameMap.getEffectAreas(g)))));
+		game.getIntruders().forEach(i -> movingObjects.getChildren().add(i.getGui(i.getFOV(gameMap.getEffectAreas(i)))));
 		return movingObjects;
 	}
 	public Group getStaticObjects()

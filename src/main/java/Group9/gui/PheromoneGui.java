@@ -56,6 +56,7 @@ public class PheromoneGui extends Circle implements GameObject{
 				break;
 			}
 		}
+		updateScale();
 
 	}
 

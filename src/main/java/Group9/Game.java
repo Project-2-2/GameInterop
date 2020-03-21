@@ -320,9 +320,10 @@ public class Game {
             //--- check whether there is already one in this place
             List<DynamicObject> pheromones = gameMap.getDynamicObjects(Pheromone.class);
             if(pheromones.stream()
-                    .filter(e -> e.getSource().getClass().isAssignableFrom(agentContainer.getClass()))
+                    //.filter(e -> e.getSource().getClass().isAssignableFrom(agentContainer.getClass()))
                     .anyMatch(e -> PointContainer.intersect(e.getAsCircle(), agentContainer.getShape())))
             {
+                System.out.println("rejected");
                 return false;
             }
             DropPheromone dropPheromone = (DropPheromone) action;
@@ -461,23 +462,6 @@ public class Game {
         gameMap.getAgentVisionCone(agentContainer, agentContainer.getFOV(gameMap.getEffectAreas(agentContainer)));
 
         return null;
-    }
-    public Group getMovingObjects()
-    {
-        Group movingObjects = new Group();
-        guards.forEach(g -> movingObjects.getChildren().add(g.getGui(g.getFOV(gameMap.getEffectAreas(g)))));
-        intruders.forEach(i -> movingObjects.getChildren().add(i.getGui(i.getFOV(gameMap.getEffectAreas(i)))));
-        List<DynamicObject> dynamicObjects = gameMap.getDynamicObjects();
-        //dynamicObjects.forEach(d -> movingObjects.getChildren().add(d.getSource().getGui));
-        return movingObjects;
-    }
-    public Group getStaticObjects()
-    {
-        Group staticObjects = new Group();
-        List<MapObject> mapObjects = gameMap.getObjects();
-        mapObjects.forEach(m -> staticObjects.getChildren().add(m.getGui()));
-        staticObjects.getChildren().forEach(c -> ((InternalWallGui)c).updateScale());
-        return staticObjects;
     }
 
 }
