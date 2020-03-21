@@ -468,7 +468,7 @@ public class Game {
         guards.forEach(g -> movingObjects.getChildren().add(g.getGui(g.getFOV(gameMap.getEffectAreas(g)))));
         intruders.forEach(i -> movingObjects.getChildren().add(i.getGui(i.getFOV(gameMap.getEffectAreas(i)))));
         List<DynamicObject> dynamicObjects = gameMap.getDynamicObjects();
-        //dynamicObjects.forEach(d -> movingObjects.getChildren().add(d.getSource().getG));
+        //dynamicObjects.forEach(d -> movingObjects.getChildren().add(d.getSource().getGui));
         return movingObjects;
     }
     public Group getStaticObjects()

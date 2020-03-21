@@ -1,6 +1,7 @@
 package Group9.map.dynamic;
 
 import Group9.agent.container.AgentContainer;
+import Group9.gui.YellGui;
 import Interop.Percept.Sound.SoundPerceptType;
 
 public class Sound extends DynamicObject<AgentContainer<?>> {
@@ -14,6 +15,12 @@ public class Sound extends DynamicObject<AgentContainer<?>> {
 
     public SoundPerceptType getType() {
         return type;
+    }
+
+    public YellGui getGui()
+    {
+        YellGui gui = new YellGui(this.getCenter().getX(), this.getCenter().getY(), this.getRadius());
+        return gui;
     }
 
 
