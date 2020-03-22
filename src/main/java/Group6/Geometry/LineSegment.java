@@ -35,6 +35,11 @@ public class LineSegment {
 
     }
 
+    public LineSegment(Point a, Direction direction, double lenght){
+        double x = ((lenght*Math.sin(direction.getDegrees())));
+        //b = new Point();
+    }
+
     public Point getA() {
         return a;
     }
@@ -113,4 +118,9 @@ public class LineSegment {
             '}';
     }
 
+    @Override
+    public String toString() {
+
+        return "("+getA().getX()+","+getA().getY()+") - ("+getB().getX()+","+getB().getY()+")";
+    }
 }

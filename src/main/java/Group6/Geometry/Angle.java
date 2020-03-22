@@ -62,4 +62,8 @@ public class Angle {
         return Interop.Geometry.Angle.fromRadians(radians);
     }
 
+    @Override
+    public String toString() {
+        return "D: "+getDegrees()+" R: "+getRadians();
+    }
 }

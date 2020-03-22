@@ -5,7 +5,7 @@ import Interop.Utils.Require;
 /**
  * Represents an euclidean distance.
  */
-public final class Distance {
+public final class Distance extends Vector{
 
     private double distance;
 
