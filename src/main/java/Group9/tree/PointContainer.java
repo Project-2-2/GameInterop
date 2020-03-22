@@ -366,7 +366,7 @@ public abstract class PointContainer {
             Circle a = (Circle) containerA;
             Circle b = (Circle) containerB;
 
-            return a.getCenter().distance(b.getCenter()) < Math.min(a.getRadius(), b.getRadius());
+            return a.getCenter().distance(b.getCenter()) < Math.max(a.getRadius(), b.getRadius());
         }
         else if(containerA instanceof Line || containerB instanceof Line)
         {

@@ -318,10 +318,11 @@ public class Game {
             }
 
             //--- check whether there is already one in this place
-            List<DynamicObject> pheromones = gameMap.getDynamicObjects(Pheromone.class);
-            if(pheromones.stream()
-                    //.filter(e -> e.getSource().getClass().isAssignableFrom(agentContainer.getClass()))
-                    .anyMatch(e -> PointContainer.intersect(e.getAsCircle(), agentContainer.getShape())))
+            if(gameMap.getDynamicObjects(Pheromone.class).stream()
+                    .filter(e -> e.getSource().getClass().isAssignableFrom(agentContainer.getClass()))
+                    .anyMatch(e -> PointContainer.intersect(e.getAsCircle(),
+                            new PointContainer.Circle(agentContainer.getPosition(), scenarioPercepts.getRadiusPheromone().getValue())))
+            )
             {
                 System.out.println("rejected");
                 return false;
