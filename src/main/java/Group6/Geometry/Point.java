@@ -9,8 +9,6 @@ public class Point extends Vector {
 
     public Point(double x, double y) {
         super(x, y);
-        this.x = x;
-        this.y = y;
     }
 
     public Point(Interop.Geometry.Point interopPoint) {
@@ -40,15 +38,7 @@ public class Point extends Vector {
     public Interop.Geometry.Point toInteropPoint() {
         return new Interop.Geometry.Point(getX(), getY());
     }
-
-    public double getY() {
-        return y;
-    }
-
-    public double getX() {
-        return x;
-    }
-
+    
     public boolean isEqualTo(Vector vector) {
         return super.isEqualTo(vector, Tolerance.epsilon);
     }

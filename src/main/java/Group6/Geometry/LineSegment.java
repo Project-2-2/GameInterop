@@ -118,9 +118,4 @@ public class LineSegment {
             '}';
     }
 
-    @Override
-    public String toString() {
-
-        return "("+getA().getX()+","+getA().getY()+") - ("+getB().getX()+","+getB().getY()+")";
-    }
 }
