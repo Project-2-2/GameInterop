@@ -1,6 +1,7 @@
 package Group6.Geometry;
 
 import Group6.Geometry.Contract.Area;
+import Interop.Utils.Utils;
 
 /**
  * Represents a point in the 2-dimensional, cartesian coordinate system.
@@ -49,8 +50,8 @@ public class Point extends Vector {
 
     public String toString() {
         return "Point{" +
-            "x=" + getX() +
-            ", y=" + getY() +
+            "x=" + Utils.round(getX()) +
+            ", y=" + Utils.round(getY()) +
             '}';
     }
 
