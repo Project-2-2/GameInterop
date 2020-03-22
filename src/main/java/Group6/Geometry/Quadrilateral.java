@@ -1,5 +1,6 @@
 package Group6.Geometry;
 
+import Group6.GUI.*;
 import Group6.Geometry.Contract.Area;
 import Group6.Utils;
 
@@ -185,6 +186,38 @@ public class Quadrilateral implements Area {
     private boolean isInBoundingBox(Point point) {
         return point.getX() >= minX && point.getX() <= maxX
             && point.getY() >= minY && point.getY() <= maxY;
+    }
+
+    public Wall getWallGui(){
+        double[] x = {pointA.getX(),pointB.getX(),pointC.getX(),pointD.getX()};
+        double[] y = {pointA.getY(),pointB.getY(),pointC.getY(),pointD.getY()};
+        return new Wall(x, y);
+    }
+    public Door getDoorGui(){
+        double[] x = {pointA.getX(),pointB.getX(),pointC.getX(),pointD.getX()};
+        double[] y = {pointA.getY(),pointB.getY(),pointC.getY(),pointD.getY()};
+        return new Door(x, y);
+    }
+    public Sentry getSentryGui(){
+        double[] x = {pointA.getX(),pointB.getX(),pointC.getX(),pointD.getX()};
+        double[] y = {pointA.getY(),pointB.getY(),pointC.getY(),pointD.getY()};
+        return new Sentry(x, y);
+    }
+    public Spawn getSpawnGui(){
+        double[] x = {pointA.getX(),pointB.getX(),pointC.getX(),pointD.getX()};
+        double[] y = {pointA.getY(),pointB.getY(),pointC.getY(),pointD.getY()};
+        return new Spawn(x, y);
+    }
+    public Target getTargetGui(){
+        double[] x = {pointA.getX(),pointB.getX(),pointC.getX(),pointD.getX()};
+        double[] y = {pointA.getY(),pointB.getY(),pointC.getY(),pointD.getY()};
+        return new Target(x, y);
+    }
+
+    public Window getWindowGui(){
+        double[] x = {pointA.getX(),pointB.getX(),pointC.getX(),pointD.getX()};
+        double[] y = {pointA.getY(),pointB.getY(),pointC.getY(),pointD.getY()};
+        return new Window(x, y);
     }
 
 }

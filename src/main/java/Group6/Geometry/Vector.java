@@ -4,8 +4,8 @@ import Interop.Utils.Require;
 
 public class Vector {
 
-    private double x;
-    private double y;
+    protected double x;
+    protected double y;
 
     public Vector() {
     }

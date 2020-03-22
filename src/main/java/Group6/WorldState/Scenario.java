@@ -113,6 +113,7 @@ public class Scenario {
                 Quadrilateral tmp;
 
                 try {
+                    if(!id.trim().startsWith("//")){
                     switch (id) {
                         case "gameMode":
                             switch (Integer.parseInt(value)) {
@@ -183,13 +184,13 @@ public class Scenario {
                         case "viewRays":
                             viewRays = Integer.parseInt(value);
                             break;
-                        case "viewRangeIntruderNomal":
+                        case "viewRangeIntruderNormal":
                             viewRangeIntruderNormal = Double.parseDouble(value);
                             break;
                         case "viewRangeIntruderShaded":
                             viewRangeIntruderShaded = Double.parseDouble(value);
                             break;
-                        case "viewRangeGuardNomal":
+                        case "viewRangeGuardNormal":
                             viewRangeGuardNormal = Double.parseDouble(value);
                             break;
                         case "viewRangeGuardShaded":
@@ -248,6 +249,7 @@ public class Scenario {
                         default:
                             throw new ScenarioException("Unknown key: " + id);
                     }
+                    }
                 } catch (ScenarioException e) {
                     throw e;
                 } catch (Exception e) {
@@ -272,10 +274,10 @@ public class Scenario {
 
     private Quadrilateral readArea(String[] items) {
         return new Quadrilateral(
-            new Point(Integer.parseInt(items[0]), Integer.parseInt(items[1])),
-            new Point(Integer.parseInt(items[2]), Integer.parseInt(items[3])),
-            new Point(Integer.parseInt(items[4]), Integer.parseInt(items[5])),
-            new Point(Integer.parseInt(items[6]), Integer.parseInt(items[7]))
+            new Point(Double.parseDouble(items[0]), Double.parseDouble(items[1])),
+            new Point(Double.parseDouble(items[2]), Double.parseDouble(items[3])),
+            new Point(Double.parseDouble(items[4]), Double.parseDouble(items[5])),
+            new Point(Double.parseDouble(items[6]), Double.parseDouble(items[7]))
         );
     }
 

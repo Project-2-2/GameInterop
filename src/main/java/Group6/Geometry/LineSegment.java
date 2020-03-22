@@ -20,13 +20,13 @@ public class LineSegment {
         this.a = a;
         this.b = b;
 
-        if(a.isEqualTo(b)) {
+        /*if(a.isEqualTo(b)) {
             throw new RuntimeException(
                 "The ends of line segment must be two different points!\n" +
                 "Point A: " + a + "\n" +
                 "Point B: " + b + "\n"
             );
-        }
+        }*/
 
         minX = Math.min(a.getX(), b.getX());
         maxX = Math.max(a.getX(), b.getX());
@@ -111,11 +111,11 @@ public class LineSegment {
 
     }
 
-    public String toString() {
+    /*public String toString() {
         return "LineSegment{" +
             "a=" + a +
             ", b=" + b +
             '}';
-    }
+    }*/
 
 }
