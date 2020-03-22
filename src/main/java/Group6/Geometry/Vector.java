@@ -76,6 +76,8 @@ public class Vector {
     }
 
     /**
+     * Rotate clockwise by theta.
+     *
      * x' = x*cos q - y*sin q
      * y' = x*sin q + y*cos q
      * z' = z
@@ -83,8 +85,8 @@ public class Vector {
      * https://www.cs.helsinki.fi/group/goa/mallinnus/3dtransf/3drot.html
      */
     public Vector rotateAround(Vector center, double theta) {
-        double cosTheta = Math.cos(theta);
-        double sinTheta = Math.sin(theta);
+        double cosTheta = Math.cos(-theta);
+        double sinTheta = Math.sin(-theta);
         Vector centered = this.subtract(center);
         Vector rotated = new Vector(
             centered.x * cosTheta - centered.y * sinTheta,

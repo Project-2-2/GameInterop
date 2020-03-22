@@ -38,7 +38,7 @@ public class Point extends Vector {
     public Interop.Geometry.Point toInteropPoint() {
         return new Interop.Geometry.Point(getX(), getY());
     }
-    
+
     public boolean isEqualTo(Vector vector) {
         return super.isEqualTo(vector, Tolerance.epsilon);
     }
