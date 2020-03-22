@@ -67,12 +67,20 @@ public class Vector {
         );
     }
 
+    public Vector rotate(Angle angle) {
+        return this.rotate(angle.getRadians());
+    }
+
     public Vector rotate(double theta) {
         return this.rotateAround(new Vector(), theta);
     }
 
     public double dotProduct(Vector vector) {
         return x * vector.x + y * vector.y;
+    }
+
+    public Vector rotateAround(Vector center, Angle angle) {
+        return this.rotateAround(center, angle.getRadians());
     }
 
     /**

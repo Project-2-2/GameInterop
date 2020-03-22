@@ -9,16 +9,20 @@ public class RayCast {
 
     public static List<LineSegment> generateRays(AgentState agentState, FieldOfView fieldOfView, int numOfRays) {
 
-        Vector straightRay = new Vector(0, fieldOfView.getRange().getValue()).rotate(agentState.getDirection().getRadians());
+        Vector straightRay = new Vector(0, fieldOfView.getRange().getValue())
+            .rotate(agentState.getDirection());
 
-        double minAngle = -fieldOfView.getViewAngle().getRadians() / 2;
+        double minAngle = - fieldOfView.getViewAngle().getRadians() / 2;
         double angleBetweenRays = fieldOfView.getViewAngle().getRadians() / numOfRays;
 
         List<LineSegment> rays = new ArrayList<>();
         for(int i = 0; i < numOfRays; i++) {
             rays.add(new LineSegment(
                 agentState.getLocation(),
-                straightRay.rotate(minAngle + angleBetweenRays * i).add(agentState.getLocation()).toPoint()
+                straightRay
+                    .rotate(minAngle + angleBetweenRays * i)
+                    .add(agentState.getLocation())
+                    .toPoint()
             ));
         }
 
