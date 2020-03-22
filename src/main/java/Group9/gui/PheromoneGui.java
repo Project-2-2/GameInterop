@@ -3,7 +3,6 @@ package Group9.gui;
 import Interop.Percept.Smell.SmellPerceptType;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
-import javafx.scene.shape.Polygon;
 
 public class PheromoneGui extends Circle implements GameObject{
 
@@ -28,7 +27,7 @@ public class PheromoneGui extends Circle implements GameObject{
 		{
 			case Pheromone1:
 			{
-				setFill(Color.YELLOW);
+				setFill(Color.rgb(255, 255, 0, 0.2));
 				break;
 			}
 			case Pheromone2:
@@ -64,7 +63,6 @@ public class PheromoneGui extends Circle implements GameObject{
 
 	@Override
 	public void updateScale() {
-		// TODO Auto-generated method stub
 		double scale = Scale.scale;
 		setCenterY(y*scale);
 		setCenterX(x*scale);

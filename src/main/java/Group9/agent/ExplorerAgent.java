@@ -11,9 +11,13 @@ import Interop.Agent.Guard;
 import Interop.Geometry.Angle;
 import Interop.Percept.GuardPercepts;
 import Interop.Percept.Smell.SmellPerceptType;
-import Interop.Percept.Vision.ObjectPerceptType;
 
 public class ExplorerAgent implements Guard {
+
+
+    //--- Notes: @jan
+    // 1. If I am not mistaken, we only have to move the agent twice to calculate the exact point where the target area
+    // is. By simply calculating the intersection points of the general direction.
 
     private final Graph<DataContainer> graph = new Graph<>();
 
@@ -25,7 +29,6 @@ public class ExplorerAgent implements Guard {
 
         if(Math.random() < 0.1)
         {
-            System.out.println("drop pheremone");
             return new DropPheromone(SmellPerceptType.Pheromone1);
         }
 

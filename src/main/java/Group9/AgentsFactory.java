@@ -1,7 +1,6 @@
 package Group9;
 
 import Group9.agent.ExplorerAgent;
-import Group9.agent.container.ExplorerContainer;
 import Interop.Agent.Guard;
 import Interop.Agent.Intruder;
 

@@ -1,8 +1,6 @@
 package Group9.map.objects;
 
-import Group9.gui.DoorGui;
 import Group9.map.area.ModifySpeedEffect;
-import Group9.math.Vector2;
 import Group9.tree.PointContainer;
 import Interop.Percept.Vision.ObjectPerceptType;
 
@@ -16,12 +14,4 @@ public class Door extends MapObject {
         ), ObjectPerceptType.Door);
     }
 
-    public DoorGui getGui()
-    {
-        DoorGui door;
-        PointContainer.Polygon area = this.getArea().getAsPolygon();
-        Vector2[] points = area.getPoints();
-        door = new DoorGui(points[0].getX(), points[0].getY(), points[1].getX(), points[1].getY(), points[2].getX(), points[2].getY(), points[3].getX(), points[3].getY());
-        return door;
-    }
 }

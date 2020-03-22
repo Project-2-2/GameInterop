@@ -3,23 +3,16 @@ package Group9.gui;
 import Group9.Game;
 import Group9.agent.container.AgentContainer;
 import Group9.map.GameMap;
-import Group9.map.dynamic.DynamicObject;
-import Group9.map.dynamic.Pheromone;
-import Group9.map.dynamic.Sound;
 import Group9.map.objects.MapObject;
 import Group9.map.parser.Parser;
-import Group9.math.Vector2;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
-import Group9.gui.SpawnAreaGui.SpawnAreaGuardGui;
-import Group9.gui.SpawnAreaGui.SpawnAreaIntruderGui;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -67,7 +60,7 @@ public class Map extends Application implements Function<AgentContainer<?>, Void
 				while (true) {
 					game.turn();
 					try {
-						Thread.sleep(1000L);
+						Thread.sleep(500L);
 					} catch (InterruptedException e) {
 						e.printStackTrace();
 					}
@@ -90,31 +83,19 @@ public class Map extends Application implements Function<AgentContainer<?>, Void
 	public Group getMovingObjects()
 	{
 		Group movingObjects = new Group();
-		//@performance
-		new ArrayList<>(gameMap.getDynamicObjects()).forEach(d -> {
-			if(d instanceof Pheromone)
-			{
-				movingObjects.getChildren().add(((Pheromone) d).getGui());
-			}
-			else if(d instanceof Sound)
-			{
-				movingObjects.getChildren().add(((Sound) d).getGui());
-			}
-			else
-			{
-				throw new IllegalStateException(String.format("Unsupported DynamicObject: %s", d.getClass().getName()));
-			}
-		});
+		//@performance we would probably want to use a mutex or something like that instead of always copying the entire list
+		new ArrayList<>(gameMap.getDynamicObjects()).forEach(d -> movingObjects.getChildren().add(GUIConverter.convert(d)));
 
-		game.getGuards().forEach(g -> movingObjects.getChildren().add(g.getGui(g.getFOV(gameMap.getEffectAreas(g)))));
-		game.getIntruders().forEach(i -> movingObjects.getChildren().add(i.getGui(i.getFOV(gameMap.getEffectAreas(i)))));
+		game.getGuards().forEach(g -> movingObjects.getChildren().add(GUIConverter.convert(g, g.getFOV(gameMap.getEffectAreas(g)))));
+		game.getIntruders().forEach(i -> movingObjects.getChildren().add(GUIConverter.convert(i, i.getFOV(gameMap.getEffectAreas(i)))));
 		return movingObjects;
 	}
+
 	public Group getStaticObjects()
 	{
 		Group staticObjects = new Group();
 		List<MapObject> mapObjects = gameMap.getObjects();
-		mapObjects.forEach(m -> staticObjects.getChildren().add(m.getGui()));
+		mapObjects.forEach(m -> staticObjects.getChildren().add(GUIConverter.convert(m)));
 		staticObjects.getChildren().forEach(c -> ((InternalWallGui)c).updateScale());
 		return staticObjects;
 	}
