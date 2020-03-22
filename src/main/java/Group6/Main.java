@@ -61,6 +61,9 @@ public class Main extends Application {
         List<Quadrilateral> sentry = test.getSentryTowers().getAll();
         sentry.forEach(w -> root.getChildren().add(w.getSentryGui()));
 
+        List<Quadrilateral> shadedArea = test.getShadedAreas().getAll();
+        shadedArea.forEach(w -> root.getChildren().add(w.getShadedAreaGui()));
+
 
         root.getChildren().add(test.getSpawnAreaGuards().getSpawnGui());
         root.getChildren().add(test.getSpawnAreaIntruders().getSpawnGui());

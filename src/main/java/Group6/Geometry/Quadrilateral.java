@@ -220,4 +220,10 @@ public class Quadrilateral implements Area {
         return new Window(x, y);
     }
 
+    public ShadedArea getShadedAreaGui(){
+        double[] x = {pointA.getX(),pointB.getX(),pointC.getX(),pointD.getX()};
+        double[] y = {pointA.getY(),pointB.getY(),pointC.getY(),pointD.getY()};
+        return new ShadedArea(x, y);
+    }
+
 }
