@@ -23,7 +23,7 @@ public class AgentController {
 
     protected Point position;
     private double radius;
-    private Point direction;  //the direction an agent is walking
+    //the angle the agent is currently facing
     protected Angle angle;
     protected boolean onSentryTower;
     private String agentType;
@@ -41,7 +41,7 @@ public class AgentController {
     protected AgentController(Point position, double radius, double maxRotation){
         this.position = position;
         this.radius = radius;
-        direction = new Point(position.getX(),position.getY());
+        Point direction = new Point(position.getX(),position.getY());
         angle = position.getClockDirection();
         this.maxAngleRotation = maxRotation;
         pheroMoneCooldownTimer=false;
@@ -65,17 +65,14 @@ public class AgentController {
         return towerViewRange;
     }
 
-    public void rotate(Angle angle){
-        double vectorLength = Sat.length(direction);
-        //System.out.println(angle.getRadians());
-        double x= vectorLength*Math.cos(angle.getRadians());
-       // System.out.println(x);
-        double y = vectorLength*Math.sin(angle.getRadians());
-        direction = new Point(x,y);
-       // System.out.println(direction.toString());
-        angle=direction.getClockDirection();
-        this.angle=Angle.fromRadians(this.angle.getRadians()+angle.getRadians());
-       // System.out.println(angle.getRadians());
+    public void rotate(Angle addAngle){
+        //changes the angle
+        this.angle=Angle.fromRadians(this.angle.getRadians()+addAngle.getRadians());
+        //System.out.println(angle.getDegrees());
+        //reduces the angle so it has a value between 0 and 2pi but same value
+        this.angle=Angle.fromRadians(this.angle.getRadians()%(2*Math.PI));
+        //System.out.println(angle.getDegrees());
+
     }
 
     public Distance getViewRange() {
@@ -201,6 +198,7 @@ public class AgentController {
         return;
     }
 
+    /*
     public void vision(){
 
         ArrayList<Point> rayCasts = visionVectors();
@@ -212,11 +210,15 @@ public class AgentController {
 
     }
 
+     */
+
+
     /**
      * returns a list of 45 vectors represented raycasts
      * these raycasts can be used to check for colission with objects
      * @return
      */
+    /*
     private ArrayList<Point> visionVectors(){
 
         Point eye = new Point(position.getX(),position.getY());
@@ -252,6 +254,7 @@ public class AgentController {
 
         return rayCasts;
     }
+    */
 
     //TODO smell has to be implemented
     public void dropPheromone(DropPheromone dropPheromone, SmellPerceptType type){

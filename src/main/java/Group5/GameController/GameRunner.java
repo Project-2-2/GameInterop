@@ -174,11 +174,13 @@ public class GameRunner {
         coolDownTimers();
 
 
-        mapInfo.intruders.get(0).rotate(Angle.fromDegrees(90));
+        mapInfo.intruders.get(0).rotate(Angle.fromDegrees(-180));
         mapInfo.intruders.get(0).move(new Move(new Distance(1)));
         for (IntruderController intruder : mapInfo.intruders){
-            mapViewer.moveIntruder(intruder.position.getX(), mapInfo.intruders.get(0).position.getY());
+            mapViewer.moveIntruder(intruder.position.getX(), intruder.position.getY());
         }
+
+
         //System.out.println(mapInfo.intruders.get(0).getPosition().toString());
         //this.mapViewer.moveIntruder(10, 10, true);
     }
