@@ -1,10 +1,5 @@
 package Group6.Geometry;
 
-import Group6.Agent.Factory.AgentsFactories;
-import Group6.GroupTests;
-import Group6.WorldState.Scenario;
-import Group6.WorldState.ScenarioTest;
-import Group6.WorldState.WorldState;
 import SimpleUnitTest.SimpleUnitTest;
 
 public class GeometryTest extends SimpleUnitTest {
@@ -13,9 +8,11 @@ public class GeometryTest extends SimpleUnitTest {
 
         System.out.println("\n\nGeometry Test\n");
 
+        VectorTest.main(args);
         DirectionTest.main(args);
         LineSegmentTest.main(args);
         QuadrilateralTest.main(args);
+        RayCastTest.main(args);
 
     }
 

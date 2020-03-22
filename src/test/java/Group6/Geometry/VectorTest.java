@@ -13,12 +13,14 @@ public class VectorTest extends ExtendedUnitTest {
 
             assertEqual(
                 new Vector(0, 1).rotate(Math.PI * 2),
-                new Vector(0, 1)
+                new Vector(0, 1),
+                "Rotated by Math.PI * 2"
             );
 
             assertEqual(
                 new Vector(0, 1).rotate(0),
-                new Vector(0, 1)
+                new Vector(0, 1),
+                "Rotated by 0."
             );
 
         });
@@ -27,7 +29,8 @@ public class VectorTest extends ExtendedUnitTest {
 
             assertEqual(
                 new Vector(0, 1).rotate(Math.PI),
-                new Vector(0, -1)
+                new Vector(0, -1),
+                "Rotated by Math.PI"
             );
 
         });
@@ -36,12 +39,14 @@ public class VectorTest extends ExtendedUnitTest {
 
             assertEqual(
                 new Vector(0, 1).rotate(Math.PI / 2),
-                new Vector(1, 0)
+                new Vector(1, 0),
+                "Rotated by Math.PI / 2"
             );
 
             assertEqual(
                 new Vector(0, 1).rotate(-Math.PI / 2),
-                new Vector(-1, 0)
+                new Vector(-1, 0),
+                "Rotated by -Math.PI / 2"
             );
 
         });
