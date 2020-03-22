@@ -174,6 +174,7 @@ public class GameRunner {
         coolDownTimers();
 
 
+        //basic movement of an agent
         mapInfo.intruders.get(0).rotate(Angle.fromDegrees(-180));
         mapInfo.intruders.get(0).move(new Move(new Distance(1)));
         for (IntruderController intruder : mapInfo.intruders){
@@ -206,6 +207,41 @@ public class GameRunner {
                 return false;
             }
         }
+
+        //checks if no collision with doors
+        ArrayList<Door> doors = mapInfo.doors;
+        for(int i =0; i<doors.size();i++){
+            ArrayList<Point> doorVectors = doors.get(i).getAreaVectors();
+            //  System.out.println("collision detected");
+            if (Sat.hasCollided(movment,doorVectors)||doors.get(i).isHit(to)){
+                to = from;
+                return false;
+            }
+        }
+
+        //checks if no colission with windows
+        ArrayList<Window> windows = mapInfo.windows;
+        for(int i =0; i<windows.size();i++){
+            ArrayList<Point> windowVectors = windows.get(i).getAreaVectors();
+            //  System.out.println("collision detected");
+            if (Sat.hasCollided(movment,windowVectors)||doors.get(i).isHit(to)){
+                to = from;
+                return false;
+            }
+        }
+
+        //checks if no colission with sentries
+        ArrayList<SentryTower> sentries = mapInfo.sentryTowers;
+        for(int i =0; i<sentries.size();i++){
+            ArrayList<Point> sentryVectors = sentries.get(i).getAreaVectors();
+            //  System.out.println("collision detected");
+            if (Sat.hasCollided(movment,sentryVectors)||doors.get(i).isHit(to)){
+                to = from;
+                return false;
+            }
+        }
+
+
         return true;
     }
 
