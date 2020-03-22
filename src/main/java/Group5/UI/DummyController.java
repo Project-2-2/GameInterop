@@ -71,7 +71,7 @@ public class DummyController {
     }
 
     private void update() throws IOException {
-        this.mapViewer.moveIntruder(10, 10, true);
+        this.mapViewer.moveIntruder(10, 10);
     }
 
     // Pause the timer and simulation

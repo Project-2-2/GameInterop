@@ -57,7 +57,7 @@ public class MapFileParser {
                     case "gameMode":
                         gameMode = Integer.parseInt(value); // 0 is exploration, 1 evasion pursuit game
                         if (gameMode == 0) {
-                            explorer = new DrawableIntruderAgent(35, 35, 3, Color.RED);
+                            explorer = new DrawableIntruderAgent(0, 0, 3, Color.CYAN);
                             drawableAgents.add(explorer);
                         }
                         break;
@@ -74,7 +74,7 @@ public class MapFileParser {
                         numGuards = Integer.parseInt(value);
                         if (gameMode != 0) {
                             for (int i = 0; i < numGuards; i++) {
-                                guard = new DrawableGuardAgent(3, 5, 2, Color.BLUE);
+                                guard = new DrawableGuardAgent(3, 5, 3, Color.BLUE);
                                 drawableAgents.add(guard);
                             }
                         }
@@ -83,7 +83,7 @@ public class MapFileParser {
                         numIntruders = Integer.parseInt(value);
                         if (gameMode != 0) {
                             for (int i = 0; i < numIntruders; i++) {
-                                intruder = new DrawableIntruderAgent(1, 1, 5, Color.PINK);
+                                intruder = new DrawableIntruderAgent(1, 1, 3, Color.PURPLE);
                                 drawableAgents.add(intruder);
                             }
                         }

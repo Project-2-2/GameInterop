@@ -21,14 +21,15 @@ public class MapViewer extends Group {
     /**
      * @param x        position x
      * @param y        position y
-     * @param isMoving if the Agent is moving or standing still
      */
-    public void moveIntruder(double x, double y, boolean isMoving) {
+    public void moveIntruder(double x, double y) {
         assert x >= 0 && x < MapFileParser.getMapWidth() && y >= 0 && y < MapFileParser.getMapHeight();
         for (Shape shape : MapFileParser.getDrawableAgents()) {
-            if (isMoving && shape.getClass().equals(DrawableIntruderAgent.class)) {
-                ((DrawableIntruderAgent) shape).setCenterX(((DrawableIntruderAgent) shape).getCenterX() + x);
-                ((DrawableIntruderAgent) shape).setCenterY(((DrawableIntruderAgent) shape).getCenterY() + y);
+            if (shape.getClass().equals(DrawableIntruderAgent.class)) {
+                ((DrawableIntruderAgent) shape).setCenterX(x);
+                ((DrawableIntruderAgent) shape).setCenterY(y);
+//                ((DrawableIntruderAgent) shape).setCenterX(((DrawableIntruderAgent) shape).getCenterX() + x);
+//                ((DrawableIntruderAgent) shape).setCenterY(((DrawableIntruderAgent) shape).getCenterY() + y);
             }
         }
     }
