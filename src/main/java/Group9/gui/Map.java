@@ -18,7 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
-public class Map extends Application implements Function<AgentContainer<?>, Void> {
+public class Map extends Application {
 
 	Game game;
 	GameMap gameMap;
@@ -38,7 +38,7 @@ public class Map extends Application implements Function<AgentContainer<?>, Void
 
 	    //Draw Map
 		gameMap = Parser.parseFile("./src/main/java/Group9/map/maps/test.map");
-		game = new Game(gameMap, 3, this::apply);
+		game = new Game(gameMap, 10);
 
 		Group staticObjects = new Group(this.getStaticObjects());
 		movingObjects = new Group(this.getMovingObjects());
@@ -54,31 +54,26 @@ public class Map extends Application implements Function<AgentContainer<?>, Void
 	 	s.setResizable(false);
 	    s.show();
 
-	    Thread thread = new Thread(new Runnable() {
-			@Override
-			public void run() {
-				while (true) {
-					game.turn();
-					try {
-						Thread.sleep(500L);
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					}
+	    Thread thread = new Thread(game);
+	    thread.start();
+
+	    Thread uithread = new Thread(() -> {
+			while (true)
+			{
+				game.query(() -> Platform.runLater(() -> {
+					movingObjects.getChildren().clear();
+					movingObjects.getChildren().add(this.getMovingObjects());
+				}));
+				try {
+					Thread.sleep(10L);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
 				}
 			}
 		});
-	    thread.start();
-	    //game.start();
+		uithread.start();
 	}
-	@Override
-	public Void apply(AgentContainer<?> agentContainer)
-	{
-		Platform.runLater(() -> {
-			movingObjects.getChildren().clear();
-			movingObjects.getChildren().add(this.getMovingObjects());
-		});
-		return null;
-	}
+
 
 	public Group getMovingObjects()
 	{

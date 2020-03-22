@@ -1,5 +1,6 @@
-package Group9;
+package Group9.gui;
 
+import Group9.Game;
 import Group9.agent.container.AgentContainer;
 import Group9.gui.GUIConverter;
 import Group9.gui.InternalWallGui;
@@ -22,7 +23,7 @@ public class ShowMap extends Application implements Function<AgentContainer<?>, 
     @Override
     public void start(Stage primaryStage) {
         GameMap gameMap = Parser.parseFile("./src/main/java/Group9/map/maps/test.map");
-        Game game = new Game(gameMap, 3, this::apply);
+        Game game = new Game(gameMap, 3);
 
         Group root = new Group();
         primaryStage.setScene(new Scene(root, 1000, 1000));

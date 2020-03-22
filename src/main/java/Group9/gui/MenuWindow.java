@@ -1,6 +1,5 @@
-package Group9;
+package Group9.gui;
 
-import Group9.gui.Map;
 import javafx.application.Application;
 import javafx.event.EventHandler;
 import javafx.scene.Group;

@@ -40,8 +40,13 @@ public class GUIConverter {
         }
         else if(dynamicObject instanceof Sound)
         {
-            //TODO implement sound visualisation
-            return new EmptySpace();
+            switch (((Sound) dynamicObject).getType())
+            {
+                case Yell:
+                    return new YellGui(dynamicObject.getCenter().getX(), dynamicObject.getCenter().getY(), dynamicObject.getRadius());
+                case Noise:
+                    return new EmptySpace();
+            }
         }
         throw new IllegalArgumentException();
     }
