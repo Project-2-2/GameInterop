@@ -7,14 +7,18 @@ import Interop.Percept.Sound.SoundPercepts;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
+
 public class Hearing {
+
     private MapInfo mapInfo;
     private Set<Door> doorActions;
     private Set<Window> windowActions;
     private Set<Point> yells;
+
     public Hearing(MapInfo map){
         this.mapInfo = map;
     }
+
     public void doorSound(Door door){
         doorActions.add(door);
     }
