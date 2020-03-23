@@ -66,7 +66,7 @@ public abstract class AgentContainer<T> {
 
     public void moveTo(Vector2 position)
     {
-        this.shape.translate(this.getPosition().sub(position));
+        this.shape.translate(position.sub(this.getPosition()));
     }
 
     public void move(double distance)

@@ -584,8 +584,12 @@ public class GameMap {
             return this;
         }
 
-        public Builder teleport(PointContainer.Polygon quadrilateral){
-            this.object(new TeleportArea(quadrilateral));
+        public Builder teleport(PointContainer.Polygon teleporterA, PointContainer.Polygon teleporterB){
+            TeleportArea teleportAreaA = new TeleportArea(teleporterA, null);
+            TeleportArea teleportAreaB = new TeleportArea(teleporterB, teleportAreaA);
+            teleportAreaA.setConnected(teleportAreaB);
+            this.object(teleportAreaA);
+            this.object(teleportAreaB);
             return this;
         }
 

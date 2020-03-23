@@ -32,6 +32,8 @@ public class Parser {
                     String type = split[0].trim();
                     String[] data = split[1].trim().split(",");
 
+                    System.out.println(type.toLowerCase());
+
                     switch (type.toLowerCase())
                     {
                         case "wall": {
@@ -50,8 +52,8 @@ public class Parser {
                             builder.spawnAreaGuards(quadrilateralFromData(data));
                         } break;
 
-                        case "teleport": {
-                            builder.teleport(quadrilateralFromData(data));
+                        case "teleportarea": {
+                            builder.teleport(quadrilateralFromData(data), quadrilateralFromData(data, 8));
                         } break;
 
                         case "shaded": {
@@ -197,14 +199,18 @@ public class Parser {
 
     }
 
-    private static PointContainer.Polygon quadrilateralFromData(String[] data)
+    private static PointContainer.Polygon quadrilateralFromData(String[] data, int offset)
     {
         return new PointContainer.Polygon(
-                new Vector2(Double.parseDouble(data[0]), Double.parseDouble(data[1])),
-                new Vector2(Double.parseDouble(data[2]), Double.parseDouble(data[3])),
-                new Vector2(Double.parseDouble(data[4]), Double.parseDouble(data[5])),
-                new Vector2(Double.parseDouble(data[6]), Double.parseDouble(data[7]))
+                new Vector2(Double.parseDouble(data[0 + offset]), Double.parseDouble(data[1 + offset])),
+                new Vector2(Double.parseDouble(data[2 + offset]), Double.parseDouble(data[3 + offset])),
+                new Vector2(Double.parseDouble(data[4 + offset]), Double.parseDouble(data[5 + offset])),
+                new Vector2(Double.parseDouble(data[6 + offset]), Double.parseDouble(data[7 + offset]))
         );
+    }
+    private static PointContainer.Polygon quadrilateralFromData(String[] data)
+    {
+        return quadrilateralFromData(data, 0);
     }
 
     public static enum Types {

@@ -127,6 +127,14 @@ public class Game implements Runnable {
         while (this.winner == null)
         {
             this.winner = this.turn();
+            if(false)
+            {
+                try {
+                    Thread.sleep(500L);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
         }
     }
 
@@ -299,7 +307,8 @@ public class Game implements Runnable {
 
             if(!justTeleported.contains(agentContainer) && locationEffect.isPresent())
             {
-                agentContainer.moveTo(((ModifyLocationEffect) locationEffect.get()).get(agentContainer));
+                Vector2 pos = ((ModifyLocationEffect) locationEffect.get()).get(agentContainer);
+                agentContainer.moveTo(pos);
                 justTeleported.add(agentContainer);
             }
             else if(justTeleported.contains(agentContainer) && !locationEffect.isPresent())

@@ -37,7 +37,7 @@ public class Map extends Application {
 	    map.setStrokeWidth(3);
 
 	    //Draw Map
-		gameMap = Parser.parseFile("./src/main/java/Group9/map/maps/test.map");
+		gameMap = Parser.parseFile("./src/main/java/Group9/map/maps/test_2.map");
 		game = new Game(gameMap, 1);
 
 		Group staticObjects = new Group(this.getStaticObjects());
@@ -51,7 +51,7 @@ public class Map extends Application {
 
 	    s.setScene(scene);
 	    s.setTitle("Map ");
-	 	s.setResizable(false);
+	 	s.setResizable(true);
 	    s.show();
 
 	    Thread thread = new Thread(game);
