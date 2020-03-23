@@ -1,21 +1,34 @@
 package Group5.Agent;
 
+import Group5.GameController.Area;
+
 public class Vertex {
     final private String id;
     final private String name;
     private boolean visited;
+    private Area containedObject;
 
 
-    public Vertex(String id, String name, boolean visited) {
+    public Vertex(String id, String name, boolean visited, Area containedObject) {
         this.id = id;
         this.name = name;
         this.visited = visited;
+        this.containedObject = containedObject;
     }
 
-    public Vertex(String id, String name) {
+    public Vertex(String id, String name, Area containedObject) {
         this.id = id;
         this.name = name;
         this.visited = false;
+        this.containedObject = containedObject;
+    }
+
+    public Area getContainedObject() {
+        return containedObject;
+    }
+
+    public void setContainedObject(Area containedObject) {
+        this.containedObject = containedObject;
     }
 
     public String getId() {

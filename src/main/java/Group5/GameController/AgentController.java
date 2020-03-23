@@ -1,6 +1,7 @@
 package Group5.GameController;
 
 
+import Group5.Agent.Explorer;
 import Interop.Action.DropPheromone;
 import Interop.Action.Move;
 import Interop.Action.NoAction;
@@ -56,8 +57,28 @@ public class AgentController {
         return position;
     }
 
+    /**
+     * This method is necessary for the agent. Otherwise we would need to break the rules for the simplest operations.
+     * @param p A point of interest
+     * @return The relative position of the agent to that point.
+     */
+    public Point getRelativePosition(Point p){
+        return new Point(position.getX() - p.getX(), position.getY() - p.getY());
+    }
+
     protected Angle getAngle() {
         return this.angle;
+    }
+
+    /**
+     * This method is necessary for the agent. Otherwise we would need to break the rules for the simplest operations.
+     * @param p A point defining one end of a line
+     * @param q A point defining the other end of a line
+     * @return The relative rotation of the agent with respect to that line.
+     */
+    public Angle getRelativeAngle(Point p, Point q){
+        Point pOrigin = new Point(Math.abs(p.getX() - q.getX()), Math.abs(p.getY() - q.getY()));
+        return Angle.fromRadians(pOrigin.getClockDirection().getRadians() - this.angle.getRadians());
     }
 
     protected  boolean isOnSentryTower() {
