@@ -46,8 +46,8 @@ public class GuardController extends AgentController {
 
 
     //TODO  when sound is implemented
-    public void yell(Yell yell){
-
+    public void yell(Hearing hearing){
+        hearing.yellSound(this.getPosition());
     }
 
     //TODO smell has to be implemented

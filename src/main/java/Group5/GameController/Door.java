@@ -17,12 +17,14 @@ public class Door extends Area {
     /**
      * TODO ADD NOISE WHEN OPENING
      */
-    public void openDoor(){
+    public void openDoor(Hearing hearing){
         closed = false;
+        hearing.doorSound(this);
     }
 
-    public void closeDoor(){
+    public void closeDoor(Hearing hearing){
         closed = true;
+        hearing.doorSound(this);
     }
 
 

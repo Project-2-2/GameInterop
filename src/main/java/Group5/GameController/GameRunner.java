@@ -54,6 +54,7 @@ public class GameRunner {
 //    }
 
     private Vision vision;
+    private static Hearing hearing;
 
     private boolean paused;
 
@@ -132,6 +133,7 @@ public class GameRunner {
         mapInfo.initialize();
 
         vision = new Vision();
+        hearing = new Hearing(mapInfo);
 
         // Check if the MapViewer for the UI has been initialized
         if (this.mapViewer != null){
@@ -234,7 +236,7 @@ public class GameRunner {
                 if(distance.getValue()>maxDistance.getValue()*Door.getSlowDownModifier()){
                     return false;
                 }
-                doors.get(i).openDoor();
+                doors.get(i).openDoor(hearing);
                 to = from;
                 return true;
             }
@@ -249,7 +251,7 @@ public class GameRunner {
                 if(distance.getValue()>maxDistance.getValue()*Window.getSlowDownModifier()){
                     return false;
                 }
-                windows.get(i).openWindow();
+                windows.get(i).openWindow(hearing);
                 to = from;
                 return true;
             }
@@ -385,7 +387,7 @@ public class GameRunner {
                 if (!doors.get(i).doorClosed()){
                     return false;
                 }
-                doors.get(i).openDoor();
+                doors.get(i).openDoor(hearing);
                 return true;
             }
         }
@@ -404,7 +406,7 @@ public class GameRunner {
                 if (!windows.get(i).windowClosed()){
                     return false;
                 }
-                windows.get(i).openWindow();
+                windows.get(i).openWindow(hearing);
                 return true;
             }
         }

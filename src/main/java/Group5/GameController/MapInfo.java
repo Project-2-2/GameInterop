@@ -302,4 +302,23 @@ public class MapInfo {
         }
     }
 
+    public ArrayList<AgentController> getAgents(){
+        ArrayList<AgentController> agents = new ArrayList<AgentController>();
+        agents.addAll(guards);
+        agents.addAll(intruders);
+        return agents;
+    }
+    public double getYellSoundRadius(){
+        return yellSoundRadius;
+    }
+    public double getMaxMoveSoundRadius(){
+        return maxMoveSoundRadius;
+    }
+    public double getWindowSoundRadius(){
+        return windowSoundRadius;
+    }
+    public double getDoorSoundRadius(){
+        return doorSoundRadius;
+    }
+
 }

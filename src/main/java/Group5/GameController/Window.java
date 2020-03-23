@@ -15,12 +15,14 @@ public class Window extends Area {
         return  closed;
     }
 
-    public void openWindow(){
+    public void openWindow(Hearing hearing){
         closed = false;
+        hearing.windowSound(this);
     }
 
-    public void closeWindow(){
+    public void closeWindow(Hearing hearing){
         closed = true;
+        hearing.windowSound(this);
     }
 
 
