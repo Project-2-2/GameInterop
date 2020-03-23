@@ -190,7 +190,7 @@ public class GameRunner {
         //TODO vision percepts is empty
         ObjectPercepts visionPercepts = getVision();
         Set<ObjectPercept> percepts =visionPercepts.getAll();
-      //  System.out.println(percepts.size());
+        System.out.println(percepts.size());
         if (percepts.size()>0){
             //System.out.println(percepts.iterator().next().toString());
         }
@@ -219,7 +219,7 @@ public class GameRunner {
         ArrayList<Area> walls= mapInfo.walls;
 
         //for now give the agent a radius of 1
-        ArrayList<Point> movment = movementShape(from,to,1);
+        ArrayList<Point> movment = movementShape(from,to,9);
         for(int i =0; i<walls.size();i++){
             ArrayList<Point> wallVectors = walls.get(i).getAreaVectors();
           //  System.out.println("collision detected");

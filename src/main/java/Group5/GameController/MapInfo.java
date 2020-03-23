@@ -283,7 +283,7 @@ public class MapInfo {
             int randomY = ThreadLocalRandom.current().nextInt(spawnAreaGuards.topBoundary, spawnAreaGuards.bottomBoundary + 1);
             Point guardPosition = new Point(randomX,randomY);
 
-            GuardController guard = new GuardController(guardPosition,4,maxRotationAngleDegrees,baseSpeedGuard,new Distance(viewRangeGuardNormal));
+            GuardController guard = new GuardController(guardPosition,9,maxRotationAngleDegrees,baseSpeedGuard,new Distance(viewRangeGuardNormal));
             guards.add(guard);
         }
     }
@@ -297,7 +297,7 @@ public class MapInfo {
             //System.out.println(randomX + " " + randomY);
             Point intruderPosition = new Point(randomX,randomY);
 
-            IntruderController intruder = new IntruderController(intruderPosition,4,maxMoveDistanceIntruder,maxSprintDistanceIntruder,maxRotationAngleDegrees,new Distance(viewRangeIntruderNormal));
+            IntruderController intruder = new IntruderController(intruderPosition,9,maxMoveDistanceIntruder,maxSprintDistanceIntruder,maxRotationAngleDegrees,new Distance(viewRangeIntruderNormal));
             intruders.add(intruder);
         }
     }
