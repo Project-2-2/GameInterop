@@ -103,11 +103,11 @@ public class AgentController {
     }
 
     public Distance getViewRange() {
-        Distance viewRange = null;
+        Distance viewRange;
         if (this.agentType.equals("guard")) {
             viewRange = guardViewRange;
 
-        }else if (this.agentType.equals("intruder")) {
+        }else {
             viewRange = intruderViewRange;
         }
 

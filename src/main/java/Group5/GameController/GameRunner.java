@@ -190,8 +190,10 @@ public class GameRunner {
         //TODO vision percepts is empty
         ObjectPercepts visionPercepts = getVision();
         Set<ObjectPercept> percepts =visionPercepts.getAll();
-        //System.out.println(percepts.size());
-       // System.out.println(percepts.iterator().next().toString());
+      //  System.out.println(percepts.size());
+        if (percepts.size()>0){
+            //System.out.println(percepts.iterator().next().toString());
+        }
 
 
 

@@ -32,7 +32,7 @@ public class Vision {
 
         Set<ObjectPercept> objectsPercepts = new HashSet<>(perceivedObjects);
 
-        System.out.println("Vision return list of size: "+ objectsPercepts.size());
+        //System.out.println("Vision return list of size: "+ objectsPercepts.size());
         return new ObjectPercepts(objectsPercepts);
     }
 
@@ -63,16 +63,16 @@ public class Vision {
         Point point1 = new Point(currentX+xShift, currentY+yShift);
         int counter = 0;
         for (double i=-22.5; i <=22.5; i++){
-            System.out.println(i);
+           // System.out.println(i);
             double value = i *Math.PI/180;
             counter ++;
             ArrayList<ObjectPercept> objects = new ArrayList();
 
-            if (angle + i > 2*Math.PI) {
+            if (angle + value > 2*Math.PI) {
                 targetX = viewRange * Math.cos(angle + value - 2*Math.PI) + currentX;
                 targetY = viewRange * Math.sin(angle + value - 2*Math.PI) + currentY;
 
-            }else if (angle + i < 0) {
+            }else if (angle + value < 0) {
                 targetX = viewRange * Math.cos(angle + value + 2*Math.PI) + currentX;
                 targetY = viewRange * Math.sin(angle + value + 2*Math.PI) + currentY;
 

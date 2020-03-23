@@ -297,7 +297,7 @@ public class MapInfo {
             //System.out.println(randomX + " " + randomY);
             Point intruderPosition = new Point(randomX,randomY);
 
-            IntruderController intruder = new IntruderController(intruderPosition,4,maxMoveDistanceIntruder,maxSprintDistanceIntruder,maxRotationAngleDegrees,new Distance(viewRangeGuardNormal));
+            IntruderController intruder = new IntruderController(intruderPosition,4,maxMoveDistanceIntruder,maxSprintDistanceIntruder,maxRotationAngleDegrees,new Distance(viewRangeIntruderNormal));
             intruders.add(intruder);
         }
     }
