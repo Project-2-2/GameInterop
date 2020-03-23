@@ -4,8 +4,8 @@ import Interop.Utils.Require;
 
 public class Vector {
 
-    private double x;
-    private double y;
+    protected double x;
+    protected double y;
 
     public Vector() {
     }
@@ -67,6 +67,10 @@ public class Vector {
         );
     }
 
+    public Vector rotate(Angle angle) {
+        return this.rotate(angle.getRadians());
+    }
+
     public Vector rotate(double theta) {
         return this.rotateAround(new Vector(), theta);
     }
@@ -75,7 +79,13 @@ public class Vector {
         return x * vector.x + y * vector.y;
     }
 
+    public Vector rotateAround(Vector center, Angle angle) {
+        return this.rotateAround(center, angle.getRadians());
+    }
+
     /**
+     * Rotate clockwise by theta.
+     *
      * x' = x*cos q - y*sin q
      * y' = x*sin q + y*cos q
      * z' = z
@@ -83,8 +93,8 @@ public class Vector {
      * https://www.cs.helsinki.fi/group/goa/mallinnus/3dtransf/3drot.html
      */
     public Vector rotateAround(Vector center, double theta) {
-        double cosTheta = Math.cos(theta);
-        double sinTheta = Math.sin(theta);
+        double cosTheta = Math.cos(-theta);
+        double sinTheta = Math.sin(-theta);
         Vector centered = this.subtract(center);
         Vector rotated = new Vector(
             centered.x * cosTheta - centered.y * sinTheta,

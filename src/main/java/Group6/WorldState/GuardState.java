@@ -1,5 +1,6 @@
 package Group6.WorldState;
 
+import Group6.GUI.Agent;
 import Group6.Geometry.Quadrilateral;
 import Interop.Action.Yell;
 import Interop.Agent.Guard;
@@ -36,6 +37,11 @@ public class GuardState extends AgentState {
             spawnArea.getRandomPointInside(),
             Direction.random()
         );
+    }
+    public Agent getAgentGui(){
+
+        return new Agent(1,getLocation().getX(),getLocation().getY());
+
     }
 
 }

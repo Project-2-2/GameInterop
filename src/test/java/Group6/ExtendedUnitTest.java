@@ -1,8 +1,6 @@
 package Group6;
 
-import Group6.Geometry.Direction;
-import Group6.Geometry.Point;
-import Group6.Geometry.Tolerance;
+import Group6.Geometry.*;
 import SimpleUnitTest.SimpleUnitTest;
 
 public class ExtendedUnitTest extends SimpleUnitTest {
@@ -17,6 +15,33 @@ public class ExtendedUnitTest extends SimpleUnitTest {
      */
     protected static void assertFalse(boolean condition, String explanation) throws RuntimeException {
         if(condition) throw new AssertionFailed("Assertion failed: \n" + explanation);
+    }
+
+    /**
+     * This methods allows to assert that two doubles are equal with certain tolerance.
+     *
+     * @param actual The actual value.
+     * @param expected The expected value.
+     */
+    protected static void assertEqual(LineSegment actual, LineSegment expected) throws RuntimeException {
+        assertEqual(actual.getA(), expected.getA(), "Point A must be equal.");
+        assertEqual(actual.getB(), expected.getB(), "Point B must be equal.");
+    }
+
+    /**
+     * This methods allows to assert that two doubles are equal with certain tolerance.
+     *
+     * @param actual The actual value.
+     * @param expected The expected value.
+     */
+    protected static void assertEqual(Vector actual, Vector expected, String explanation) throws RuntimeException {
+        if(!actual.isEqualTo(expected, Tolerance.epsilon)) throw new AssertionFailed(
+            "Assertion Failed! Two points are not equal! " + "\n" + explanation + "\n\n" +
+                "Actual X:   \t" + actual.getX() + "\n" +
+                "Expected X: \t" + expected.getX() + "\n\n" +
+                "Actual Y:   \t" + actual.getY() + "\n" +
+                "Expected Y: \t" + expected.getY()
+        );
     }
 
     /**

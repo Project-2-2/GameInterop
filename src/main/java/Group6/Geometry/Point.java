@@ -1,6 +1,7 @@
 package Group6.Geometry;
 
 import Group6.Geometry.Contract.Area;
+import Interop.Utils.Utils;
 
 /**
  * Represents a point in the 2-dimensional, cartesian coordinate system.
@@ -9,8 +10,6 @@ public class Point extends Vector {
 
     public Point(double x, double y) {
         super(x, y);
-        this.x = x;
-        this.y = y;
     }
 
     public Point(Interop.Geometry.Point interopPoint) {
@@ -41,14 +40,6 @@ public class Point extends Vector {
         return new Interop.Geometry.Point(getX(), getY());
     }
 
-    public double getY() {
-        return y;
-    }
-
-    public double getX() {
-        return x;
-    }
-
     public boolean isEqualTo(Vector vector) {
         return super.isEqualTo(vector, Tolerance.epsilon);
     }
@@ -59,8 +50,8 @@ public class Point extends Vector {
 
     public String toString() {
         return "Point{" +
-            "x=" + getX() +
-            ", y=" + getY() +
+            "x=" + Utils.round(getX()) +
+            ", y=" + Utils.round(getY()) +
             '}';
     }
 
