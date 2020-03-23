@@ -283,7 +283,7 @@ public class MapInfo {
             int randomY = ThreadLocalRandom.current().nextInt(spawnAreaGuards.topBoundary, spawnAreaGuards.bottomBoundary + 1);
             Point guardPosition = new Point(randomX,randomY);
 
-            GuardController guard = new GuardController(guardPosition,4,maxRotationAngleDegrees,baseSpeedGuard,new Distance(viewRangeIntruderNormal));
+            GuardController guard = new GuardController(guardPosition,4,maxRotationAngleDegrees,baseSpeedGuard,new Distance(viewRangeGuardNormal));
             guards.add(guard);
         }
     }

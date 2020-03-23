@@ -77,6 +77,8 @@ public class Vision {
                 targetY = viewRange * Math.sin(angle + i) + currentY;
 
             }
+            //System.out.println();
+            //System.out.println("targetX: "+ targetX + " targetY: "+targetY);
             Point point2 = new Point(targetX, targetY);
             ArrayList<Point> vector1 = new ArrayList<>(List.of(point1, point2));
 
@@ -86,6 +88,7 @@ public class Vision {
                     ArrayList<Point> vector2 = new ArrayList<>(List.of(arr.get(0),arr.get(1)));
 
                     if (Sat.hasCollided(vector1, vector2)) {
+                        System.out.println("in if");
                         intersectionPoint = Area.getIntersectionPoint(vector1.get(0), vector1.get(1), vector2.get(0), vector2.get(1));
                         objects.add(new ObjectPercept(area.getObjectsPerceptType(), intersectionPoint));
 
@@ -93,7 +96,7 @@ public class Vision {
                 }
             }
             bubbleSort(objects, agent);
-            checkPerceivedObjects(objects);
+            objects = checkPerceivedObjects(objects);
             toReturn.addAll(objects);
         }
 
@@ -103,18 +106,21 @@ public class Vision {
     /**
      * Checks if there are some opaque object and removes the object that you can't see
      */
-    private void checkPerceivedObjects(ArrayList<ObjectPercept> perceivedObjects) {
+    private ArrayList<ObjectPercept> checkPerceivedObjects(ArrayList<ObjectPercept> perceivedObjects) {
         boolean seeFarther = true; // false if there is an area in front that is not opaque
+        ArrayList<ObjectPercept> toReturn = new ArrayList<>();
 
         for (ObjectPercept object : perceivedObjects) {
             if (!seeFarther) {
-                perceivedObjects.remove(object);
+                //perceivedObjects.remove(object);
 
             }else if (object.getType().isOpaque()) {
+                toReturn.add(object);
                 seeFarther = false;
 
             }
         }
+        return toReturn;
     }
 
     public static void bubbleSort(ArrayList<ObjectPercept> perceived, AgentController agent) {

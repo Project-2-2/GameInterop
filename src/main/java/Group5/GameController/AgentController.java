@@ -54,7 +54,6 @@ public class AgentController {
         this.intruderViewRange=viewRange;
         this.guardViewRange=viewRange;
 
-
     }
 
     protected Point getPosition(){

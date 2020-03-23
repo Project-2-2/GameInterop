@@ -39,6 +39,7 @@ public class Area {
         this.y2=y2;
         this.y3=y3;
         this.y4=y4;
+        this.type = ObjectPerceptType.Wall;
 
         areas.add(this);
     }
