@@ -44,7 +44,7 @@ public class Vision {
 
         double currentX = agent.getPosition().getX();
         double currentY = agent.getPosition().getY();
-        double angle = agent.getAngle().getDegrees();
+        double angle = agent.getAngle().getRadians();
 
         if (agent.isOnSentryTower()) {
             Distance[] dist = agent.getTowerViewRange();
@@ -59,26 +59,29 @@ public class Vision {
             yShift = viewShift * Math.sin(angle) + currentY;
 
         }
+
         Point point1 = new Point(currentX+xShift, currentY+yShift);
-
+        int counter = 0;
         for (double i=-22.5; i <=22.5; i++){
-            ArrayList objects = new ArrayList();
+            System.out.println(i);
+            double value = i *Math.PI/180;
+            counter ++;
+            ArrayList<ObjectPercept> objects = new ArrayList();
 
-            if (angle + i > 360) {
-                targetX = viewRange * Math.cos(angle + i - 360) + currentX;
-                targetY = viewRange * Math.sin(angle + i - 360) + currentY;
+            if (angle + i > 2*Math.PI) {
+                targetX = viewRange * Math.cos(angle + value - 2*Math.PI) + currentX;
+                targetY = viewRange * Math.sin(angle + value - 2*Math.PI) + currentY;
 
             }else if (angle + i < 0) {
-                targetX = viewRange * Math.cos(angle + i + 360) + currentX;
-                targetY = viewRange * Math.sin(angle + i + 360) + currentY;
+                targetX = viewRange * Math.cos(angle + value + 2*Math.PI) + currentX;
+                targetY = viewRange * Math.sin(angle + value + 2*Math.PI) + currentY;
 
             }else{
-                targetX = viewRange * Math.cos(angle + i) + currentX;
-                targetY = viewRange * Math.sin(angle + i) + currentY;
+                targetX = viewRange * Math.cos(angle + value) + currentX;
+                targetY = viewRange * Math.sin(angle + value) + currentY;
 
             }
-            //System.out.println();
-            //System.out.println("targetX: "+ targetX + " targetY: "+targetY);
+
             Point point2 = new Point(targetX, targetY);
             ArrayList<Point> vector1 = new ArrayList<>(List.of(point1, point2));
 
@@ -88,7 +91,6 @@ public class Vision {
                     ArrayList<Point> vector2 = new ArrayList<>(List.of(arr.get(0),arr.get(1)));
 
                     if (Sat.hasCollided(vector1, vector2)) {
-                        System.out.println("in if");
                         intersectionPoint = Area.getIntersectionPoint(vector1.get(0), vector1.get(1), vector2.get(0), vector2.get(1));
                         objects.add(new ObjectPercept(area.getObjectsPerceptType(), intersectionPoint));
 
@@ -114,8 +116,9 @@ public class Vision {
             if (seeFarther) {
                 toReturn.add(object);
 
-                if (object.getType().isOpaque())
+                if (object.getType().isOpaque()) {
                     seeFarther = false;
+                }
 
             }
         }
