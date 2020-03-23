@@ -104,15 +104,15 @@ public class AgentController {
     }
 
     public Distance getViewRange() {
-        Distance toReturn = null;
+        Distance viewRange = null;
         if (this.agentType.equals("guard")) {
-            toReturn = guardViewRange;
+            viewRange = guardViewRange;
 
         }else if (this.agentType.equals("intruder")) {
-            toReturn = intruderViewRange;
+            viewRange = intruderViewRange;
         }
 
-        return toReturn;
+        return viewRange;
     }
     
     /**

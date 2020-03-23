@@ -1,15 +1,19 @@
 package Group5.Agent;
 
+import Group5.GameController.AgentController;
+import Interop.Geometry.Distance;
+import Interop.Percept.Vision.ObjectPercept;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class Graph {
-    private final List<Vertex> vertexes;
-    private final List<Edge> edges;
+    private List<Vertex> vertexes;
+    private List<Edge> edges;
+    private AgentController agent;
 
-    public Graph(List<Vertex> vertexes, List<Edge> edges) {
-        this.vertexes = vertexes;
-        this.edges = edges;
+    public Graph(AgentController agent) {
+        this.agent = agent;
     }
 
     public List<Vertex> getVertexes() {
@@ -20,9 +24,70 @@ public class Graph {
         return edges;
     }
 
+    public void addEdge(Edge e) {
+        this.edges.add(e);
+    }
+
+    public void addVertex(Vertex v) {
+        if (checkNewEdges(v)) {
+            this.vertexes.add(v);
+        }
+
+    }
+
+    /**
+     * Every time you add a new vertex to the graph, this method checks if it's a view distance from other objects
+     * @param newVertex vertex that was added to the graph
+     */
+    public Boolean checkNewEdges(Vertex newVertex) {
+        ArrayList<Vertex> vertexInRange = new ArrayList<>();
+        ArrayList<Double> distances = new ArrayList<>();
+
+        boolean partOfAnotherObject = false;
+
+        for (Vertex v: vertexes) {
+            double distance = getDistance(v, newVertex);
+
+            if (distance < 1 &&
+                    v.getObject().getType() == newVertex.getObject().getType()) {
+                partOfAnotherObject = true;
+                combineTwoVertex(v, newVertex);
+
+            }else if (distance <= agent.getViewRange().getValue()) {
+                distances.add(distance);
+                vertexInRange.add(v);
+            }
+        }
+
+        if (partOfAnotherObject) {
+            for (int i = 0; i < vertexInRange.size(); i++) {
+                addEdge(new Edge(vertexInRange.get(i), newVertex, distances.get(i)));
+            }
+        }
+
+        return partOfAnotherObject;
+    }
+
+
+    public static double getDistance(Vertex v1, Vertex v2) {
+
+        return Math.sqrt(Math.pow(v1.getObject().getPoint().getX() - v2.getObject().getPoint().getX(), 2) +
+                Math.pow(v1.getObject().getPoint().getY() - v2.getObject().getPoint().getY(), 2));
+    }
+
+    /**
+     * If the two objectPercept are recognize as being part of the same object we combine them to get Areas
+     * @param v already saved vertex
+     * @param toCombine vertex containing the objectPercept to combine to v
+     */
+    public void combineTwoVertex(Vertex v, Vertex toCombine) {
+
+    }
+
+    /*
     public boolean adjacent(String x, String y) {
         for (Edge e : edges) {
-            if (e.getSource().getId().equals(x) && e.getDestination().getId().equals(y))
+            if (e.getVerticies().get(0).getId().equals(x) && e.getVerticies().get(1).getId().equals(y))
                 return true;
             else if (e.getSource().getId().equals(y) && e.getDestination().getId().equals(x))
                 return true;
@@ -76,14 +141,6 @@ public class Graph {
         return adjacentEdges;
     }
 
-    public void addEdge(Edge e) {
-        this.edges.add(e);
-    }
-
-    public void addVertex(Vertex v) {
-        this.vertexes.add(v);
-    }
-
     @Override
     public boolean equals(Object obj) {
         if (this == obj)
@@ -105,6 +162,8 @@ public class Graph {
         return true;
 
     }
+
+     */
 
 
 }

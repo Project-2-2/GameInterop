@@ -1,42 +1,30 @@
 package Group5.Agent;
 
-import Group5.GameController.Area;
+import Interop.Percept.Vision.ObjectPercept;
 
 public class Vertex {
     final private String id;
-    final private String name;
     private boolean visited;
-    private Area containedObject;
+    private ObjectPercept object;
 
 
-    public Vertex(String id, String name, boolean visited, Area containedObject) {
+    public Vertex(String id, boolean visited, ObjectPercept object) {
         this.id = id;
-        this.name = name;
         this.visited = visited;
-        this.containedObject = containedObject;
+        this.object = object;
     }
 
-    public Vertex(String id, String name, Area containedObject) {
+    public Vertex(String id, String name) {
         this.id = id;
-        this.name = name;
         this.visited = false;
-        this.containedObject = containedObject;
     }
 
-    public Area getContainedObject() {
-        return containedObject;
-    }
-
-    public void setContainedObject(Area containedObject) {
-        this.containedObject = containedObject;
+    public ObjectPercept getObject() {
+        return this.object;
     }
 
     public String getId() {
         return id;
-    }
-
-    public String getName() {
-        return name;
     }
 
     public boolean isVisited() {
@@ -61,10 +49,5 @@ public class Vertex {
         } else return id.equals(other.id);
     }
 
-
-    @Override
-    public String toString() {
-        return name;
-    }
 
 }

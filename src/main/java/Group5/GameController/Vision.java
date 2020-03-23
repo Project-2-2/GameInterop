@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Set;
 
 public class Vision {
+    ArrayList<Area> areas = Area.getAreas();
 
     /**
      * @param agent the agent you want to update vision
@@ -30,18 +31,17 @@ public class Vision {
 
         bubbleSort(perceivedObjects, agent);
         checkPerceivedObjects(perceivedObjects);
-        Set<ObjectPercept> toReturn = new HashSet<>(perceivedObjects);
+        Set<ObjectPercept> objectsPercepts = new HashSet<>(perceivedObjects);
 
-        return new ObjectPercepts(toReturn);
+        System.out.println("Vision return list of size: "+ objectsPercepts.size());
+        return new ObjectPercepts(objectsPercepts);
     }
 
     public ArrayList<ObjectPercept> getObjectPerceived(AgentController agent) {
         ArrayList<ObjectPercept> toReturn = new ArrayList<>();
         double targetX, targetY, viewRange, viewShift = 0, xShift = 0, yShift = 0; //viewShift only if we are on a sentry tower
-        ArrayList<Area> areas = Area.getAreas();
         Point intersectionPoint;
         ArrayList<ArrayList<Point>> positions;
-
 
         double currentX = agent.getPosition().getX();
         double currentY = agent.getPosition().getY();
@@ -54,14 +54,14 @@ public class Vision {
         }else
             viewRange = agent.getViewRange().getValue();
 
+        if (viewShift != 0) {   //If we are on a sentry tower wa cannot see from our position to our position+2
+            xShift = viewShift * Math.cos(angle) + currentX;
+            yShift = viewShift * Math.sin(angle) + currentY;
+
+        }
+        Point point1 = new Point(currentX+xShift, currentY+yShift);
 
         for (double i=-22.5; i <=22.5; i++){
-            if (viewShift != 0) {   //If we are on a sentry tower wa cannot see from our position to our position+2
-                xShift = viewShift * Math.cos(angle) + currentX;
-                yShift = viewShift * Math.sin(angle) + currentY;
-
-            }
-            Point point1 = new Point(currentX+xShift, currentY+yShift);
 
             if (angle + i > 360) {
                 targetX = viewRange * Math.cos(angle + i - 360) + currentX;
@@ -76,7 +76,7 @@ public class Vision {
                 targetY = viewRange * Math.sin(angle + i) + currentY;
 
             }
-           Point point2 = new Point(targetX, targetY);
+            Point point2 = new Point(targetX, targetY);
             ArrayList<Point> vector1 = new ArrayList<>(List.of(point1, point2));
 
             for (Area area : areas) {
@@ -86,7 +86,7 @@ public class Vision {
 
                     if (Sat.hasCollided(vector1, vector2)) {
                         intersectionPoint = Area.getIntersectionPoint(vector1.get(0), vector1.get(1), vector2.get(0), vector2.get(1));
-                        toReturn.add(new ObjectPercept(area.getObjectsPerceptType(), intersectionPoint ));
+                        toReturn.add(new ObjectPercept(area.getObjectsPerceptType(), intersectionPoint));
                     }
                 }
             }
@@ -103,8 +103,10 @@ public class Vision {
         for (ObjectPercept object : perceivedObjects) {
             if (!seeFarther) {
                 perceivedObjects.remove(object);
-            } else if (object.getType().isOpaque()) {
+
+            }else if (object.getType().isOpaque()) {
                 seeFarther = false;
+
             }
         }
     }
@@ -113,7 +115,7 @@ public class Vision {
         int n = perceived.size();
         for (int i = 0; i < n - 1; i++) {
             for (int j = 0; j < n - i - 1; j++) {
-                if (getDistance(perceived.get(j),(agent)) > getDistance(perceived.get(j + 1),agent)) {
+                if (getDistance(perceived.get(j), agent) > getDistance(perceived.get(j + 1),agent)) {
                     ObjectPercept temp = perceived.get(j);
                     perceived.set(j, perceived.get(j + 1));
                     perceived.set(j + 1, temp);
@@ -129,7 +131,7 @@ public class Vision {
      * @return return distance between an agent and an object
      */
     public static double getDistance(ObjectPercept object, AgentController agent) {
-        return Math.sqrt(Math.pow(agent.getPosition().getX(), object.getPoint().getX()) +
-                Math.pow(agent.getPosition().getY(), object.getPoint().getY()));
+        return Math.sqrt(Math.pow(agent.getPosition().getX() - object.getPoint().getX(), 2) +
+                Math.pow(agent.getPosition().getY() - object.getPoint().getY(), 2));
     }
 }
