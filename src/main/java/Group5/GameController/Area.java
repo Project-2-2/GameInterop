@@ -229,4 +229,13 @@ public class Area {
         return areas;
     }
 
+    public Point getCentre(){
+        return new Point((x1+x2+x3+x4)/4,(y1+y2+y3+y4)/4);
+    }
+    public Point getClosest(Point point){
+        double x = Math.min(Math.min(Math.min(x1-point.getX(),x2-point.getX()),x3-point.getX()),x4-point.getX());
+        double y = Math.min(Math.min(Math.min(y1-point.getX(),y2-point.getX()),y3-point.getX()),y4-point.getX());
+        return new Point(x+point.getX(), y+point.getY());
+    }
+
 }
