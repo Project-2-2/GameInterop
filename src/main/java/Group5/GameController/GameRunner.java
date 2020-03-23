@@ -4,6 +4,7 @@ package Group5.GameController;
 import Group5.UI.DrawableDialogueBox;
 import Group5.UI.MapViewer;
 import Interop.Action.Move;
+import Interop.Action.Rotate;
 import Interop.Geometry.Angle;
 import Interop.Geometry.Distance;
 import Interop.Geometry.Point;
@@ -175,8 +176,11 @@ public class GameRunner {
 
 
         //basic movement of an agent
-        mapInfo.intruders.get(0).rotate(Angle.fromDegrees(-180));
-        mapInfo.intruders.get(0).move(new Move(new Distance(1)));
+       // mapInfo.intruders.get(0).rotate(Angle.fromDegrees(-180));
+       // mapInfo.intruders.get(0).move(new Move(new Distance(1)));
+       // rotate(new Rotate(Angle.fromDegrees(90)));
+      //  move(new Move(new Distance(1)));
+
         for (IntruderController intruder : mapInfo.intruders){
             mapViewer.moveIntruder(intruder.position.getX(), intruder.position.getY());
         }
@@ -194,7 +198,8 @@ public class GameRunner {
      * checks if movement is valid
      * returns the postion after movement
      */
-    protected static boolean moveValidility(Point from, Point to){
+    protected static boolean moveValidility(Point from, Point to, Distance distance, Distance maxDistance){
+        mapInfo.intruders.get(0).onSentryTower=false;
         ArrayList<Area> walls= mapInfo.walls;
 
         //for now give the agent a radius of 1
@@ -208,38 +213,71 @@ public class GameRunner {
             }
         }
 
-        //checks if no collision with doors
+        //checks if collision with doors
         ArrayList<Door> doors = mapInfo.doors;
         for(int i =0; i<doors.size();i++){
             ArrayList<Point> doorVectors = doors.get(i).getAreaVectors();
             //  System.out.println("collision detected");
-            if (Sat.hasCollided(movment,doorVectors)||doors.get(i).isHit(to)){
+            if ((Sat.hasCollided(movment,doorVectors)||doors.get(i).isHit(to))&&doors.get(i).doorClosed()){
+                if(distance.getValue()>maxDistance.getValue()*Door.getSlowDownModifier()){
+                    return false;
+                }
+                doors.get(i).openDoor();
                 to = from;
-                return false;
+                return true;
             }
         }
 
-        //checks if no colission with windows
+        //checks if colission with windows
         ArrayList<Window> windows = mapInfo.windows;
         for(int i =0; i<windows.size();i++){
             ArrayList<Point> windowVectors = windows.get(i).getAreaVectors();
             //  System.out.println("collision detected");
-            if (Sat.hasCollided(movment,windowVectors)||doors.get(i).isHit(to)){
+            if ((Sat.hasCollided(movment,windowVectors)||windows.get(i).isHit(to))&&windows.get(i).windowClosed()){
+                if(distance.getValue()>maxDistance.getValue()*Window.getSlowDownModifier()){
+                    return false;
+                }
+                windows.get(i).openWindow();
                 to = from;
-                return false;
+                return true;
             }
         }
 
-        //checks if no colission with sentries
+
+        //checks if colission with sentries
         ArrayList<SentryTower> sentries = mapInfo.sentryTowers;
         for(int i =0; i<sentries.size();i++){
             ArrayList<Point> sentryVectors = sentries.get(i).getAreaVectors();
             //  System.out.println("collision detected");
-            if (Sat.hasCollided(movment,sentryVectors)||doors.get(i).isHit(to)){
+            if (Sat.hasCollided(movment,sentryVectors)||sentries.get(i).isHit(to)){
+                if(distance.getValue()>maxDistance.getValue()*SentryTower.getSlowDownModifer()){
+                    return false;
+                }
+                if(sentries.get(i).enterTower(to)){
+                    mapInfo.intruders.get(0).onSentryTower=true;
+                    return true;
+                }
                 to = from;
-                return false;
             }
         }
+
+        //checks if colission with sentries
+        ArrayList<TelePortal> teleports = mapInfo.teleports;
+        for(int i =0; i<teleports.size();i++){
+            ArrayList<Point> teleportVectors = teleports.get(i).getAreaVectors();
+            //  System.out.println("collision detected");
+            if (teleports.get(i).isHit(to)){
+                to=teleportValidility(to,1);
+                if (to.equals(from)){
+                    return false;
+                }
+                mapInfo.intruders.get(0).teleported=true;
+                mapInfo.intruders.get(0).setPosition(to);
+                return true;
+            }
+        }
+
+
 
 
         return true;
@@ -422,6 +460,26 @@ public class GameRunner {
             }
         }
 
+    }
+
+
+    /**
+     * call this method to do a movement
+     *
+     * @return true if movement is valid
+     */
+    public boolean move(Move move){
+       return mapInfo.intruders.get(0).move(move);
+
+
+    }
+
+    /**
+     * call this method to rotate the agent
+     * @param rotate
+     */
+    public void rotate(Rotate rotate){
+        mapInfo.intruders.get(0).rotate(rotate.getAngle());
     }
 }
 

@@ -36,6 +36,8 @@ public class AgentController {
     protected boolean pheroMoneCooldownTimer;
     protected int pheroMoneCoolDownCounter;
 
+    protected boolean teleported;
+
 
 
     protected AgentController(Point position, double radius, double maxRotation){
@@ -46,6 +48,7 @@ public class AgentController {
         this.maxAngleRotation = maxRotation;
         pheroMoneCooldownTimer=false;
         pheroMoneCoolDownCounter=0;
+        teleported = false;
 
     }
 
@@ -92,18 +95,22 @@ public class AgentController {
      * @param distance
      * @param maxDistance
      */
-    public void move(Distance distance, Distance maxDistance){
+    public boolean move(Distance distance, Distance maxDistance){
         if (distance.getValue()>maxDistance.getValue()){
-            return;
+            return false;
         }
         double newX= position.getX()+distance.getValue()*Math.cos(angle.getRadians());
         double newY= position.getY()+distance.getValue()*Math.sin(angle.getRadians());
 
         Point newPosition = new Point(newX,newY);
 
-        if(GameRunner.moveValidility(position,newPosition)){
-            position = newPosition;
+        if(GameRunner.moveValidility(position,newPosition,distance,maxDistance)){
+            if (teleported==false){
+                position = newPosition;
+            }
+            teleported=false;
         }
+        return true;
     }
 
     public void noAction(NoAction noAction){
@@ -265,6 +272,10 @@ public class AgentController {
         pheroMoneCooldownTimer=true;
 
 
+    }
+
+    protected void setPosition(Point to){
+        position = to;
     }
 
 }

@@ -1,6 +1,7 @@
 package Group5.GameController;
 
 import Interop.Geometry.Point;
+import Interop.Percept.Scenario.GameMode;
 import Interop.Percept.Scenario.SlowDownModifiers;
 
 import java.nio.charset.Charset;
@@ -17,6 +18,7 @@ public class MapInfo {
     private final static Charset ENCODING = StandardCharsets.UTF_8;
 
 
+    protected GameMode gameModeInterop;
     protected String name;
     protected String gameFile;
     protected int mapHeight;
@@ -248,7 +250,16 @@ public class MapInfo {
     protected void initialize(){
         spawnAgents();
         setSlowDownModifiers();
+        setGameMode();
 
+    }
+
+    private void setGameMode(){
+        if (gameMode==0){
+            gameModeInterop=GameMode.CaptureOneIntruder;
+        }else{
+            gameModeInterop=GameMode.CaptureAllIntruders;
+        }
     }
 
     private void setSlowDownModifiers(){

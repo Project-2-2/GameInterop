@@ -38,7 +38,9 @@ public class IntruderController extends AgentController {
     }
 
 
-    public void move(Move move){ super.move(move.getDistance(),normalMoveDistance);}
+    public boolean move(Move move){
+        return super.move(move.getDistance(),normalMoveDistance);
+    }
 
 
     /**
@@ -61,7 +63,7 @@ public class IntruderController extends AgentController {
 
         Point newPosition = new Point(newX,newY);
 
-        if(GameRunner.moveValidility(position,newPosition)){
+        if(GameRunner.moveValidility(position,newPosition,sprint.getDistance(),sprintDistance)){
             position = newPosition;
         }
 
@@ -88,7 +90,7 @@ public class IntruderController extends AgentController {
 
         Point newPosition = new Point(newX,newY);
 
-        if(GameRunner.moveValidility(position,newPosition)){
+        if(GameRunner.moveValidility(position,newPosition,distance,sprintDistance)){
             position = newPosition;
         }
     }
