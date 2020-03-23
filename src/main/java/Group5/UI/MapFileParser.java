@@ -141,7 +141,7 @@ public class MapFileParser {
                         DrawableObject window = new DrawableObject(Integer.parseInt(items[0]), Integer.parseInt(items[1]), Integer.parseInt(items[2]),
                                 Integer.parseInt(items[3]), Integer.parseInt(items[4]), Integer.parseInt(items[5]),
                                 Integer.parseInt(items[6]), Integer.parseInt(items[7]));
-                        window.setFill(Color.TURQUOISE);
+                        window.setFill(Color.SNOW);
                         drawableObjects.add(window);
                         break;
                     case "sentry":
