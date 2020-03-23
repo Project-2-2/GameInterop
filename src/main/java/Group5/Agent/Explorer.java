@@ -36,9 +36,9 @@ public class Explorer {
      *
      * @param level This is the exploration level of the agent. See paper for details.
      */
-    public Explorer(int level) {
+    public Explorer(int level, AgentController agent) {
         this.level = level;
-        this.g = new Graph(new ArrayList<>(), new ArrayList<>());
+        this.g = new Graph(agent);
         this.queue = new LinkedList<>();
         this.actionQueue = new LinkedList<>();
     }
@@ -66,8 +66,8 @@ public class Explorer {
 
         while (!queue.isEmpty()) {
             Vertex v = queue.remove();
-            List<Edge> adjacentEdges = map.getEdgesDirected(v.getId());
-            BFS(v, adjacentEdges);
+            //List<Edge> adjacentEdges = map.getEdgesDirected(v.getId());
+            //BFS(v, adjacentEdges);
         }
 
         return map;
@@ -78,11 +78,11 @@ public class Explorer {
         if (!g.getVertexes().contains(v)) g.addVertex(v);
         for (Edge e : adjacentEdges) {
             if (!g.getEdges().contains(e)) g.addEdge(e);
-            Vertex w = e.getDestination();
-            if (!w.isVisited()) {
-                w.setVisited(true);
-                queue.add(w);
-            }
+            //Vertex w = e.getDestination();
+            //if (!w.isVisited()) {
+              //  w.setVisited(true);
+                //queue.add(w);
+            //}
         }
     }
 

@@ -21,16 +21,15 @@ public class Vision {
      */
     public ObjectPercepts vision(AgentController agent) {
 
-        if (GameRunner.enterSentry(agent.getPosition(),agent.getPosition())){
+        if (GameRunner.enterSentry(agent.getPosition(), agent.getPosition())){
             agent.onSentryTower=true;
         }else{
             agent.onSentryTower=false;
         }
 
-        ArrayList<ObjectPercept> perceivedObjects = getObjectPerceived(agent);
+        ArrayList<ObjectPercept> perceivedObjects = new ArrayList<>();
+        perceivedObjects.addAll(getObjectPerceived(agent));
 
-        bubbleSort(perceivedObjects, agent);
-        checkPerceivedObjects(perceivedObjects);
         Set<ObjectPercept> objectsPercepts = new HashSet<>(perceivedObjects);
 
         System.out.println("Vision return list of size: "+ objectsPercepts.size());
@@ -51,6 +50,7 @@ public class Vision {
             Distance[] dist = agent.getTowerViewRange();
             viewShift = dist[0].getValue();
             viewRange = dist[1].getValue();
+
         }else
             viewRange = agent.getViewRange().getValue();
 
@@ -62,6 +62,7 @@ public class Vision {
         Point point1 = new Point(currentX+xShift, currentY+yShift);
 
         for (double i=-22.5; i <=22.5; i++){
+            ArrayList objects = new ArrayList();
 
             if (angle + i > 360) {
                 targetX = viewRange * Math.cos(angle + i - 360) + currentX;
@@ -86,11 +87,16 @@ public class Vision {
 
                     if (Sat.hasCollided(vector1, vector2)) {
                         intersectionPoint = Area.getIntersectionPoint(vector1.get(0), vector1.get(1), vector2.get(0), vector2.get(1));
-                        toReturn.add(new ObjectPercept(area.getObjectsPerceptType(), intersectionPoint));
+                        objects.add(new ObjectPercept(area.getObjectsPerceptType(), intersectionPoint));
+
                     }
                 }
             }
+            bubbleSort(objects, agent);
+            checkPerceivedObjects(objects);
+            toReturn.addAll(objects);
         }
+
         return toReturn;
     }
 
