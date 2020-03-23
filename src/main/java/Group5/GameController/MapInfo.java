@@ -1,5 +1,6 @@
 package Group5.GameController;
 
+import Interop.Geometry.Distance;
 import Interop.Geometry.Point;
 import Interop.Percept.Scenario.GameMode;
 import Interop.Percept.Scenario.SlowDownModifiers;
@@ -282,7 +283,7 @@ public class MapInfo {
             int randomY = ThreadLocalRandom.current().nextInt(spawnAreaGuards.topBoundary, spawnAreaGuards.bottomBoundary + 1);
             Point guardPosition = new Point(randomX,randomY);
 
-            GuardController guard = new GuardController(guardPosition,4,maxRotationAngleDegrees,baseSpeedGuard);
+            GuardController guard = new GuardController(guardPosition,4,maxRotationAngleDegrees,baseSpeedGuard,new Distance(viewRangeIntruderNormal));
             guards.add(guard);
         }
     }
@@ -296,7 +297,7 @@ public class MapInfo {
             //System.out.println(randomX + " " + randomY);
             Point intruderPosition = new Point(randomX,randomY);
 
-            IntruderController intruder = new IntruderController(intruderPosition,4,maxMoveDistanceIntruder,maxSprintDistanceIntruder,maxRotationAngleDegrees);
+            IntruderController intruder = new IntruderController(intruderPosition,4,maxMoveDistanceIntruder,maxSprintDistanceIntruder,maxRotationAngleDegrees,new Distance(viewRangeGuardNormal));
             intruders.add(intruder);
         }
     }

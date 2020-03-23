@@ -8,6 +8,8 @@ import Interop.Action.Rotate;
 import Interop.Geometry.Angle;
 import Interop.Geometry.Distance;
 import Interop.Geometry.Point;
+import Interop.Percept.Vision.ObjectPercept;
+import Interop.Percept.Vision.ObjectPercepts;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.input.KeyCode;
@@ -16,10 +18,7 @@ import javafx.scene.layout.BorderPane;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.*;
 
 public class GameRunner {
 
@@ -53,6 +52,8 @@ public class GameRunner {
 //    private String getPath(){
 //        return this.mapDoc;
 //    }
+
+    private Vision vision;
 
     private boolean paused;
 
@@ -130,6 +131,8 @@ public class GameRunner {
         mapInfo.readMap(file.getPath());
         mapInfo.initialize();
 
+        vision = new Vision();
+
         // Check if the MapViewer for the UI has been initialized
         if (this.mapViewer != null){
             this.update();
@@ -178,8 +181,17 @@ public class GameRunner {
         //basic movement of an agent
        // mapInfo.intruders.get(0).rotate(Angle.fromDegrees(-180));
        // mapInfo.intruders.get(0).move(new Move(new Distance(1)));
-       // rotate(new Rotate(Angle.fromDegrees(90)));
-      //  move(new Move(new Distance(1)));
+        //rotate(new Rotate(Angle.fromDegrees(90)));
+        move(new Move(new Distance(1)));
+
+
+        //TODO vision percepts is empty
+        ObjectPercepts visionPercepts = getVision();
+        Set<ObjectPercept> percepts =visionPercepts.getAll();
+        //System.out.println(percepts.size());
+       // System.out.println(percepts.iterator().next().toString());
+
+
 
         for (IntruderController intruder : mapInfo.intruders){
             mapViewer.moveIntruder(intruder.position.getX(), intruder.position.getY());
@@ -466,7 +478,7 @@ public class GameRunner {
     /**
      * call this method to do a movement
      *
-     * @return true if movement is valid
+     * @return true if movement is valid otherwise false
      */
     public boolean move(Move move){
        return mapInfo.intruders.get(0).move(move);
@@ -480,6 +492,10 @@ public class GameRunner {
      */
     public void rotate(Rotate rotate){
         mapInfo.intruders.get(0).rotate(rotate.getAngle());
+    }
+
+    public ObjectPercepts getVision(){
+        return vision.vision(mapInfo.intruders.get(0));
     }
 }
 

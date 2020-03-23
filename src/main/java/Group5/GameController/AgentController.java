@@ -41,7 +41,7 @@ public class AgentController {
 
 
 
-    protected AgentController(Point position, double radius, double maxRotation){
+    protected AgentController(Point position, double radius, double maxRotation, String type, Distance viewRange){
         this.position = position;
         this.radius = radius;
         Point direction = new Point(position.getX(),position.getY());
@@ -50,6 +50,10 @@ public class AgentController {
         pheroMoneCooldownTimer=false;
         pheroMoneCoolDownCounter=0;
         teleported = false;
+        agentType=type;
+        this.intruderViewRange=viewRange;
+        this.guardViewRange=viewRange;
+
 
     }
 

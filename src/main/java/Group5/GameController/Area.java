@@ -67,7 +67,11 @@ public class Area {
      * @return a list of Points that represents the sides of an area
      */
     public ArrayList<ArrayList<Point>> getPositions() {
-        ArrayList<ArrayList<Point>> positions = new ArrayList<>();
+        ArrayList<ArrayList<Point>> positions = new ArrayList<>(4);
+        positions.add(new ArrayList<>());
+        positions.add(new ArrayList<>());
+        positions.add(new ArrayList<>());
+        positions.add(new ArrayList<>());
         positions.get(0).add(new Point(this.x1,this.y1));
         positions.get(0).add(new Point(this.x2,this.y2));
         positions.get(1).add(new Point(this.x2,this.y2));
@@ -76,7 +80,6 @@ public class Area {
         positions.get(2).add(new Point(this.x4,this.y4));
         positions.get(3).add(new Point(this.x4,this.y4));
         positions.get(3).add(new Point(this.x1,this.y1));
-
         return positions;
     }
 

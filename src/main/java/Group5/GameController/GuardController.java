@@ -18,8 +18,8 @@ public class GuardController extends AgentController {
 
     private double maxAngleRotation;
 
-    protected GuardController(Point position, double radius, double maxAngleRotation, double moveDistance) {
-        super(position, radius, maxAngleRotation);
+    protected GuardController(Point position, double radius, double maxAngleRotation, double moveDistance, Distance viewRange) {
+        super(position, radius, maxAngleRotation,"guard",viewRange);
         normalMoveDistance = new Distance(moveDistance);
     }
 
