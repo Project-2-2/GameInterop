@@ -1,0 +1,80 @@
+gameMode = 0
+height = 80
+width = 120
+numGuards = 0
+numIntruders = 1
+
+
+wall = 0 0 750 0 750 10 0 10
+wall = 0 650 750 650 750 640 0 640
+wall = 0 640 0 10 10 10 10 640
+wall = 750 0 750 650 740 650 740 0
+
+
+wall = 200 120 200 60 205 60 205 120
+wall = 205 60 285 60 285 65 205 65
+wall = 200 115 220 115 220 120 200 120
+door = 220 115 250 115 250 120 220 120
+wall = 250 115 285 115 285 120 250 120
+wall= 280 115 280 65 285 65 285 115
+
+door = 350 140 380 140 380 145 350 145
+wall = 345 145 350 145 350 205 345 205
+wall = 350 200 500 200 500 205 350 205
+wall = 495 200 495 145 500 145 500 200
+wall = 380 140 500 140 500 145 380 145
+
+wall = 30 60 35 60 35 560 30 560
+door = 30 560 35 560 35 590 30 590
+wall = 30 590 35 590 35 650 30 650
+
+wall = 635 650 635 590 640 590 640 650
+window = 635 590 635 545 640 545 640 590
+wall = 55 60 60 60 60 120 55 120
+wall = 55 115 200 115 200 120 55 120
+wall = 55 140 350 140 350 145 55 145
+wall = 55 140 60 140 60 280 55 280
+wall = 60 275 370 275 370 280 60 280
+door = 370 275 400 275 400 280 370 280
+wall = 400 275 540 275 540 280 400 280
+wall = 285 115 650 115 650 120 285 120
+window = 650 115 700 115 700 120 650 120
+wall = 700 115 750 115 750 120 700 120
+wall = 750 250 750 255 600 255 600 250
+wall = 600 170 605 170 605 250 600 250
+wall = 600 120 605 120 605 140 600 140
+
+wall = 500 140 540 140 540 145 500 145
+wall = 540 140 545 140 545 540 540 540
+wall = 540 540 695 540 695 545 540 545
+
+
+
+spawnAreaIntruders = 30 30 60 30 60 60 30 60
+spawnAreaGuards = 230 500 260 500 260 530 230 530
+teleport = 680 580 710 580 710 610 680 610 300 300
+shaded = 300 300 350 300 350 380 300 380
+
+
+maxMoveDistanceIntruder = 1.4
+maxSprintDistanceIntruder = 4.0
+maxMoveDistanceGuard = 1.4
+sprintCooldown = 2
+pheromoneCooldown = 3
+
+radiusPheromone = 5.0
+slowDownModifierWindow = 0.5
+slowDownModifierDoor = 0.5
+slowDownModifierSentryTower = 0.1
+viewAngle = 45.0
+viewRays = 45
+viewRangeIntruderNormal = 7.5
+viewRangeIntruderShaded = 4.0
+viewRangeGuardNormal = 6.0
+viewRangeGuardShaded = 3.5
+viewRangeSentry = 2.0 20.0
+yellSoundRadius = 30.0
+maxMoveSoundRadius = 10.0
+windowSoundRadius = 10.0
+doorSoundRadius = 5.0
+
