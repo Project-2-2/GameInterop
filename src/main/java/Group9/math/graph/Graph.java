@@ -10,6 +10,10 @@ public class Graph<T> {
 
     public Graph() {}
 
+    public List<Vertex<T>> getVertices() {
+        return vertices;
+    }
+
     public void add(Vertex<T> ...vertex)
     {
         this.vertices.addAll(Arrays.asList(vertex));

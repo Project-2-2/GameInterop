@@ -76,19 +76,12 @@ public abstract class AgentContainer<T> {
 
     /**
      * Turns the agent by a certain amount of radians and returns the updated direction.
-     * @param radians
+     * @param theta
      * @return
      */
-    public Vector2 rotate(double radians)
+    public Vector2 rotate(double theta)
     {
-        final double theta = PiMath.getDistanceBetweenAngles(this.getDirection().getClockDirection(), radians);
-        final double x = direction.getX();
-        final double y = direction.getY();
-
-        this.direction = new Vector2(
-                x * Math.cos(theta) - y * Math.sin(theta),
-                x * Math.sin(theta) + y * Math.cos(theta)
-        );
+        this.direction = direction.rotated(theta);
         return this.direction;
     }
 

@@ -70,10 +70,10 @@ public class Game implements Runnable {
         Spawn.Intruder intruderSpawn = gameMap.getObjects(Spawn.Intruder.class).get(0);
 
         AgentsFactory.createGuards(teamSize).forEach(a -> this.guards.add(new GuardContainer(a,
-                guardSpawn.getContainer().getAsPolygon().generateRandomLocation().toVexing(), new Vector2.Random().normalise().toVexing(),
+                guardSpawn.getContainer().getAsPolygon().generateRandomLocation().toVexing(), new Vector2(0, 1).normalise().toVexing(),
                 new FieldOfView(gameMap.getGuardViewRangeNormal(), gameMap.getViewAngle()))));
         AgentsFactory.createIntruders(teamSize).forEach(a -> this.intruders.add(new IntruderContainer(a,
-                intruderSpawn.getContainer().getAsPolygon().generateRandomLocation().toVexing(), new Vector2.Random().normalise().toVexing(),
+                intruderSpawn.getContainer().getAsPolygon().generateRandomLocation().toVexing(), new Vector2(0, 1).normalise().toVexing(),
                 new FieldOfView(gameMap.getIntruderViewRangeNormal(), gameMap.getViewAngle()))));
     }
 
@@ -341,7 +341,7 @@ public class Game implements Runnable {
         else if(action instanceof Rotate)
         {
             Rotate rotate = (Rotate) action;
-            if(gameMap.getScenarioPercepts().getMaxRotationAngle().getRadians() < rotate.getAngle().getRadians())
+            if(Math.abs(rotate.getAngle().getRadians()) > gameMap.getScenarioPercepts().getMaxRotationAngle().getRadians())
             {
                 return false;
             }

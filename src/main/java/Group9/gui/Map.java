@@ -38,7 +38,7 @@ public class Map extends Application {
 
 	    //Draw Map
 		gameMap = Parser.parseFile("./src/main/java/Group9/map/maps/test.map");
-		game = new Game(gameMap, 10);
+		game = new Game(gameMap, 1);
 
 		Group staticObjects = new Group(this.getStaticObjects());
 		movingObjects = new Group(this.getMovingObjects());
