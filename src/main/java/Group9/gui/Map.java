@@ -16,6 +16,7 @@ import javafx.stage.Stage;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Function;
 
 public class Map extends Application {
@@ -79,7 +80,7 @@ public class Map extends Application {
 	{
 		Group movingObjects = new Group();
 		//@performance we would probably want to use a mutex or something like that instead of always copying the entire list
-		new ArrayList<>(gameMap.getDynamicObjects()).forEach(d -> movingObjects.getChildren().add(GUIConverter.convert(d)));
+		new ArrayList<>(gameMap.getDynamicObjects()).stream().filter(Objects::nonNull).forEach(d -> movingObjects.getChildren().add(GUIConverter.convert(d)));
 
 		game.getGuards().forEach(g -> movingObjects.getChildren().add(GUIConverter.convert(g, g.getFOV(gameMap.getEffectAreas(g)))));
 		game.getIntruders().forEach(i -> movingObjects.getChildren().add(GUIConverter.convert(i, i.getFOV(gameMap.getEffectAreas(i)))));

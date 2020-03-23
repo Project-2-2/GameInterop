@@ -2,11 +2,13 @@ package Group9.tree;
 
 import Group9.Game;
 import Group9.math.Vector2;
+import Interop.Geometry.Vector;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Function;
 
 public abstract class PointContainer {
 
@@ -413,7 +415,49 @@ public abstract class PointContainer {
         return intersectionPoints;
     }
 
-    private static Vector2[] circleLineIntersect(Circle circle, Line line){
+    private static Vector2[] circleLineIntersect(Circle circle, Line line)
+    {
+        Vector2 start = line.getStart().sub(circle.getCenter());
+        Vector2 end = line.getEnd().sub(circle.getCenter());
+
+        double dx = end.getX() - start.getX();
+        double dy = end.getY() - start.getY();
+        double dr = Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2));
+
+        double D = start.getX() * end.getY() - end.getX() * start.getY();
+
+        double discriminant = Math.pow(circle.getRadius(), 2) - Math.pow(dr, 2) - Math.pow(D, 2);
+
+        if(discriminant < 0)
+        {
+            return new Vector2[0];
+        }
+
+        Function<Double, Double> sgn = x -> (x < 0 ? -1D : 1D);
+
+        if(discriminant == 0)
+        {
+            return new Vector2[] {
+                new Vector2(
+                    (D * dy + sgn.apply(dy) * dx * Math.sqrt(discriminant)) / Math.pow(dr, 2),
+                    (-D * dx + Math.abs(dy) * Math.sqrt(discriminant)) / Math.pow(dr, 2)
+                ),
+            };
+        }
+
+        return new Vector2[] {
+            new Vector2(
+                (D * dy + sgn.apply(dy) * dx * Math.sqrt(discriminant)) / Math.pow(dr, 2),
+                (-D * dx + Math.abs(dy) * Math.sqrt(discriminant)) / Math.pow(dr, 2)
+            ),
+            new Vector2(
+                (D * dy - sgn.apply(dy) * dx * Math.sqrt(discriminant)) / Math.pow(dr, 2),
+                (-D * dx - Math.abs(dy) * Math.sqrt(discriminant)) / Math.pow(dr, 2)
+            )
+        };
+    }
+
+    /*private static Vector2[] circleLineIntersect(Circle circle, Line line){
         //https://mathworld.wolfram.com/Circle-LineIntersection.html
         Vector2[] returnArray = new Vector2[0];
         double r = circle.getRadius();
@@ -448,7 +492,7 @@ public abstract class PointContainer {
         }
 
         return returnArray;
-    }
+    }*/
 
     /**
      * Calculate whether 2 lines intersect with each other

@@ -65,6 +65,7 @@ public class ExplorerAgent implements Guard {
            }
         }
 
+        System.out.println(position);
         //----
         Vertex<DataContainer> closestVertex = getVertex(position, percepts.getScenarioGuardPercepts().getMaxMoveDistanceGuard().getValue())
                 .orElseGet(() -> {
@@ -236,13 +237,17 @@ public class ExplorerAgent implements Guard {
                     }});
                 }
             });
-            System.out.println("angle-b: " + explorerAgent.direction.getClockDirection());
-            System.out.println("B:\n" + objects.get(ObjectPerceptType.Wall).stream().map(new Function<Vector2, String>() {
-                @Override
-                public String apply(Vector2 objectPercept) {
-                    return String.format("(%.2f,%.2f)", objectPercept.getX(), objectPercept.getY());
-                }
-            }).collect(Collectors.joining(",")));
+            if(false && objects.containsKey(ObjectPerceptType.Wall))
+            {
+                System.out.println("angle-b: " + explorerAgent.direction.getClockDirection());
+                System.out.println("B:\n" + objects.get(ObjectPerceptType.Wall).stream().map(new Function<Vector2, String>() {
+                    @Override
+                    public String apply(Vector2 objectPercept) {
+                        return String.format("(%.2f,%.2f)", objectPercept.getX(), objectPercept.getY());
+                    }
+                }).collect(Collectors.joining(",")));
+            }
+
         }
 
         public List<GuardPercepts> getPercepts() {
