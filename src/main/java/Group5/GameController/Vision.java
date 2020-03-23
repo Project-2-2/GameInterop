@@ -111,12 +111,11 @@ public class Vision {
         ArrayList<ObjectPercept> toReturn = new ArrayList<>();
 
         for (ObjectPercept object : perceivedObjects) {
-            if (!seeFarther) {
-                //perceivedObjects.remove(object);
-
-            }else if (object.getType().isOpaque()) {
+            if (seeFarther) {
                 toReturn.add(object);
-                seeFarther = false;
+
+                if (object.getType().isOpaque())
+                    seeFarther = false;
 
             }
         }
