@@ -3,11 +3,9 @@ package Group6;
 
 import Group6.Agent.Factory.AgentsFactories;
 import Group6.Controller.Controller;
-import Group6.Geometry.Collection.Quadrilaterals;
 import Group6.Geometry.Quadrilateral;
 import Group6.Percept.*;
 import Group6.WorldState.Scenario;
-import Group6.WorldState.Teleport;
 import Group6.WorldState.WorldState;
 import javafx.application.Application;
 import javafx.application.Platform;

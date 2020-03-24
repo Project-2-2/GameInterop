@@ -1,11 +1,14 @@
 package Group6.Geometry;
 
 import Group6.GUI.*;
+import Group6.Geometry.Collection.Points;
 import Group6.Geometry.Contract.Area;
 import Group6.Utils;
 
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class Quadrilateral implements Area {
 
@@ -124,6 +127,15 @@ public class Quadrilateral implements Area {
             sideCD,
             sideDA
         );
+    }
+
+    public Points getIntersections(LineSegment lineSegment) {
+        Set<Point> points = new HashSet<>();
+        for (LineSegment side: getAllSides()) {
+            if(!side.isIntersecting(lineSegment)) continue;
+            points.add(side.getIntersectionPointWith(lineSegment));
+        }
+        return new Points(points);
     }
 
     public boolean isInRange(Point point, Distance distance) {

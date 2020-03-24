@@ -10,5 +10,4 @@ import java.util.Set;
 
 public interface Object extends Area {
     public ObjectPerceptType getType();
-    public Points getIntersections(LineSegment lineSegment);
 }

@@ -30,12 +30,7 @@ public class QuadrilateralObject implements Object {
     }
 
     public Points getIntersections(LineSegment lineSegment) {
-        Set<Point> points = new HashSet<>();
-        for (LineSegment side: quadrilateral.getAllSides()) {
-            if(!side.isIntersecting(lineSegment)) continue;
-            points.add(side.getIntersectionPointWith(lineSegment));
-        }
-        return new Points(points);
+        return quadrilateral.getIntersections(lineSegment);
     }
 
     public boolean hasInside(Point point) {
