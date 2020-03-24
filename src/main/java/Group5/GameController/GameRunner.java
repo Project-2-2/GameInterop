@@ -214,6 +214,19 @@ public class GameRunner {
             mapViewer.moveIntruder(intruder.position.getX(), intruder.position.getY());
         }
 
+        for( Door door: mapInfo.doors){
+            if(!door.doorClosed())
+            {
+                mapViewer.doorOpening(door.x1,door.y1,door.x2,door.y2,door.x3,door.y3,door.x4,door.y4);
+            }
+        }
+        for(Window window: mapInfo.windows){
+            if(!window.windowClosed())
+            {
+                mapViewer.windowOpening(window.x1,window.y1,window.x2,window.y2,window.x3,window.y3,window.x4,window.y4);
+            }
+        }
+
 
         //System.out.println(mapInfo.intruders.get(0).getPosition().toString());
 //        this.mapViewer.moveIntruder(10, 10);
