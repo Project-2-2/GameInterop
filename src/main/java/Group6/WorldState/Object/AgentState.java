@@ -39,7 +39,7 @@ public abstract class AgentState implements Object {
     }
 
     public boolean isInRange(Point point, Distance distance) {
-        return false; // TODO
+        return location.getDistance(point).getValue() <= distance.getValue();
     }
 
     public boolean isInside(Area area) {
@@ -131,7 +131,7 @@ public abstract class AgentState implements Object {
     }
 
     public Points getIntersections(LineSegment lineSegment) {
-        return null; // TODO
+        return new Points(); // TODO
     }
 
     public boolean hasInside(Point point) {
