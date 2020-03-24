@@ -55,4 +55,14 @@ public class Line {
         return getSlope() * x + getYIntercept();
     }
 
+    public String toString() {
+        return "Line{" +
+            "A=" + A +
+            ", B=" + B +
+            ", C=" + C +
+            ", vertical=" + isVertical() +
+            ", slope=" + getSlope() +
+            '}';
+    }
+
 }

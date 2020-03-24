@@ -55,4 +55,13 @@ public class QuadraticFormula {
         return roots;
     }
 
+    public String toString() {
+        return "QuadraticFormula{" +
+            "a=" + a +
+            ", b=" + b +
+            ", c=" + c +
+            ", delta=" + getDelta() +
+            ", roots=" + getRoots() +
+            '}';
+    }
 }
