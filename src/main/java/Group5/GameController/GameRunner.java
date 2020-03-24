@@ -3,6 +3,7 @@ package Group5.GameController;
 
 import Group5.UI.DrawableDialogueBox;
 import Group5.UI.MapViewer;
+import Interop.Action.Action;
 import Interop.Action.Move;
 import Interop.Action.Rotate;
 import Interop.Geometry.Angle;
@@ -190,7 +191,7 @@ public class GameRunner {
         //TODO vision percepts is empty
         ObjectPercepts visionPercepts = getVision();
         Set<ObjectPercept> percepts =visionPercepts.getAll();
-        System.out.println(percepts.size());
+//        System.out.println(percepts.size());
         if (percepts.size()>0){
             //System.out.println(percepts.iterator().next().toString());
         }
@@ -198,12 +199,24 @@ public class GameRunner {
 
 
         for (IntruderController intruder : mapInfo.intruders){
+            Action nextAction = intruder.explorer.getAction(intruder, visionPercepts);
+//            System.out.println(nextAction);
+            if (nextAction instanceof Move) {
+                mapInfo.intruders.get(0).move((Move) nextAction);
+//                System.out.println(((Move) nextAction).getDistance().getValue());
+            }
+            else {
+                Rotate r = (Rotate) nextAction;
+                mapInfo.intruders.get(0).rotate(r.getAngle());
+            }
+//            rotate(new Rotate(Angle.fromDegrees(90)));
+//            System.out.println(intruder.getAngle().getDegrees());
             mapViewer.moveIntruder(intruder.position.getX(), intruder.position.getY());
         }
 
 
         //System.out.println(mapInfo.intruders.get(0).getPosition().toString());
-        //this.mapViewer.moveIntruder(10, 10, true);
+//        this.mapViewer.moveIntruder(10, 10);
     }
 
 

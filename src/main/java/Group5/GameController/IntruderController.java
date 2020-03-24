@@ -1,5 +1,6 @@
 package Group5.GameController;
 
+import Group5.Agent.Explorer;
 import Interop.Action.DropPheromone;
 import Interop.Action.Move;
 import Interop.Action.Rotate;
@@ -22,6 +23,9 @@ public class IntruderController extends AgentController {
     protected boolean sprintCooldownTimer;
     protected int sprintCoolDownCounter;
 
+    public Explorer explorer;
+
+
 
 
     protected IntruderController(Point position, double radius, double moveDistance, double sprintDistance, double maxAngleRotation,Distance viewRange) {
@@ -30,6 +34,7 @@ public class IntruderController extends AgentController {
         this.sprintDistance = new Distance(sprintDistance);
         sprintCooldownTimer=false;
         sprintCoolDownCounter=0;
+        explorer = new Explorer(1, this);
     }
 
 

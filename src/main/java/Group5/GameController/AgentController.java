@@ -28,7 +28,7 @@ public class AgentController {
     protected Angle angle;
     protected boolean onSentryTower;
     private String agentType;
-    private static Distance intruderViewRange;
+    private static Distance intruderViewRange ;
     private static Distance guardViewRange;
     private static Distance[] towerViewRange; //need two distances
 
@@ -80,6 +80,7 @@ public class AgentController {
      * @return The relative rotation of the agent with respect to that line.
      */
     public Angle getRelativeAngle(Point p, Point q){
+        System.out.println("Agent angle: " + this.angle.getRadians());
         Point pOrigin = new Point(Math.abs(p.getX() - q.getX()), Math.abs(p.getY() - q.getY()));
         return Angle.fromRadians(pOrigin.getClockDirection().getRadians() - this.angle.getRadians());
     }
@@ -300,6 +301,14 @@ public class AgentController {
 
     protected void setPosition(Point to){
         position = to;
+    }
+
+    public static void main(String[] args){
+        IntruderController i = new IntruderController(new Point(1,1),1 , 2, 2, 2, new Distance(2));
+
+        Angle a = i.getRelativeAngle(new Point(2,2), new Point(3, 2));
+        System.out.println(a.getDegrees());
+
     }
 
 }
