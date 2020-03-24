@@ -64,7 +64,7 @@ public class GameRunner {
         this.timer.cancel();
     }
 
-    final private static double FRAMES_PER_SECOND = 5;
+    final private static double FRAMES_PER_SECOND = 20;
 
     @FXML
     private MapViewer mapViewer;

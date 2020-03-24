@@ -116,7 +116,8 @@ public class Explorer {
 
 
     private Rotate rotateTowards(Point point, AgentController agentController) {
-        return new Rotate(agentController.getRelativePosition(point).getClockDirection());
+        System.out.println("Rotating Towards");
+        return new Rotate(Angle.fromRadians(agentController.getRelativePosition(point).getClockDirection().getRadians()));
     }
 
     private Move walkTowards(Point point, AgentController agentController) {
@@ -152,10 +153,13 @@ public class Explorer {
             Vision.bubbleSort(visionObjects, agentController);
 
             ArrayList<ObjectPercept> walls = new ArrayList<>();
+            boolean seenObjectOfInterest = false;
 
             for (ObjectPercept objectPercept : visionObjects) {
 
                 if (objectPercept.getType() == ObjectPerceptType.SentryTower) {
+                    seenObjectOfInterest = true;
+                    actionQueue.clear();
                     Rotate r = rotateTowards(objectPercept.getPoint(), agentController);
                     Move m = walkTowards(objectPercept.getPoint(), agentController);
                     actionQueue.add(r);
@@ -164,12 +168,25 @@ public class Explorer {
                     actionQueue.add(m);
                     break;
                 } else if (objectPercept.getType() == ObjectPerceptType.Door) { //TODO: Plan the way back after  moving through
+                    seenObjectOfInterest = true;
+                    Rotate r = rotateTowards(objectPercept.getPoint(), agentController);
+                    Move m = walkTowards(objectPercept.getPoint(), agentController);
+                    actionQueue.clear();
+                    actionQueue.add(r);
+                    actionQueue.add(m);
+                    System.out.println("Found Door");
+                }
+                    else if (objectPercept.getType() == ObjectPerceptType.Window) { //TODO: Plan the way back after  moving through
+                    seenObjectOfInterest = true;
                     Rotate r = rotateTowards(objectPercept.getPoint(), agentController);
                     Move m = walkTowards(objectPercept.getPoint(), agentController);
                     actionQueue.add(r);
-                    actionQueue.add(m);
+//                    actionQueue.add(new Move(new Distance(1)));
+                    System.out.println("Found Window");
                     break;
                 } else if (objectPercept.getType() == ObjectPerceptType.Teleport) { //TODO: Plan the way back after  moving through
+                    seenObjectOfInterest = true;
+                    actionQueue.clear();
                     Rotate r = rotateTowards(objectPercept.getPoint(), agentController);
                     Move m = walkTowards(objectPercept.getPoint(), agentController);
                     actionQueue.add(r);
@@ -179,22 +196,60 @@ public class Explorer {
                     walls.add(objectPercept);
             }
 
-            if (walls.size() >= 7) {
-                Point startPoint = walls.get(walls.size()-7).getPoint();
-                Point endPoint = walls.get(walls.size()-1).getPoint();
+            if (walls.size() >= 2 && !seenObjectOfInterest) {
+
+//                actionQueue.clear();
+                Point closestPoint = agentController.getRelativePosition(walls.get(0).getPoint());
+                double closestDistance = Math.sqrt(Math.pow(closestPoint.getX(), 2) + Math.pow(closestPoint.getY(), 2));
+
+                if (closestDistance < 12.001) {
+//                    actionQueue.add(new Rotate(Angle.fromRadians(Math.PI / 2)));
+                System.out.println("Got close");
+                double sameXAverageYCoordinate = 0;
+                double sameYAverageXCoordinate = 0;
+                int sameXCount = 0;
+                int sameYCount = 0;
+
+                for (ObjectPercept w: walls){
+                    if(w.getPoint().getX() == closestPoint.getX()) {
+                        sameXAverageYCoordinate += Math.abs(agentController.getRelativePosition(w.getPoint()).getY());
+                        sameXCount++;
+                    }
+                    else if (w.getPoint().getY() == closestPoint.getY()) {
+                        sameYAverageXCoordinate += Math.abs(agentController.getRelativePosition(w.getPoint()).getX());
+                        sameYCount++;
+                    }
+                }
+
+
+                if (sameXAverageYCoordinate/sameXCount > sameYAverageXCoordinate/sameYCount)
+                    actionQueue.add(rotateTowards(new Point(closestPoint.getX() + closestDistance, closestPoint.getY() + 25), agentController));
+                else
+                    actionQueue.add(rotateTowards(new Point(closestPoint.getY() + closestDistance, closestPoint.getX() + 25), agentController));
+
+
+
+
+
+
 //                System.out.println("Start Point: (" + startPoint.getX() + ", " + startPoint.getY() + ")");
 //                System.out.println("End Point: (" + endPoint.getX() + ", " + endPoint.getY() + ")");
+//
+//                System.out.println("Relative Angle: " + agentController.getRelativeAngle(closestPoint, endPoint).getDegrees());
+//                    System.out.println("Start Point: (" + closestPoint.getX() + ", " + closestPoint.getY() + ")");
 
-                System.out.println("Relative Angle: " + agentController.getRelativeAngle(startPoint, endPoint).getDegrees());
-
-
-
-                if (checkInnerCorner(agentController, walls))
-                    actionQueue.add(new Rotate(Angle.fromDegrees(90 + agentController.getRelativeAngle(startPoint, endPoint).getDegrees())));
-                else {
-                    actionQueue.add(new Rotate(agentController.getRelativeAngle(startPoint, endPoint)));
-//                    actionQueue.add(new Rotate(Angle.fromDegrees(90)));
                 }
+                else {
+                    actionQueue.clear();
+                    actionQueue.add(new Move(new Distance(1)));
+                    System.out.println("Have seen a wall. Moving on");
+                }
+
+//                if (checkInnerCorner(agentController, walls))
+//                    actionQueue.add(new Rotate(Angle.fromRadians(Math.PI/2 + agentController.getRelativeAngle(startPoint, endPoint).getRadians())));
+//                else {
+//                    actionQueue.add(new Rotate(Angle.fromRadians(Math.PI/2)));
+//                }
 
                 for(Action a: actionQueue){
                     if (a instanceof Move) {
@@ -205,24 +260,21 @@ public class Explorer {
 //                     System.out.println(((Rotate) a).getAngle().getDegrees());
                     }
                 }
-                actionQueue.add(new Move(new Distance(1)));
-                actionQueue.add(new Move(new Distance(1)));
-                actionQueue.add(new Move(new Distance(1)));
-                actionQueue.add(new Move(new Distance(1)));
-                actionQueue.add(new Move(new Distance(1)));
-                actionQueue.add(new Move(new Distance(1)));
-                actionQueue.add(new Move(new Distance(1)));
-                actionQueue.add(new Move(new Distance(1)));
-                actionQueue.add(new Move(new Distance(1)));
+
             }
 
 
 
         }
 
-            else
-                actionQueue.add(new Move(new Distance(agentController.getViewRange().getValue()/2)));
+            else {
+            actionQueue.add(new Move(new Distance(1)));
+            System.out.println("Not seeing anything");
 //                actionQueue.add(new Move(new Distance(1)));
+        }
+//            if (actionQueue.isEmpty()){
+//            actionQueue.add(new Move(new Distance(1)));
+//        }
 
         }
 

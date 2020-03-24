@@ -62,7 +62,7 @@ public class Vision {
 
         Point point1 = new Point(currentX+xShift, currentY+yShift);
         int counter = 0;
-        for (double i=-22.5; i <=22.5; i++){
+        for (double i=-45; i <=45; i++){
            // System.out.println(i);
             double value = i *Math.PI/180;
             counter ++;

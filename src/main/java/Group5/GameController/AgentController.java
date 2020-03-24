@@ -45,7 +45,7 @@ public class AgentController {
         this.position = position;
         this.radius = radius;
         Point direction = new Point(position.getX(),position.getY());
-        angle = position.getClockDirection();
+        angle = Angle.fromRadians(0);
         this.maxAngleRotation = maxRotation;
         pheroMoneCooldownTimer=false;
         pheroMoneCoolDownCounter=0;
@@ -56,7 +56,7 @@ public class AgentController {
 
     }
 
-    protected Point getPosition(){
+    public Point getPosition(){
         return position;
     }
 
@@ -80,7 +80,7 @@ public class AgentController {
      * @return The relative rotation of the agent with respect to that line.
      */
     public Angle getRelativeAngle(Point p, Point q){
-        System.out.println("Agent angle: " + this.angle.getRadians());
+        System.out.println("Agent angle: " + this.angle.getDegrees());
         Point pOrigin = new Point(Math.abs(p.getX() - q.getX()), Math.abs(p.getY() - q.getY()));
         return Angle.fromRadians(pOrigin.getClockDirection().getRadians() - this.angle.getRadians());
     }
