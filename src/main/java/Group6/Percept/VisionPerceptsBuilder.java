@@ -19,7 +19,7 @@ public class VisionPerceptsBuilder {
                 agentState,
                 fieldOfView,
                 worldState.getScenario().getViewRays()
-            ).getObjectPercepts(worldState).toInterop()
+            ).getObjectPercepts(worldState.getAllObjects()).toInterop()
         );
     }
 

@@ -1,5 +1,6 @@
 package Group6.Geometry;
 
+import Group6.Percept.Vision.RaysTest;
 import SimpleUnitTest.SimpleUnitTest;
 
 public class GeometryTest extends SimpleUnitTest {
@@ -14,7 +15,6 @@ public class GeometryTest extends SimpleUnitTest {
         LineSegmentTest.main(args);
         CircleTest.main(args);
         QuadrilateralTest.main(args);
-        RayCastTest.main(args);
 
     }
 

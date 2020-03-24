@@ -30,6 +30,11 @@ public class WorldStateObjects {
         }
     }
 
+    public WorldStateObjects(Object ...collection) {
+        objects = new HashSet<>();
+        objects.addAll(Arrays.asList(collection));
+    }
+
     public WorldStateObjects(WorldStateObjects ...collections) {
         objects = new HashSet<>();
         for (WorldStateObjects collection: collections) {

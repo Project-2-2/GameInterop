@@ -45,17 +45,12 @@ public class Rays {
         return rays;
     }
 
-    public List<LineSegment> toLineSegments() {
-        return rays.stream().map(Ray::getLineSegment).collect(Collectors.toList());
-    }
-
-    public ObjectPercepts getObjectPercepts(WorldState worldState) {
+    public ObjectPercepts getObjectPercepts(WorldStateObjects objects) {
 
         Point agentLocation = agentState.getLocation();
         Distance viewRange = new Distance(fieldOfView.getRange());
 
-        WorldStateObjects objectsInRange = worldState
-            .getAllObjects()
+        WorldStateObjects objectsInRange = objects
             .getInRange(agentLocation, viewRange)
             .getWithout(agentState);
 
@@ -68,6 +63,10 @@ public class Rays {
             .shiftPerspective(agentLocation)
             .getInFieldOfView(fieldOfView);
 
+    }
+
+    public List<LineSegment> toLineSegments() {
+        return rays.stream().map(Ray::getLineSegment).collect(Collectors.toList());
     }
 
 }

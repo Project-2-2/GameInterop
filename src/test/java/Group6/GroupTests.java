@@ -3,6 +3,7 @@ package Group6;
 import Group6.Agent.AgentsTests;
 import Group6.Controller.ControllerTest;
 import Group6.Geometry.GeometryTest;
+import Group6.Percept.Vision.RaysTest;
 import Group6.WorldState.WorldStateTest;
 import SimpleUnitTest.SimpleUnitTest;
 
@@ -20,6 +21,7 @@ public class GroupTests extends SimpleUnitTest {
         GeometryTest.main(args);
         WorldStateTest.main(args);
         AgentsTests.main(args);
+        RaysTest.main(args);
         ControllerTest.main(args);
     }
 
