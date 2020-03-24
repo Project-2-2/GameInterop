@@ -1,7 +1,7 @@
 package Group9.math;
 
 import Group9.Game;
-import Interop.Geometry.Vector;
+import Interop.Geometry.Point;
 import Interop.Utils.Utils;
 
 import java.util.Objects;
@@ -99,12 +99,12 @@ public class Vector2 {
         return Utils.clockAngle(this.x, this. y);
     }
 
-    public Vector toVexing()
+    public Point toVexing()
     {
-        return new Vector(this.x, this.y);
+        return new Point(this.x, this.y);
     }
 
-    public static Vector2 from(Vector point)
+    public static Vector2 from(Point point)
     {
         return new Vector2(point.getX(), point.getY());
     }

@@ -9,7 +9,7 @@ import Group9.tree.PointContainer;
 import Group9.tree.QuadTree;
 import Interop.Geometry.Angle;
 import Interop.Geometry.Distance;
-import Interop.Geometry.Vector;
+import Interop.Geometry.Point;
 import Interop.Percept.Scenario.GameMode;
 import Interop.Percept.Scenario.ScenarioPercepts;
 import Interop.Percept.Scenario.SlowDownModifiers;
@@ -316,7 +316,7 @@ public class GameMap {
                             //TODO sometimes the distance from origin is exactly 0. is the agent perceiving itself?
                             .filter(e -> Vector2.from(e.getPoint()).sub(agentContainer.getPosition()).length() > 0)
                             .map(e -> {
-                                Vector point =  Vector2.from(e.getPoint())
+                                Point point =  Vector2.from(e.getPoint())
                                         .sub(agentContainer.getPosition()) // move relative to agent
                                         .rotated(agentContainer.getDirection().getClockDirection()) // rotate back
                                         .toVexing();

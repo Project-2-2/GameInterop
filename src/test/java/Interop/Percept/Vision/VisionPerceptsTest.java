@@ -2,7 +2,7 @@ package Interop.Percept.Vision;
 
 import Interop.Geometry.Angle;
 import Interop.Geometry.Distance;
-import Interop.Geometry.Vector;
+import Interop.Geometry.Point;
 import SimpleUnitTest.SimpleUnitTest;
 
 import java.util.Arrays;
@@ -27,27 +27,27 @@ public class VisionPerceptsTest extends SimpleUnitTest {
                 new ObjectPercepts(new HashSet<>(Arrays.asList(
                     new ObjectPercept(
                         ObjectPerceptType.Wall,
-                        new Vector(1, 1)
+                        new Point(1, 1)
                     ),
                     new ObjectPercept(
                         ObjectPerceptType.Wall,
-                        new Vector(1, 0)
+                        new Point(1, 0)
                     ),
                     new ObjectPercept(
                         ObjectPerceptType.Wall,
-                        new Vector(-1, 0)
+                        new Point(-1, 0)
                     ),
                     new ObjectPercept(
                         ObjectPerceptType.Wall,
-                        new Vector(0, 1)
+                        new Point(0, 1)
                     ),
                     new ObjectPercept(
                         ObjectPerceptType.Wall,
-                        new Vector(0, -1)
+                        new Point(0, -1)
                     ),
                     new ObjectPercept(
                         ObjectPerceptType.Wall,
-                        new Vector(-1, -1)
+                        new Point(-1, -1)
                     )
                 )))
             );
@@ -67,19 +67,19 @@ public class VisionPerceptsTest extends SimpleUnitTest {
                 new ObjectPercepts(new HashSet<>(Arrays.asList(
                     new ObjectPercept(
                         ObjectPerceptType.Wall,
-                        new Vector(1, 1)
+                        new Point(1, 1)
                     ),
                     new ObjectPercept(
                         ObjectPerceptType.Wall,
-                        new Vector(1, 0)
+                        new Point(1, 0)
                     ),
                     new ObjectPercept(
                         ObjectPerceptType.Wall,
-                        new Vector(-1, 0)
+                        new Point(-1, 0)
                     ),
                     new ObjectPercept(
                         ObjectPerceptType.Wall,
-                        new Vector(0, 1)
+                        new Point(0, 1)
                     )
                 )))
             );
@@ -101,27 +101,27 @@ public class VisionPerceptsTest extends SimpleUnitTest {
                     new ObjectPercepts(new HashSet<>(Arrays.asList(
                         new ObjectPercept(
                             ObjectPerceptType.Wall,
-                            new Vector(1, 1)
+                            new Point(1, 1)
                         ),
                         new ObjectPercept(
                             ObjectPerceptType.Wall,
-                            new Vector(1, 0)
+                            new Point(1, 0)
                         ),
                         new ObjectPercept(
                             ObjectPerceptType.Wall,
-                            new Vector(-1, 0)
+                            new Point(-1, 0)
                         ),
                         new ObjectPercept(
                             ObjectPerceptType.Wall,
-                            new Vector(0, 1)
+                            new Point(0, 1)
                         ),
                         new ObjectPercept(
                             ObjectPerceptType.Wall,
-                            new Vector(0, -1)
+                            new Point(0, -1)
                         ),
                         new ObjectPercept(
                             ObjectPerceptType.Wall,
-                            new Vector(-1, -1)
+                            new Point(-1, -1)
                         )
                     )))
                 );

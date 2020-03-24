@@ -16,7 +16,7 @@ import Interop.Agent.Guard;
 import Interop.Agent.Intruder;
 import Interop.Geometry.Direction;
 import Interop.Geometry.Distance;
-import Interop.Geometry.Vector;
+import Interop.Geometry.Point;
 import Interop.Percept.AreaPercepts;
 import Interop.Percept.GuardPercepts;
 import Interop.Percept.IntruderPercepts;
@@ -33,13 +33,10 @@ import Interop.Percept.Vision.ObjectPerceptType;
 import Interop.Percept.Vision.ObjectPercepts;
 import Interop.Percept.Vision.VisionPrecepts;
 import Interop.Utils.Utils;
-import javafx.scene.Group;
 
 import java.util.*;
-import java.util.concurrent.Future;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class Game implements Runnable {
@@ -452,7 +449,7 @@ public class Game implements Runnable {
                                             .getCenter().sub(intruder.getDirection()).normalise();
 
         return new IntruderPercepts(
-                Direction.fromClockAngle(new Vector(direction.getX(), direction.getY())),
+                Direction.fromClockAngle(new Point(direction.getX(), direction.getY())),
                 generateVisionPercepts(intruder),
                 generateSoundPercepts(intruder),
                 generateSmellPercepts(intruder),

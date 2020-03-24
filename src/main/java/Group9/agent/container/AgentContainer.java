@@ -1,12 +1,11 @@
 package Group9.agent.container;
 
-import Group9.PiMath;
 import Group9.map.area.EffectArea;
 import Group9.map.area.ModifyViewEffect;
 import Group9.math.Vector2;
 import Group9.tree.PointContainer;
 import Interop.Geometry.Distance;
-import Interop.Geometry.Vector;
+import Interop.Geometry.Point;
 import Interop.Percept.Vision.FieldOfView;
 
 import java.util.*;
@@ -20,7 +19,7 @@ public abstract class AgentContainer<T> {
 
     public Map<Cooldown, Integer> cooldowns = new HashMap<>();
 
-    public AgentContainer(T agent, Vector position, Vector direction, FieldOfView normalFOV)
+    public AgentContainer(T agent, Point position, Point direction, FieldOfView normalFOV)
     {
         this.agent = agent;
         this.shape = new PointContainer.Circle(Vector2.from(position), 0.5);
