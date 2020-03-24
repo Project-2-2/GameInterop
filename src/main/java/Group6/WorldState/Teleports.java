@@ -6,12 +6,12 @@ import Group6.Geometry.Distance;
 import Group6.Geometry.LineSegment;
 import Group6.Geometry.Point;
 import Group6.Geometry.Quadrilateral;
+import Group6.WorldState.Contract.Object;
 import Group6.WorldState.Object.Teleport;
+import Group6.WorldState.Object.WorldStateObjects;
+import Interop.Percept.Vision.ObjectPerceptType;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class Teleports implements Area {
 
@@ -57,6 +57,10 @@ public class Teleports implements Area {
         }
         if(targetArea == null) throw new RuntimeException("Given point is not inside any teleport area: " + point);
         return targetArea;
+    }
+
+    public WorldStateObjects toObjects() {
+        return new WorldStateObjects((Collection<Object>) (Collection<?>) teleports);
     }
 
 }
