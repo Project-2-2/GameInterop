@@ -11,13 +11,10 @@ import Interop.Action.Rotate;
 import Interop.Agent.Guard;
 import Interop.Geometry.Angle;
 import Interop.Geometry.Distance;
-import Interop.Geometry.Vector;
 import Interop.Percept.GuardPercepts;
-import Interop.Percept.Vision.ObjectPercept;
 import Interop.Percept.Vision.ObjectPerceptType;
 
 import java.util.*;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -36,9 +33,12 @@ public class ExplorerAgent implements Guard {
     private double currentRotation = Math.PI * 2;
 
     private Set<Vector2> exploredTargets = new HashSet<>();
-    private Vector2 target;
+    private Vertex<DataContainer> currentVertex;
 
     private final Graph<DataContainer> graph = new Graph<>();
+
+    private Stack<Vector2> targets = new Stack<>();
+    private boolean findNewTarget = true;
 
     public ExplorerAgent() {}
 
@@ -47,8 +47,8 @@ public class ExplorerAgent implements Guard {
 
         if(!percepts.wasLastActionExecuted())
         {
-            this.state = State.ROTATE;
             System.out.println(actionHistory.action);
+            return new NoAction();
         }
 
 
@@ -65,14 +65,11 @@ public class ExplorerAgent implements Guard {
            }
         }
 
-        System.out.println(position);
         //----
-        Vertex<DataContainer> closestVertex = getVertex(position, percepts.getScenarioGuardPercepts().getMaxMoveDistanceGuard().getValue())
-                .orElseGet(() -> {
-                    Vertex<DataContainer> vertex = new Vertex<>(new DataContainer(this, ExplorerAgent.this.position));
-                    graph.add(vertex);
-                    return vertex;
-                });
+        if(graph.getVertices().isEmpty())
+        {
+            graph.add(this.currentVertex = new Vertex<>(new DataContainer(this, ExplorerAgent.this.position)));
+        }
 
         switch (state)
         {
@@ -80,12 +77,34 @@ public class ExplorerAgent implements Guard {
             case ROTATE:
                 if(currentRotation > 0)
                 {
-                    closestVertex.getContent().add(percepts);
+                    currentVertex.getContent().add(percepts);
                     double angle = percepts.getScenarioGuardPercepts().getScenarioPercepts().getMaxRotationAngle().getRadians();
                     currentRotation -= angle;
 
-                    if(currentRotation <= 0 )
+                    if(currentRotation <= 0)
                     {
+                        for(Vertex<DataContainer> a : graph.getVertices())
+                        {
+                            Set<Vector2> a_hash = a.getContent().objects
+                                    .values().stream()
+                                    .flatMap((Function<HashSet<Vector2>, Stream<Vector2>>) Collection::stream)
+                                    .collect(Collectors.toCollection(HashSet::new));
+                            for(Vertex<DataContainer> b : graph.getVertices())
+                            {
+                                if(a == b) continue;
+                                Set<Vector2> b_hash = b.getContent().objects
+                                        .values().stream()
+                                        .flatMap((Function<HashSet<Vector2>, Stream<Vector2>>) Collection::stream)
+                                        .collect(Collectors.toCollection(HashSet::new));
+
+                                Set<Vector2> intersection = a_hash.stream().distinct()
+                                        .filter(e -> b_hash.contains(e) || b_hash.stream().anyMatch(c -> c.distance(e) < 0.1))
+                                        .filter(e -> !exploredTargets.contains(e))
+                                        .collect(Collectors.toSet());
+                                System.out.println("intersection: " + intersection.size());
+                                exploredTargets.addAll(intersection);
+                            }
+                        }
                         this.state = State.EXPLORE;
                         this.currentRotation = Math.PI * 2;
                     }
@@ -97,12 +116,15 @@ public class ExplorerAgent implements Guard {
 
             case EXPLORE:
             {
-                if(this.target == null)
+                if(findNewTarget)
                 {
-                    Optional<Vector2> target = closestVertex.getContent().getPointOfInterest(exploredTargets);
+                    Optional<Vector2> target = currentVertex.getContent().getPointOfInterest(exploredTargets);
                     if(target.isPresent())
                     {
-                        this.target = target.get();
+                        this.targets.push(target.get());
+                        this.currentVertex = new Vertex<>(new DataContainer(this, this.targets.peek()));
+                        graph.add(this.currentVertex);
+                        findNewTarget = false;
                     }
                     else
                     {
@@ -111,19 +133,18 @@ public class ExplorerAgent implements Guard {
                     }
                 }
 
-                Vector2 desiredDirection = target.sub(position).normalise();
+                Vector2 desiredDirection = targets.peek().sub(position).normalise();
                 double rotationDiff = PiMath.getDistanceBetweenAngles(direction.getClockDirection(), desiredDirection.getClockDirection());
 
                 if(Math.abs(rotationDiff) < 1E-14)
                 {
-                    double distance = Math.min(target.distance(position), percepts.getScenarioGuardPercepts().getMaxMoveDistanceGuard().getValue());
+                    double distance = Math.min(targets.peek().distance(position), percepts.getScenarioGuardPercepts().getMaxMoveDistanceGuard().getValue());
                     this.actionHistory = new ActionHistory<>(ActionHistory.Action.MOVE, distance);
 
-                    if(target.distance(position) - distance < 1E-4)
+                    if(targets.peek().distance(position) - distance < 1E-4)
                     {
-                        exploredTargets.add(target);
-                        target = null;
                         this.state = State.ROTATE;
+                        findNewTarget = true;
                     }
                     return new Move(new Distance(distance));
                 }
@@ -155,7 +176,8 @@ public class ExplorerAgent implements Guard {
 
     private Optional<Vertex<DataContainer>> getVertex(Vector2 location, double maxDistance)
     {
-        return graph.getVertices().stream().filter(e -> e.getContent().getPosition().distance(location) < maxDistance)
+        return graph.getVertices().stream()
+                .filter(e -> e.getContent().getPosition().distance(location) < maxDistance)
                 .min(Comparator.comparingDouble(o -> o.getContent().getPosition().distance(location)));
     }
 
@@ -197,7 +219,9 @@ public class ExplorerAgent implements Guard {
         private Vector2 position;
 
         private List<GuardPercepts> percepts = new ArrayList<>();
-        private Map<ObjectPerceptType, List<Vector2>> objects = new HashMap<>();
+        private Map<ObjectPerceptType, HashSet<Vector2>> objects = new HashMap<>();
+
+        private boolean explored = false;
 
         public DataContainer(ExplorerAgent explorerAgent, Vector2 position) {
             this.explorerAgent = explorerAgent;
@@ -212,16 +236,19 @@ public class ExplorerAgent implements Guard {
         {
             return objects.entrySet().stream()
                     .filter(e -> !e.getKey().isSolid())
-                    .flatMap((Function<Map.Entry<ObjectPerceptType, List<Vector2>>, Stream<Vector2>>) objectPerceptTypeListEntry -> objectPerceptTypeListEntry.getValue().stream())
+                    .flatMap((Function<Map.Entry<ObjectPerceptType, HashSet<Vector2>>, Stream<Vector2>>) objectPerceptTypeListEntry -> objectPerceptTypeListEntry.getValue().stream())
                     .filter(e -> !exclude.contains(e))
-                    .filter(e -> !explorerAgent.getVertex(e, 1).isPresent()) //TODO use correct maxDistance
                     .max(Comparator.comparingDouble(o -> o.distance(position)));
 
         }
 
+
+        public boolean isExplored() {
+            return explored;
+        }
+
         public void add(GuardPercepts percepts)
         {
-            this.percepts.add(percepts);
             percepts.getVision().getObjects().getAll().forEach(e -> {
                 Vector2 coordinate = Vector2.from(e.getPoint())
                         .rotated(-explorerAgent.direction.getClockDirection())
@@ -232,15 +259,15 @@ public class ExplorerAgent implements Guard {
                 }
                 else
                 {
-                    this.objects.put(e.getType(), new ArrayList<>() {{
+                    this.objects.put(e.getType(), new HashSet<>() {{
                         this.add(coordinate);
                     }});
                 }
             });
-            if(false && objects.containsKey(ObjectPerceptType.Wall))
+            if(false && objects.containsKey(ObjectPerceptType.EmptySpace))
             {
                 System.out.println("angle-b: " + explorerAgent.direction.getClockDirection());
-                System.out.println("B:\n" + objects.get(ObjectPerceptType.Wall).stream().map(new Function<Vector2, String>() {
+                System.out.println("B:\n" + objects.get(ObjectPerceptType.EmptySpace).stream().map(new Function<Vector2, String>() {
                     @Override
                     public String apply(Vector2 objectPercept) {
                         return String.format("(%.2f,%.2f)", objectPercept.getX(), objectPercept.getY());

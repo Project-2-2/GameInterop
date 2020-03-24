@@ -26,7 +26,7 @@ public class AgentsFactory {
         List<Guard> guards = new ArrayList<>();
         for(int i = 0; i < number; i++)
         {
-            guards.add(new RandomAgent());
+            guards.add(new ExplorerAgent());
         }
         return guards;
     }
