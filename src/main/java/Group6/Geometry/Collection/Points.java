@@ -29,15 +29,16 @@ public class Points {
     }
 
     public Point getClosest(Point point) {
+        if(points.isEmpty()) throw new RuntimeException("No closest point as there are no points in collection!");
         Point closest = null;
         double closestDistance = Double.MAX_VALUE;
         for(Point candidate: points) {
             double candidateDistance = point.getDistance(candidate).getValue();
-            if(candidateDistance < closestDistance) continue;
+            if(candidateDistance > closestDistance) continue;
             closest = candidate;
             closestDistance = candidateDistance;
         }
-        if(closest == null) throw new RuntimeException("No closest point as there are no points in collection!");
+        if(closest == null) throw new RuntimeException("Something went wrong when getting closest point!");
         return closest;
     }
 
