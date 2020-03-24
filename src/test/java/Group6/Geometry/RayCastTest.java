@@ -1,12 +1,11 @@
 package Group6.Geometry;
 
-import Group6.Agent.Factory.RandomAgentFactory;
 import Group6.Agent.Guard.RandomGuard;
 import Group6.ExtendedUnitTest;
-import Group6.WorldState.GuardState;
-import Interop.Agent.Guard;
+import Group6.Percept.Vision.Ray;
+import Group6.Percept.Vision.Rays;
+import Group6.WorldState.Object.GuardState;
 import Interop.Percept.Vision.FieldOfView;
-import SimpleUnitTest.SimpleUnitTest;
 
 import java.util.List;
 
@@ -29,7 +28,7 @@ public class RayCastTest extends ExtendedUnitTest {
                 Direction.fromDegrees(0)//set the agent direction here.
             );
 
-            List<LineSegment> rays = RayCast.generateRays(guardState, fieldOfView, 4);
+            List<LineSegment> rays = new Rays(guardState, fieldOfView, 4).toLineSegments();
 
             assertEqual(rays.size(), 4);
             assertEqual(rays.get(0), new LineSegment(new Point(0,0), new Point(0, -10)));
@@ -52,7 +51,7 @@ public class RayCastTest extends ExtendedUnitTest {
                 Direction.fromDegrees(0)//set the agent direction here.
             );
 
-            List<LineSegment> rays = RayCast.generateRays(guardState, fieldOfView, 4);
+            List<LineSegment> rays = new Rays(guardState, fieldOfView, 4).toLineSegments();
 
             assertEqual(rays.size(), 4);
 
@@ -103,7 +102,7 @@ public class RayCastTest extends ExtendedUnitTest {
                 Direction.fromDegrees(90)//set the agent direction here.
             );
 
-            List<LineSegment> rays = RayCast.generateRays(guardState, fieldOfView, 4);
+            List<LineSegment> rays = new Rays(guardState, fieldOfView, 4).toLineSegments();
 
             assertEqual(rays.size(), 4);
 

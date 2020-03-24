@@ -1,10 +1,8 @@
 package Group6.Percept;
 
-import Group6.WorldState.AgentState;
+import Group6.WorldState.Object.AgentState;
 import Group6.WorldState.Scenario;
 import Group6.WorldState.WorldState;
-import Interop.Geometry.Angle;
-import Interop.Geometry.Distance;
 import Interop.Percept.Scenario.*;
 
 public class ScenarioPerceptsBuilder {

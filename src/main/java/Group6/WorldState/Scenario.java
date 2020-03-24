@@ -10,7 +10,9 @@ import Group6.Geometry.Collection.Quadrilaterals;
 import Group6.Geometry.Distance;
 import Group6.Geometry.Point;
 import Group6.Geometry.Quadrilateral;
+import Group6.WorldState.Object.WorldStateObjects;
 import Interop.Percept.Scenario.GameMode;
+import Interop.Percept.Vision.ObjectPerceptType;
 
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
@@ -185,12 +187,14 @@ public class Scenario {
                             viewRays = Integer.parseInt(value);
                             break;
                         case "viewRangeIntruderNormal":
+                        case "viewRangeIntruderNomal":
                             viewRangeIntruderNormal = Double.parseDouble(value);
                             break;
                         case "viewRangeIntruderShaded":
                             viewRangeIntruderShaded = Double.parseDouble(value);
                             break;
                         case "viewRangeGuardNormal":
+                        case "viewRangeGuardNomal":
                             viewRangeGuardNormal = Double.parseDouble(value);
                             break;
                         case "viewRangeGuardShaded":
@@ -435,6 +439,17 @@ public class Scenario {
 
     public Quadrilaterals getShadedAreas() {
         return new Quadrilaterals(shadedAreas);
+    }
+
+    public WorldStateObjects getObjects() {
+        return new WorldStateObjects(
+            new WorldStateObjects(getShadedAreas(), ObjectPerceptType.ShadedArea),
+            new WorldStateObjects(getSentryTowers(), ObjectPerceptType.SentryTower),
+            new WorldStateObjects(getDoors(), ObjectPerceptType.Door),
+            new WorldStateObjects(getWindows(), ObjectPerceptType.Window),
+            new WorldStateObjects(getWalls(), ObjectPerceptType.Wall)
+            // TODO
+        );
     }
 
     static private class ScenarioException extends RuntimeException {

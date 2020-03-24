@@ -1,6 +1,7 @@
 package Group6.Geometry.Collection;
 
 import Group6.Geometry.Contract.Area;
+import Group6.Geometry.Distance;
 import Group6.Geometry.Point;
 import Group6.Geometry.Quadrilateral;
 
@@ -17,6 +18,13 @@ public class Quadrilaterals implements Area {
 
     public List<Quadrilateral> getAll() {
         return quadrilaterals;
+    }
+
+    public boolean isInRange(Point point, Distance distance) {
+        for (Quadrilateral quadrilateral: quadrilaterals) {
+            if(quadrilateral.isInRange(point, distance)) return true;
+        }
+        return false;
     }
 
     public boolean hasInside(Point point) {

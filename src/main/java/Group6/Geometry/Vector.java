@@ -124,6 +124,10 @@ public class Vector {
         return new Point(this);
     }
 
+    public Interop.Geometry.Point toInteropPoint() {
+        return toPoint().toInteropPoint();
+    }
+
     public boolean isEqualTo(Vector vector, double tolerance) {
         Vector absDiff = this.subtract(vector).abs();
         return absDiff.x <= tolerance

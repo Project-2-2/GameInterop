@@ -1,6 +1,7 @@
 package Group6.WorldState;
 
 import Group6.Geometry.Contract.Area;
+import Group6.Geometry.Distance;
 import Group6.Geometry.Point;
 import Group6.Geometry.Quadrilateral;
 
@@ -17,6 +18,13 @@ public class Teleports implements Area {
 
     public List<Teleport> getAll() {
         return teleports;
+    }
+
+    public boolean isInRange(Point point, Distance distance) {
+        for (Teleport teleport: teleports) {
+            if(teleport.isInRange(point, distance)) return true;
+        }
+        return false;
     }
 
     public boolean hasInside(Point point) {

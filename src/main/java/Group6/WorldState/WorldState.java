@@ -1,14 +1,14 @@
 package Group6.WorldState;
 
 import Group6.Agent.Factory.AgentsFactories;
+import Group6.WorldState.Contract.Object;
+import Group6.WorldState.Object.GuardState;
+import Group6.WorldState.Object.IntruderState;
+import Group6.WorldState.Object.WorldStateObjects;
 import Interop.Agent.Guard;
 import Interop.Agent.Intruder;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.function.Consumer;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class WorldState {
@@ -97,6 +97,14 @@ public class WorldState {
 
     public Set<Sound> getSounds() {
         return soundsToPerceiveNow;
+    }
+
+    public WorldStateObjects getAllObjects() {
+        return new WorldStateObjects(
+            new WorldStateObjects((Collection<Object>) (List<?>) getIntruderStates()),
+            new WorldStateObjects((Collection<Object>) (List<?>) getGuardStates()),
+            scenario.getObjects()
+        );
     }
 
 }

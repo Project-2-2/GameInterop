@@ -1,15 +1,24 @@
-package Group6.WorldState;
+package Group6.WorldState.Object;
 
 import Group6.Geometry.*;
+import Group6.Geometry.Collection.Points;
 import Group6.Geometry.Collection.Quadrilaterals;
 import Group6.Geometry.Contract.Area;
+import Group6.WorldState.Contract.Object;
+import Group6.WorldState.Pheromone;
+import Group6.WorldState.Teleports;
+import Group6.WorldState.WorldState;
 import Interop.Action.Action;
 import Interop.Action.DropPheromone;
 import Interop.Action.Move;
 import Interop.Action.Rotate;
 import Interop.Utils.Require;
 
-public abstract class AgentState {
+import java.util.Set;
+
+public abstract class AgentState implements Object {
+
+    private final double RADIUS = 0.5;
 
     private Point location;
     private Direction direction;
@@ -27,6 +36,10 @@ public abstract class AgentState {
 
     public Point getLocation() {
         return location;
+    }
+
+    public boolean isInRange(Point point, Distance distance) {
+        return false; // TODO
     }
 
     public boolean isInside(Area area) {
@@ -115,6 +128,14 @@ public abstract class AgentState {
 
     public void noAction() {
         markActionAsExecuted();
+    }
+
+    public Points getIntersections(LineSegment lineSegment) {
+        return null; // TODO
+    }
+
+    public boolean hasInside(Point point) {
+        return location.getDistance(point).getValue() < RADIUS + Tolerance.epsilon;
     }
 
     protected void markActionAsExecuted() {

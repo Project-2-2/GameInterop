@@ -2,6 +2,9 @@ package Group6.WorldState;
 
 import Group6.Geometry.Distance;
 import Group6.Geometry.Point;
+import Group6.WorldState.Object.AgentState;
+import Group6.WorldState.Object.GuardState;
+import Group6.WorldState.Object.IntruderState;
 import Interop.Action.DropPheromone;
 import Interop.Percept.Smell.SmellPercept;
 import Interop.Percept.Smell.SmellPerceptType;

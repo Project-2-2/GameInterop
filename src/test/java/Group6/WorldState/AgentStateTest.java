@@ -3,8 +3,9 @@ package Group6.WorldState;
 import Group6.Agent.Intruder.RandomIntruder;
 import Group6.ExtendedUnitTest;
 import Group6.Geometry.Direction;
-import Group6.Geometry.LineSegment;
 import Group6.Geometry.Point;
+import Group6.WorldState.Object.AgentState;
+import Group6.WorldState.Object.IntruderState;
 
 public class AgentStateTest extends ExtendedUnitTest {
 

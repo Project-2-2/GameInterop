@@ -126,6 +126,13 @@ public class Quadrilateral implements Area {
         );
     }
 
+    public boolean isInRange(Point point, Distance distance) {
+        for (Point vertex: getAllPoints()) {
+            if(vertex.getDistance(point).getValue() <= distance.getValue()) return true;
+        }
+        return false;
+    }
+
     public Point getRandomPointInside() {
         Point randomPoint;
         do {

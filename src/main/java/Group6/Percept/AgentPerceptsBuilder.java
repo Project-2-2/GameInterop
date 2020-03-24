@@ -1,7 +1,7 @@
 package Group6.Percept;
 
-import Group6.WorldState.GuardState;
-import Group6.WorldState.IntruderState;
+import Group6.WorldState.Object.GuardState;
+import Group6.WorldState.Object.IntruderState;
 import Group6.WorldState.WorldState;
 import Interop.Geometry.Direction;
 import Interop.Percept.AreaPercepts;
