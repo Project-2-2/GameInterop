@@ -1,7 +1,6 @@
 package Group9.agent;
 
 import Group9.PiMath;
-import Group9.map.objects.SentryTower;
 import Group9.math.Vector2;
 import Group9.math.graph.Edge;
 import Group9.math.graph.Graph;
@@ -13,18 +12,15 @@ import Interop.Action.NoAction;
 import Interop.Action.Rotate;
 import Interop.Agent.Guard;
 import Interop.Geometry.Angle;
-import Interop.Geometry.Direction;
 import Interop.Geometry.Distance;
 import Interop.Percept.GuardPercepts;
 import Interop.Percept.Vision.ObjectPerceptType;
-import Interop.Utils.Utils;
 
-import javax.xml.crypto.Data;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-public class ExplorerAgent2 implements Guard {
+public class DeepSpace implements Guard {
 
     //--- Notes: @jan
     // 1. If I am not mistaken, we only have to move the agent twice to calculate the exact point where the target area
@@ -44,7 +40,7 @@ public class ExplorerAgent2 implements Guard {
     private ActionHistory<?> actionHistory = null;
     private Queue<ActionHistory> planning = new LinkedList<>();
 
-    public ExplorerAgent2() { }
+    public DeepSpace() { }
 
     @Override
     public GuardAction getAction(GuardPercepts percepts) {
@@ -288,14 +284,14 @@ public class ExplorerAgent2 implements Guard {
 
     public static class DataContainer extends PointContainer.Circle {
 
-        private ExplorerAgent2 explorerAgent;
+        private DeepSpace explorerAgent;
 
         private List<GuardPercepts> percepts = new ArrayList<>();
         private Map<ObjectPerceptType, HashSet<Vector2>> objects = new HashMap<>();
 
         private boolean deadend;
 
-        public DataContainer(ExplorerAgent2 explorerAgent, Vector2 position, double radius) {
+        public DataContainer(DeepSpace explorerAgent, Vector2 position, double radius) {
             super(position.clone(), radius);
             this.explorerAgent = explorerAgent;
         }
