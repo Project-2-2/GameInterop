@@ -2,11 +2,14 @@ package Group6.Geometry.Collection;
 
 import Group6.Geometry.Point;
 import Group6.Percept.Vision.ObjectPercept;
+import Group6.Percept.Vision.ObjectPercepts;
 import Interop.Percept.Vision.ObjectPerceptType;
 
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 public class Points {
 
@@ -40,6 +43,10 @@ public class Points {
         }
         if(closest == null) throw new RuntimeException("Something went wrong when getting closest point!");
         return closest;
+    }
+
+    public Points filter(Predicate<? super Point> predicate) {
+        return new Points(points.stream().filter(predicate).collect(Collectors.toSet()));
     }
 
     public Set<ObjectPercept> toObjectPercepts(ObjectPerceptType perceptType) {

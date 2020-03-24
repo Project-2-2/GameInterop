@@ -38,16 +38,28 @@ public abstract class AgentState implements Object {
         return location;
     }
 
-    public boolean isInRange(Point point, Distance distance) {
-        return location.getDistance(point).getValue() <= distance.getValue();
-    }
-
     public boolean isInside(Area area) {
         return location.isInside(area);
     }
 
     public Direction getDirection() {
         return direction;
+    }
+
+    public Circle getCircle() {
+        return new Circle(location, RADIUS);
+    }
+
+    public boolean isInRange(Point point, Distance distance) {
+        return getCircle().isInRange(point, distance);
+    }
+
+    public Points getIntersections(LineSegment lineSegment) {
+        return getCircle().getIntersections(lineSegment);
+    }
+
+    public boolean hasInside(Point point) {
+        return getCircle().hasInside(point);
     }
 
     public Direction getPerceivedDirectionTo(Point point) {
@@ -128,14 +140,6 @@ public abstract class AgentState implements Object {
 
     public void noAction() {
         markActionAsExecuted();
-    }
-
-    public Points getIntersections(LineSegment lineSegment) {
-        return new Points(); // TODO
-    }
-
-    public boolean hasInside(Point point) {
-        return location.getDistance(point).getValue() < RADIUS + Tolerance.epsilon;
     }
 
     protected void markActionAsExecuted() {
