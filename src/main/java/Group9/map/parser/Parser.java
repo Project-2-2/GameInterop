@@ -213,18 +213,4 @@ public class Parser {
         return quadrilateralFromData(data, 0);
     }
 
-    public static enum Types {
-
-
-
-    }
-
-    public static interface Type {
-
-        String getName();
-
-        String getKey();
-
-    }
-
 }

@@ -2,19 +2,39 @@ package Group9;
 
 import Group9.map.GameMap;
 import Group9.map.parser.Parser;
-
+import Group9.math.Vector2;
+import Group9.math.graph.Graph;
+import Group9.math.graph.Vertex;
+import Group9.tree.PointContainer;
 
 
 public class Main {
 
     public static void main(String[] args) {
 
+        /*Graph<String> graph = new Graph<>();
+        Vertex<String> a = new Vertex<>("a");
+        Vertex<String> b = new Vertex<>("b");
+        Vertex<String> c = new Vertex<>("c");
+        Vertex<String> d = new Vertex<>("d");
+        Vertex<String> e = new Vertex<>("e");
+        Vertex<String> __ = new Vertex<>("__");
+
+        graph.add(a, b, c, d, e, __);
+        graph.addEdge(a, b, 10, true);
+        graph.addEdge(a, d, 30, true);
+        graph.addEdge(b, c, 20.5, true);
+        graph.addEdge(c, d, 5, true);
+        graph.addEdge(d, e, 5, true);
+
+        graph.shortestPath(a, __);*/
+
         // How to read in a map from a file
         //GameMap map = Parser.parseFile("./src/main/java/Group9/map/maps/test.map");
 
         GameMap gameMap = Parser.parseFile("./src/main/java/Group9/map/maps/test.map");
 
-        Game game = new Game(gameMap, 3);
+        Game game = new Game(gameMap, 1);
         game.run();
         //game.start();
 

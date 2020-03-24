@@ -2,11 +2,9 @@ package Group9.tree;
 
 import Group9.Game;
 import Group9.math.Vector2;
+import Interop.Geometry.Point;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.function.Function;
 
 public abstract class PointContainer {
@@ -97,12 +95,60 @@ public abstract class PointContainer {
         {
             List<Vector2[]> triangles = new ArrayList<>();
 
-            for(int i = 1; i <= this.points.length - 2; i++)
+            //---
+            //TODO implememt https://www.geometrictools.com/Documentation/TriangulationByEarClipping.pdf
+            // very important
+            if(false)
             {
-                triangles.add(new Vector2[] {
-                        this.points[0], this.points[i], this.points[(i + 1)]
-                });
+                for(Vector2 a : points)
+                {
+                    for(Vector2 b : points)
+                    {
+                        if(a == b) continue;
+                        for(Vector2 c : points)
+                        {
+                            if(a == c || b == c) continue;
+
+                            if(new Vector2(b.getX() - a.getX(), b.getY() - a.getY()).angle(
+                                    new Vector2(c.getX() - a.getX(), c.getY() - a.getY())
+                            ) >= Math.PI)
+                            {
+                                continue;
+                            }
+
+                            // TODO In theory we should do a proper check here whether or not the line is actually completely
+                            //  inside the polygon but I am currently not aware of an easy way to do it, so this is only
+                            //  for polygons with 4 points. ^^
+                            Line _02 = new Line(a, c);
+                            Vector2 randomPoint = new Vector2(_02.getStart().getX(), _02.getStart().getY()).add(
+                                    new Vector2.Random().normalise().mul(
+                                            _02.getEnd().getX() - _02.getStart().getX(),
+                                            _02.getEnd().getY() - _02.getStart().getY()
+                                    )
+                            );
+
+                            if(this.isPointInside(randomPoint))
+                            {
+                                triangles.add(new Vector2[] {a, b, c});
+                            }
+
+                        }
+                    }
+                }
             }
+
+            //---
+            if(true)
+            {
+                for(int i = 1; i <= this.points.length - 2; i++)
+                {
+                    triangles.add(new Vector2[] {
+                            this.points[0], this.points[i], this.points[(i + 1)]
+                    });
+                }
+            }
+
+            assert !triangles.isEmpty();
 
             return triangles;
         }
@@ -222,6 +268,11 @@ public abstract class PointContainer {
         {
             this.center = center;
             this.radius = radius;
+        }
+
+        public boolean isInside(Vector2 point)
+        {
+            return center.distance(point) <= radius;
         }
 
         public double getRadius() {
@@ -393,8 +444,8 @@ public abstract class PointContainer {
 
     }
 
-    public static List<Vector2> intersectionPoints(PointContainer pointContainer, Line l) {
-        List<Vector2> intersectionPoints = new ArrayList<Vector2>();
+    public static Set<Vector2> intersectionPoints(PointContainer pointContainer, Line l) {
+        Set<Vector2> intersectionPoints = new HashSet<>();
 
         if (pointContainer instanceof Line) {
             intersectionPoints.add(twoLinesIntersect((Line) pointContainer,l));

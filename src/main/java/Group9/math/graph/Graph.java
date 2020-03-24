@@ -19,7 +19,7 @@ public class Graph<T> {
         this.vertices.addAll(Arrays.asList(vertex));
     }
 
-    public void addEdge(Vertex<T> source, Vertex<T> target, double cost)
+    public void addEdge(Vertex<T> source, Vertex<T> target, double cost, boolean undirected)
     {
         Edge<T> edge = new Edge<>(source, target, cost);
         //---
@@ -37,6 +37,11 @@ public class Graph<T> {
         }
 
         this.neighbours.get(source.hashCode()).add(edge);
+
+        if(undirected)
+        {
+            addEdge(target, source, cost, false);
+        }
     }
 
     public List<Edge<T>> getNeighbours(Vertex<T> source)
@@ -51,16 +56,14 @@ public class Graph<T> {
 
         Map<Vertex<T>, Double> dist = new HashMap<>();
         Map<Vertex<T>, Vertex<T>> prev = new HashMap<>();
-        Queue<Vertex<T>> Q = new PriorityQueue<>(Comparator.comparingDouble(o -> dist.getOrDefault(o, Double.MAX_VALUE)));
-        Q.addAll(this.vertices);
-
         dist.put(source, 0D);
+        Queue<Vertex<T>> Q = new LinkedList<>(this.vertices);
 
         while (!Q.isEmpty())
         {
 
-            Vertex<T> u = Q.poll();
-
+            Vertex<T> u = Q.stream().min(Comparator.comparingDouble(o -> dist.getOrDefault(o, Double.MAX_VALUE))).get();
+            Q.remove(u);
             final double currentDistance = dist.getOrDefault(u, Double.MAX_VALUE);
 
             for (Edge<T> v : getNeighbours(u))
@@ -83,6 +86,12 @@ public class Graph<T> {
         while (u != null) {
             path.add(0, u);
             u = prev.getOrDefault(u, null);
+        }
+
+        //--- if |path| = 1 that means that only the target has been added and thus no path exists
+        if(path.size() == 1)
+        {
+            return null;
         }
 
         return path;

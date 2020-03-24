@@ -38,12 +38,6 @@ public class Vector2 {
         return this.length;
     }
 
-    public double dot(Vector2 other)
-    {
-        return (this.x * other.getX() + this.y * other.getY());
-    }
-
-
     public Vector2 mul(double x, double y)
     {
         return new Vector2(this.x * x, this.y * y);
@@ -87,6 +81,18 @@ public class Vector2 {
         return new Vector2(
                 Math.cos(radians) * x  -  Math.sin(radians) * y,
                 Math.sin(radians) * x  +  Math.cos(radians) * y
+        );
+    }
+
+    public double dot(Vector2 other)
+    {
+        return (this.x * other.getX()) + (this.y * other.getY());
+    }
+
+    public double angle(Vector2 other)
+    {
+        return Math.acos(
+                (this.dot(other) / (this.length() * other.length()))
         );
     }
 
