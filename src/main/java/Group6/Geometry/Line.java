@@ -13,9 +13,9 @@ public class Line {
     }
 
     public Line(Point a, Point b) {
-        A = b.getX() - a.getX();
-        B = a.getY() - b.getY();
-        C = -(a.getY()*A + a.getX()*B);
+        A = a.getY() - b.getY();
+        B = b.getX() - a.getX();
+        C = a.getX() * b.getY() - b.getX() * a.getY();
     }
 
     public Line(LineSegment lineSegment) {
