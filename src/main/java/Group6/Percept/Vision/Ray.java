@@ -35,20 +35,11 @@ public class Ray {
 
             Points intersections = object.getIntersections(ray);
             if(!intersections.hasPoints()) continue;
-
-//            if(object.getType().isOpaque()) {
-//                potentialPercepts.add(
-//                    new ObjectPercept(
-//                        object.getType(),
-//                        intersections.getClosest(agentLocation)
-//                    )
-//                );
-//            } else {
-                potentialPercepts.addAll(intersections.toObjectPercepts(object.getType()));
-//            }
+            potentialPercepts.addAll(intersections.toObjectPercepts(object.getType()));
 
         }
 
+        // if ray does not detect anything then indicate empty space
         if(potentialPercepts.isEmpty()) {
             potentialPercepts.add(new ObjectPercept(
                 ObjectPerceptType.EmptySpace,
