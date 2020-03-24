@@ -49,10 +49,12 @@ public class Utils {
      * @return The remainder.
      */
     public static double mod(double dividend, double divisor) {
-        if(divisor == 1 || divisor == -1) return 0;
-        if(divisor < 0) return dividend >= 0 ? dividend % divisor + divisor : -(dividend % divisor);
-        if(divisor > 0) return dividend >= 0 ? +(dividend % divisor) : dividend % divisor + divisor;
-        return dividend % divisor;
+        if(divisor == 0) return NaN;
+        if(divisor == 1 || divisor == -1 || dividend == 0) return 0;
+        boolean differentSign = (divisor < 0 && dividend > 0) || (divisor > 0 && dividend < 0);
+        double mod = Math.signum(divisor) * Math.abs(differentSign ? dividend % divisor + divisor : dividend % divisor);
+        if(mod == divisor) return 0;
+        return mod;
     }
 
     /**

@@ -178,6 +178,14 @@ public abstract class SimpleUnitTest {
      * @param explanation An explanation of the assertion.
      */
     protected static void assertEqual(double actual, double expected, double tolerance, String explanation) throws RuntimeException {
+        if((!Double.isNaN(actual) && Double.isNaN(expected))
+         || (Double.isNaN(actual) && !Double.isNaN(expected))) {
+            throw new AssertionFailed(
+                "Assertion Failed: " + explanation + "\n" +
+                    "Actual value: \t" + actual + "\n" +
+                    "Expected value:\t" + expected + "\n"
+            );
+        }
         if(Math.abs(actual - expected) > tolerance) throw new AssertionFailed(
             "Assertion Failed: " + explanation + "\n" +
                 "Actual value: \t" + actual + "\n" +
