@@ -20,13 +20,16 @@ public class UtilsTest extends SimpleUnitTest {
             assertEqual(Utils.mod(45., 360.), 45., 0.);
         });
         it("returns -45 for (-45, -360)", () -> {
-            assertEqual(Utils.mod(-45., -360.), 45., 0.);
+            assertEqual(Utils.mod(-45., -360.), -45., 0.);
         });
         it("returns -315 for (45, -360)", () -> {
             assertEqual(Utils.mod(45., -360.), -315., 0.);
         });
         it("returns 315 for (-45, 360)", () -> {
             assertEqual(Utils.mod(-45., 360.), 315., 0.);
+        });
+        it("returns 0 for (-4.440892098500626E-16, Utils.TAU)", () -> {
+            assertEqual(Utils.mod(-4.440892098500626E-16, Utils.TAU), 0., 0.);
         });
         it("returns 0 for (n, 1) where n is any number", () -> {
             for (int n = -10; n <= 10; n++) {
@@ -42,6 +45,15 @@ public class UtilsTest extends SimpleUnitTest {
             for (int n = -10; n <= 10; n++) {
                 assertTrue(isNaN(Utils.mod(n, 0.)), "n is " + n);
             }
+        });
+        it("returns 0 for (+/- n, +/- n) where n is any number, but 0", () -> {
+            for (int n = -10; n <= 10; n++) {
+                if(n == 0) continue;
+                assertEqual(Utils.mod(+n, +n), 0., 0., "(+n, +n) where n is " + n);
+                assertEqual(Utils.mod(+n, -n), 0., 0., "(+n, -n) where n is " + n);
+                assertEqual(Utils.mod(-n, +n), 0., 0., "(-n, +n) where n is " + n);
+                assertEqual(Utils.mod(-n, -n), 0., 0., "(-n, -n) where n is " + n);
+            };
         });
     }
 
