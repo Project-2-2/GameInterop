@@ -3,6 +3,10 @@ package Group6.Geometry;
 import Group6.Geometry.Collection.Points;
 import Group6.Geometry.Contract.Area;
 
+import java.util.HashSet;
+import java.util.Set;
+import java.util.function.Function;
+
 public class Circle implements Area {
 
     private Point center;
@@ -30,7 +34,35 @@ public class Circle implements Area {
     }
 
     public Points getIntersections(LineSegment lineSegment) {
-        return lineSegment.getIntersectionPointsWith(this);
+        Line line = lineSegment.toLine();
+        double p = center.getX();
+        double q = center.getY();
+        double r = radius;
+        Function<Double, Double> computeC = (x) -> {
+            return Math.pow(p, 2.) + Math.pow(q, 2.) - Math.pow(r, 2.) - 2 * x * p + Math.pow(x, 2.);
+        };
+        Set<Point> pointSet = new HashSet<>();
+        if(line.isVertical()) {
+            double k = line.getX();
+            QuadraticFormula quadraticFormula = new QuadraticFormula(
+                1, -2*q, computeC.apply(k)
+            );
+            for(Double root: quadraticFormula.getRoots()) {
+                pointSet.add(new Point(k, root));
+            }
+        } else {
+            double m = line.getSlope();
+            double c = line.getYIntercept();
+            QuadraticFormula quadraticFormula = new QuadraticFormula(
+                Math.pow(m, 2.) + 1,
+                2 * (m*c - m*q - p),
+                computeC.apply(c)
+            );
+            for(Double root: quadraticFormula.getRoots()) {
+                pointSet.add(new Point(root, line.getY(root)));
+            }
+        }
+        return new Points(pointSet).filter(lineSegment::includes);
     }
 
 }

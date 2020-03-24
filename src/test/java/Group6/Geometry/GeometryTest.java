@@ -12,6 +12,7 @@ public class GeometryTest extends SimpleUnitTest {
         DirectionTest.main(args);
         LineTest.main(args);
         LineSegmentTest.main(args);
+        CircleTest.main(args);
         QuadrilateralTest.main(args);
         RayCastTest.main(args);
 

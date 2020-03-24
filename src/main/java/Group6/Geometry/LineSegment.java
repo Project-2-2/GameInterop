@@ -1,6 +1,5 @@
 package Group6.Geometry;
 
-import Group6.Geometry.Collection.Points;
 import Group6.Utils;
 
 import java.util.HashSet;
@@ -107,38 +106,6 @@ public class LineSegment {
 
         return new Point(x, y);
 
-    }
-
-    public Points getIntersectionPointsWith(Circle circle) {
-        Line line = toLine();
-        double p = circle.getCenter().getX();
-        double q = circle.getCenter().getY();
-        double r = circle.getRadius();
-        Function<Double, Double> computeC = (x) -> {
-            return Math.pow(p, 2.) + Math.pow(q, 2.) - Math.pow(r, 2.) - 2 * x * p + Math.pow(x, 2.);
-        };
-        Set<Point> pointSet = new HashSet<>();
-        if(line.isVertical()) {
-            double k = line.getX();
-            QuadraticFormula quadraticFormula = new QuadraticFormula(
-                1, -2*q, computeC.apply(k)
-            );
-            for(Double root: quadraticFormula.getRoots()) {
-                pointSet.add(new Point(k, root));
-            }
-        } else {
-            double m = line.getSlope();
-            double c = line.getYIntercept();
-            QuadraticFormula quadraticFormula = new QuadraticFormula(
-                Math.pow(m, 2.) + 1,
-                2 * (m*c - m*q - p),
-                computeC.apply(c)
-            );
-            for(Double root: quadraticFormula.getRoots()) {
-                pointSet.add(new Point(root, line.getY(root)));
-            }
-        }
-        return new Points(pointSet).filter(this::includes);
     }
 
     public Line toLine() {

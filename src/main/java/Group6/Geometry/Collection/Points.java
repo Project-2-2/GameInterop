@@ -5,9 +5,7 @@ import Group6.Percept.Vision.ObjectPercept;
 import Group6.Percept.Vision.ObjectPercepts;
 import Interop.Percept.Vision.ObjectPerceptType;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -17,6 +15,10 @@ public class Points {
 
     public Points() {
         this.points = new HashSet<>();
+    }
+
+    public Points(Point ...points) {
+        this(new HashSet<>(Arrays.asList(points)));
     }
 
     public Points(Set<Point> points) {

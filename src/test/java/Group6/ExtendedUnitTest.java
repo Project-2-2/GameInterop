@@ -1,6 +1,7 @@
 package Group6;
 
 import Group6.Geometry.*;
+import Group6.Geometry.Collection.Points;
 import SimpleUnitTest.SimpleUnitTest;
 
 public class ExtendedUnitTest extends SimpleUnitTest {
@@ -42,6 +43,23 @@ public class ExtendedUnitTest extends SimpleUnitTest {
                 "Actual Y:   \t" + actual.getY() + "\n" +
                 "Expected Y: \t" + expected.getY()
         );
+    }
+
+    /**
+     * This methods allows to assert that two doubles are equal with certain tolerance.
+     *
+     * @param actual The actual value.
+     * @param expected The expected value.
+     */
+    protected static void assertEqual(Points actual, Points expected) throws RuntimeException {
+        if(actual.getAll().size() != expected.getAll().size()) throw new AssertionFailed(
+            "Assertion Failed! Two points collection are not equal size!\n" +
+              "Actual size: " + actual.getAll().size() + "\n" +
+              "Expected size: " + expected.getAll().size()
+        );
+        for(Point expectedPoint: expected.getAll()) {
+            assertEqual(actual.getClosest(expectedPoint), expectedPoint);
+        }
     }
 
     /**
