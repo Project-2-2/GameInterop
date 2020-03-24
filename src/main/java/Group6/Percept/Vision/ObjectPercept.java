@@ -36,4 +36,11 @@ public class ObjectPercept {
         );
     }
 
+    public String toString() {
+        return "ObjectPercept{" +
+            "type=" + objectPerceptType +
+            ", point=" + point +
+            '}';
+    }
+
 }

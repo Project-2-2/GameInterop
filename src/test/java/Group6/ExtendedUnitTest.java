@@ -55,7 +55,9 @@ public class ExtendedUnitTest extends SimpleUnitTest {
         if(actual.getAll().size() != expected.getAll().size()) throw new AssertionFailed(
             "Assertion Failed! Two points collection are not equal size!\n" +
               "Actual size: " + actual.getAll().size() + "\n" +
-              "Expected size: " + expected.getAll().size()
+              "Expected size: " + expected.getAll().size() + "\n\n" +
+              "Actual: " + actual + "\n" +
+              "Expected: " + expected + "\n"
         );
         for(Point expectedPoint: expected.getAll()) {
             assertEqual(actual.getClosest(expectedPoint), expectedPoint);

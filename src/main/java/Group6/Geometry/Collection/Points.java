@@ -59,4 +59,8 @@ public class Points {
         return objectPercepts;
     }
 
+    public String toString() {
+        return "Points{size=" + points.size() + ", points=" + points + "}";
+    }
+
 }

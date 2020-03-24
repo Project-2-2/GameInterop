@@ -61,4 +61,10 @@ public class ObjectPercepts {
         );
     }
 
+    public String toString() {
+        return "ObjectPercepts{" +
+            "percepts=" + percepts +
+            '}';
+    }
+
 }
