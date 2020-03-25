@@ -163,16 +163,23 @@ public class DeepSpace implements Guard {
 
                 List<Vertex<DataContainer>> shortestPath = this.graph.shortestPath(this.currentVertex, vertex);
 
+                if(currentVertex.getContent().getCenter().distance(position) > 1E-9)
+                {
+                    moveTowardsPoint(guardPercepts, this.direction, currentVertex.getContent().getCenter());
+                }
 
-                Vector2 s = shortestPath.get(0).getContent().getCenter();
-                Vector2 c = shortestPath.get(1).getContent().getCenter();
-                moveTowardsPoint(guardPercepts, this.direction, c);
-                for (int i = 2; i < shortestPath.size(); i++) {
-                    Vector2 n = shortestPath.get(i).getContent().getCenter();
-                    moveTowardsPoint(guardPercepts, c.sub(s).normalise(), n);
-
-                    s = c;
-                    c = n;
+                if(shortestPath.size() == 2)
+                {
+                    moveTowardsPoint(guardPercepts, this.direction, shortestPath.get(1).getContent().getCenter());
+                }
+                else
+                {
+                    for (int i = 0; i < shortestPath.size() - 2; i++) {
+                        Vector2 s = shortestPath.get(0 + i).getContent().getCenter();
+                        Vector2 c = shortestPath.get(1 + i).getContent().getCenter();
+                        Vector2 n = shortestPath.get(2 + i).getContent().getCenter();
+                        moveTowardsPoint(guardPercepts, c.sub(s).normalise(), n);
+                    }
                 }
 
                 planning.add(new ActionHistory<State>(ActionHistory.Action.SWITCH_STATE, State.FIND_NEW_TARGET));
