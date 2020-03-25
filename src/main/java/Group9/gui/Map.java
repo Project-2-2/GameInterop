@@ -31,15 +31,17 @@ public class Map extends Application {
 		VBox vBox = new VBox();
 	    vBox.setPrefWidth(200);
 	    vBox.setPrefHeight(50);
-	    //Map
-	    Rectangle map = new Rectangle(0,0,120*Scale.scale,80*Scale.scale);
-	    map.setFill(Color.LIGHTGREEN);
-	    map.setStroke(Color.BLACK);
-	    map.setStrokeWidth(3);
+
 
 	    //Draw Map
 		gameMap = Parser.parseFile("./src/main/java/Group9/map/maps/test_2.map");
 		game = new Game(gameMap, 1);
+
+		//Map
+		Rectangle map = new Rectangle(0,0,gameMap.getWidth()*Scale.scale,gameMap.getHeight()*Scale.scale);
+		map.setFill(Color.LIGHTGREEN);
+		map.setStroke(Color.BLACK);
+		map.setStrokeWidth(3);
 
 		Group staticObjects = new Group(this.getStaticObjects());
 		movingObjects = new Group(this.getMovingObjects());
