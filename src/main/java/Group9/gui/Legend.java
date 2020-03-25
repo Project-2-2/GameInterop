@@ -28,7 +28,7 @@ public class Legend extends Group {
         }
 
         Rectangle[] ids = new Rectangle[names.length];
-        Color[] colors = new Color[]{Color.BROWN/*Door*/, Color.BLUE/*Guard*/, Color.LAVENDER/*Wall*/, Color.RED/*Intruder*/, Color.YELLOW/*Yell*/, Color.PURPLE/*Sentry*/, Color.BLACK/*Shaded Area*/, Color.LINEN/*Spawn Area Guard*/, Color.BISQUE/*Spawn Area Intruder*/, Color.RED/*Target Area*/, Color.DARKBLUE/*Teleport Area*/, Color.LIGHTGREY/*Window*/};
+        Color[] colors = new Color[]{Color.BROWN/*Door*/, Color.BLUE/*Guard*/, Color.LAVENDER/*Wall*/, Color.RED/*Intruder*/, Color.YELLOW/*Yell*/, Color.PURPLE/*Sentry*/, Color.rgb(0, 0, 0, 0.6)/*Shaded Area*/, Color.LINEN/*Spawn Area Guard*/, Color.BISQUE/*Spawn Area Intruder*/, Color.RED/*Target Area*/, Color.DARKBLUE/*Teleport Area*/, Color.LIGHTGREY/*Window*/};
 
         for(int i=0; i<colors.length; i++)
         {
