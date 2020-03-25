@@ -29,7 +29,18 @@ public class CollisionTest extends ExtendedUnitTest {
             assertTrue(collision.checkCollision());
         });
 
-        
+
+        it("checks inbetween collision", ()->{
+            Distance distance= new Distance(100);
+            Point point= new Point(10,30);
+
+            AgentState agent= new GuardState(new RandomGuard(),point,Direction.fromRadians(0));
+
+            Collision collision= new Collision(agent,distance,scenario);
+            //System.out.println(collision.checkCollision());
+
+            assertTrue(collision.checkCollision());
+        });
     }
 
 }
