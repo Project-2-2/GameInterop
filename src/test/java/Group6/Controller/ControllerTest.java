@@ -27,7 +27,8 @@ public class ControllerTest extends ExtendedUnitTest {
                     new SmellPreceptsBuilder(),
                     new AreaPerceptsBuilder(),
                     new ScenarioPerceptsBuilder()
-                )
+                ),
+                false
             );
 
             WorldState worldState = new WorldState(

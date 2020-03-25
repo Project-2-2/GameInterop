@@ -4,6 +4,7 @@ import Group6.Geometry.*;
 import Group6.Geometry.Collection.Points;
 import Group6.Geometry.Collection.Quadrilaterals;
 import Group6.Geometry.Contract.Area;
+import Group6.WorldState.Collision;
 import Group6.WorldState.Contract.Object;
 import Group6.WorldState.Pheromone;
 import Group6.WorldState.Teleports;
@@ -107,6 +108,9 @@ public abstract class AgentState implements Object {
     }
 
     protected void move(WorldState worldState, Distance distance) {
+
+        boolean hasCollision = new Collision(this, distance, worldState.getScenario()).checkCollision();
+        if(hasCollision) throw new IllegalAction("move or sprint", "move or sprint resulted in collision");
 
         Vector displacement = new Vector(0, distance.getValue()).rotate(direction.getRadians());
         location = location.add(displacement).toPoint();
