@@ -166,20 +166,21 @@ public class Area {
     public ArrayList<ArrayList<Point>> getPositions() {
         ArrayList<ArrayList<Point>> positions = new ArrayList<>();
         positions.add(new ArrayList<>());
-        positions.get(-1).add(new Point(this.x1,this.y1));
-        positions.get(-1).add(new Point(this.x2,this.y2));
-
         positions.add(new ArrayList<>());
-        positions.get(-1).add(new Point(this.x2,this.y2));
-        positions.get(-1).add(new Point(this.x3,this.y3));
-
         positions.add(new ArrayList<>());
-        positions.get(-1).add(new Point(this.x3,this.y3));
-        positions.get(-1).add(new Point(this.x4,this.y4));
-
         positions.add(new ArrayList<>());
-        positions.get(-1).add(new Point(this.x4,this.y4));
-        positions.get(-1).add(new Point(this.x1,this.y1));
+
+        positions.get(0).add(new Point(this.x1,this.y1));
+        positions.get(0).add(new Point(this.x2,this.y2));
+
+        positions.get(1).add(new Point(this.x2,this.y2));
+        positions.get(1).add(new Point(this.x3,this.y3));
+
+        positions.get(2).add(new Point(this.x3,this.y3));
+        positions.get(2).add(new Point(this.x4,this.y4));
+
+        positions.get(3).add(new Point(this.x4,this.y4));
+        positions.get(3).add(new Point(this.x1,this.y1));
         return positions;
     }
 

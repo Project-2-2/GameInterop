@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Graph {
+    public static double minimumDistance = 7.1913; //distance two rays
     private ArrayList<Vertex> vertices;
     private ArrayList<Edge> edges;
     private AgentController agent;
@@ -51,7 +52,7 @@ public class Graph {
         for (Vertex v: vertices) {
             double distance = getDistance(v, newVertex);
 
-            if (distance < 1 &&
+            if (distance < minimumDistance &&
                     v.getObject().getType() == newVertex.getObject().getType()) {
                 partOfAnotherObject = true;
                 combineTwoVertex(v, newVertex, v.getObject().getType());

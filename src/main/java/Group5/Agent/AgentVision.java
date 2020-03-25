@@ -17,7 +17,7 @@ public class AgentVision {
             graphs.put(agent, new Graph(agent));
 
         for (ObjectPercept object : newObjectPerceived) {
-            graphs.get(agent).addVertex(new Vertex(idCounter.toString(), false , object));
+            graphs.get(agent).addVertex(new ObjectPerceptVertex(false , object));
             idCounter++;
         }
 
