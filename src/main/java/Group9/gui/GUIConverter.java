@@ -88,7 +88,17 @@ public class GUIConverter {
         }
         else if(object instanceof Spawn)
         {
+            //System.out.println(object.getEffects());
+
             return new EmptySpace();
+        }
+        else if(object instanceof Spawn.Intruder)
+        {
+            System.out.println("intruderspawn");
+        }
+        else if(object instanceof Spawn.Guard)
+        {
+            System.out.println("Guardspawn");
         }
         else if(object instanceof TeleportArea)
         {
