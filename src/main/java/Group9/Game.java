@@ -124,10 +124,10 @@ public class Game implements Runnable {
         while (this.winner == null)
         {
             this.winner = this.turn();
-            if(true)
+            if(false)
             {
                 try {
-                    Thread.sleep(500);
+                    Thread.sleep(10);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -274,13 +274,22 @@ public class Game implements Runnable {
 
             //--- check for movement collision
             {
-                final Vector2 end = agentContainer.getPosition().add(agentContainer.getDirection().mul(distance, distance));
+                // --- To check for collisions, we create a bounding box. The length of this box has to be the
+                // distance the agent wants to move
+                // + the radius of the agent; because the center of the agent is moved
+                // + epsilon; because of the limitations of floating point numbers numerical mistakes will happen and thus
+                //              a safety margin is required.
+                final double epsilon = 9E-2;
+                final double length = distance + agentContainer.getShape().getRadius() + epsilon;
+
+
+                final Vector2 end = agentContainer.getPosition().add(agentContainer.getDirection().mul(length));
                 PointContainer.Line line = new PointContainer.Line(agentContainer.getPosition(), end);
-                Vector2 temp = line.getNormal().mul(agentContainer.getShape().getRadius());
-                Vector2 pointA = temp.add(line.getStart());
-                Vector2 pointC = temp.add(line.getEnd());
-                Vector2 pointB = temp.flip().add(line.getStart());
-                Vector2 pointD = temp.flip().add(line.getEnd());
+                Vector2 normal = line.getNormal().mul(agentContainer.getShape().getRadius());
+                Vector2 pointA = normal.add(line.getStart());
+                Vector2 pointC = normal.add(line.getEnd());
+                Vector2 pointB = normal.flip().add(line.getStart());
+                Vector2 pointD = normal.flip().add(line.getEnd());
                 PointContainer.Polygon quadrilateral = new PointContainer.Polygon(pointA, pointB, pointC, pointD);
                 if(gameMap.isMoveIntersecting(quadrilateral, ObjectPerceptType::isSolid))
                 {

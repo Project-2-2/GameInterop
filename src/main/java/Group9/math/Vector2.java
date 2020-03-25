@@ -30,12 +30,21 @@ public class Vector2 {
 
     public Vector2 normalise()
     {
+        if(this.length == 0)
+        {
+            return new Vector2(0, 0);
+        }
         return new Vector2(this.x / this.length, this.y / this.length);
     }
 
     public double length()
     {
         return this.length;
+    }
+
+    public Vector2 mul(Vector2 other)
+    {
+        return mul(other.getX(), other.getY());
     }
 
     public Vector2 mul(double x, double y)
@@ -101,6 +110,17 @@ public class Vector2 {
         return Math.sqrt(Math.pow(this.x - other.getX(), 2) + Math.pow(this.y - other.getY(), 2));
     }
 
+    public double getAngle()
+    {
+        double angle = Math.asin(y);
+        if(x < 0)
+        {
+            angle = Math.PI - angle;
+        }
+        return angle;
+
+    }
+
     public double getClockDirection() {
         return Utils.clockAngle(this.x, this. y);
     }
@@ -150,14 +170,10 @@ public class Vector2 {
         }
     }
 
-    public double getAngle()
-    {
-        double angle = Math.asin(y);
-        if(x < 0)
-        {
-            angle = Math.PI - angle;
+    public static class Origin extends Vector2 {
+        public Origin() {
+            super(0, 0);
         }
-        return angle;
-
     }
+
 }
