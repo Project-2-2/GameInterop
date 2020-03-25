@@ -17,11 +17,4 @@ public class Sound extends DynamicObject<AgentContainer<?>> {
         return type;
     }
 
-    public YellGui getGui()
-    {
-        YellGui gui = new YellGui(this.getCenter().getX(), this.getCenter().getY(), this.getRadius());
-        return gui;
-    }
-
-
 }

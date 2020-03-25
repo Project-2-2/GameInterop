@@ -2,7 +2,6 @@ package Group9.gui;
 
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Polygon;
-import javafx.scene.shape.Rectangle;
 
 public class InternalWallGui extends Polygon implements GameObject {
     final double[] xs;

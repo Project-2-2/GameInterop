@@ -3,7 +3,6 @@ package Group9;
 import Group9.agent.container.AgentContainer;
 import Group9.agent.container.GuardContainer;
 import Group9.agent.container.IntruderContainer;
-import Group9.gui.InternalWallGui;
 import Group9.map.GameMap;
 import Group9.map.area.*;
 import Group9.map.dynamic.DynamicObject;
@@ -17,7 +16,7 @@ import Interop.Agent.Guard;
 import Interop.Agent.Intruder;
 import Interop.Geometry.Direction;
 import Interop.Geometry.Distance;
-import Interop.Geometry.Vector;
+import Interop.Geometry.Point;
 import Interop.Percept.AreaPercepts;
 import Interop.Percept.GuardPercepts;
 import Interop.Percept.IntruderPercepts;
@@ -34,14 +33,13 @@ import Interop.Percept.Vision.ObjectPerceptType;
 import Interop.Percept.Vision.ObjectPercepts;
 import Interop.Percept.Vision.VisionPrecepts;
 import Interop.Utils.Utils;
-import javafx.scene.Group;
-import javafx.scene.Scene;
 
 import java.util.*;
-import java.util.function.Function;
+import java.util.concurrent.Semaphore;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-public class Game {
+public class Game implements Runnable {
 
     public final static Random _RANDOM = new Random();
 
@@ -54,29 +52,46 @@ public class Game {
     private Map<AgentContainer<?>, Boolean> actionSuccess = new HashMap<>();
     private Set<AgentContainer<?>> justTeleported = new HashSet<>();
 
-    private Function<AgentContainer<?>, Void> callback;
+    private Team winner = null;
+
+    //--
+    private Semaphore lock = new Semaphore(1);
 
     public Game(GameMap gameMap, int teamSize)
-    {
-        this(gameMap, teamSize, null);
-    }
-
-    public Game(GameMap gameMap, int teamSize, Function<AgentContainer<?>, Void> callback)
     {
 
         this.gameMap = gameMap;
         this.scenarioPercepts = gameMap.getScenarioPercepts();
-        this.callback = callback;
 
         Spawn.Guard guardSpawn = gameMap.getObjects(Spawn.Guard.class).get(0);
         Spawn.Intruder intruderSpawn = gameMap.getObjects(Spawn.Intruder.class).get(0);
 
         AgentsFactory.createGuards(teamSize).forEach(a -> this.guards.add(new GuardContainer(a,
-                guardSpawn.getContainer().getAsPolygon().generateRandomLocation().toVexing(), new Vector2.Random().normalise().toVexing(),
+                guardSpawn.getContainer().getAsPolygon().generateRandomLocation().toVexing(), new Vector2(0, 1).normalise().toVexing(),
                 new FieldOfView(gameMap.getGuardViewRangeNormal(), gameMap.getViewAngle()))));
         AgentsFactory.createIntruders(teamSize).forEach(a -> this.intruders.add(new IntruderContainer(a,
-                intruderSpawn.getContainer().getAsPolygon().generateRandomLocation().toVexing(), new Vector2.Random().normalise().toVexing(),
+                intruderSpawn.getContainer().getAsPolygon().generateRandomLocation().toVexing(), new Vector2(0, 1).normalise().toVexing(),
                 new FieldOfView(gameMap.getIntruderViewRangeNormal(), gameMap.getViewAngle()))));
+    }
+
+    /**
+     * This method is mainly used for UI updates or for other threads accessing any data structures in an async manner.
+     * The method will acquire a mutex, and stop the game controller from updating during the method call.
+     *
+     * @param callback The method which should be called once the lock has been acquired.
+     */
+    public void query(QueryUpdate callback)
+    {
+        try {
+            //@todo the 10 ms basically guarantee that it will get a lock when this method gets called. this leads to
+            //  smoother ui updates but it is not guaranteed, so if someone has a fairly week computer this method
+            //  might lead to a choppy ui experience.
+            lock.tryAcquire(10, TimeUnit.MILLISECONDS);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        callback.update();
+        lock.release();
     }
 
     public List<GuardContainer> getGuards() {
@@ -87,18 +102,44 @@ public class Game {
         return intruders;
     }
 
-    public Team start()
+    public GameMap getGameMap()
     {
-        Team team = null;
-        while (team == null)
-        {
-            team = this.turn();
-        }
-
-        return team;
+        return gameMap;
     }
 
-    public Team checkForWinner()
+    /**
+     * @return Returns the winner of the match, otherwise null.
+     */
+    public Team getWinner()
+    {
+        return winner;
+    }
+
+    /**
+     * Runs the game controller in a loop.
+     */
+    @Override
+    public void run()
+    {
+        while (this.winner == null)
+        {
+            this.winner = this.turn();
+            if(true)
+            {
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    /**
+     * Checks whether any of the teams fulfil their win condition.
+     * @return A team that has won, otherwise null.
+     */
+    private Team checkForWinner()
     {
         final long intrudersCaptured = intruders.stream().filter(IntruderContainer::isCaptured).count();
         final long intrudersWins = intruders.stream().filter(e -> e.getZoneCounter() >= gameMap.getTurnsInTargetAreaToWin()).count();
@@ -127,7 +168,11 @@ public class Game {
         return null;
     }
 
-    public Team turn()
+    /**
+     * Executes one full turn of the game.
+     * @return
+     */
+    private Team turn()
     {
 
         this.cooldown();
@@ -138,9 +183,16 @@ public class Game {
         {
             if(!(intruder.isCaptured()))
             {
+                try {
+                    lock.acquire();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
                 final IntruderAction action = intruder.getAgent().getAction(this.generateIntruderPercepts(intruder));
                 actionSuccess.put(intruder, executeAction(intruder, action));
-                if(this.callback != null) this.callback.apply(intruder);
+
+                lock.release();
                 if((winner = checkForWinner()) != null)
                 {
                     return winner;
@@ -150,9 +202,16 @@ public class Game {
 
         for(GuardContainer guard : this.guards)
         {
+            try {
+                lock.acquire();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
             final GuardAction action = guard.getAgent().getAction(this.generateGuardPercepts(guard));
             actionSuccess.put(guard, executeAction(guard, action));
-            if(this.callback != null) this.callback.apply(guard);
+
+            lock.release();
             if((winner = checkForWinner()) != null)
             {
                 return winner;
@@ -245,7 +304,8 @@ public class Game {
 
             if(!justTeleported.contains(agentContainer) && locationEffect.isPresent())
             {
-                agentContainer.moveTo(((ModifyLocationEffect) locationEffect.get()).get(agentContainer));
+                Vector2 pos = ((ModifyLocationEffect) locationEffect.get()).get(agentContainer);
+                agentContainer.moveTo(pos);
                 justTeleported.add(agentContainer);
             }
             else if(justTeleported.contains(agentContainer) && !locationEffect.isPresent())
@@ -287,7 +347,7 @@ public class Game {
         else if(action instanceof Rotate)
         {
             Rotate rotate = (Rotate) action;
-            if(gameMap.getScenarioPercepts().getMaxRotationAngle().getRadians() < rotate.getAngle().getRadians())
+            if(Math.abs(rotate.getAngle().getRadians()) > gameMap.getScenarioPercepts().getMaxRotationAngle().getRadians())
             {
                 return false;
             }
@@ -318,10 +378,11 @@ public class Game {
             }
 
             //--- check whether there is already one in this place
-            List<DynamicObject> pheromones = gameMap.getDynamicObjects(Pheromone.class);
-            if(pheromones.stream()
+            if(gameMap.getDynamicObjects(Pheromone.class).stream()
                     .filter(e -> e.getSource().getClass().isAssignableFrom(agentContainer.getClass()))
-                    .anyMatch(e -> PointContainer.intersect(e.getAsCircle(), agentContainer.getShape())))
+                    .anyMatch(e -> PointContainer.intersect(e.getAsCircle(),
+                            new PointContainer.Circle(agentContainer.getPosition(), scenarioPercepts.getRadiusPheromone().getValue())))
+            )
             {
                 return false;
             }
@@ -388,7 +449,7 @@ public class Game {
                                             .getCenter().sub(intruder.getDirection()).normalise();
 
         return new IntruderPercepts(
-                Direction.fromClockAngle(new Vector(direction.getX(), direction.getY())),
+                Direction.fromClockAngle(new Point(direction.getX(), direction.getY())),
                 generateVisionPercepts(intruder),
                 generateSoundPercepts(intruder),
                 generateSmellPercepts(intruder),
@@ -449,35 +510,15 @@ public class Game {
                 }).collect(Collectors.toUnmodifiableSet()));
     }
 
-
     public enum Team
     {
         INTRUDERS,
         GUARDS
     }
-    public Group apply(AgentContainer<?> agentContainer)
-    {
 
-        gameMap.getAgentVisionCone(agentContainer, agentContainer.getFOV(gameMap.getEffectAreas(agentContainer)));
-
-        return null;
-    }
-    public Group getMovingObjects()
+    public interface QueryUpdate
     {
-        Group movingObjects = new Group();
-        guards.forEach(g -> movingObjects.getChildren().add(g.getGui(g.getFOV(gameMap.getEffectAreas(g)))));
-        intruders.forEach(i -> movingObjects.getChildren().add(i.getGui(i.getFOV(gameMap.getEffectAreas(i)))));
-        List<DynamicObject> dynamicObjects = gameMap.getDynamicObjects();
-        //dynamicObjects.forEach(d -> movingObjects.getChildren().add(d.getSource().getGui));
-        return movingObjects;
-    }
-    public Group getStaticObjects()
-    {
-        Group staticObjects = new Group();
-        List<MapObject> mapObjects = gameMap.getObjects();
-        mapObjects.forEach(m -> staticObjects.getChildren().add(m.getGui()));
-        staticObjects.getChildren().forEach(c -> ((InternalWallGui)c).updateScale());
-        return staticObjects;
+        void update();
     }
 
 }

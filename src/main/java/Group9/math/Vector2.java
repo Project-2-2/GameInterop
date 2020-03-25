@@ -1,8 +1,10 @@
 package Group9.math;
 
 import Group9.Game;
-import Interop.Geometry.Vector;
+import Interop.Geometry.Point;
 import Interop.Utils.Utils;
+
+import java.util.Objects;
 
 public class Vector2 {
 
@@ -31,17 +33,10 @@ public class Vector2 {
         return new Vector2(this.x / this.length, this.y / this.length);
     }
 
-
     public double length()
     {
         return this.length;
     }
-
-    public double dot(Vector2 other)
-    {
-        return (this.x * other.getX() + this.y * other.getY());
-    }
-
 
     public Vector2 mul(double x, double y)
     {
@@ -89,6 +84,18 @@ public class Vector2 {
         );
     }
 
+    public double dot(Vector2 other)
+    {
+        return (this.x * other.getX()) + (this.y * other.getY());
+    }
+
+    public double angle(Vector2 other)
+    {
+        return Math.acos(
+                (this.dot(other) / (this.length() * other.length()))
+        );
+    }
+
     public double distance(Vector2 other)
     {
         return Math.sqrt(Math.pow(this.x - other.getX(), 2) + Math.pow(this.y - other.getY(), 2));
@@ -98,12 +105,12 @@ public class Vector2 {
         return Utils.clockAngle(this.x, this. y);
     }
 
-    public Vector toVexing()
+    public Point toVexing()
     {
-        return new Vector(this.x, this.y);
+        return new Point(this.x, this.y);
     }
 
-    public static Vector2 from(Vector point)
+    public static Vector2 from(Point point)
     {
         return new Vector2(point.getX(), point.getY());
     }
@@ -115,6 +122,20 @@ public class Vector2 {
                 ", y=" + y +
                 ", length=" + length +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Vector2 vector2 = (Vector2) o;
+        return Double.compare(vector2.x, x) == 0 &&
+                Double.compare(vector2.y, y) == 0;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(x, y);
     }
 
     @Override

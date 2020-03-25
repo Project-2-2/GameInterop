@@ -9,7 +9,7 @@ import Group9.tree.PointContainer;
 import Group9.tree.QuadTree;
 import Interop.Geometry.Angle;
 import Interop.Geometry.Distance;
-import Interop.Geometry.Vector;
+import Interop.Geometry.Point;
 import Interop.Percept.Scenario.GameMode;
 import Interop.Percept.Scenario.ScenarioPercepts;
 import Interop.Percept.Scenario.SlowDownModifiers;
@@ -308,12 +308,15 @@ public class GameMap {
      */
     public <T> Set<ObjectPercept> getObjectPerceptsForAgent(AgentContainer<T> agentContainer, FieldOfView fov) {
         Set<ObjectPercept> objectsInSight = new HashSet<>();
+        //System.out.println("angle-a: " + agentContainer.getDirection().getClockDirection());
         for (Vector2[] ray : getAgentVisionCone(agentContainer, fov)) {
             objectsInSight.addAll(
                     getObjectPerceptsInLine(new PointContainer.Line(ray[0], ray[1]))
                             .stream()
+                            //TODO sometimes the distance from origin is exactly 0. is the agent perceiving itself?
+                            .filter(e -> Vector2.from(e.getPoint()).sub(agentContainer.getPosition()).length() > 0)
                             .map(e -> {
-                                Vector point =  Vector2.from(e.getPoint())
+                                Point point =  Vector2.from(e.getPoint())
                                         .sub(agentContainer.getPosition()) // move relative to agent
                                         .rotated(agentContainer.getDirection().getClockDirection()) // rotate back
                                         .toVexing();
@@ -581,8 +584,12 @@ public class GameMap {
             return this;
         }
 
-        public Builder teleport(PointContainer.Polygon quadrilateral){
-            this.object(new TeleportArea(quadrilateral));
+        public Builder teleport(PointContainer.Polygon teleporterA, PointContainer.Polygon teleporterB){
+            TeleportArea teleportAreaA = new TeleportArea(teleporterA, null);
+            TeleportArea teleportAreaB = new TeleportArea(teleporterB, teleportAreaA);
+            teleportAreaA.setConnected(teleportAreaB);
+            this.object(teleportAreaA);
+            this.object(teleportAreaB);
             return this;
         }
 

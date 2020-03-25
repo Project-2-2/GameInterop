@@ -1,8 +1,7 @@
 package Group9.agent.container;
 
-import Group9.gui.IntruderGui;
 import Interop.Agent.Intruder;
-import Interop.Geometry.Vector;
+import Interop.Geometry.Point;
 import Interop.Percept.Vision.FieldOfView;
 
 public class IntruderContainer extends AgentContainer<Intruder> {
@@ -10,7 +9,7 @@ public class IntruderContainer extends AgentContainer<Intruder> {
     private boolean captured = false;
     private int zoneCounter = 0;
 
-    public IntruderContainer(Intruder agent, Vector position, Vector direction, FieldOfView normalFOV) {
+    public IntruderContainer(Intruder agent, Point position, Point direction, FieldOfView normalFOV) {
         super(agent, position, direction, normalFOV);
     }
 
@@ -32,11 +31,6 @@ public class IntruderContainer extends AgentContainer<Intruder> {
     public void setCaptured(boolean captured)
     {
         this.captured = captured;
-    }
-    public IntruderGui getGui(FieldOfView FOV)
-    {
-        IntruderGui gui = new IntruderGui(this.getShape().getCenter().getX(), this.getShape().getCenter().getY(), this.getShape().getRadius(), this.getDirection(), FOV.getRange().getValue());
-        return gui;
     }
 
 }

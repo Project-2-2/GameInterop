@@ -1,30 +1,42 @@
 package Group9.map.objects;
 
 import Group9.agent.container.AgentContainer;
-import Group9.gui.targetAreaGui;
 import Group9.map.area.ModifyLocationEffect;
 import Group9.math.Vector2;
 import Group9.tree.PointContainer;
 import Interop.Percept.Vision.ObjectPerceptType;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 
 public class TeleportArea extends MapObject {
 
-    public TeleportArea(PointContainer area) {
-        super(area, Arrays.asList(
-                new ModifyLocationEffect(area) {
-                    @Override
-                    public Vector2 get(AgentContainer<?> agentContainer) {
-                        return area.getAsPolygon().generateRandomLocation();
-                    }
-                }
-        ), ObjectPerceptType.Teleport);
+    private TeleportArea connected;
+
+    public TeleportArea(PointContainer area, TeleportArea connected) {
+        super(area, new ArrayList<>(), ObjectPerceptType.Teleport);
+        setConnected(connected);
     }
-    public targetAreaGui getGui()
+
+    public void setConnected(TeleportArea connected) {
+        if(connected != null)
+        {
+            getEffects().clear();
+            getEffects().add(
+                    new ModifyLocationEffect(getArea()) {
+                        @Override
+                        public Vector2 get(AgentContainer<?> agentContainer) {
+                            return TeleportArea.this.connected.getArea().getAsPolygon().generateRandomLocation();
+                        }
+                    }
+            );
+        }
+        this.connected = connected;
+    }
+
+    public TeleportArea getConnected()
     {
-        Vector2[] points = getArea().getAsPolygon().getPoints();
-        return new targetAreaGui(points[0].getX(), points[0].getY(), points[1].getX(), points[1].getY(), points[2].getX(), points[2].getY(), points[3].getX(), points[3].getY());
+        return this.connected;
     }
 
 }

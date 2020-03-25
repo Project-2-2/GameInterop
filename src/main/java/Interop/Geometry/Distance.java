@@ -9,7 +9,7 @@ public final class Distance {
 
     private double distance;
 
-    public Distance(Vector pointA, Vector pointB) {
+    public Distance(Point pointA, Point pointB) {
         this(Math.sqrt(
             Math.pow(pointA.getX() - pointB.getX(), 2) +
             Math.pow(pointA.getY() - pointB.getY(), 2)

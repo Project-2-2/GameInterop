@@ -1,6 +1,5 @@
 package Group9.gui;
 
-import Group9.tree.PointContainer;
 import javafx.scene.shape.Circle;
 
 public class YellGui extends Circle implements GameObject {

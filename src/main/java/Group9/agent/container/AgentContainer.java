@@ -1,12 +1,11 @@
 package Group9.agent.container;
 
-import Group9.PiMath;
 import Group9.map.area.EffectArea;
 import Group9.map.area.ModifyViewEffect;
 import Group9.math.Vector2;
 import Group9.tree.PointContainer;
 import Interop.Geometry.Distance;
-import Interop.Geometry.Vector;
+import Interop.Geometry.Point;
 import Interop.Percept.Vision.FieldOfView;
 
 import java.util.*;
@@ -20,7 +19,7 @@ public abstract class AgentContainer<T> {
 
     public Map<Cooldown, Integer> cooldowns = new HashMap<>();
 
-    public AgentContainer(T agent, Vector position, Vector direction, FieldOfView normalFOV)
+    public AgentContainer(T agent, Point position, Point direction, FieldOfView normalFOV)
     {
         this.agent = agent;
         this.shape = new PointContainer.Circle(Vector2.from(position), 0.5);
@@ -66,7 +65,7 @@ public abstract class AgentContainer<T> {
 
     public void moveTo(Vector2 position)
     {
-        this.shape.translate(this.getPosition().sub(position));
+        this.shape.translate(position.sub(this.getPosition()));
     }
 
     public void move(double distance)
@@ -76,19 +75,12 @@ public abstract class AgentContainer<T> {
 
     /**
      * Turns the agent by a certain amount of radians and returns the updated direction.
-     * @param radians
+     * @param theta
      * @return
      */
-    public Vector2 rotate(double radians)
+    public Vector2 rotate(double theta)
     {
-        final double theta = PiMath.getDistanceBetweenAngles(this.getDirection().getClockDirection(), radians);
-        final double x = direction.getX();
-        final double y = direction.getY();
-
-        this.direction = new Vector2(
-                x * Math.cos(theta) - y * Math.sin(theta),
-                x * Math.sin(theta) + y * Math.cos(theta)
-        );
+        this.direction = direction.rotated(theta);
         return this.direction;
     }
 
