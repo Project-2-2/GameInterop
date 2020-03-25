@@ -36,7 +36,7 @@ public class AgentGui extends Group implements GameObject
 		head.setRadius(radius);
 		if(guard) {head.setFill(Color.BLUE);head.setStroke(Color.BLACK);}
 		else {head.setFill(Color.RED);}
-		vision = new VisionConeGui(direction, x, y, range);
+		vision = new VisionConeGui(direction, x, y, range, visionRays);
 		getChildren().addAll(vision, head);
 		updateScale();
 		

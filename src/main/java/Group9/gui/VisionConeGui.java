@@ -3,6 +3,9 @@ package Group9.gui;
 import Group9.math.Vector2;
 import javafx.scene.shape.*;
 
+import java.util.Iterator;
+import java.util.Set;
+
 public class VisionConeGui extends Path implements GameObject {
     double range;
     double angle = 45;
@@ -13,11 +16,11 @@ public class VisionConeGui extends Path implements GameObject {
     double[] leftCoordinate;
     double[] rightCoordinate;
     Vector2 direction;
-    public VisionConeGui(Vector2 direction, double x, double y, double range)
+    public VisionConeGui(Vector2 direction, double x, double y, double range, Set<Vector2[]> visionRays)
     {
         super(new MoveTo(x,y));
         double directionAngle = direction.getAngle();
-        System.out.println("angle: " + directionAngle);
+        Iterator<Vector2[]> visionAtor = visionRays.iterator();
         this.range = range;
         this.direction = direction;
         leftCoordinate = getCoordinate(directionAngle - angle*0.5, range);
