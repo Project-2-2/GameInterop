@@ -247,5 +247,10 @@ public class Quadrilateral implements Area {
         double[] y = {pointA.getY(),pointB.getY(),pointC.getY(),pointD.getY()};
         return new ShadedArea(x, y);
     }
-
+    public double getHeight(){
+        return (pointA.getDistance(pointD).getValue());
+    }
+    public double getWidth(){
+        return (pointA.getDistance(pointB).getValue());
+    }
 }

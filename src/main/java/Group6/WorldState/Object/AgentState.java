@@ -41,13 +41,15 @@ public abstract class AgentState implements Object {
         return location;
     }
 
+    public Direction getDirection() {
+        return direction;
+    }
+
     public boolean isInside(Area area) {
         return location.isInside(area);
     }
 
-    public Direction getDirection() {
-        return direction;
-    }
+
 
     public Circle getCircle() {
         return new Circle(location, RADIUS);
