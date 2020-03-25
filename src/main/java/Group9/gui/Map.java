@@ -45,20 +45,18 @@ public class Map extends Application {
 		movingObjects = new Group(this.getMovingObjects());
 
 		Group root = new Group();
-
 		Scene scene = new Scene(root, 970, 630,Color.BURLYWOOD);
-		
 
-	    root.getChildren().addAll(map, staticObjects, movingObjects, new Legend(s.getWidth()-150, 30));
+		s.setScene(scene);
+		s.setMaximized(true);
 
+		root.getChildren().addAll(map, staticObjects, movingObjects, new Legend(s.getWidth()-150, 30));
 
-	    s.setScene(scene);
-	    s.setMaximized(true);
-	    s.setTitle("Map ");
-	 	s.setResizable(true);
-	    s.show();
+		s.setTitle("Map ");
+		s.setResizable(true);
+		s.show();
 
-	    Thread thread = new Thread(game);
+		Thread thread = new Thread(game);
 	    thread.start();
 
 	    Thread uithread = new Thread(() -> {
