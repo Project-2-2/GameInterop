@@ -14,9 +14,12 @@ import Interop.Agent.Guard;
 public class CollisionTest extends ExtendedUnitTest {
     public static void main(String [] args){
 
+        System.out.println("\n\nCollision Test\n");
+
         Scenario scenario= new Scenario(GroupTests.resources + "/scenario.txt");
-        System.out.println("COLLISION TEST");
-        it("checks end collison",()->{
+        
+        it("checks end collision", () -> {
+
             //COLLISION WHEN END STATE
             Distance distance= new Distance(10);
             Point point= new Point(30,10);
@@ -24,22 +27,22 @@ public class CollisionTest extends ExtendedUnitTest {
             AgentState agent= new GuardState(new RandomGuard(),point,Direction.fromRadians(1));
 
             Collision collision= new Collision(agent,distance,scenario);
-            //System.out.println(collision.checkCollision());
 
             assertTrue(collision.checkCollision());
+
         });
 
+        it("checks in between collision", () -> {
 
-        it("checks inbetween collision", ()->{
-            Distance distance= new Distance(100);
-            Point point= new Point(10,30);
+            Distance distance = new Distance(100);
+            Point point = new Point(10,30);
 
-            AgentState agent= new GuardState(new RandomGuard(),point,Direction.fromRadians(0));
+            AgentState agent = new GuardState(new RandomGuard(),point,Direction.fromRadians(0));
 
-            Collision collision= new Collision(agent,distance,scenario);
-            //System.out.println(collision.checkCollision());
+            Collision collision = new Collision(agent,distance,scenario);
 
             assertTrue(collision.checkCollision());
+
         });
     }
 

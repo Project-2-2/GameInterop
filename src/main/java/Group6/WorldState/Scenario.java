@@ -433,9 +433,6 @@ public class Scenario {
         return new Quadrilaterals(walls);
     }
 
-    //get all walls in an array list
-    public ArrayList<Quadrilateral> getWallsAL(){return walls;}
-
     public Quadrilaterals getDoors() {
         return new Quadrilaterals(doors);
     }

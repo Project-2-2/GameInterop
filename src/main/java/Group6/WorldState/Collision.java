@@ -11,32 +11,18 @@ import Group6.WorldState.Object.AgentState;
 /**
  * @author Florène Feyzi
  */
-
 public class Collision {
+
     private AgentState agent;
     private Distance dist;
     private Scenario scenario;
-
 
     public Collision(AgentState agent, Distance dist, Scenario scenario){
         this.agent=agent;
         this.dist=dist;
         this.scenario=scenario;
     }
-/*
-//Old intersect version
-    public boolean intersects(Circle circle, Quadrilateral wall){
-        double circleDistanceX= Math.abs(circle.getCenterX()-wall.getPointA().getX());
-        double circleDistanceY=Math.abs(circle.getCenterY()-wall.getPointA().getY());
 
-        if(circleDistanceX>(wall.getWidth()/2+circle.getRadius()) || circleDistanceY>(wall.getHeight()/2+circle.getRadius())) {
-            return false;
-        }
-        else {
-            return true;
-        }
-    }
-    */
     private boolean intersects(Circle c1, Quadrilateral r1) {
         float closestX = clamp((float)c1.getCenterX(), (int)r1.getPointA().getX(), (int)r1.getPointA().getX() + (int)r1.getWidth());
         float closestY = clamp((float)c1.getCenterY(), (int)r1.getPointA().getY() - (int)r1.getHeight(), (int)r1.getPointA().getY());
@@ -69,18 +55,16 @@ public class Collision {
         int yCoord = (int) (agent.getLocation().getY() + 0.5 * Math.cos(agent.getDirection().getRadians()));
         int distance = (int) (dist.getValue());
         Rectangle rectangle = new Rectangle(xCoord, yCoord, distance, 1);
-        System.out.println("Rectangle coordinates "+rectangle.getX() + " "+ rectangle.getY()+ " "+ rectangle.getSize().toString());
         Shape newRect = affineTransform.createTransformedShape(rectangle);
         int nbOfIntersection = 0;
         boolean checkCollision = false;
-        for (Quadrilateral wall : scenario.getWallsAL()) {
-
+        for (Quadrilateral wall : scenario.getWalls().getAll()) {
 
             //needs to be changed and create a rectangle for the walls
             if (newRect.intersects(wall.getPointA().getX(), wall.getPointA().getY(), wall.getWidth(), wall.getHeight())) {
                 nbOfIntersection++;
-                System.out.println("part1");
             }
+
         }
 
 
@@ -92,14 +76,13 @@ public class Collision {
         double CircleYCoord=agent.getLocation().getY()+dist.getValue()*Math.sin(agent.getDirection().getRadians());
         Circle circ= new Circle(CircleXCoord,CircleYCoord,0.5);
 
-        for(Quadrilateral wall: scenario.getWallsAL()) {
+        for(Quadrilateral wall: scenario.getWalls().getAll()) {
             if (intersects(circ, wall)) {
                 nbOfIntersection++;
-                System.out.println("part2");
             }
         }
+
         if (nbOfIntersection > 0) {
-            System.out.println("There are (will be) "+ nbOfIntersection+ " many collisions");
             checkCollision = true;
         }
 
