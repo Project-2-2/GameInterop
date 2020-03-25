@@ -59,6 +59,9 @@ public class MapFileParser {
                         if (gameMode == 0) {
                             explorer = new DrawableIntruderAgent(0, 0, 7.5, Color.CYAN);
                             drawableAgents.add(explorer);
+                            DrawableObject visionFieldExplorer = new DrawableObject(0,0,0,0,0,0);
+                            visionFieldExplorer.setFill(Color.YELLOW);
+                            drawableObjects.add(visionFieldExplorer);
                         }
                         break;
                     case "height":

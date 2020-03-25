@@ -212,6 +212,8 @@ public class GameRunner {
 //            rotate(new Rotate(Angle.fromDegrees(90)));
 //            System.out.println(intruder.getAngle().getDegrees());
             mapViewer.moveIntruder(intruder.position.getX(), intruder.position.getY());
+            mapViewer.drawAgentVisionField(intruder.position.getX(), intruder.position.getY(),
+                    intruder.getAngle().getRadians(), intruder.getViewRange().getValue());
         }
 
         for( Door door: mapInfo.doors){

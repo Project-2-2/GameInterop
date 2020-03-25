@@ -1,7 +1,10 @@
 package Group5.UI;
 
+import Interop.Geometry.Angle;
+import Interop.Geometry.Distance;
 import javafx.scene.Group;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Shape;
 
 public class MapViewer extends Group {
@@ -31,6 +34,27 @@ public class MapViewer extends Group {
                 ((DrawableIntruderAgent) shape).setCenterY(y);
 //                ((DrawableIntruderAgent) shape).setCenterX(((DrawableIntruderAgent) shape).getCenterX() + x);
 //                ((DrawableIntruderAgent) shape).setCenterY(((DrawableIntruderAgent) shape).getCenterY() + y);
+            }
+        }
+    }
+    
+    /**
+     *
+     * @param x position for the agent
+     * @param y position for the agent
+     * @param angle viewing angle for the agent in Radians
+     * @param distance for the visual field
+     */
+    public void drawAgentVisionField(double x, double y, double angle, double distance) {
+        double value1 = -45*Math.PI/180;
+        double value2 = 45*Math.PI/180;
+        double x2 = distance * Math.cos(angle + value1) + x;
+        double y2 = distance * Math.sin(angle + value1) + y;
+        double x3 = distance * Math.cos(angle + value2) + x;
+        double y3 = distance * Math.sin(angle + value2) + y;
+        for (Shape shape : MapFileParser.getDrawableObjects()) {
+            if (shape.getFill() == Color.YELLOW) {
+                ((DrawableObject) shape).changeCoordinates(x, y, x2, y2, x3, y3);
             }
         }
     }
