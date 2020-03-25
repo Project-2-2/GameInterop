@@ -220,8 +220,8 @@ public class PointContainerTest extends SimpleUnitTest {
             );
 
             PointContainer.Circle b = new PointContainer.Circle(new Vector2.Origin(), 0.5);
-            b.translate(new Vector2(-0.5, -0.5));
-            assertTrue(PointContainer.intersect(a, b));
+            b.translate(new Vector2(-0.49, -0.49));
+            assertTrue(!PointContainer.intersect(a, b));
         }
 
         {
@@ -310,6 +310,18 @@ public class PointContainerTest extends SimpleUnitTest {
         {
             PointContainer.Circle a = new PointContainer.Circle(new Vector2.Origin(), 1);
             PointContainer.Line b = new PointContainer.Line(new Vector2(-2, -2), new Vector2(-2, 2));
+            assertTrue(!PointContainer.intersect(a, b));
+        }
+
+        {
+            PointContainer.Circle a = new PointContainer.Circle(
+                    new Vector2(10.071979770056398, 118.34813766886532), 0.5
+            );
+
+            PointContainer.Line b = new PointContainer.Line(
+                    new Vector2(10, 77), new Vector2(10, 67)
+            );
+
             assertTrue(!PointContainer.intersect(a, b));
         }
     }

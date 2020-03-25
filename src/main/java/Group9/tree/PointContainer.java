@@ -294,6 +294,14 @@ public abstract class PointContainer {
         public Circle clone() {
             return new Circle(center.clone(), this.getRadius());
         }
+
+        @Override
+        public String toString() {
+            return "Circle{" +
+                    "center=" + center +
+                    ", radius=" + radius +
+                    '}';
+        }
     }
 
     public static class Line extends PointContainer{
@@ -474,6 +482,48 @@ public abstract class PointContainer {
 
         double dx = end.getX() - start.getX();
         double dy = end.getY() - start.getY();
+
+        if(dx == 0 || dy == 0)
+        {
+            Line top = new Line(circle.getCenter(), circle.getCenter().add(new Vector2(0, 1).mul(circle.getRadius())));
+            Line right = new Line(circle.getCenter(), circle.getCenter().add(new Vector2(1, 0).mul(circle.getRadius())));
+            Line bottom = new Line(circle.getCenter(), circle.getCenter().add(new Vector2(0, -1).mul(circle.getRadius())));
+            Line left = new Line(circle.getCenter(), circle.getCenter().add(new Vector2(-1, 0).mul(circle.getRadius())));
+
+            if(twoLinesIntersect(line, top) != null)
+            {
+                return new Vector2[] {top.getEnd()};
+            }
+            if(twoLinesIntersect(line, right) != null)
+            {
+                return new Vector2[] {right.getEnd()};
+            }
+            if(twoLinesIntersect(line, bottom) != null)
+            {
+                return new Vector2[] {bottom.getEnd()};
+            }
+            if(twoLinesIntersect(line, left) != null)
+            {
+                return new Vector2[] {left.getEnd()};
+            }
+
+            /*Line a = new Line(circle.getCenter(), circle.getCenter().add(line.getStart().sub(circle.getCenter()).normalise().mul(circle.getRadius())));
+            Line b = new Line(circle.getCenter(), circle.getCenter().add(line.getEnd().sub(circle.getCenter()).normalise().mul(circle.getRadius())));
+
+            if(twoLinesIntersect(line, a) != null)
+            {
+                return new Vector2[] {circle.getCenter().add(line.getStart().sub(circle.getCenter()).normalise().mul(circle.getRadius()))};
+            }
+
+            if(twoLinesIntersect(line, b) != null)
+            {
+                return new Vector2[] {circle.getCenter().add(line.getEnd().sub(circle.getCenter()).normalise().mul(circle.getRadius()))};
+            }*/
+
+            return new Vector2[0];
+            //return new Vector2[0];
+        }
+
         double dr = Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2));
 
         double D = (start.getX() * end.getY()) - (end.getX() * start.getY());
