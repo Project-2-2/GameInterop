@@ -53,6 +53,7 @@ public class Map extends Application {
 	  	Scene scene = new Scene(root, 970, 630,Color.BURLYWOOD);
 
 	    s.setScene(scene);
+	    s.setMaximized(true);
 	    s.setTitle("Map ");
 	 	s.setResizable(true);
 	    s.show();
