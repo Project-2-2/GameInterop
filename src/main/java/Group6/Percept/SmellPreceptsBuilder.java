@@ -7,6 +7,9 @@ import Interop.Percept.Smell.SmellPercepts;
 
 import java.util.stream.Collectors;
 
+/**
+ * @author Tomasz Darmetko
+ */
 public class SmellPreceptsBuilder {
     public SmellPercepts buildPercepts(WorldState worldState, AgentState agentState) {
         return new SmellPercepts(

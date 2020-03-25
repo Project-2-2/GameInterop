@@ -3,6 +3,9 @@ package Group6.Geometry;
 import Group6.ExtendedUnitTest;
 import SimpleUnitTest.SimpleUnitTest;
 
+/**
+ * @author Tomasz Darmetko
+ */
 public class QuadrilateralTest extends ExtendedUnitTest {
 
     public static void main(String[] args) {

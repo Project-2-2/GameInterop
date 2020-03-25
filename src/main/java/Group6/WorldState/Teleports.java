@@ -13,6 +13,9 @@ import Interop.Percept.Vision.ObjectPerceptType;
 
 import java.util.*;
 
+/**
+ * @author Tomasz Darmetko
+ */
 public class Teleports implements Area {
 
     private List<Teleport> teleports;

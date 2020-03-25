@@ -7,6 +7,9 @@ import Interop.Geometry.Distance;
 import Interop.Geometry.Angle;
 import Interop.Percept.Percepts;
 
+/**
+ * @author Tomasz Darmetko
+ */
 abstract public class RandomAgent {
     protected Action getRandomAction(Percepts percepts, Distance maxMove, Angle maxRotate) {
         if(percepts.wasLastActionExecuted()) {

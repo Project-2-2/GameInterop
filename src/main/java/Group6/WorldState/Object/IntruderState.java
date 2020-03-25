@@ -11,6 +11,9 @@ import Group6.Geometry.Direction;
 import Group6.Geometry.Point;
 import Interop.Percept.Vision.ObjectPerceptType;
 
+/**
+ * @author Tomasz Darmetko
+ */
 public class IntruderState extends AgentState {
 
     public IntruderState(Intruder intruder, Point location, Direction direction) {

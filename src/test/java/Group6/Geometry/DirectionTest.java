@@ -2,6 +2,9 @@ package Group6.Geometry;
 
 import Group6.ExtendedUnitTest;
 
+/**
+ * @author Tomasz Darmetko
+ */
 public class DirectionTest extends ExtendedUnitTest {
 
     public static void main(String[] args) {

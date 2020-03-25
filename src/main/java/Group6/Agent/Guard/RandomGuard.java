@@ -6,6 +6,9 @@ import Interop.Agent.Guard;
 import Interop.Percept.GuardPercepts;
 import Interop.Percept.Percepts;
 
+/**
+ * @author Tomasz Darmetko
+ */
 public class RandomGuard extends RandomAgent implements Guard {
     public GuardAction getAction(GuardPercepts percepts) {
         return (GuardAction)getRandomAction(

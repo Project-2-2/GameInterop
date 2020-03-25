@@ -7,6 +7,9 @@ import Interop.Percept.Sound.SoundPercepts;
 
 import java.util.stream.Collectors;
 
+/**
+ * @author Tomasz Darmetko
+ */
 public class SoundPerceptsBuilder {
     public SoundPercepts buildPercepts(WorldState worldState, AgentState agentState) {
         return new SoundPercepts(

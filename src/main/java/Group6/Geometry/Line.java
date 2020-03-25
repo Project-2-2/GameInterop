@@ -1,5 +1,8 @@
 package Group6.Geometry;
 
+/**
+ * @author Tomasz Darmetko
+ */
 public class Line {
 
     private double A;

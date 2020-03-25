@@ -5,6 +5,9 @@ import Group6.GroupTests;
 import Group6.WorldState.Scenario;
 import SimpleUnitTest.SimpleUnitTest;
 
+/**
+ * @author Tomasz Darmetko
+ */
 public class GuardsTest extends SimpleUnitTest {
 
     public static void main(String[] args) {

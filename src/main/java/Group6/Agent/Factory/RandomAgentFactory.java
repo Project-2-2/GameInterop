@@ -8,6 +8,9 @@ import Interop.Agent.Intruder;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * @author Tomasz Darmetko
+ */
 public class RandomAgentFactory implements AgentFactory {
 
     public List<Intruder> createIntruders(int number) {

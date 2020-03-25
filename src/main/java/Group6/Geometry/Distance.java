@@ -4,6 +4,8 @@ import Interop.Utils.Require;
 
 /**
  * Represents an euclidean distance.
+ *
+ * @author Tomasz Darmetko
  */
 public final class Distance extends Vector{
 

@@ -8,6 +8,9 @@ import SimpleUnitTest.SimpleUnitTest;
 
 import java.nio.file.Paths;
 
+/**
+ * @author Tomasz Darmetko
+ */
 public class ScenarioTest extends ExtendedUnitTest {
 
     public static void main(String[] args) {

@@ -4,6 +4,8 @@ import Interop.Utils.Utils;
 
 /**
  * Represents an angle.
+ *
+ * @author Tomasz Darmetko
  */
 public class Angle {
 

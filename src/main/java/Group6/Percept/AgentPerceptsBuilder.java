@@ -8,6 +8,9 @@ import Interop.Percept.AreaPercepts;
 import Interop.Percept.GuardPercepts;
 import Interop.Percept.IntruderPercepts;
 
+/**
+ * @author Tomasz Darmetko
+ */
 public class AgentPerceptsBuilder {
 
     private VisionPerceptsBuilder visionPerceptsBuilder;

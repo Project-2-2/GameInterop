@@ -4,6 +4,9 @@ import Group6.Geometry.Point;
 import Group6.WorldState.Object.AgentState;
 import Interop.Percept.Vision.ObjectPerceptType;
 
+/**
+ * @author Tomasz Darmetko
+ */
 public class ObjectPercept {
 
     private ObjectPerceptType objectPerceptType;

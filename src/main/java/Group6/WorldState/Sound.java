@@ -6,6 +6,9 @@ import Group6.WorldState.Object.AgentState;
 import Interop.Percept.Sound.SoundPercept;
 import Interop.Percept.Sound.SoundPerceptType;
 
+/**
+ * @author Tomasz Darmetko
+ */
 public class Sound {
 
     private Point source;

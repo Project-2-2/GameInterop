@@ -11,6 +11,9 @@ import Interop.Agent.Intruder;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * @author Tomasz Darmetko
+ */
 public class WorldState {
 
     private int turn = 0;

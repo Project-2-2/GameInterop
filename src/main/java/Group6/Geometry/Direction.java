@@ -5,6 +5,8 @@ import Interop.Utils.Utils;
 /**
  * Represents a direction angle. This is an angle that indicates direction.
  * Therefore, the angle is limited to the range [0, 2*PI).
+ *
+ * @author Tomasz Darmetko
  */
 public final class Direction extends Angle {
 

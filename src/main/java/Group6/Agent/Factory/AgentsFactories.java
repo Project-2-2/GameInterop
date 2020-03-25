@@ -8,6 +8,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * @author Tomasz Darmetko
+ */
 public class AgentsFactories {
 
     final static private Map<String, AgentFactory> factories = new HashMap<>();

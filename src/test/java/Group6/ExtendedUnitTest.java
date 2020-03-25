@@ -4,6 +4,9 @@ import Group6.Geometry.*;
 import Group6.Geometry.Collection.Points;
 import SimpleUnitTest.SimpleUnitTest;
 
+/**
+ * @author Tomasz Darmetko
+ */
 public class ExtendedUnitTest extends SimpleUnitTest {
 
     /**

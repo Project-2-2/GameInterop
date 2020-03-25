@@ -5,6 +5,8 @@ import Interop.Utils.Utils;
 
 /**
  * Represents a point in the 2-dimensional, cartesian coordinate system.
+ *
+ * @author Tomasz Darmetko
  */
 public class Point extends Vector {
 

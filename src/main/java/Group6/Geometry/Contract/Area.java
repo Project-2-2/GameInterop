@@ -5,6 +5,9 @@ import Group6.Geometry.Distance;
 import Group6.Geometry.LineSegment;
 import Group6.Geometry.Point;
 
+/**
+ * @author Tomasz Darmetko
+ */
 public interface Area {
     boolean hasInside(Point point);
     boolean isInRange(Point point, Distance distance);

@@ -9,6 +9,9 @@ import SimpleUnitTest.SimpleUnitTest;
 
 import java.nio.file.Paths;
 
+/**
+ * @author Tomasz Darmetko
+ */
 public class GroupTests extends SimpleUnitTest {
 
     public final static String resources = Paths

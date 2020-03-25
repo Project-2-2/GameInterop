@@ -2,6 +2,9 @@ package Group6.Geometry;
 
 import Interop.Utils.Require;
 
+/**
+ * @author Tomasz Darmetko
+ */
 public class Vector {
 
     protected double x;

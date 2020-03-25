@@ -10,6 +10,9 @@ import Interop.Percept.GuardPercepts;
 import Interop.Percept.IntruderPercepts;
 import SimpleUnitTest.SimpleUnitTest;
 
+/**
+ * @author Tomasz Darmetko
+ */
 public class RandomGuardTest extends SimpleUnitTest {
 
     public static void main(String[] args) {

@@ -16,6 +16,9 @@ import Interop.Utils.Require;
 
 import java.util.Set;
 
+/**
+ * @author Tomasz Darmetko
+ */
 public abstract class AgentState implements Object {
 
     private final double RADIUS = 0.5;

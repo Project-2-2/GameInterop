@@ -8,6 +8,9 @@ import Interop.Action.Rotate;
 import Interop.Percept.IntruderPercepts;
 import SimpleUnitTest.SimpleUnitTest;
 
+/**
+ * @author Tomasz Darmetko
+ */
 public class RandomIntruderTest extends SimpleUnitTest {
 
     public static void main(String[] args) {

@@ -7,6 +7,9 @@ import Group6.WorldState.Object.GuardState;
 import Group6.WorldState.Object.IntruderState;
 import Interop.Action.*;
 
+/**
+ * @author Tomasz Darmetko
+ */
 public class Controller {
 
     private AgentPerceptsBuilder agentPerceptsBuilder;

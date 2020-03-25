@@ -19,6 +19,9 @@ import Interop.Percept.Vision.*;
 import java.util.Arrays;
 import java.util.HashSet;
 
+/**
+ * @author Tomasz Darmetko
+ */
 public class GuardPerceptsBuilder {
 
     public static GuardPercepts getSimple(boolean wasLastActionExecuted) {

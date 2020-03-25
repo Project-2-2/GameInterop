@@ -10,6 +10,9 @@ import Interop.Percept.Vision.ObjectPerceptType;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * @author Tomasz Darmetko
+ */
 public class Ray {
 
     private Point agentLocation;

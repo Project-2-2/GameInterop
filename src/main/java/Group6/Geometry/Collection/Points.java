@@ -9,6 +9,9 @@ import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+/**
+ * @author Tomasz Darmetko
+ */
 public class Points {
 
     private Set<Point> points;

@@ -3,6 +3,9 @@ package Group6.Geometry;
 import Group6.ExtendedUnitTest;
 import Group6.Geometry.Collection.Points;
 
+/**
+ * @author Tomasz Darmetko
+ */
 public class LineTest extends ExtendedUnitTest {
 
     public static void main(String[] args) {

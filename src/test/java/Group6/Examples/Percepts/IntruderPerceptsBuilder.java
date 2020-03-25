@@ -21,6 +21,9 @@ import Interop.Percept.Vision.*;
 import java.util.Arrays;
 import java.util.HashSet;
 
+/**
+ * @author Tomasz Darmetko
+ */
 public class IntruderPerceptsBuilder {
 
     public static IntruderPercepts getSimple(boolean wasLastActionExecuted) {

@@ -5,6 +5,9 @@ import Group6.WorldState.Scenario;
 import Group6.WorldState.WorldState;
 import Interop.Percept.Scenario.*;
 
+/**
+ * @author Tomasz Darmetko
+ */
 public class ScenarioPerceptsBuilder {
 
     public ScenarioPercepts buildPercepts(Scenario scenario, AgentState agentState) {

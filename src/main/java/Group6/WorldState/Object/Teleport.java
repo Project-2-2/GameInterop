@@ -10,6 +10,9 @@ import Interop.Percept.Vision.ObjectPerceptType;
 
 import java.util.Arrays;
 
+/**
+ * @author Tomasz Darmetko
+ */
 public class Teleport extends Quadrilaterals implements Object {
 
     private Quadrilateral thisSide;

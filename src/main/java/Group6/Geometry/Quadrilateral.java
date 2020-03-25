@@ -10,6 +10,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * @author Tomasz Darmetko
+ */
 public class Quadrilateral implements Area {
 
     private Point pointA;

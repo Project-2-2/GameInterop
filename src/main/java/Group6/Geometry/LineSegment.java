@@ -6,6 +6,9 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Function;
 
+/**
+ * @author Tomasz Darmetko
+ */
 public class LineSegment {
 
     private Point a;

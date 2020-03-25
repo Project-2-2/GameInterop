@@ -3,6 +3,9 @@ package Group6.Geometry;
 import Group6.ExtendedUnitTest;
 import Interop.Utils.Utils;
 
+/**
+ * @author Tomasz Darmetko
+ */
 public class VectorTest extends ExtendedUnitTest {
 
     public static void main(String[] args) {

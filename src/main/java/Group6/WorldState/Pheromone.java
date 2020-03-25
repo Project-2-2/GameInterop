@@ -9,6 +9,9 @@ import Interop.Action.DropPheromone;
 import Interop.Percept.Smell.SmellPercept;
 import Interop.Percept.Smell.SmellPerceptType;
 
+/**
+ * @author Tomasz Darmetko
+ */
 public class Pheromone {
 
     public enum Team {

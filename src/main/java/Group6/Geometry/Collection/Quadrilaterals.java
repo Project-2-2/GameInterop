@@ -11,6 +11,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * @author Tomasz Darmetko
+ */
 public class Quadrilaterals implements Area {
 
     private List<Quadrilateral> quadrilaterals;

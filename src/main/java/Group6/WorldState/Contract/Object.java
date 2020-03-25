@@ -8,6 +8,9 @@ import Interop.Percept.Vision.ObjectPerceptType;
 
 import java.util.Set;
 
+/**
+ * @author Tomasz Darmetko
+ */
 public interface Object extends Area {
     public ObjectPerceptType getType();
 }

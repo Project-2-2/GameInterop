@@ -4,6 +4,9 @@ import Group6.Agent.Factory.AgentsFactories;
 import Group6.GroupTests;
 import SimpleUnitTest.SimpleUnitTest;
 
+/**
+ * @author Tomasz Darmetko
+ */
 public class WorldStateTest extends SimpleUnitTest {
 
     public static void main(String[] args) {

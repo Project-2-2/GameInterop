@@ -3,6 +3,9 @@ package Group6.Geometry;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * @author Tomasz Darmetko
+ */
 public class QuadraticFormula {
 
     private double a;

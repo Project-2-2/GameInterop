@@ -7,6 +7,9 @@ import Group6.Geometry.Point;
 import Group6.WorldState.Object.AgentState;
 import Group6.WorldState.Object.IntruderState;
 
+/**
+ * @author Tomasz Darmetko
+ */
 public class AgentStateTest extends ExtendedUnitTest {
 
     public static void main(String[] args) {
