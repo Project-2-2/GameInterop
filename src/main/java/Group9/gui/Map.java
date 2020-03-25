@@ -1,7 +1,6 @@
 package Group9.gui;
 
 import Group9.Game;
-import Group9.agent.container.AgentContainer;
 import Group9.map.GameMap;
 import Group9.map.objects.MapObject;
 import Group9.map.parser.Parser;
@@ -17,7 +16,6 @@ import javafx.stage.Stage;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.function.Function;
 
 public class Map extends Application {
 
@@ -48,12 +46,13 @@ public class Map extends Application {
 
 
 	    Group root = new Group();
-	    root.getChildren().addAll(map, staticObjects, movingObjects);
+	    root.getChildren().addAll(map, staticObjects, movingObjects, new Legend(1800, 50));
 
 	  	Scene scene = new Scene(root, 970, 630,Color.BURLYWOOD);
 
 	    s.setScene(scene);
 	    s.setMaximized(true);
+	    System.out.println("max height: " + s.getMaxHeight());
 	    s.setTitle("Map ");
 	 	s.setResizable(true);
 	    s.show();

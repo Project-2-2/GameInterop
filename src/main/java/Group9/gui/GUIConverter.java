@@ -93,7 +93,7 @@ public class GUIConverter {
         else if(object instanceof TeleportArea)
         {
             Vector2[] points = object.getArea().getAsPolygon().getPoints();
-            return new targetAreaGui(points[0].getX(), points[0].getY(), points[1].getX(), points[1].getY(), points[2].getX(),
+            return new TeleportGui(points[0].getX(), points[0].getY(), points[1].getX(), points[1].getY(), points[2].getX(),
                     points[2].getY(), points[3].getX(), points[3].getY());
         }
         else if(object instanceof Window)
