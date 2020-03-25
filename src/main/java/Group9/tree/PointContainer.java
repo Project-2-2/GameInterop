@@ -246,7 +246,9 @@ public abstract class PointContainer {
 
         @Override
         public PointContainer.Polygon clone() {
-            return new Polygon(this.points);
+            return new Polygon(
+                    Arrays.stream(this.points).map(Vector2::clone).toArray(Vector2[]::new)
+            );
         }
 
         @Override
@@ -354,7 +356,7 @@ public abstract class PointContainer {
 
         @Override
         public PointContainer.Line clone() {
-            return new Line(this.start, this.end);
+            return new Line(this.start.clone(), this.end.clone());
         }
     }
 
@@ -411,7 +413,8 @@ public abstract class PointContainer {
                         return true;
                     }
                 }
-                return false;
+
+                return (polygon.isPointInside(line.getStart()) || polygon.isPointInside(line.getEnd()));
             }
 
         }
@@ -473,9 +476,9 @@ public abstract class PointContainer {
         double dy = end.getY() - start.getY();
         double dr = Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2));
 
-        double D = start.getX() * end.getY() - end.getX() * start.getY();
+        double D = (start.getX() * end.getY()) - (end.getX() * start.getY());
 
-        double discriminant = Math.pow(circle.getRadius(), 2) - Math.pow(dr, 2) - Math.pow(D, 2);
+        double discriminant = Math.pow(circle.getRadius(), 2) * Math.pow(dr, 2) - Math.pow(D, 2);
 
         if(discriminant < 0)
         {
@@ -545,25 +548,66 @@ public abstract class PointContainer {
 
     /**
      * Calculate whether 2 lines intersect with each other
-     * @param vec1 start point of line 1.
-     * @param vec2 start point of line 2.
-     * @param vec3 start point of line 3.
-     * @param vec4 start point of line 4.
+     * @param a_start start point of line 1.
+     * @param a_end end point of line 1.
+     * @param b_start start point of line 2.
+     * @param b_end end point of line 2.
      * @return the vector that points to the intersection point, returns null when no intersection is found
      */
-    private static Vector2 twoLinesIntersect(Vector2 vec1, Vector2 vec2, Vector2 vec3, Vector2 vec4){
+    private static Vector2 twoLinesIntersect(Vector2 a_start, Vector2 a_end, Vector2 b_start, Vector2 b_end){
         //http://mathworld.wolfram.com/Line-LineIntersection.html
-        double x1 = vec1.getX();
-        double y1 = vec1.getY();
-        double x2 = vec2.getX();
-        double y2 = vec2.getY();
-        double x3 = vec3.getX();
-        double y3 = vec3.getY();
-        double x4 = vec4.getX();
-        double y4 = vec4.getY();
+        double x1 = a_start.getX();
+        double y1 = a_start.getY();
+        double x2 = a_end.getX();
+        double y2 = a_end.getY();
+        double x3 = b_start.getX();
+        double y3 = b_start.getY();
+        double x4 = b_end.getX();
+        double y4 = b_end.getY();
         double parallelDenominator = determinant(x1-x2, y1-y2, x3-x4, y3-y4);
 
         if(parallelDenominator == 0.0){
+
+            // Note: when the lines are parallel we have to check whether they contain one another
+            // 1. First, we check if they share the same y-intercept, if they do not share the same intercept then
+            //      they are parallel but can not intercept one another.
+            // 2. Check if the start, end or both points are inside the other line.
+            // mx+b=y -> b = y-mx
+            double _a_y_intercept = a_start.getY() - (a_end.getY() - a_start.getY()) / (a_end.getX() - a_start.getX()) * a_start.getX();
+            double _b_y_intercept = b_start.getY() - (b_end.getY() - b_start.getY()) / (b_end.getX() - b_start.getX()) * b_start.getX();
+
+            //-- check y intercept
+            if(_a_y_intercept != _b_y_intercept)
+            {
+                return null;
+            }
+
+            if(a_start.getX() >= b_start.getX() && a_end.getX() <= b_end.getX())
+            {
+                return a_start;
+            }
+            else if(a_start.getX() >= b_start.getX() && a_start.getX() <= b_end.getX() && a_end.getX() >= b_end.getX())
+            {
+                return a_start;
+            }
+            else if(a_start.getX() <= b_start.getX() && a_end.getX() >= b_start.getX() && a_end.getX() <= b_end.getX())
+            {
+                return b_end;
+            }
+
+            if (b_start.getX() >= a_start.getX() && b_end.getX() <= a_end.getX())
+            {
+                return b_start;
+            }
+            else if(b_start.getX() >= a_start.getX() && b_start.getX() <= a_end.getX() && b_end.getX() >= a_end.getX())
+            {
+                return b_start;
+            }
+            else if(b_start.getX() <= a_start.getX() && b_end.getX() >= a_start.getX() && b_end.getX() <= a_end.getX())
+            {
+                return b_end;
+            }
+
             return null;
         }
 
