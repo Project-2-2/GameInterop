@@ -23,7 +23,8 @@ public class Collision {
         this.dist=dist;
         this.scenario=scenario;
     }
-
+/*
+//Old intersect version
     public boolean intersects(Circle circle, Quadrilateral wall){
         double circleDistanceX= Math.abs(circle.getCenterX()-wall.getPointA().getX());
         double circleDistanceY=Math.abs(circle.getCenterY()-wall.getPointA().getY());
@@ -34,6 +35,26 @@ public class Collision {
         else {
             return true;
         }
+    }
+    */
+    private boolean intersects(Circle c1, Quadrilateral r1) {
+        float closestX = clamp((float)c1.getCenterX(), (int)r1.getPointA().getX(), (int)r1.getPointA().getX() + (int)r1.getWidth());
+        float closestY = clamp((float)c1.getCenterY(), (int)r1.getPointA().getY() - (int)r1.getHeight(), (int)r1.getPointA().getY());
+
+        float distanceX = (float)c1.getCenterX() - closestX;
+        float distanceY = (float)c1.getCenterY() - closestY;
+
+        return Math.pow(distanceX, 2) + Math.pow(distanceY, 2) < Math.pow(c1.getRadius(), 2);
+    }
+
+    public static float clamp(float value, float min, float max) {
+        float x = value;
+        if (x < min) {
+            x = min;
+        } else if (x > max) {
+            x = max;
+        }
+        return x;
     }
 
     public boolean checkCollision() {
@@ -48,6 +69,7 @@ public class Collision {
         int yCoord = (int) (agent.getLocation().getY() + 0.5 * Math.cos(agent.getDirection().getRadians()));
         int distance = (int) (dist.getValue());
         Rectangle rectangle = new Rectangle(xCoord, yCoord, 1, distance);
+        System.out.println("Rectangle coordinates "+rectangle.getWidth()+" "+rectangle.getHeight());
         Shape newRect = affineTransform.createTransformedShape(rectangle);
         int nbOfIntersection = 0;
         boolean checkCollision = false;
