@@ -49,8 +49,6 @@ public abstract class AgentState implements Object {
         return location.isInside(area);
     }
 
-
-
     public Circle getCircle() {
         return new Circle(location, RADIUS);
     }
@@ -127,6 +125,9 @@ public abstract class AgentState implements Object {
     }
 
     public void rotate(WorldState worldState, Rotate action) {
+        if(Math.abs(action.getAngle().getRadians()) > worldState.getScenario().getMaxRotationAngle().getRadians()) {
+            throw new IllegalAction("move", "rotation bigger than allowed");
+        }
         requireNoCooldown(action);
         direction = direction.getChangedBy(
             Angle.fromInteropAngle(action.getAngle())
@@ -153,6 +154,15 @@ public abstract class AgentState implements Object {
 
     protected void requireNoCooldown(Action action) {
         if (hasCooldown()) throw new IllegalActionDuringCooldown(action.getClass().getName());
+    }
+
+    class IllegalAction extends RuntimeException {
+        public IllegalAction(String action, String explanation) {
+            super(
+                "Following action: " + action + " is illegal!\n" +
+                "Explanation: " + explanation
+            );
+        }
     }
 
     class IllegalActionDuringCooldown extends RuntimeException {
