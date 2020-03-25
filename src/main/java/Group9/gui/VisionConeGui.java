@@ -8,7 +8,7 @@ import java.util.Set;
 
 public class VisionConeGui extends Path implements GameObject {
     double range;
-    double angle = 45;
+    double angle;
     double maxX;
     double maxY;
     double x;
@@ -17,10 +17,11 @@ public class VisionConeGui extends Path implements GameObject {
     double[] middleCoordinate;
     double[] rightCoordinate;
     Vector2 direction;
-    boolean moreAccurate = true;
-    public VisionConeGui(Vector2 direction, double x, double y, double range, Set<Vector2[]> visionRays)
+    boolean moreAccurate = false;
+    public VisionConeGui(Vector2 direction, double x, double y, double range, Set<Vector2[]> visionRays, double viewAngle)
     {
         super(new MoveTo(x,y));
+        this.angle = viewAngle;
         double directionAngle = direction.getAngle();
         Vector2[][] rays = visionRays.toArray(new Vector2[][]{});
         this.range = range;
