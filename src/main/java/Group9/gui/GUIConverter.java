@@ -3,6 +3,7 @@ package Group9.gui;
 import Group9.agent.container.AgentContainer;
 import Group9.agent.container.GuardContainer;
 import Group9.agent.container.IntruderContainer;
+import Group9.map.GameMap;
 import Group9.map.dynamic.DynamicObject;
 import Group9.map.dynamic.Pheromone;
 import Group9.map.dynamic.Sound;
@@ -12,20 +13,22 @@ import Group9.tree.PointContainer;
 import Interop.Percept.Vision.FieldOfView;
 import javafx.scene.Node;
 
+import java.util.Set;
+
 public class GUIConverter {
 
-    public static Node convert(AgentContainer<?> agentContainer, FieldOfView fov)
+    public static Node convert(AgentContainer<?> agentContainer, FieldOfView fov, Set<Vector2[]> visionRays)
     {
         PointContainer.Circle circle = agentContainer.getShape();
         if(agentContainer instanceof GuardContainer)
         {
             return new GuardGui(circle.getCenter().getX(), circle.getCenter().getY(), circle.getRadius(),
-                    agentContainer.getDirection(), fov.getRange().getValue());
+                    agentContainer.getDirection(), fov.getRange().getValue(), visionRays);
         }
         else if(agentContainer instanceof IntruderContainer)
         {
             return new IntruderGui(circle.getCenter().getX(), circle.getCenter().getY(), circle.getRadius(),
-                    agentContainer.getDirection(), fov.getRange().getValue());
+                    agentContainer.getDirection(), fov.getRange().getValue(), visionRays);
         }
 
         throw new IllegalArgumentException();
