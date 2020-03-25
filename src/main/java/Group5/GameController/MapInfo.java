@@ -90,6 +90,7 @@ public class MapInfo {
     public void readMap(String filePath){
         try (Scanner scanner =  new Scanner(Paths.get(filePath), ENCODING.name())){
             while (scanner.hasNextLine()){
+                //System.out.println("ak");
                 parseLine(scanner.nextLine());
             }
         }
