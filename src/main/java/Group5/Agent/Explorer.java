@@ -2,7 +2,6 @@ package Group5.Agent;
 
 import Group5.GameController.AgentController;
 import Group5.GameController.Area;
-import Group5.GameController.MapInfo;
 import Group5.GameController.Vision;
 import Interop.Action.Action;
 import Interop.Action.Move;
@@ -14,7 +13,6 @@ import Interop.Percept.Vision.ObjectPercept;
 import Interop.Percept.Vision.ObjectPerceptType;
 import Interop.Percept.Vision.ObjectPercepts;
 
-import java.security.AccessController;
 import java.util.*;
 
 import static Interop.Percept.Vision.ObjectPerceptType.Wall;
@@ -79,7 +77,7 @@ public class Explorer {
     }
 
     public void BFS(Vertex v, List<Edge> adjacentEdges) {
-        if (!g.getVertexes().contains(v)) g.addVertex(v);
+        if (!g.getVertices().contains(v)) g.addVertex(v);
         for (Edge e : adjacentEdges) {
             if (!g.getEdges().contains(e)) g.addEdge(e);
             //Vertex w = e.getDestination();

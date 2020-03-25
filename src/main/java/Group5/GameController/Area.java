@@ -13,14 +13,14 @@ public class Area {
     protected int topBoundary;
     protected int bottomBoundary;
 
-    protected int x1;
-    protected int x2;
-    protected int x3;
-    protected int x4;
-    protected int y1;
-    protected int y2;
-    protected int y3;
-    protected int y4;
+    protected double x1;
+    protected double x2;
+    protected double x3;
+    protected double x4;
+    protected double y1;
+    protected double y2;
+    protected double y3;
+    protected double y4;
 
     protected ObjectPerceptType type;
 
@@ -31,14 +31,14 @@ public class Area {
         rightBoundary=Math.max(Math.max(x1,x2),Math.max(x3,x4));
         topBoundary=Math.min(Math.max(y1,y2),Math.max(y3,y4));
         bottomBoundary=Math.max(Math.max(y1,y2),Math.max(y3,y4));
-        this.x1=x1;
-        this.x2=x2;
-        this.x3=x3;
-        this.x4=x4;
-        this.y1=y1;
-        this.y2=y2;
-        this.y3=y3;
-        this.y4=y4;
+        this.x1 = x1;
+        this.x2 = x2;
+        this.x3 = x3;
+        this.x4 = x4;
+        this.y1 = y1;
+        this.y2 = y2;
+        this.y3 = y3;
+        this.y4 = y4;
         this.type = ObjectPerceptType.Wall;
 
         areas.add(this);
@@ -78,43 +78,108 @@ public class Area {
         areas.add(this);
     }
 
+    /**
+     * For area recognition
+     */
+    public Area(double x1, double y1, double x2, double y2, ObjectPerceptType objectType) {
+        setPositions(x1,y1,x2,y2);
+        this.type = objectType;
+    }
+
+    /**
+     * For Area recognition
+     */
+    public void setPositions(double x1, double y1, double x2, double y2) {
+        if (x1 == x2) {
+            if (y1 < y2) {
+                this.x1 = x1;
+                this.y1 = y1;
+                this.x2 = x2;
+                this.y2 = y2;
+
+            }else {
+                this.x1 = x2;
+                this.y1 = y2;
+                this.x2 = x1;
+                this.y2 = y1;
+            }
+
+        }else if (y1 == y2) {
+            if (x1 < x2) {
+                this.x1 = x1;
+                this.y1 = y1;
+                this.x2 = x2;
+                this.y2 = y2;
+
+            }else {
+                this.x1 = x2;
+                this.y1 = y2;
+                this.x2 = x1;
+                this.y2 = y1;
+            }
+
+
+        }else if (x1 < x2 && y1 < y2) {
+            this.x1 = x1;
+            this.y1 = y1;
+            this.x3 = x2;
+            this.y3 = y2;
+
+        }else if (x1 > x2 && y1 > y2) {
+            this.x1 = x2;
+            this.y1 = y2;
+            this.x3 = x1;
+            this.y3 = y1;
+        }
+    }
+
+    public void addPoint(Point p) {
+        double x = p.getX();
+        double y = p.getY();
+
+        if (x < this.x1 && y < this.y1) {
+            this.x1 = x;
+            this.y1 = y;
+
+        }else if (x > this.x2 && y < this.y2) {
+            this.x2 = x;
+            this.y2 = y;
+
+        }else if (x > this.x3 && y > this.y3) {
+            this.x3 = x;
+            this.y3 = y;
+
+        }else if (x < this.x4 && y > this.y4) {
+            this.x4 = x;
+            this.y4 = y;
+        }
+    }
+
 
     public ObjectPerceptType getObjectsPerceptType() {
         return this.type;
     }
 
-
-
-    public ArrayList<Integer> getPosition() {
-        ArrayList<Integer> positions = new ArrayList<>();
-        positions.add(this.x1);
-        positions.add(this.y1);
-        positions.add(this.x2);
-        positions.add(this.y2);
-        positions.add(this.x3);
-        positions.add(this.y3);
-        positions.add(this.x4);
-        positions.add(this.y4);
-        return positions;
-    }
-
     /**
-     * @return a list of Points that represents the sides of an area
+     * @return a list of Points that represents the corners of an area
      */
     public ArrayList<ArrayList<Point>> getPositions() {
-        ArrayList<ArrayList<Point>> positions = new ArrayList<>(4);
+        ArrayList<ArrayList<Point>> positions = new ArrayList<>();
         positions.add(new ArrayList<>());
+        positions.get(-1).add(new Point(this.x1,this.y1));
+        positions.get(-1).add(new Point(this.x2,this.y2));
+
         positions.add(new ArrayList<>());
+        positions.get(-1).add(new Point(this.x2,this.y2));
+        positions.get(-1).add(new Point(this.x3,this.y3));
+
         positions.add(new ArrayList<>());
+        positions.get(-1).add(new Point(this.x3,this.y3));
+        positions.get(-1).add(new Point(this.x4,this.y4));
+
         positions.add(new ArrayList<>());
-        positions.get(0).add(new Point(this.x1,this.y1));
-        positions.get(0).add(new Point(this.x2,this.y2));
-        positions.get(1).add(new Point(this.x2,this.y2));
-        positions.get(1).add(new Point(this.x3,this.y3));
-        positions.get(2).add(new Point(this.x3,this.y3));
-        positions.get(2).add(new Point(this.x4,this.y4));
-        positions.get(3).add(new Point(this.x4,this.y4));
-        positions.get(3).add(new Point(this.x1,this.y1));
+        positions.get(-1).add(new Point(this.x4,this.y4));
+        positions.get(-1).add(new Point(this.x1,this.y1));
         return positions;
     }
 

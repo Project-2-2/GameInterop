@@ -1,31 +1,34 @@
 package Group5.Agent;
 
+import Group5.GameController.Area;
 import Interop.Percept.Vision.ObjectPercept;
 
 public class Vertex {
-    final private String id;
     private boolean visited;
     private ObjectPercept object;
+    private Area area;
 
-
-    public Vertex(String id, boolean visited, ObjectPercept object) {
-        this.id = id;
+    public Vertex(boolean visited, ObjectPercept object) {
         this.visited = visited;
         this.object = object;
+        this.area =null;
     }
 
-    public Vertex(String id, String name) {
-        this.id = id;
-        this.visited = false;
+    public Vertex(boolean visited, Area area) {
+        this.visited = visited;
+        this.area = area;
+        this.object = null;
+
     }
 
     public ObjectPercept getObject() {
         return this.object;
     }
 
-    public String getId() {
-        return id;
+    public Area getArea() {
+        return this.area;
     }
+
 
     public boolean isVisited() {
         return visited;
@@ -35,19 +38,21 @@ public class Vertex {
         this.visited = visited;
     }
 
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        Vertex other = (Vertex) obj;
-        if (id == null) {
-            return other.id == null;
-        } else return id.equals(other.id);
+    public boolean isAreaVertex() {
+        return this.area != null;
     }
 
+}
 
+class ObjectPerceptVertex extends Vertex {
+    public ObjectPerceptVertex(boolean visited, ObjectPercept object) {
+        super(visited, object);
+
+    }
+}
+
+class AreaVertex extends  Vertex {
+    public AreaVertex(boolean visited, Area area) {
+        super(visited, area);
+    }
 }
