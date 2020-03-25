@@ -27,7 +27,7 @@ public class AgentsFactory {
         for(int i = 0; i < number; i++)
         {
             guards.add(new RandomAgent());
-            guards.add(new DeepSpace());
+            //guards.add(new DeepSpace());
         }
         return guards;
     }
