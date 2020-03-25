@@ -14,21 +14,45 @@ public class Graph<T> {
         return vertices;
     }
 
-    public void add(Vertex<T> ...vertex)
+    public boolean has(Vertex<T> vertex)
     {
-        this.vertices.addAll(Arrays.asList(vertex));
+        return this.vertices.contains(vertex);
     }
 
-    public void addEdge(Vertex<T> source, Vertex<T> target, double cost, boolean undirected)
+    public boolean has(Vertex<T> source, Vertex<T> target)
+    {
+        return this.edges.containsKey(calculateEdgeHash(source, target));
+    }
+
+    public Edge<T> get(Vertex<T> source, Vertex<T> target)
+    {
+        return this.edges.getOrDefault(calculateEdgeHash(source, target), null);
+    }
+
+    @SafeVarargs
+    public final boolean add(Vertex<T>... vertices)
+    {
+        for(Vertex<T> v : vertices)
+        {
+            if(has(v))
+            {
+                return false;
+            }
+        }
+        this.vertices.addAll(Arrays.asList(vertices));
+        return true;
+    }
+
+    public boolean add(Vertex<T> source, Vertex<T> target, double cost, boolean undirected)
     {
         Edge<T> edge = new Edge<>(source, target, cost);
-        //---
-        long hash = 0L;
-        hash |= source.hashCode();
-        hash <<= 32;
-        hash |= target.hashCode();
 
-        this.edges.put(hash, edge);
+        if(has(source, target))
+        {
+            return false;
+        }
+
+        this.edges.put(calculateEdgeHash(source, target), edge);
 
         //---
         if(!this.neighbours.containsKey(source.hashCode()))
@@ -40,8 +64,10 @@ public class Graph<T> {
 
         if(undirected)
         {
-            addEdge(target, source, cost, false);
+            return add(target, source, cost, false);
         }
+
+        return true;
     }
 
     public List<Edge<T>> getNeighbours(Vertex<T> source)
@@ -96,6 +122,16 @@ public class Graph<T> {
 
         return path;
 
+    }
+
+    private final static long calculateEdgeHash(Vertex<?> source, Vertex<?> target)
+    {
+        //---
+        long hash = 0L;
+        hash |= source.hashCode();
+        hash <<= 32;
+        hash |= target.hashCode();
+        return hash;
     }
 
 }

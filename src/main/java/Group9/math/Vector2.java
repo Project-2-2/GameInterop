@@ -30,12 +30,21 @@ public class Vector2 {
 
     public Vector2 normalise()
     {
+        if(this.length == 0)
+        {
+            return new Vector2(0, 0);
+        }
         return new Vector2(this.x / this.length, this.y / this.length);
     }
 
     public double length()
     {
         return this.length;
+    }
+
+    public Vector2 mul(Vector2 other)
+    {
+        return mul(other.getX(), other.getY());
     }
 
     public Vector2 mul(double x, double y)
