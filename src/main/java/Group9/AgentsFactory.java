@@ -1,6 +1,7 @@
 package Group9;
 
 import Group9.agent.DeepSpace;
+import Group9.agent.RandomAgent;
 import Interop.Agent.Guard;
 import Interop.Agent.Intruder;
 
@@ -25,6 +26,7 @@ public class AgentsFactory {
         List<Guard> guards = new ArrayList<>();
         for(int i = 0; i < number; i++)
         {
+            guards.add(new RandomAgent());
             guards.add(new DeepSpace());
         }
         return guards;

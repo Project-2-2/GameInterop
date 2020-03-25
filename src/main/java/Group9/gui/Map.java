@@ -1,7 +1,6 @@
 package Group9.gui;
 
 import Group9.Game;
-import Group9.agent.container.AgentContainer;
 import Group9.map.GameMap;
 import Group9.map.objects.MapObject;
 import Group9.map.parser.Parser;
@@ -17,7 +16,6 @@ import javafx.stage.Stage;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.function.Function;
 
 public class Map extends Application {
 
@@ -31,26 +29,30 @@ public class Map extends Application {
 		VBox vBox = new VBox();
 	    vBox.setPrefWidth(200);
 	    vBox.setPrefHeight(50);
-	    //Map
-	    Rectangle map = new Rectangle(0,0,120*Scale.scale,80*Scale.scale);
-	    map.setFill(Color.LIGHTGREEN);
-	    map.setStroke(Color.BLACK);
-	    map.setStrokeWidth(3);
+
 
 	    //Draw Map
 		gameMap = Parser.parseFile("./src/main/java/Group9/map/maps/test_2.map");
 		game = new Game(gameMap, 1);
+
+		//Map
+		Rectangle map = new Rectangle(0,0,gameMap.getWidth()*Scale.scale,gameMap.getHeight()*Scale.scale);
+		map.setFill(Color.LIGHTGREEN);
+		map.setStroke(Color.BLACK);
+		map.setStrokeWidth(3);
 
 		Group staticObjects = new Group(this.getStaticObjects());
 		movingObjects = new Group(this.getMovingObjects());
 
 
 	    Group root = new Group();
-	    root.getChildren().addAll(map, staticObjects, movingObjects);
+	    root.getChildren().addAll(map, staticObjects, movingObjects, new Legend(1790, 50));
 
 	  	Scene scene = new Scene(root, 970, 630,Color.BURLYWOOD);
 
 	    s.setScene(scene);
+	    s.setMaximized(true);
+	    System.out.println("max height: " + s.getMaxHeight());
 	    s.setTitle("Map ");
 	 	s.setResizable(true);
 	    s.show();
@@ -82,8 +84,8 @@ public class Map extends Application {
 		//@performance we would probably want to use a mutex or something like that instead of always copying the entire list
 		new ArrayList<>(gameMap.getDynamicObjects()).stream().filter(Objects::nonNull).forEach(d -> movingObjects.getChildren().add(GUIConverter.convert(d)));
 
-		game.getGuards().forEach(g -> movingObjects.getChildren().add(GUIConverter.convert(g, g.getFOV(gameMap.getEffectAreas(g)))));
-		game.getIntruders().forEach(i -> movingObjects.getChildren().add(GUIConverter.convert(i, i.getFOV(gameMap.getEffectAreas(i)))));
+		game.getGuards().forEach(g -> movingObjects.getChildren().add(GUIConverter.convert(g, g.getFOV(gameMap.getEffectAreas(g)), gameMap.getAgentVisionCone(g, g.getFOV(gameMap.getEffectAreas(g))), gameMap.getViewAngle().getDegrees())));
+		game.getIntruders().forEach(i -> movingObjects.getChildren().add(GUIConverter.convert(i, i.getFOV(gameMap.getEffectAreas(i)), gameMap.getAgentVisionCone(i, i.getFOV(gameMap.getEffectAreas(i))), gameMap.getViewAngle().getDegrees())));
 		return movingObjects;
 	}
 

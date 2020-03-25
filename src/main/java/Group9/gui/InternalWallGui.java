@@ -15,6 +15,7 @@ public class InternalWallGui extends Polygon implements GameObject {
         this.ys = ys;
         setFill(Color.LAVENDER);
         setStroke(Color.BLACK);
+        updateScale();
     }
     public InternalWallGui()
     {

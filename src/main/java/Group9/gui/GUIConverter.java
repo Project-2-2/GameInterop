@@ -3,6 +3,7 @@ package Group9.gui;
 import Group9.agent.container.AgentContainer;
 import Group9.agent.container.GuardContainer;
 import Group9.agent.container.IntruderContainer;
+import Group9.map.GameMap;
 import Group9.map.dynamic.DynamicObject;
 import Group9.map.dynamic.Pheromone;
 import Group9.map.dynamic.Sound;
@@ -12,20 +13,22 @@ import Group9.tree.PointContainer;
 import Interop.Percept.Vision.FieldOfView;
 import javafx.scene.Node;
 
+import java.util.Set;
+
 public class GUIConverter {
 
-    public static Node convert(AgentContainer<?> agentContainer, FieldOfView fov)
+    public static Node convert(AgentContainer<?> agentContainer, FieldOfView fov, Set<Vector2[]> visionRays, double viewAngle)
     {
         PointContainer.Circle circle = agentContainer.getShape();
         if(agentContainer instanceof GuardContainer)
         {
             return new GuardGui(circle.getCenter().getX(), circle.getCenter().getY(), circle.getRadius(),
-                    agentContainer.getDirection(), fov.getRange().getValue());
+                    agentContainer.getDirection(), fov.getRange().getValue(), visionRays, viewAngle);
         }
         else if(agentContainer instanceof IntruderContainer)
         {
             return new IntruderGui(circle.getCenter().getX(), circle.getCenter().getY(), circle.getRadius(),
-                    agentContainer.getDirection(), fov.getRange().getValue());
+                    agentContainer.getDirection(), fov.getRange().getValue(), visionRays, viewAngle);
         }
 
         throw new IllegalArgumentException();
@@ -90,7 +93,7 @@ public class GUIConverter {
         else if(object instanceof TeleportArea)
         {
             Vector2[] points = object.getArea().getAsPolygon().getPoints();
-            return new targetAreaGui(points[0].getX(), points[0].getY(), points[1].getX(), points[1].getY(), points[2].getX(),
+            return new TeleportGui(points[0].getX(), points[0].getY(), points[1].getX(), points[1].getY(), points[2].getX(),
                     points[2].getY(), points[3].getX(), points[3].getY());
         }
         else if(object instanceof Window)

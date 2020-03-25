@@ -10,8 +10,11 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.util.Duration;
 
+import java.util.Set;
+
 public class AgentGui extends Group implements GameObject
 {
+	private double viewAngle;
 	double x;
 	double y;
 	final double r;
@@ -23,8 +26,9 @@ public class AgentGui extends Group implements GameObject
 	final VisionConeGui vision;
 
 	
-	public AgentGui(double x, double y, double radius, Vector2 direction, double range, boolean guard)
+	public AgentGui(double x, double y, double radius, Vector2 direction, double range, boolean guard, Set<Vector2[]> visionRays, double viewAngle)
 	{
+		this.viewAngle = viewAngle;
 		this.x = x;
 		this.y = y;
 		this.r = radius;
@@ -34,7 +38,7 @@ public class AgentGui extends Group implements GameObject
 		head.setRadius(radius);
 		if(guard) {head.setFill(Color.BLUE);head.setStroke(Color.BLACK);}
 		else {head.setFill(Color.RED);}
-		vision = new VisionConeGui(direction, x, y, range);
+		vision = new VisionConeGui(direction, x, y, range, visionRays, viewAngle);
 		getChildren().addAll(vision, head);
 		updateScale();
 		
