@@ -43,7 +43,7 @@ public class Hearing {
             AgentController agent = agents.get(i);
             Point pointRelation = new Point(agent.getPosition().getX()-position.getX(), agent.getPosition().getY()-position.getY());
             Distance distance = new Distance(position, agent.getPosition());
-            if (distance.getValue() < mapInfo.getMaxMoveSoundRadius()) {
+            if (!agent.getIsMoving() && distance.getValue() < mapInfo.getMaxMoveSoundRadius()) {
                 sounds.add(new SoundPercept(SoundPerceptType.Noise, pointRelation.getClockDirection())); //work out this
             }
         }
