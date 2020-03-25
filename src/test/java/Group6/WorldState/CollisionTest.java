@@ -16,7 +16,7 @@ public class CollisionTest extends ExtendedUnitTest {
 
         Scenario scenario= new Scenario(GroupTests.resources + "/scenario.txt");
         System.out.println("COLLISION TEST");
-        it("checks collison",()->{
+        it("checks end collison",()->{
             //COLLISION WHEN END STATE
             Distance distance= new Distance(10);
             Point point= new Point(30,10);
@@ -29,8 +29,7 @@ public class CollisionTest extends ExtendedUnitTest {
             assertTrue(collision.checkCollision());
         });
 
-
-
+        
     }
 
 }

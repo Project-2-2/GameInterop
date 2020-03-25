@@ -68,8 +68,8 @@ public class Collision {
         int xCoord = (int) (agent.getLocation().getX() + 0.5 * Math.sin(agent.getDirection().getRadians()));
         int yCoord = (int) (agent.getLocation().getY() + 0.5 * Math.cos(agent.getDirection().getRadians()));
         int distance = (int) (dist.getValue());
-        Rectangle rectangle = new Rectangle(xCoord, yCoord, 1, distance);
-        System.out.println("Rectangle coordinates "+rectangle.getWidth()+" "+rectangle.getHeight());
+        Rectangle rectangle = new Rectangle(xCoord, yCoord, distance, 1);
+        System.out.println("Rectangle coordinates "+rectangle.getX() + " "+ rectangle.getY()+ " "+ rectangle.getSize().toString());
         Shape newRect = affineTransform.createTransformedShape(rectangle);
         int nbOfIntersection = 0;
         boolean checkCollision = false;
