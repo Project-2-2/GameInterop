@@ -46,7 +46,7 @@ public class Map extends Application {
 
 
 	    Group root = new Group();
-	    root.getChildren().addAll(map, staticObjects, movingObjects, new Legend(1800, 50));
+	    root.getChildren().addAll(map, staticObjects, movingObjects, new Legend(1790, 50));
 
 	  	Scene scene = new Scene(root, 970, 630,Color.BURLYWOOD);
 
