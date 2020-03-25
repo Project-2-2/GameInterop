@@ -3,7 +3,6 @@ package Group9.gui;
 import Group9.agent.container.AgentContainer;
 import Group9.agent.container.GuardContainer;
 import Group9.agent.container.IntruderContainer;
-import Group9.map.GameMap;
 import Group9.map.dynamic.DynamicObject;
 import Group9.map.dynamic.Pheromone;
 import Group9.map.dynamic.Sound;
@@ -88,14 +87,12 @@ public class GUIConverter {
         }
         else if(object instanceof Spawn.Intruder)
         {
-            System.out.println("intruderspawn");
             Vector2[] points = object.getArea().getAsPolygon().getPoints();
             return new SpawnAreaGui.SpawnAreaIntruderGui(points[0].getX(), points[0].getY(), points[1].getX(), points[1].getY(), points[2].getX(),
                     points[2].getY(), points[3].getX(), points[3].getY());
         }
         else if(object instanceof Spawn.Guard)
         {
-            System.out.println("Guardspawn");
             Vector2[] points = object.getArea().getAsPolygon().getPoints();
             return new SpawnAreaGui.SpawnAreaGuardGui(points[0].getX(), points[0].getY(), points[1].getX(), points[1].getY(), points[2].getX(),
                     points[2].getY(), points[3].getX(), points[3].getY());
