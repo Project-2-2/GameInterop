@@ -40,12 +40,19 @@ public class DeepSpace implements Guard {
     private ActionHistory<?> actionHistory = null;
     private Queue<ActionHistory> planning = new LinkedList<>();
 
-    public DeepSpace() { }
+    public DeepSpace() {
+        this.planning.offer(new ActionHistory<>(ActionHistory.Action.SWITCH_STATE, State.INITIAL));
+    }
 
     @Override
     public GuardAction getAction(GuardPercepts percepts) {
 
+        if(!percepts.wasLastActionExecuted())
+        {
+            System.out.println("well");
+        }
         assert percepts.wasLastActionExecuted();
+
         if(percepts.wasLastActionExecuted() && this.actionHistory != null)
         {
             switch (actionHistory.getAction())
@@ -61,42 +68,49 @@ public class DeepSpace implements Guard {
 
         if(!planning.isEmpty())
         {
-            ActionHistory<?> actionHistory = planning.poll();
-            this.actionHistory = actionHistory;
-            switch (actionHistory.action)
+            this.actionHistory = planning.poll();
+            if(actionHistory.getAction() == ActionHistory.Action.SWITCH_STATE)
             {
-                case SWITCH_STATE: this.state = actionHistory.getValue(); break;
-                case MOVE: return new Move(new Distance(actionHistory.<Double>getValue()));
-                case ROTATE: return new Rotate(Angle.fromRadians(actionHistory.<Double>getValue()));
-
-                default: throw new IllegalArgumentException(String.format("%s is not supported.", actionHistory.action));
-            }
-        }
-
-        switch (state)
-        {
-            case EXPLORE_360_ADD_VERTEX:
-                System.out.println("add vertex");
-                Vertex<DataContainer> newVertex = new Vertex<>(new DataContainer(this, this.position.clone(),
-                        percepts.getVision().getFieldOfView().getRange().getValue()));
-                if(currentVertex != null)
+                this.state = actionHistory.getValue();
+                switch (state)
                 {
-                    graph.addEdge(this.currentVertex, newVertex, calculateCost(currentVertex, newVertex), true);
+                    case EXPLORE_360_ADD_VERTEX:
+                        System.out.println("add vertex");
+                        Vertex<DataContainer> newVertex = new Vertex<>(new DataContainer(this, this.position.clone(),
+                                percepts.getVision().getFieldOfView().getRange().getValue()));
+                        if(currentVertex != null)
+                        {
+                            graph.add(this.currentVertex, newVertex, calculateCost(currentVertex, newVertex), true);
+                        }
+                        graph.add(this.currentVertex = newVertex);
+                        this.planning.offer(new ActionHistory<>(ActionHistory.Action.SWITCH_STATE, State.EXPLORE_360));
+                        break;
+                    case EXPLORE_360:
+                        this.currentVertex.getContent().add(percepts);
+                        break;
+
+                    case FIND_NEW_TARGET:
+                        findNewTarget(percepts);
+                        break;
+
+                    default: this.explorePoint(percepts); break;
                 }
-                graph.add(this.currentVertex = newVertex);
-                this.planning.offer(new ActionHistory<>(ActionHistory.Action.SWITCH_STATE, State.EXPLORE_360));
-                break;
-            case EXPLORE_360:
-                this.currentVertex.getContent().add(percepts);
-            break;
+            }
+            else
+            {
+                switch (actionHistory.action)
+                {
+                    case MOVE: return new Move(new Distance(actionHistory.<Double>getValue()));
+                    case ROTATE: return new Rotate(Angle.fromRadians(actionHistory.<Double>getValue()));
 
-            case FIND_NEW_TARGET:
-                findNewTarget(percepts);
-                break;
+                    default: throw new IllegalArgumentException(String.format("%s is not supported.", actionHistory.action));
+                }
+            }
 
-            default: this.explorePoint(percepts); break;
+
         }
 
+        System.out.println("nothing to do: " + state);
 
         return new NoAction();
     }
@@ -121,7 +135,7 @@ public class DeepSpace implements Guard {
                 Optional<Vector2> target = positions.stream().filter(e -> !isInsideOtherVertex(currentVertex, e)).findAny();
                 if(target.isPresent())
                 {
-                    this.moveTowardsPoint(guardPercepts, this.direction, target.get());
+                    this.moveTowardsPoint(guardPercepts, this.position, this.direction, target.get());
                     this.explorePoint(guardPercepts);
                     return;
                 }
@@ -134,6 +148,11 @@ public class DeepSpace implements Guard {
     }
 
 
+    /**
+     * TODO I think the current issue is within this method. It seems to generate an invalid move pattern for the agent
+     *      causing it to get stuck.
+     * @param guardPercepts
+     */
     public void backtrack(GuardPercepts guardPercepts)
     {
         Function<Vertex<DataContainer>, LinkedList<Vertex<DataContainer>>> a = new Function<>() {
@@ -162,15 +181,21 @@ public class DeepSpace implements Guard {
             {
 
                 List<Vertex<DataContainer>> shortestPath = this.graph.shortestPath(this.currentVertex, vertex);
+                System.out.println("|path| = " + shortestPath.size());
+                System.out.println(shortestPath.get(0).getContent().getCenter());
+                System.out.println(shortestPath.get(shortestPath.size() - 1).getContent().getCenter());
 
-                if(currentVertex.getContent().getCenter().distance(position) > 1E-9)
+                //--- walk to the center of the vertex it is currently exploring
+                if(this.position.distance(currentVertex.getContent().getCenter()) > 1E-8)
                 {
-                    moveTowardsPoint(guardPercepts, this.direction, currentVertex.getContent().getCenter());
+                    moveTowardsPoint(guardPercepts, this.direction, this.position, this.currentVertex.getContent().getCenter());
                 }
 
+                //--- if the path has only length 2 then we are only walking from the current vertex to a previous vertex
                 if(shortestPath.size() == 2)
                 {
-                    moveTowardsPoint(guardPercepts, this.direction, shortestPath.get(1).getContent().getCenter());
+                    moveTowardsPoint(guardPercepts, currentVertex.getContent().getCenter().sub(this.position).normalise(),
+                            this.position, shortestPath.get(1).getContent().getCenter());
                 }
                 else
                 {
@@ -178,7 +203,7 @@ public class DeepSpace implements Guard {
                         Vector2 s = shortestPath.get(0 + i).getContent().getCenter();
                         Vector2 c = shortestPath.get(1 + i).getContent().getCenter();
                         Vector2 n = shortestPath.get(2 + i).getContent().getCenter();
-                        moveTowardsPoint(guardPercepts, c.sub(s).normalise(), n);
+                        moveTowardsPoint(guardPercepts, c.sub(s).normalise(), c, n);
                     }
                 }
 
@@ -195,9 +220,9 @@ public class DeepSpace implements Guard {
                 .anyMatch(e -> e != own && !e.getContent().isDeadend() && e.getContent().getAsCircle().isInside(position));
     }
 
-    private void moveTowardsPoint(GuardPercepts percepts, Vector2 direction, Vector2 target)
+    private void moveTowardsPoint(GuardPercepts percepts, Vector2 direction, Vector2 source, Vector2 target)
     {
-        Vector2 desiredDirection = target.sub(this.position).normalise();
+        Vector2 desiredDirection = target.sub(source).normalise();
         double rotationDiff = PiMath.getDistanceBetweenAngles(direction.getClockDirection(), desiredDirection.getClockDirection());
 
         if(Math.abs(rotationDiff) > 1E-10)
@@ -206,10 +231,10 @@ public class DeepSpace implements Guard {
         }
 
         final double maxAllowedMove = percepts.getScenarioGuardPercepts().getMaxMoveDistanceGuard().getValue();
+        final double distance = target.distance(source);
+        final int fullMoves = (int) (distance / maxAllowedMove);
+        final double remainder = distance % percepts.getScenarioGuardPercepts().getMaxMoveDistanceGuard().getValue();
 
-        double distance = target.distance(position);
-        int fullMoves = (int) (distance / maxAllowedMove);
-        double remainder = distance % percepts.getScenarioGuardPercepts().getMaxMoveDistanceGuard().getValue();
         for(int i = 0; i < fullMoves; i++)
         {
             planning.add(new ActionHistory<>(ActionHistory.Action.MOVE, maxAllowedMove));
