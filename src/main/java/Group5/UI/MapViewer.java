@@ -1,10 +1,7 @@
 package Group5.UI;
 
-import Interop.Geometry.Angle;
-import Interop.Geometry.Distance;
 import javafx.scene.Group;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Shape;
 
 public class MapViewer extends Group {
@@ -58,6 +55,10 @@ public class MapViewer extends Group {
             }
         }
     }
+    
+    /**
+     * Visualize door opening
+     */
 
     public void doorOpening(double x1, double y1, double x2, double y2,double x3, double y3,double x4, double y4){
         for(Shape shape : MapFileParser.getDrawableObjects()){
@@ -68,6 +69,10 @@ public class MapViewer extends Group {
             }
         }
     }
+    
+    /**
+     * Visualize window opening
+     */
     public void windowOpening(double x1, double y1, double x2, double y2,double x3, double y3,double x4, double y4){
         for(Shape shape : MapFileParser.getDrawableObjects()){
             DrawableObject object = (DrawableObject) shape;

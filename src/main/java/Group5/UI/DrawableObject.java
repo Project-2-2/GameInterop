@@ -2,6 +2,10 @@ package Group5.UI;
 
 import javafx.scene.shape.Polygon;
 
+
+/**
+ * Class for creating map objects to be visualized (excluding agents)
+ */
 public class DrawableObject extends Polygon {
     double x1;
     double y1;
@@ -30,7 +34,7 @@ public class DrawableObject extends Polygon {
         super(x1, y1, x2, y2, x3, y3);
     }
     
-    public void changeCoordinates(double x1,double y1,double x2,double y2,double x3,double y3){
+    protected void changeCoordinates(double x1,double y1,double x2,double y2,double x3,double y3){
         this.getPoints().setAll(x1,y1,x2,y2,x3,y3);
     }
 }

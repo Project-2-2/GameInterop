@@ -1,11 +1,11 @@
 package Group5.UI;
 
+import java.io.IOException;
+
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
-
-import java.io.IOException;
 
 public class DrawableMenuController {
 

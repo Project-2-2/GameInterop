@@ -1,16 +1,20 @@
 package Group5.UI;
 
-import javafx.fxml.FXMLLoader;
-import javafx.geometry.*;
-import javafx.geometry.Insets;
-import javafx.scene.*;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.layout.*;
-import javafx.stage.*;
-
 import java.io.File;
 import java.io.IOException;
+
+import javafx.fxml.FXMLLoader;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.layout.GridPane;
+import javafx.stage.FileChooser;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 
 /**
  * Implementing a pop-up window, which takes a .txt file as input and passes it to the Game Controller,
@@ -25,7 +29,7 @@ public class DrawableDialogueBox {
      * @param title   is the title of the string.
      * @param message text to be displayed on the screen.
      */
-    public static void display(String title, String message) {
+    protected static void display(String title, String message) {
         Stage window = new Stage();
         window.initModality(Modality.APPLICATION_MODAL);
         window.setTitle(title);
