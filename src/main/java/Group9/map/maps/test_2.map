@@ -1,6 +1,6 @@
 gameMode = 0
-height = 80
-width = 120
+height = 121
+width = 250
 numGuards = 3
 numIntruders = 2
 captureDistance = 0.5
