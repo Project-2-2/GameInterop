@@ -84,8 +84,8 @@ public class Map extends Application {
 		//@performance we would probably want to use a mutex or something like that instead of always copying the entire list
 		new ArrayList<>(gameMap.getDynamicObjects()).stream().filter(Objects::nonNull).forEach(d -> movingObjects.getChildren().add(GUIConverter.convert(d)));
 
-		game.getGuards().forEach(g -> movingObjects.getChildren().add(GUIConverter.convert(g, g.getFOV(gameMap.getEffectAreas(g)), gameMap.getAgentVisionCone(g, g.getFOV(gameMap.getEffectAreas(g))))));
-		game.getIntruders().forEach(i -> movingObjects.getChildren().add(GUIConverter.convert(i, i.getFOV(gameMap.getEffectAreas(i)), gameMap.getAgentVisionCone(i, i.getFOV(gameMap.getEffectAreas(i))))));
+		game.getGuards().forEach(g -> movingObjects.getChildren().add(GUIConverter.convert(g, g.getFOV(gameMap.getEffectAreas(g)), gameMap.getAgentVisionCone(g, g.getFOV(gameMap.getEffectAreas(g))), gameMap.getViewAngle().getDegrees())));
+		game.getIntruders().forEach(i -> movingObjects.getChildren().add(GUIConverter.convert(i, i.getFOV(gameMap.getEffectAreas(i)), gameMap.getAgentVisionCone(i, i.getFOV(gameMap.getEffectAreas(i))), gameMap.getViewAngle().getDegrees())));
 		return movingObjects;
 	}
 

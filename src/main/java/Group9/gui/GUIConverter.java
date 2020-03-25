@@ -17,18 +17,18 @@ import java.util.Set;
 
 public class GUIConverter {
 
-    public static Node convert(AgentContainer<?> agentContainer, FieldOfView fov, Set<Vector2[]> visionRays)
+    public static Node convert(AgentContainer<?> agentContainer, FieldOfView fov, Set<Vector2[]> visionRays, double viewAngle)
     {
         PointContainer.Circle circle = agentContainer.getShape();
         if(agentContainer instanceof GuardContainer)
         {
             return new GuardGui(circle.getCenter().getX(), circle.getCenter().getY(), circle.getRadius(),
-                    agentContainer.getDirection(), fov.getRange().getValue(), visionRays);
+                    agentContainer.getDirection(), fov.getRange().getValue(), visionRays, viewAngle);
         }
         else if(agentContainer instanceof IntruderContainer)
         {
             return new IntruderGui(circle.getCenter().getX(), circle.getCenter().getY(), circle.getRadius(),
-                    agentContainer.getDirection(), fov.getRange().getValue(), visionRays);
+                    agentContainer.getDirection(), fov.getRange().getValue(), visionRays, viewAngle);
         }
 
         throw new IllegalArgumentException();
