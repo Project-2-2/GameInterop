@@ -17,13 +17,27 @@ public class WorldStateTest extends SimpleUnitTest {
         System.out.println("\n\nWorld State Test\n");
 
         it("allows to create world state from a scenario", () -> {
+
             Scenario scenario = new Scenario(GroupTests.resources + "/scenario.txt");
-            new WorldState(
+
+            WorldState worldState = new WorldState(
                 scenario,
                 new AgentsFactories(),
                 "random",
                 "random"
             );
+
+            assertEqual(worldState.getGuardStates().size(), 3);
+            assertEqual(worldState.getIntruderStates().size(), 2);
+
+            assertTrue(scenario.getSpawnAreaGuards().hasInside(
+                worldState.getGuardStates().get(1).getLocation()
+            ));
+
+            assertTrue(scenario.getSpawnAreaIntruders().hasInside(
+                worldState.getIntruderStates().get(1).getLocation()
+            ));
+
         });
 
     }
