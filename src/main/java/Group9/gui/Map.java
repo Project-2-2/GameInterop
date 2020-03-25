@@ -47,13 +47,7 @@ public class Map extends Application {
 		Group root = new Group();
 
 		Scene scene = new Scene(root, 970, 630,Color.BURLYWOOD);
-
-		s.setScene(scene);
-		s.setMaximized(true);
-		System.out.println("max height: " + s.getMaxHeight());
-		s.setTitle("Map ");
-		s.setResizable(true);
-		s.show();
+		
 
 	    root.getChildren().addAll(map, staticObjects, movingObjects, new Legend(s.getWidth()-150, 30));
 
