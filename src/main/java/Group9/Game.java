@@ -274,8 +274,16 @@ public class Game implements Runnable {
 
             //--- check for movement collision
             {
-                final Vector2 end = agentContainer.getPosition().add(agentContainer.getDirection().mul(distance +
-                        agentContainer.getShape().getRadius(), distance + agentContainer.getShape().getRadius()));
+                // --- To check for collisions, we create a bounding box. The length of this box has to be the
+                // distance the agent wants to move
+                // + the radius of the agent; because the center of the agent is moved
+                // + epsilon; because of the limitations of floating point numbers numerical mistakes will happen and thus
+                //              a safety margin is required.
+                final double epsilon = 9E-2;
+                final double length = distance + agentContainer.getShape().getRadius() + epsilon;
+
+
+                final Vector2 end = agentContainer.getPosition().add(agentContainer.getDirection().mul(length));
                 PointContainer.Line line = new PointContainer.Line(agentContainer.getPosition(), end);
                 Vector2 normal = line.getNormal().mul(agentContainer.getShape().getRadius());
                 Vector2 pointA = normal.add(line.getStart());
