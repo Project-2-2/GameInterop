@@ -52,7 +52,6 @@ public class Map extends Application {
 
 	    s.setScene(scene);
 	    s.setMaximized(true);
-	    System.out.println("max height: " + s.getMaxHeight());
 	    s.setTitle("Map ");
 	 	s.setResizable(true);
 	    s.show();

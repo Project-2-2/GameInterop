@@ -86,19 +86,19 @@ public class GUIConverter {
             return new ShadedareaGui(points[0].getX(), points[0].getY(), points[1].getX(), points[1].getY(), points[2].getX(),
                     points[2].getY(), points[3].getX(), points[3].getY());
         }
-        else if(object instanceof Spawn)
-        {
-            //System.out.println(object.getEffects());
-
-            return new EmptySpace();
-        }
         else if(object instanceof Spawn.Intruder)
         {
             System.out.println("intruderspawn");
+            Vector2[] points = object.getArea().getAsPolygon().getPoints();
+            return new SpawnAreaGui.SpawnAreaIntruderGui(points[0].getX(), points[0].getY(), points[1].getX(), points[1].getY(), points[2].getX(),
+                    points[2].getY(), points[3].getX(), points[3].getY());
         }
         else if(object instanceof Spawn.Guard)
         {
             System.out.println("Guardspawn");
+            Vector2[] points = object.getArea().getAsPolygon().getPoints();
+            return new SpawnAreaGui.SpawnAreaGuardGui(points[0].getX(), points[0].getY(), points[1].getX(), points[1].getY(), points[2].getX(),
+                    points[2].getY(), points[3].getX(), points[3].getY());
         }
         else if(object instanceof TeleportArea)
         {
