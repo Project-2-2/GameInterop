@@ -44,15 +44,16 @@ public class Map extends Application {
 		Group staticObjects = new Group(this.getStaticObjects());
 		movingObjects = new Group(this.getMovingObjects());
 
+		Group root = new Group();
 
-	    Group root = new Group();
-	    root.getChildren().addAll(map, staticObjects, movingObjects, new Legend(1790, 50));
+		Scene scene = new Scene(root, 970, 630,Color.BURLYWOOD);
+		
 
-	  	Scene scene = new Scene(root, 970, 630,Color.BURLYWOOD);
+	    root.getChildren().addAll(map, staticObjects, movingObjects, new Legend(s.getWidth()-150, 30));
+
 
 	    s.setScene(scene);
 	    s.setMaximized(true);
-	    System.out.println("max height: " + s.getMaxHeight());
 	    s.setTitle("Map ");
 	 	s.setResizable(true);
 	    s.show();
