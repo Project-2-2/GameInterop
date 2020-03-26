@@ -324,6 +324,30 @@ public class PointContainerTest extends SimpleUnitTest {
 
             assertTrue(!PointContainer.intersect(a, b));
         }
+
+        {
+            PointContainer.Circle a = new PointContainer.Circle(
+                    new Vector2(2, 2), 1
+            );
+
+            PointContainer.Line b = new PointContainer.Line(
+                    new Vector2(-2, 2), new Vector2(4, 2)
+            );
+
+            assertTrue(PointContainer.intersect(a, b));
+        }
+
+        {
+            PointContainer.Circle a = new PointContainer.Circle(
+                    new Vector2(2, 2), 1
+            );
+
+            PointContainer.Line b = new PointContainer.Line(
+                    new Vector2(2, 0), new Vector2(2, 4)
+            );
+
+            assertTrue(PointContainer.intersect(a, b));
+        }
     }
 
     private static void test_intersect_line_line() {

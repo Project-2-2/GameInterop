@@ -9,6 +9,7 @@ public class Vector2Test extends SimpleUnitTest {
     public static void main(String[] args) {
 
         it("Vector2::new", Vector2Test::test_new);
+        it("Vector2::Origin::new", Vector2Test::test_origin_new);
         it("Vector2::normalise", Vector2Test::test_normalise);
         it("Vector::length", Vector2Test::test_length);
         it("Vector2::mul", Vector2Test::test_mul);
@@ -16,6 +17,9 @@ public class Vector2Test extends SimpleUnitTest {
         it("Vector2::from", Vector2Test::test_from);
         it("Vector2::distance", Vector2Test::test_distance);
         it("Vector2::rotated", Vector2Test::test_rotated);
+        it("Vector2::add", Vector2Test::test_add);
+        it("Vector2::angle", Vector2Test::test_angle);
+        it("Vector2::dot", Vector2Test::test_dot);
 
     }
 
@@ -283,5 +287,70 @@ public class Vector2Test extends SimpleUnitTest {
             assertEqual(rotated.getX(), 0, 1E-9);
             assertEqual(rotated.getY(), 1, 1E-9);
         }
+    }
+
+    private static void test_add() {
+        {
+            Vector2 a = new Vector2(3, 5);
+
+            Vector2 r1 = a.add(new Vector2(2, 6));
+            Vector2 r2 = a.add(2, 6);
+
+            assertEqual(r1.getX(), 5, 0);
+            assertEqual(r1.getY(), 11, 0);
+
+            assertEqual(r2.getX(), 5, 0);
+            assertEqual(r2.getY(), 11, 0);
+        }
+
+        {
+            Vector2 a = new Vector2(-3, -5);
+
+            Vector2 r1 = a.add(new Vector2(2, 6));
+            Vector2 r2 = a.add(2, 6);
+
+            assertEqual(r1.getX(), -1, 0);
+            assertEqual(r1.getY(), 1, 0);
+
+            assertEqual(r2.getX(), -1, 0);
+            assertEqual(r2.getY(), 1, 0);
+        }
+    }
+
+    private static void test_angle() {
+        assertEqual(new Vector2(1, 0).angle(new Vector2(0, 1)), Math.PI / 2, 1E-9);
+        assertEqual(new Vector2(1, 0).angle(new Vector2(-1, 0)), Math.PI, 1E-9);
+        assertEqual(new Vector2(1, 0).angle(new Vector2(0, -1)), Math.PI / 2, 1E-9);
+        assertEqual(new Vector2(1, 0).angle(new Vector2(1, 0)), 0, 1E-9);
+    }
+
+    private static void test_dot() {
+        assertEqual(new Vector2.Origin().dot(new Vector2(5, 2)), 0, 0);
+
+        assertEqual(new Vector2(3, 4).dot(new Vector2(5, 2)), 23, 0);
+        assertEqual(new Vector2(3, 4).dot(new Vector2(-5, 2)), -7, 0);
+        assertEqual(new Vector2(3, 4).dot(new Vector2(5, -2)), 7, 0);
+        assertEqual(new Vector2(3, 4).dot(new Vector2(-5, -2)), -23, 0);
+
+        assertEqual(new Vector2(-3, 4).dot(new Vector2(5, 2)), -7, 0);
+        assertEqual(new Vector2(-3, 4).dot(new Vector2(-5, 2)), 23, 0);
+        assertEqual(new Vector2(-3, 4).dot(new Vector2(5, -2)), -23, 0);
+        assertEqual(new Vector2(-3, 4).dot(new Vector2(-5, -2)), 7, 0);
+
+        assertEqual(new Vector2(3, -4).dot(new Vector2(5, 2)), 7, 0);
+        assertEqual(new Vector2(3, -4).dot(new Vector2(-5, 2)), -23, 0);
+        assertEqual(new Vector2(3, -4).dot(new Vector2(5, -2)), 23, 0);
+        assertEqual(new Vector2(3, -4).dot(new Vector2(-5, -2)), -7, 0);
+
+        assertEqual(new Vector2(-3, -4).dot(new Vector2(5, 2)), -23, 0);
+        assertEqual(new Vector2(-3, -4).dot(new Vector2(-5, 2)), 7, 0);
+        assertEqual(new Vector2(-3, -4).dot(new Vector2(5, -2)), -7, 0);
+        assertEqual(new Vector2(-3, -4).dot(new Vector2(-5, -2)), 23, 0);
+    }
+
+    private static void test_origin_new() {
+        Vector2 a = new Vector2.Origin();
+        assertEqual(a.getX(), 0, 0);
+        assertEqual(a.getY(), 0, 0);
     }
 }
