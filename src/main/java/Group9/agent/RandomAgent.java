@@ -1,6 +1,7 @@
 package Group9.agent;
 
 import Group9.Game;
+import Interop.Action.DropPheromone;
 import Interop.Action.GuardAction;
 import Interop.Action.Move;
 import Interop.Action.Rotate;
@@ -8,6 +9,7 @@ import Interop.Agent.Guard;
 import Interop.Geometry.Angle;
 import Interop.Geometry.Distance;
 import Interop.Percept.GuardPercepts;
+import Interop.Percept.Smell.SmellPerceptType;
 
 public class RandomAgent implements Guard {
 
@@ -15,6 +17,12 @@ public class RandomAgent implements Guard {
 
     @Override
     public GuardAction getAction(GuardPercepts percepts) {
+
+        if(Math.random() < 0.25)
+        {
+            return new DropPheromone(SmellPerceptType.values()[(int) (Math.random() * SmellPerceptType.values().length)]);
+        }
+
         if(!percepts.wasLastActionExecuted())
         {
             System.out.println("rotate");

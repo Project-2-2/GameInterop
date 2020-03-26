@@ -54,7 +54,7 @@ public class Game implements Runnable {
 
     private Team winner = null;
 
-    //--
+    //---
     private Semaphore lock = new Semaphore(1);
 
     public Game(GameMap gameMap, int teamSize)
@@ -127,7 +127,7 @@ public class Game implements Runnable {
             if(true)
             {
                 try {
-                    Thread.sleep(40);
+                    Thread.sleep(100);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
