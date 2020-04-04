@@ -41,7 +41,11 @@ import java.util.stream.Collectors;
 
 public class Game implements Runnable {
 
-    public final static Random _RANDOM = new Random();
+    public final static Random _RANDOM;
+    public final static long _RANDOM_SEED = 1L; //System.nanoTime();
+    static {
+        _RANDOM = new Random(_RANDOM_SEED);
+    }
 
     private GameMap gameMap;
     private ScenarioPercepts scenarioPercepts;
@@ -124,7 +128,7 @@ public class Game implements Runnable {
         while (this.winner == null)
         {
             this.winner = this.turn();
-            if(true)
+            if(false)
             {
                 try {
                     Thread.sleep(100);
@@ -172,7 +176,7 @@ public class Game implements Runnable {
      * Executes one full turn of the game.
      * @return
      */
-    private Team turn()
+    public final Team turn()
     {
 
         this.cooldown();

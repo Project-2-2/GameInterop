@@ -8,5 +8,6 @@ public class GroupTests extends SimpleUnitTest {
         GraphTest.main(args);
         Vector2Test.main(args);
         PointContainerTest.main(args);
+        AgentMovementTest.main(args);
     }
 }
