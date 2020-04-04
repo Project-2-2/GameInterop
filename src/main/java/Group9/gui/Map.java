@@ -4,6 +4,7 @@ import Group9.Game;
 import Group9.map.GameMap;
 import Group9.map.objects.MapObject;
 import Group9.map.parser.Parser;
+import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.scene.Group;
@@ -58,21 +59,17 @@ public class Map extends Application {
 		Thread thread = new Thread(game);
 	    thread.start();
 
-	    Thread uithread = new Thread(() -> {
-			while (true)
-			{
+		AnimationTimer animationTimer = new AnimationTimer() {
+			@Override
+			public void handle(long now) {
 				game.query(() -> Platform.runLater(() -> {
 					movingObjects.getChildren().clear();
-					movingObjects.getChildren().add(this.getMovingObjects());
+					movingObjects.getChildren().add(Map.this.getMovingObjects());
 				}));
-				try {
-					Thread.sleep(10L);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
 			}
-		});
-		uithread.start();
+		};
+		animationTimer.start();
+
 	}
 
 
