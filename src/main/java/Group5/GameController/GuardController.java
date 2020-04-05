@@ -1,5 +1,6 @@
 package Group5.GameController;
 
+import Group5.Agent.Explorer;
 import Interop.Action.DropPheromone;
 import Interop.Action.Move;
 import Interop.Action.Rotate;
@@ -18,9 +19,12 @@ public class GuardController extends AgentController {
 
     private double maxAngleRotation;
 
+    protected Explorer explorer;
+
     protected GuardController(Point position, double radius, double maxAngleRotation, double moveDistance, Distance viewRange) {
         super(position, radius, maxAngleRotation,"guard",viewRange);
         normalMoveDistance = new Distance(moveDistance);
+        explorer = new Explorer(1, this);
     }
 
 
@@ -56,33 +60,5 @@ public class GuardController extends AgentController {
     }
 
 
-
-    /**
-     * call this method as an agent if you want to do a movement that includes opening a door
-     * you don't have to call the normal move method after this
-     * @param move distance of the movement
-     */
-    public void openDoor(Move move){
-        super.openDoor(move.getDistance(),normalMoveDistance);
-    }
-
-
-    /**
-     * call this method as an agent if you want to do a movement that includes opening a window
-     * you don't have to call the normal move method after this
-     * @param move distance of the movement
-     */
-    public void openWindow(Move move){
-        super.openWindow(move.getDistance(),normalMoveDistance);
-    }
-
-    /**
-     * call this method as an agent if you want to do a movement that includes entering a sentry
-     * you don't have to call the normal move method after this
-     * @param move distance of the movement
-     */
-    public void enterSentry(Move move){
-        super.enterSentry(move.getDistance(),normalMoveDistance);
-    }
 
 }

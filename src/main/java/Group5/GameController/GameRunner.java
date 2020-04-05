@@ -10,6 +10,7 @@ import Interop.Geometry.Angle;
 import Interop.Geometry.Distance;
 import Interop.Geometry.Point;
 import Interop.Percept.Vision.ObjectPercept;
+import Interop.Percept.Vision.ObjectPerceptType;
 import Interop.Percept.Vision.ObjectPercepts;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -47,9 +48,15 @@ public class GameRunner {
 
     private Timer timer;
 
+    private int checkIfWon;
+
+    private boolean gameEnded;
+
     public GameRunner() {
         mapInfo = new MapInfo();
         timer = new Timer();
+        checkIfWon = 0;
+        gameEnded = false;
     }
 
     public static void main(String[] args) throws IOException {
@@ -129,14 +136,16 @@ public class GameRunner {
     }
 
     private void update() throws IOException {
+        if (gameEnded){
+            System.out.println("Game ENDED");
+            return;
+        }
         coolDownTimers();
 
 
-        //basic movement of an agent
-       // mapInfo.intruders.get(0).rotate(Angle.fromDegrees(-180));
-       // mapInfo.intruders.get(0).move(new Move(new Distance(1)));
-        //rotate(new Rotate(Angle.fromDegrees(90)));
-        move(new Move(new Distance(1)));
+
+        //THIS LINE MADE SURE THE AGENT WORKED SO JUST ADD A SIMILAR LINE INSIDE THE AGENT
+        //move(new Move(new Distance(1)));
 
 
         ObjectPercepts visionPercepts = getVision();
@@ -149,22 +158,59 @@ public class GameRunner {
 
 
         for (IntruderController intruder : mapInfo.intruders){
-            Action nextAction = intruder.explorer.getAction(intruder, visionPercepts);
+            if (!intruder.isCaptured) {
+                Action nextAction = intruder.explorer.getAction(intruder, visionPercepts);
+//            System.out.println(nextAction);
+                if (nextAction instanceof Move) {
+                    intruder.move((Move) nextAction);
+//                System.out.println(((Move) nextAction).getDistance().getValue());
+                } else {
+                    Rotate r = (Rotate) nextAction;
+                    intruder.rotate(r.getAngle());
+                }
+//            rotate(new Rotate(Angle.fromDegrees(90)));
+//            System.out.println(intruder.getAngle().getDegrees());
+                if (mapViewer != null) {
+                    mapViewer.moveIntruder(intruder.position.getX(), intruder.position.getY());
+                    mapViewer.drawAgentVisionField(intruder.position.getX(), intruder.position.getY(),
+                            intruder.getAngle().getRadians(), intruder.getViewRange().getValue());
+                }
+            }
+        }
+
+
+        if (mapViewer!=null) {
+            for (Door door : mapInfo.doors) {
+                if (!door.doorClosed()) {
+                    mapViewer.doorOpening(door.x1, door.y1, door.x2, door.y2, door.x3, door.y3, door.x4, door.y4);
+                }
+            }
+            for (Window window : mapInfo.windows) {
+                if (!window.windowClosed()) {
+                    mapViewer.windowOpening(window.x1, window.y1, window.x2, window.y2, window.x3, window.y3, window.x4, window.y4);
+                }
+            }
+        }
+
+
+        //use a different agent for this
+        for (GuardController guard : mapInfo.guards){
+            Action nextAction = guard.explorer.getAction(guard, visionPercepts);
 //            System.out.println(nextAction);
             if (nextAction instanceof Move) {
-                mapInfo.intruders.get(0).move((Move) nextAction);
+                guard.move((Move) nextAction);
 //                System.out.println(((Move) nextAction).getDistance().getValue());
             }
             else {
                 Rotate r = (Rotate) nextAction;
-                mapInfo.intruders.get(0).rotate(r.getAngle());
+                guard.rotate(r.getAngle());
             }
 //            rotate(new Rotate(Angle.fromDegrees(90)));
 //            System.out.println(intruder.getAngle().getDegrees());
             if(mapViewer!=null) {
-                mapViewer.moveIntruder(intruder.position.getX(), intruder.position.getY());
-                mapViewer.drawAgentVisionField(intruder.position.getX(), intruder.position.getY(),
-                        intruder.getAngle().getRadians(), intruder.getViewRange().getValue());
+                mapViewer.moveIntruder(guard.position.getX(), guard.position.getY());
+                mapViewer.drawAgentVisionField(guard.position.getX(), guard.position.getY(),
+                        guard.getAngle().getRadians(), guard.getViewRange().getValue());
             }
         }
 
@@ -181,9 +227,84 @@ public class GameRunner {
             }
         }
 
+        checkGameEnded();
 
-        //System.out.println(mapInfo.intruders.get(0).getPosition().toString());
-//        this.mapViewer.moveIntruder(10, 10);
+    }
+
+
+    private void checkGameEnded(){
+        if (mapInfo.gameMode==0){
+            boolean won = true;
+            for (int i =0; i<mapInfo.intruders.size();i++){
+                if (!mapInfo.targetArea.isHit(mapInfo.intruders.get(i).getPosition())){
+                    won = false;
+                    break;
+                }
+            }
+            if (won){
+                checkIfWon++;
+            }else{
+                checkIfWon=0;
+            }
+            if (checkIfWon==mapInfo.winConditionIntruderRounds){
+                System.out.println("INTRUDERS WON");
+                gameEnded = true;
+            }
+        }
+        if (mapInfo.gameMode==1){
+            boolean won = false;
+            for (int i =0; i<mapInfo.intruders.size();i++){
+                if (mapInfo.targetArea.isHit(mapInfo.intruders.get(i).getPosition())){
+                    won = true;
+                    break;
+                }
+            }
+            if (won){
+                checkIfWon++;
+            }else{
+                checkIfWon=0;
+            }
+            if (checkIfWon==mapInfo.winConditionIntruderRounds){
+                System.out.println("INTRUDERS WON");
+                gameEnded = true;
+            }
+        }
+    }
+
+    private void checkIfIntruderCaught(){
+
+        for (int i =0; i<mapInfo.guards.size();i++){
+            ObjectPercepts visionPercepts =  vision.vision(mapInfo.guards.get(i));
+            Set<ObjectPercept> percepts =visionPercepts.getAll();
+            for(int j = 0; j<percepts.size();j++){
+                if (percepts.iterator().next().getType().equals(ObjectPerceptType.Intruder)){
+                    for (int k =0; k<mapInfo.intruders.size();k++){
+                        if (Sat.distance(mapInfo.guards.get(i).getPosition(),mapInfo.intruders.get(k).getPosition())<=mapInfo.captureDistance){
+                            if (mapInfo.gameMode==1){
+                                System.out.println("GUARDS WON");
+                                gameEnded=true;
+                            }
+                            if (mapInfo.gameMode==0){
+                                mapInfo.intruders.get(k).isCaptured=true;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        if (mapInfo.gameMode==0){
+            boolean allCaptured = true;
+            for (int i =0; i<mapInfo.intruders.size();i++){
+                if (!mapInfo.intruders.get(i).isCaptured){
+                    allCaptured=false;
+                    break;
+                }
+            }
+            if (allCaptured){
+                gameEnded=true;
+            }
+        }
+
     }
 
 
@@ -391,11 +512,26 @@ public class GameRunner {
 
         for(int i =0; i<sentryTowers.size();i++){
             ArrayList<Point> sentryVectors = sentryTowers.get(i).getAreaVectors();
-            System.out.println("collision detected");
+            //System.out.println("collision detected");
             if (Sat.hasCollided(movment,sentryVectors)||sentryTowers.get(i).isHit(to)){
                 if (!sentryTowers.get(i).enterTower(to)){
                     return false;
                 }
+                return true;
+            }
+        }
+        return false;
+    }
+
+    protected static boolean enterShadedAreay(Point from, Point to){
+        ArrayList<ShadedArea> shadedAreas= mapInfo.shaded;
+        //for now give the agent a radius of 1
+        ArrayList<Point> movment = movementShape(from,to,1);
+
+        for(int i =0; i<shadedAreas.size();i++){
+            ArrayList<Point> shadedVectors = shadedAreas.get(i).getAreaVectors();
+            if (Sat.hasCollided(movment,shadedVectors)||shadedAreas.get(i).isHit(to)){
+                //System.out.println("collision detected biem");
                 return true;
             }
         }

@@ -24,6 +24,11 @@ public class Vision {
         }else{
             agent.onSentryTower=false;
         }
+        if (GameRunner.enterShadedAreay(agent.getPosition(),agent.getPosition())){
+            agent.inShadedArea = true;
+        }else{
+            agent.inShadedArea = false;
+        }
 
         ArrayList<ObjectPercept> perceivedObjects = new ArrayList<>(getObjectPerceived(agent));
 
@@ -50,6 +55,11 @@ public class Vision {
 
         }else
             viewRange = agent.getViewRange().getValue();
+
+        //TODO IONAS YOU CAN PUT THE CODE HERE
+        if(agent.inShadedArea){
+
+        }
 
         if (viewShift != 0) {   //If we are on a sentry tower wa cannot see from our position to our position+2
             xShift = viewShift * Math.cos(angle) + currentX;

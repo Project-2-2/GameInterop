@@ -143,7 +143,7 @@ public class MapInfo {
                         numIntruders = Integer.parseInt(value);
                         break;
                     case "captureDistance":
-                        captureDistance = Integer.parseInt(value);
+                        captureDistance = Double.parseDouble(value);
                         break;
                     case "winConditionIntruderRounds":
                         winConditionIntruderRounds = Integer.parseInt(value);
