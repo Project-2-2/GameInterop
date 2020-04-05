@@ -116,8 +116,25 @@ public class Explorer {
 
 
     private Rotate rotateTowards(Point point, AgentController agentController) {
-        System.out.println("Rotating Towards");
-        return new Rotate(Angle.fromRadians(agentController.getRelativePosition(point).getClockDirection().getRadians()));
+        return new Rotate(agentController.getRelativeAngle(new Point(0, 0),
+                agentController.getRelativePosition(point)));
+    }
+
+    public Angle correctAngleToWall(Angle a){
+        double[] wallAngles = {0, Math.PI/2, Math.PI, -Math.PI/2, -Math.PI};
+        double wallAngle = wallAngles[0];
+        for (double d: wallAngles){
+            if(Math.abs(d - a.getRadians()) < Math.abs(d - wallAngle)) wallAngle = d;
+        }
+        return Angle.fromRadians(wallAngle);
+    }
+
+    private Rotate rotateToWall(Point point, AgentController agentController) {
+        Angle a = agentController.getRelativeAngle(new Point(0, 0),
+                agentController.getRelativePosition(point));
+        a = this.correctAngleToWall(a);
+        System.out.println("Rotating by: " + a.getRadians());
+        return new Rotate(a);
     }
 
     private Move walkTowards(Point point, AgentController agentController) {
@@ -157,6 +174,8 @@ public class Explorer {
 
             for (ObjectPercept objectPercept : visionObjects) {
 
+                double distance = Math.sqrt(Math.pow(objectPercept.getPoint().getX(), 2) + Math.pow(objectPercept.getPoint().getY(), 2));
+
                 if (objectPercept.getType() == ObjectPerceptType.SentryTower) {
                     seenObjectOfInterest = true;
                     actionQueue.clear();
@@ -176,7 +195,7 @@ public class Explorer {
                     actionQueue.add(m);
                     System.out.println("Found Door");
                 }
-                    else if (objectPercept.getType() == ObjectPerceptType.Window) { //TODO: Plan the way back after  moving through
+                    else if (objectPercept.getType() == ObjectPerceptType.Window && distance < 10) { //TODO: Plan the way back after  moving through
                     seenObjectOfInterest = true;
                     Rotate r = rotateTowards(objectPercept.getPoint(), agentController);
                     Move m = walkTowards(objectPercept.getPoint(), agentController);
@@ -223,9 +242,9 @@ public class Explorer {
 
 
                 if (sameXAverageYCoordinate/sameXCount > sameYAverageXCoordinate/sameYCount)
-                    actionQueue.add(rotateTowards(new Point(closestPoint.getX() + closestDistance, closestPoint.getY() + 25), agentController));
+                    actionQueue.add(rotateToWall(new Point(closestPoint.getX() + closestDistance, closestPoint.getY() + 25), agentController));
                 else
-                    actionQueue.add(rotateTowards(new Point(closestPoint.getY() + closestDistance, closestPoint.getX() + 25), agentController));
+                    actionQueue.add(rotateToWall(new Point(closestPoint.getY() + closestDistance, closestPoint.getX() + 25), agentController));
 
 
 
