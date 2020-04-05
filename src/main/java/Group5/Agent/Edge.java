@@ -6,21 +6,23 @@ import java.util.Set;
 
 public class Edge implements Comparable<Edge> {
     private String id;
-    private List<Vertex> verticies;
+    private ArrayList<Vertex> verticies;
     private final double distance; //distance between the two vertices
     private Edge mirror;
 
-    public Edge(String id, Vertex source, Vertex destination, double weight) {
+    public Edge(String id, Vertex v1, Vertex v2, double weight) {
         this.id = id;
-        this.verticies.add(source);
-        this.verticies.add(destination);
+        this.verticies = new ArrayList<>(List.of(v1, v2));
         this.distance = weight;
     }
 
     public Edge(Vertex v1, Vertex v2, double distance) {
-        this.verticies.add(v1);
-        this.verticies.add(v2);
+        this.verticies = new ArrayList<>(List.of(v1, v2));
         this.distance = distance;
+    }
+
+    public boolean contains(Vertex v) {
+        return this.getVerticies().contains(v);
     }
 
     @Override

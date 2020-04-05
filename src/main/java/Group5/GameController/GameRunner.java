@@ -11,7 +11,9 @@ import Interop.Geometry.Distance;
 import Interop.Geometry.Point;
 import Interop.Percept.Vision.ObjectPercept;
 import Interop.Percept.Vision.ObjectPercepts;
+import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.embed.swing.JFXPanel;
 import javafx.fxml.FXML;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -23,36 +25,6 @@ import java.util.*;
 
 public class GameRunner {
 
-//    protected String mapDoc;
-//    protected Scenario scenario;
-//
-//    GamePlayer p;
-//
-//    public static void main(String[] args){
-//        // the mapscenario should be passed as a parameter
-//        String mapD="/Users/slav/Documents/Maastricht University - DKE/Year 2/Project 2-2/Project22/GameControllerSample/testmap.txt";
-//        GameRunner game = new GameRunner(mapD);
-//        game.p.setup();
-//        //game.writeGameFile();
-//        game.p.start();
-//    }
-//
-//    public GameRunner(String scn){
-//        mapDoc=scn;
-//        scenario = new Scenario(mapDoc);
-//        p = new GamePlayer(scenario);
-//    }
-//
-//    public void runWholeGame(){
-//        this.p.setup();
-//        this.p.start();
-//        Explorer explorer = new Explorer(gameRunner.getPath());
-//        Explorer.runExplorer(explorer);
-//    }
-//
-//    private String getPath(){
-//        return this.mapDoc;
-//    }
 
     private Vision vision;
     private static Hearing hearing;
@@ -82,44 +54,8 @@ public class GameRunner {
 
     public static void main(String[] args) throws IOException {
 
-
-        /*
-        Point from = new Point(6,6);
-        Point to = new Point (100,2);
-        GameRunner poep = new GameRunner();
-        //Point[] movement = poep.movementShape(from,to,5);
-        //movement = new Point[]{new Point(from)};
-
-        Area wall = new Area(5,5,10,5,5,10,10,10);
-        Area wall2 = new Area(4,4,8,11,11,8,100,50);
-
-
-        System.out.println(wall.isHit(6,6));
-
-        System.out.println(wall.isHit(wall2));
-
-         */
-
-
-
-        /*
-        IntruderController poep = new IntruderController(new Point(1,1),1);
-        poep.vision();
-
-         */
-
-
-
-
-
         GameRunner runner = new GameRunner();
         runner.initialize();
-
-
-
-
-
-
     }
 
     @FXML
@@ -128,21 +64,36 @@ public class GameRunner {
         //mapInfo.readMap(file.getPath());
 
         File file = DrawableDialogueBox.getFile();
-        String src = "src/main/java/Group5/Maps/testmap.txt";
+        String src = "src/main/java/Group5/Maps/testmap";
         //mapInfo.readMap(src);
-        mapInfo.readMap(file.getPath());
+        //tries to open the map without gui, otherwise open without gui
+        try{
+            mapInfo.readMap(file.getPath());
+        }catch (NullPointerException e){
+            JFXPanel panel =new JFXPanel();
+            mapInfo.readMap(src);
+        }
+
+
+
+
+
+
+
         mapInfo.initialize();
 
         vision = new Vision();
         hearing = new Hearing(mapInfo);
 
-        // Check if the MapViewer for the UI has been initialized
-        if (this.mapViewer != null){
-            this.update();
-            this.startTimer();
+
+        this.update();
+        this.startTimer();
+
+        if (mapViewer!=null){
             mapViewer.setFocusTraversable(true);
             mapViewer.requestFocus();
         }
+
     }
 
     @FXML
@@ -188,10 +139,9 @@ public class GameRunner {
         move(new Move(new Distance(1)));
 
 
-        //TODO vision percepts is empty
         ObjectPercepts visionPercepts = getVision();
         Set<ObjectPercept> percepts =visionPercepts.getAll();
-//        System.out.println(percepts.size());
+//       System.out.println(percepts.size());
         if (percepts.size()>0){
             //System.out.println(percepts.iterator().next().toString());
         }
@@ -211,21 +161,23 @@ public class GameRunner {
             }
 //            rotate(new Rotate(Angle.fromDegrees(90)));
 //            System.out.println(intruder.getAngle().getDegrees());
-            mapViewer.moveIntruder(intruder.position.getX(), intruder.position.getY());
-            mapViewer.drawAgentVisionField(intruder.position.getX(), intruder.position.getY(),
-                    intruder.getAngle().getRadians(), intruder.getViewRange().getValue());
-        }
-
-        for( Door door: mapInfo.doors){
-            if(!door.doorClosed())
-            {
-                mapViewer.doorOpening(door.x1,door.y1,door.x2,door.y2,door.x3,door.y3,door.x4,door.y4);
+            if(mapViewer!=null) {
+                mapViewer.moveIntruder(intruder.position.getX(), intruder.position.getY());
+                mapViewer.drawAgentVisionField(intruder.position.getX(), intruder.position.getY(),
+                        intruder.getAngle().getRadians(), intruder.getViewRange().getValue());
             }
         }
-        for(Window window: mapInfo.windows){
-            if(!window.windowClosed())
-            {
-                mapViewer.windowOpening(window.x1,window.y1,window.x2,window.y2,window.x3,window.y3,window.x4,window.y4);
+
+        if (mapViewer!=null) {
+            for (Door door : mapInfo.doors) {
+                if (!door.doorClosed()) {
+                    mapViewer.doorOpening(door.x1, door.y1, door.x2, door.y2, door.x3, door.y3, door.x4, door.y4);
+                }
+            }
+            for (Window window : mapInfo.windows) {
+                if (!window.windowClosed()) {
+                    mapViewer.windowOpening(window.x1, window.y1, window.x2, window.y2, window.x3, window.y3, window.x4, window.y4);
+                }
             }
         }
 
@@ -392,18 +344,6 @@ public class GameRunner {
         return true;
     }
 
-    /**
-     * returns the area which can be seen with the raycast
-     * checks only for walls
-     * @param rayCast the raycast vector
-     * @param location the current location of the agent
-     * @return
-     */
-    protected Area visionCollision(Point rayCast, Point location){
-       // ArrayList<>
-        return null;
-
-    }
 
     protected static boolean openDoorValidility(Point from, Point to){
         ArrayList<Door> doors= mapInfo.doors;

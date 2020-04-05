@@ -1,18 +1,18 @@
 package Group5.UI;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.Timer;
+import java.util.TimerTask;
+
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.Timer;
-import java.util.TimerTask;
-
 /**
- * !!! THIS CONTROLLER IS ONLY FOR TESTING PURPOSES UNTIL THE ACTUAL GAME CONTROLLER IS IMPLEMENTED !!!
+ * !!! THIS CONTROLLER IS ONLY FOR TESTING PURPOSES UNTIL THE ACTUAL GAME CONTROLLER IS FULLY IMPLEMENTED !!!
  */
 
 public class DummyController {

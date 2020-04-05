@@ -1,9 +1,7 @@
 package Group5.GameController;
 
-import Interop.Geometry.Angle;
 import Interop.Geometry.Distance;
 import Interop.Geometry.Point;
-import Interop.Percept.Vision.FieldOfView;
 import Interop.Percept.Vision.ObjectPercept;
 import Interop.Percept.Vision.ObjectPercepts;
 
@@ -27,8 +25,7 @@ public class Vision {
             agent.onSentryTower=false;
         }
 
-        ArrayList<ObjectPercept> perceivedObjects = new ArrayList<>();
-        perceivedObjects.addAll(getObjectPerceived(agent));
+        ArrayList<ObjectPercept> perceivedObjects = new ArrayList<>(getObjectPerceived(agent));
 
         Set<ObjectPercept> objectsPercepts = new HashSet<>(perceivedObjects);
 
@@ -61,11 +58,9 @@ public class Vision {
         }
 
         Point point1 = new Point(currentX+xShift, currentY+yShift);
-        int counter = 0;
         for (double i=-45; i <=45; i++){
            // System.out.println(i);
             double value = i *Math.PI/180;
-            counter ++;
             ArrayList<ObjectPercept> objects = new ArrayList();
 
             if (angle + value > 2*Math.PI) {

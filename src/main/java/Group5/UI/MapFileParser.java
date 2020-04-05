@@ -1,15 +1,15 @@
 package Group5.UI;
 
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
-import javafx.scene.shape.Shape;
-
 import java.io.File;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
+import javafx.scene.shape.Shape;
 
 public class MapFileParser {
 
@@ -26,7 +26,7 @@ public class MapFileParser {
     private static List<Shape> drawableObjects = new ArrayList<>();
     private static List<Circle> drawableAgents = new ArrayList<>();
 
-    public static void readMapFile(File file) {
+    protected static void readMapFile(File file) {
         try (Scanner scanner = new Scanner(file, ENCODING.name())) {
             while (scanner.hasNextLine()) {
                 readLine(scanner.nextLine());
@@ -41,7 +41,7 @@ public class MapFileParser {
      * Create variables to be stored and used by the Controller, based in the file input.
      * @param line line to be parsed from the input txt file
      */
-    public static void readLine(String line) {
+    private static void readLine(String line) {
         try (Scanner scanner = new Scanner(line)) {
             scanner.useDelimiter("=");
             if (scanner.hasNext()) {
@@ -159,35 +159,35 @@ public class MapFileParser {
         }
     }
 
-    public static List<Shape> getDrawableObjects() {
+    protected static List<Shape> getDrawableObjects() {
         return drawableObjects;
     }
-
-    public static List<Circle> getDrawableAgents() {
+    
+    protected static List<Circle> getDrawableAgents() {
         return drawableAgents;
     }
-
-    public static int getGameMode() {
+    
+    protected static int getGameMode() {
         return gameMode;
     }
-
-    public static String getGameFile() {
+    
+    protected static String getGameFile() {
         return gameFile;
     }
-
-    public static int getMapHeight() {
+    
+    protected static int getMapHeight() {
         return mapHeight;
     }
-
-    public static int getMapWidth() {
+    
+    protected static int getMapWidth() {
         return mapWidth;
     }
-
-    public static int getNumIntruders() {
+    
+    protected static int getNumIntruders() {
         return numIntruders;
     }
-
-    public static int getNumGuards() {
+    
+    protected static int getNumGuards() {
         return numGuards;
     }
 }

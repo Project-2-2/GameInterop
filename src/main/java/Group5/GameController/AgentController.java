@@ -31,6 +31,7 @@ public class AgentController {
     private static Distance intruderViewRange ;
     private static Distance guardViewRange;
     private static Distance[] towerViewRange; //need two distances
+    private boolean isMoving=true;
 
     private double maxAngleRotation;
 
@@ -115,6 +116,10 @@ public class AgentController {
         return viewRange;
     }
 
+    public boolean getIsMoving(){
+        return isMoving;
+    }
+
     /**
      * call this method to do a movement
      * @param distance
@@ -135,11 +140,12 @@ public class AgentController {
             }
             teleported=false;
         }
+        isMoving = true;
         return true;
     }
 
     public void noAction(NoAction noAction){
-        return;
+        isMoving=false;;
     }
 
 
