@@ -62,6 +62,21 @@ public class RaysTest extends ExtendedUnitTest {
                 )
             );
 
+            Rays intruderRays = new Rays(intruderState, fieldOfView, 4);
+            ObjectPercepts intruderPercepts = intruderRays.getObjectPercepts(
+                new WorldStateObjects(guardState)
+            );
+
+            assertEqual(
+                intruderPercepts,
+                new ObjectPercepts(
+                    new ObjectPercept(ObjectPerceptType.EmptySpace, new Point(-10, 0)),
+                    new ObjectPercept(ObjectPerceptType.EmptySpace, new Point(+10, 0)),
+                    new ObjectPercept(ObjectPerceptType.EmptySpace, new Point(0, 10)),
+                    new ObjectPercept(ObjectPerceptType.Guard, new Point(0, -5))
+                )
+            );
+
         });
 
     }
