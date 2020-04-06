@@ -27,6 +27,7 @@ public class AgentController {
     //the angle the agent is currently facing
     protected Angle angle;
     protected boolean onSentryTower;
+    protected boolean inShadedArea;
     private String agentType;
     private static Distance intruderViewRange ;
     private static Distance guardViewRange;
@@ -54,6 +55,8 @@ public class AgentController {
         agentType=type;
         this.intruderViewRange=viewRange;
         this.guardViewRange=viewRange;
+        onSentryTower=false;
+        inShadedArea=false;
 
     }
 
@@ -88,6 +91,10 @@ public class AgentController {
 
     protected  boolean isOnSentryTower() {
         return this.onSentryTower;
+    }
+
+    protected boolean isInShadedArea(){
+        return this.inShadedArea;
     }
 
     protected Distance[] getTowerViewRange() {
@@ -144,155 +151,7 @@ public class AgentController {
         return true;
     }
 
-    public void noAction(NoAction noAction){
-        isMoving=false;;
-    }
 
-
-    /**
-     * call this method as an agent if you want to do a movement that includes opening a door
-     * you don't have to call the normal move method after this
-     * @param distance
-     * @param maxDistance
-     */
-    public void openDoor(Distance distance, Distance maxDistance){
-        Distance newMaxDistance = new Distance(maxDistance.getValue()*Door.getSlowDownModifier());
-        if (distance.getValue()>newMaxDistance.getValue()){
-            return;
-        }
-        double newX= position.getX()+distance.getValue()*Math.cos(angle.getRadians());
-        double newY= position.getY()+distance.getValue()*Math.sin(angle.getRadians());
-
-        Point newPosition = new Point(newX,newY);
-
-        //opens the door if there is really a door
-        if (GameRunner.openDoorValidility(position,newPosition)){
-            move(distance,newMaxDistance);
-            return;
-        }
-        move(distance,maxDistance);
-    }
-
-    /**
-     * call this method as an agent if you want to do a movement that includes opening a window
-     * you don't have to call the normal move method after this
-     * @param distance
-     * @param maxDistance
-     */
-    public void openWindow(Distance distance, Distance maxDistance){
-        Distance newMaxDistance = new Distance(maxDistance.getValue()*Window.getSlowDownModifier());
-        if (distance.getValue()>newMaxDistance.getValue()){
-            return;
-        }
-        double newX= position.getX()+distance.getValue()*Math.cos(angle.getRadians());
-        double newY= position.getY()+distance.getValue()*Math.sin(angle.getRadians());
-
-        Point newPosition = new Point(newX,newY);
-
-        //opens the door if there is really a door
-        if (GameRunner.openWindowValidility(position,newPosition)){
-            move(distance,newMaxDistance);
-            return;
-        }
-        move(distance,maxDistance);
-    }
-
-    /**
-     * call this method as an agent if you want to do a movement that includes entering a sentry
-     * you don't have to call the normal move method after this
-     * @param distance
-     * @param maxDistance
-     */
-    public void enterSentry(Distance distance, Distance maxDistance){
-        Distance newMaxDistance = new Distance(maxDistance.getValue()*SentryTower.getSlowDownModifer());
-        if (distance.getValue()>newMaxDistance.getValue()){
-            return;
-        }
-        double newX= position.getX()+distance.getValue()*Math.cos(angle.getRadians());
-        double newY= position.getY()+distance.getValue()*Math.sin(angle.getRadians());
-
-        Point newPosition = new Point(newX,newY);
-
-        //opens the door if there is really a door
-        if (GameRunner.enterSentry(position,newPosition)){
-            move(distance,newMaxDistance);
-            onSentryTower = true;
-            return;
-        }
-        move(distance,maxDistance);
-    }
-
-
-    public boolean teleport(){
-        Point newLocation =GameRunner.teleportValidility(position,radius);
-        if (newLocation.equals(position)){
-            return false;
-        }
-        position=newLocation;
-        return true;
-    }
-
-    public void noAction(){
-        return;
-    }
-
-    /*
-    public void vision(){
-
-        ArrayList<Point> rayCasts = visionVectors();
-
-        for (int i =0; i<rayCasts.size();i++){
-
-        }
-
-
-    }
-
-     */
-
-
-    /**
-     * returns a list of 45 vectors represented raycasts
-     * these raycasts can be used to check for colission with objects
-     * @return
-     */
-    /*
-    private ArrayList<Point> visionVectors(){
-
-        Point eye = new Point(position.getX(),position.getY());
-        ArrayList<Point> rayCasts = new ArrayList<>(45);
-        rayCasts.add(eye);
-        for (int i =1;i<23;i++){
-            double angle = (Math.PI/180)*i;
-            //System.out.println(angle);
-
-            //System.out.println("eye");
-            //System.out.println(eye.toString());
-            Point rotateDegree = Sat.add(eye,Sat.mul(direction,1000));
-            Point rayCastVector = Sat.rotate(rotateDegree,angle);
-            //System.out.println(rayCastVector.toString());
-            rayCasts.add(rayCastVector);
-            //rotateDegree = rotateDegree.rotate()
-        }
-
-        // System.out.println("BIEM");
-        for (int i =0;i<22;i++){
-            double angle = (Math.PI/180)*i*-1;
-
-            //System.out.println(angle);
-
-            //System.out.println("eye");
-            //System.out.println(eye.toString());
-            Point rotateDegree = Sat.add(eye,Sat.mul(   direction,1000));
-            Point rayCastVector = Sat.rotate(rotateDegree,angle);
-            //System.out.println(rayCastVector.toString());
-            rayCasts.add(rayCastVector);
-            //rotateDegree = rotateDegree.rotate()
-        }
-
-        return rayCasts;
-    }
-    */
 
     //TODO smell has to be implemented
     public void dropPheromone(DropPheromone dropPheromone, SmellPerceptType type){

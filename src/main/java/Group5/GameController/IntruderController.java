@@ -25,6 +25,8 @@ public class IntruderController extends AgentController {
 
     public Explorer explorer;
 
+    protected boolean isCaptured;
+
 
 
 
@@ -35,6 +37,7 @@ public class IntruderController extends AgentController {
         sprintCooldownTimer=false;
         sprintCoolDownCounter=0;
         explorer = new Explorer(1, this);
+        isCaptured=false;
     }
 
 
@@ -100,32 +103,5 @@ public class IntruderController extends AgentController {
         }
     }
 
-    /**
-     * call this method as an agent if you want to do a movement that includes opening a door
-     * you don't have to call the normal move method after this
-     * @param move distance of the movement
-     */
-    public void openDoor(Move move){
-        super.openDoor(move.getDistance(),normalMoveDistance);
-    }
-
-
-    /**
-     * call this method as an agent if you want to do a movement that includes opening a window
-     * you don't have to call the normal move method after this
-     * @param move distance of the movement
-     */
-    public void openWindow(Move move){
-        super.openWindow(move.getDistance(),normalMoveDistance);
-    }
-
-    /**
-     * call this method as an agent if you want to do a movement that includes entering a sentry
-     * you don't have to call the normal move method after this
-     * @param move distance of the movement
-     */
-    public void enterSentry(Move move){
-        super.enterSentry(move.getDistance(),normalMoveDistance);
-    }
 
 }

@@ -25,14 +25,6 @@ public class SentryTower extends Area {
         return false;
     }
 
-    /**
-     * this is a different vission method since the vision inside a tower is different
-     * possible to watch over walls
-     * objects close by are not visible
-     */
-    public static void visionInTower(){
-
-    }
 
     public static double getSlowDownModifer() {
         return SlowDownModifer;
