@@ -4,8 +4,11 @@ import Group6.Geometry.Collection.Points;
 import Group6.Geometry.Point;
 import Group6.WorldState.Object.AgentState;
 import Interop.Percept.Vision.FieldOfView;
+import Interop.Percept.Vision.ObjectPerceptType;
 
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -22,6 +25,10 @@ public class ObjectPercepts {
         this.percepts = Collections.unmodifiableSet(percepts);
     }
 
+    public ObjectPercepts(ObjectPercept ...percepts) {
+        this(new HashSet<>(Arrays.asList(percepts)));
+    }
+
     public Set<ObjectPercept> getAll() {
         return percepts;
     }
@@ -31,7 +38,7 @@ public class ObjectPercepts {
         if(opaque.getAll().isEmpty()) return this; // there are no opaque objects to obscure the view
         Point closestOpaquePoint = opaque.toPoints().getClosest(point);
         double viewRange = point.getDistance(closestOpaquePoint).getValue();
-        return filter(percept -> percept.getPoint().getDistance(point).getValue() < viewRange);
+        return filter(percept -> percept.getPoint().getDistance(point).getValue() <= viewRange);
     }
 
     public ObjectPercepts getOpaque() {
@@ -44,6 +51,26 @@ public class ObjectPercepts {
 
     public ObjectPercepts getInFieldOfView(FieldOfView fieldOfView) {
         return filter(percept -> fieldOfView.isInView(percept.getPoint().toInteropPoint()));
+    }
+
+    public ObjectPercept getClosestTo(Point point, ObjectPerceptType type) {
+        ObjectPercepts filteredByType = getByType(type);
+        ObjectPercepts closestFilteredByType = filteredByType.getByPoint(
+            filteredByType.toPoints().getClosest(point)
+        );
+        return closestFilteredByType.getAll().iterator().next();
+    }
+
+    public ObjectPercepts getByType(ObjectPerceptType type) {
+        return filter(objectPercept -> { return objectPercept.getType() == type; });
+    }
+
+    public ObjectPercepts getByPoint(Point point) {
+        return filter(objectPercept -> { return objectPercept.getPoint().isEqualTo(point); });
+    }
+
+    public Set<ObjectPerceptType> getTypes() {
+        return percepts.stream().map(ObjectPercept::getType).collect(Collectors.toSet());
     }
 
     public ObjectPercepts filter(Predicate<? super ObjectPercept> predicate) {
@@ -65,9 +92,7 @@ public class ObjectPercepts {
     }
 
     public String toString() {
-        return "ObjectPercepts{" +
-            "percepts=" + percepts +
-            '}';
+        return "ObjectPercepts=" + percepts;
     }
 
 }

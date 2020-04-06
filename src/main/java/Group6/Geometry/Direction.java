@@ -61,4 +61,8 @@ public final class Direction extends Angle {
         return Interop.Geometry.Direction.fromRadians(getRadians());
     }
 
+    public String toString() {
+        return "Direction{deg="+ getDegrees() +"}";
+    }
+
 }

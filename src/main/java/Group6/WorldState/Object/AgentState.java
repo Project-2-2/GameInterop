@@ -13,6 +13,7 @@ import Interop.Action.Action;
 import Interop.Action.DropPheromone;
 import Interop.Action.Move;
 import Interop.Action.Rotate;
+import Interop.Percept.Vision.ObjectPerceptType;
 import Interop.Utils.Require;
 
 import java.util.Set;
@@ -45,6 +46,8 @@ public abstract class AgentState implements Object {
     public Direction getDirection() {
         return direction;
     }
+
+    public abstract ObjectPerceptType getType();
 
     public boolean isInside(Area area) {
         return location.isInside(area);
@@ -158,6 +161,10 @@ public abstract class AgentState implements Object {
 
     protected void requireNoCooldown(Action action) {
         if (hasCooldown()) throw new IllegalActionDuringCooldown(action.getClass().getName());
+    }
+
+    public String toString() {
+        return "AgentState{" + location + ", " + direction + '}';
     }
 
     class IllegalAction extends RuntimeException {

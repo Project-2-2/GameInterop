@@ -11,6 +11,7 @@ import Group6.WorldState.Object.GuardState;
 import Group6.WorldState.Object.IntruderState;
 import Group6.WorldState.Object.WorldStateObjects;
 import Interop.Percept.Vision.FieldOfView;
+import Interop.Percept.Vision.ObjectPerceptType;
 
 import java.util.List;
 
@@ -27,7 +28,7 @@ public class RaysTest extends ExtendedUnitTest {
 
     private static void getObjectPerceptsTests() {
 
-        xit("allows to get percepts", () -> {
+        it("allows to get percepts", () -> {
 
             FieldOfView fieldOfView = new FieldOfView(
                 new Distance(10).toInteropDistance(),
@@ -51,7 +52,15 @@ public class RaysTest extends ExtendedUnitTest {
                 new WorldStateObjects(intruderState)
             );
 
-            assertEqual(guardPercepts.toPoints(), new Points(new Point(0, 5)));
+            assertEqual(
+                guardPercepts,
+                new ObjectPercepts(
+                    new ObjectPercept(ObjectPerceptType.EmptySpace, new Point(-10, 0)),
+                    new ObjectPercept(ObjectPerceptType.EmptySpace, new Point(+10, 0)),
+                    new ObjectPercept(ObjectPerceptType.EmptySpace, new Point(0, -10)),
+                    new ObjectPercept(ObjectPerceptType.Intruder, new Point(0, 5))
+                )
+            );
 
         });
 
