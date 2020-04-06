@@ -318,13 +318,13 @@ public class AgentController {
         Angle b = i.getRelativeAngle(new Point(0, 0), new Point(1, 0));
         System.out.println(b.getDegrees());
 
-        System.out.println("When angle is 0: " + i.explorer.correctAngleToWall(Angle.fromRadians(0)).getRadians());
-        System.out.println("When angle is pi/2: " + i.explorer.correctAngleToWall(Angle.fromRadians(Math.PI/2)).getRadians());
-        System.out.println("When angle is pi: " + i.explorer.correctAngleToWall(Angle.fromRadians(Math.PI)).getRadians());
-        System.out.println("When angle is -pi/2: " + i.explorer.correctAngleToWall(Angle.fromRadians(-Math.PI/2)).getRadians());
-        System.out.println("When angle is -pi: " + i.explorer.correctAngleToWall(Angle.fromRadians(-Math.PI)).getRadians());
-        System.out.println("When angle is -82.45 degrees: " + i.explorer.correctAngleToWall(Angle.fromDegrees(-82.45)).getRadians());
-        System.out.println("When angle is -182.45 degrees: " + i.explorer.correctAngleToWall(Angle.fromDegrees(-182.45)).getRadians());
+//        System.out.println("When angle is 0: " + i.explorer.correctAngleToWall(Angle.fromRadians(0)).getRadians());
+//        System.out.println("When angle is pi/2: " + i.explorer.correctAngleToWall(Angle.fromRadians(Math.PI/2)).getRadians());
+//        System.out.println("When angle is pi: " + i.explorer.correctAngleToWall(Angle.fromRadians(Math.PI)).getRadians());
+//        System.out.println("When angle is -pi/2: " + i.explorer.correctAngleToWall(Angle.fromRadians(-Math.PI/2)).getRadians());
+//        System.out.println("When angle is -pi: " + i.explorer.correctAngleToWall(Angle.fromRadians(-Math.PI)).getRadians());
+//        System.out.println("When angle is -82.45 degrees: " + i.explorer.correctAngleToWall(Angle.fromDegrees(-82.45)).getRadians());
+//        System.out.println("When angle is -182.45 degrees: " + i.explorer.correctAngleToWall(Angle.fromDegrees(-182.45)).getRadians());
 
 
     }

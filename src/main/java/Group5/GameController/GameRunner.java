@@ -136,7 +136,7 @@ public class GameRunner {
        // mapInfo.intruders.get(0).rotate(Angle.fromDegrees(-180));
        // mapInfo.intruders.get(0).move(new Move(new Distance(1)));
         //rotate(new Rotate(Angle.fromDegrees(90)));
-        move(new Move(new Distance(1)));
+//        move(new Move(new Distance(1)));
 
 
         ObjectPercepts visionPercepts = getVision();

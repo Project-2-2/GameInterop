@@ -31,6 +31,7 @@ public class Explorer {
     private int level;
     private HashSet<Area> discoveredObjects;
     private Deque<Action> actionQueue;
+    private Point previousRotationPoint;
 
 
     /**
@@ -43,6 +44,7 @@ public class Explorer {
         this.g = new Graph(agent);
         this.queue = new LinkedList<>();
         this.actionQueue = new LinkedList<>();
+        this.previousRotationPoint = new Point(0, 0);
     }
 
     /**
@@ -108,7 +110,8 @@ public class Explorer {
 
     public Action getAction(AgentController agentController, ObjectPercepts objectsInVision){
         explore(agentController, objectsInVision);
-        return actionQueue.pop();
+        if (actionQueue.isEmpty()) return new Move(new Distance(1));
+        else return actionQueue.pop();
     }
 
 
@@ -116,23 +119,6 @@ public class Explorer {
     private Rotate rotateTowards(Point point, AgentController agentController) {
         return new Rotate(agentController.getRelativeAngle(new Point(0, 0),
                 agentController.getRelativePosition(point)));
-    }
-
-    public Angle correctAngleToWall(Angle a){
-        double[] wallAngles = {0, Math.PI/2, Math.PI, -Math.PI/2, -Math.PI};
-        double wallAngle = wallAngles[0];
-        for (double d: wallAngles){
-            if(Math.abs(d - a.getRadians()) < Math.abs(d - wallAngle)) wallAngle = d;
-        }
-        return Angle.fromRadians(wallAngle);
-    }
-
-    private Rotate rotateToWall(Point point, AgentController agentController) {
-        Angle a = agentController.getRelativeAngle(new Point(0, 0),
-                agentController.getRelativePosition(point));
-        a = this.correctAngleToWall(a);
-        System.out.println("Rotating by: " + a.getRadians());
-        return new Rotate(a);
     }
 
     private Move walkTowards(Point point, AgentController agentController) {
@@ -216,12 +202,11 @@ public class Explorer {
             if (walls.size() >= 2 && !seenObjectOfInterest) {
 
 //                actionQueue.clear();
-                Point closestPoint = agentController.getRelativePosition(walls.get(0).getPoint());
-                double closestDistance = Math.sqrt(Math.pow(closestPoint.getX(), 2) + Math.pow(closestPoint.getY(), 2));
+                Point closestPointRelative = agentController.getRelativePosition(walls.get(0).getPoint());
+                Point closestPoint = walls.get(0).getPoint();
+                double closestDistance = Math.sqrt(Math.pow(closestPointRelative.getX(), 2) + Math.pow(closestPointRelative.getY(), 2));
 
                 if (closestDistance < 12.001) {
-//                    actionQueue.add(new Rotate(Angle.fromRadians(Math.PI / 2)));
-                System.out.println("Got close");
                 double sameXAverageYCoordinate = 0;
                 double sameYAverageXCoordinate = 0;
                 int sameXCount = 0;
@@ -229,20 +214,40 @@ public class Explorer {
 
                 for (ObjectPercept w: walls){
                     if(w.getPoint().getX() == closestPoint.getX()) {
-                        sameXAverageYCoordinate += Math.abs(agentController.getRelativePosition(w.getPoint()).getY());
+                        sameXAverageYCoordinate += Math.abs(w.getPoint().getY());
                         sameXCount++;
                     }
                     else if (w.getPoint().getY() == closestPoint.getY()) {
-                        sameYAverageXCoordinate += Math.abs(agentController.getRelativePosition(w.getPoint()).getX());
+                        sameYAverageXCoordinate += Math.abs(w.getPoint().getX());
                         sameYCount++;
                     }
                 }
 
 
-                if (sameXAverageYCoordinate/sameXCount > sameYAverageXCoordinate/sameYCount)
-                    actionQueue.add(rotateToWall(new Point(closestPoint.getX() + closestDistance, closestPoint.getY() + 25), agentController));
-                else
-                    actionQueue.add(rotateToWall(new Point(closestPoint.getY() + closestDistance, closestPoint.getX() + 25), agentController));
+                if (sameXCount > sameYCount){
+                    System.out.println("Rotating towards X");
+                    if(previousRotationPoint.getY() == -1) {
+                        actionQueue.add(new Rotate(agentController.getRelativeAngle(new Point(0, 0), new Point(-1, 0))));
+                        previousRotationPoint = new Point(-1, 0);
+                    }
+                    else {
+                        actionQueue.add(new Rotate(agentController.getRelativeAngle(new Point(0, 0), new Point(1, 0))));
+                        previousRotationPoint = new Point(1, 0);
+                    }
+                }
+
+                else {
+                    System.out.println("Rotating towards Y");
+                    if(previousRotationPoint.getX() == 1) {
+                        actionQueue.add(new Rotate(agentController.getRelativeAngle(new Point(0, 0), new Point(0, -1))));
+                        previousRotationPoint = new Point(0, -1);
+                    }
+                    else {
+                        actionQueue.add(new Rotate(agentController.getRelativeAngle(new Point(0, 0), new Point(0, 1))));
+                        previousRotationPoint = new Point(0, 1);
+
+                    }
+                }
 
 
 
