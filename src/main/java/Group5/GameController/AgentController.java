@@ -32,6 +32,8 @@ public class AgentController {
     private static Distance intruderViewRange ;
     private static Distance guardViewRange;
     private static Distance[] towerViewRange; //need two distances
+    private static Distance shadedAreaIntruderViewRange;
+    private static Distance shadedAreaGuardViewRange;
     private boolean isMoving=true;
 
     private double maxAngleRotation;
@@ -118,6 +120,18 @@ public class AgentController {
 
         }else {
             viewRange = intruderViewRange;
+        }
+
+        return viewRange;
+    }
+
+    public Distance getShadedAreaViewRange() {
+        Distance viewRange;
+        if (this.agentType.equals("guard")) {
+            viewRange = shadedAreaGuardViewRange;
+
+        }else {
+            viewRange = shadedAreaIntruderViewRange;
         }
 
         return viewRange;

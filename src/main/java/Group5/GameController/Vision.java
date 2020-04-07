@@ -48,15 +48,20 @@ public class Vision {
         double currentY = agent.getPosition().getY();
         double angle = agent.getAngle().getRadians();
 
+
+
+        //if the agent is on a sentry tower
         if (agent.isOnSentryTower()) {
             Distance[] dist = agent.getTowerViewRange();
             viewShift = dist[0].getValue();
             viewRange = dist[1].getValue();
 
+        }else if (agent.isInShadedArea()) {
+            viewRange = agent.getShadedAreaViewRange().getValue();
+
         }else
             viewRange = agent.getViewRange().getValue();
 
-        //TODO IONAS YOU CAN PUT THE CODE HERE
         if(agent.inShadedArea){
 
         }
