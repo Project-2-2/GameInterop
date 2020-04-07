@@ -381,6 +381,15 @@ public class PointContainerTest extends SimpleUnitTest {
             assertTrue(PointContainer.intersect(a, b));
         }
 
+        // --- @regression: This bug was caused by not allowing a proper delta in the >= and <= comparision. To fix this bug
+        //      I added the geq() and leq() methods to the PointContainer class for comparisions.
+        {
+            PointContainer.Line a = new PointContainer.Line(new Vector2(59.43349636341895,14.333224990404418), new Vector2(61.318334753821354, 14.093674907821876));
+            PointContainer.Line b = new PointContainer.Line(new Vector2(60.0,12.0), new Vector2(60.0,36.0));
+
+            PointContainer.intersect(a, b);
+        }
+
         {
             PointContainer.Line a = new PointContainer.Line(new Vector2.Origin(), new Vector2(6, 6));
             PointContainer.Line b = new PointContainer.Line(new Vector2(0, 2), new Vector2(4, 6));
@@ -422,5 +431,6 @@ public class PointContainerTest extends SimpleUnitTest {
             PointContainer.Line b = new PointContainer.Line(new Vector2(4, 2), new Vector2(4, 4));
             assertTrue(!PointContainer.intersect(a, b));
         }
+
     }
 }

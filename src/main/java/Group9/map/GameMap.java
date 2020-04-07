@@ -103,7 +103,6 @@ public class GameMap {
         this.pheromoneExpireRounds = pheromoneExpireRounds;
         this.rayConstant = this.calculateRayConstant();
 
-        System.out.println("min: " + this.calculateRayConstant() * viewAngle.getRadians() * getGuardViewRangeNormal().getValue());
         /*this.quadTree = new QuadTree<>(width, height, 10000, MapObject::getContainer);
         AtomicInteger index = new AtomicInteger();
         mapObjects.forEach(a -> {
@@ -313,9 +312,14 @@ public class GameMap {
     }
 
     public boolean isMoveIntersecting(PointContainer.Polygon agentMove, Predicate<ObjectPerceptType> filter){
-        return this.mapObjects.stream()
-                .filter(e -> filter.test(e.getType()))
-                .anyMatch(e -> PointContainer.intersect(e.getContainer(), agentMove));
+        for (MapObject e : this.mapObjects) {
+            if (e.getType().isSolid()) {
+                if (PointContainer.intersect(e.getContainer(), agentMove)) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     /**
@@ -326,29 +330,24 @@ public class GameMap {
     public Set<ObjectPercept> getObjectPerceptsInLine(PointContainer.Line line) {
         // get list of objects that intersect line
         List<MapObject> intersectingMapObjects = this.mapObjects.stream()
-                .filter(mo -> PointContainer.intersect(mo.getContainer(), line))
+                .filter(e -> PointContainer.intersect(e.getContainer(), line))
                 .collect(Collectors.toList());
 
         // all points where line and objects intersect sorted by proximity to start of line
-        Map<Vector2, MapObject> objectPoints = new TreeMap<Vector2, MapObject>(new Comparator<Vector2>() {
-            @Override
-            public int compare(Vector2 v1, Vector2 v2) {
-                return Double.compare(
-                        line.getStart().distance(v1),
-                        line.getStart().distance(v2));
-            }
-        });
-
+        Map<Vector2, MapObject> objectPoints = new HashMap<>();
         for (MapObject mo : intersectingMapObjects) {
             for (Vector2 point : PointContainer.intersectionPoints(mo.getContainer(), line)) {
                 objectPoints.put(point, mo);
             }
         }
+        List<Map.Entry<Vector2, MapObject>> entries = objectPoints.entrySet()
+                .stream()
+                .sorted(Comparator.comparingDouble(a -> line.getStart().distance(a.getKey())))
+                .collect(Collectors.toList());
 
-        // we build Set<ObjectPercepts> removing ObjectPercepts that come after opaque ObjectPercepts
         Set<ObjectPercept> retSet = new HashSet<>();
 
-        for (Map.Entry<Vector2, MapObject> entry : objectPoints.entrySet()) {
+        for (Map.Entry<Vector2, MapObject> entry : entries) {
             retSet.add(new ObjectPercept(entry.getValue().getType(), entry.getKey().toVexing()));
             if (entry.getValue().getType().isOpaque())
             {
@@ -378,7 +377,7 @@ public class GameMap {
                     getObjectPerceptsInLine(new PointContainer.Line(ray[0], ray[1]))
                             .stream()
                             //TODO sometimes the distance from origin is exactly 0. is the agent perceiving itself?
-                            .filter(e -> Vector2.from(e.getPoint()).sub(agentContainer.getPosition()).length() > 0)
+                            .filter(e -> Vector2.from(e.getPoint()).distance(agentContainer.getPosition()) > 0)
                             .map(e -> {
                                 Point point =  Vector2.from(e.getPoint())
                                         .sub(agentContainer.getPosition()) // move relative to agent

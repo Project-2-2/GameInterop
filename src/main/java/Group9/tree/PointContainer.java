@@ -54,6 +54,7 @@ public abstract class PointContainer {
 
         private Vector2[] points;
         private Line[] lines;
+        private List<Vector2[]> triangles = new ArrayList<>();
 
         public Polygon(Vector2 ...points)
         {
@@ -92,62 +93,59 @@ public abstract class PointContainer {
 
         public List<Vector2[]> getTriangles()
         {
-            List<Vector2[]> triangles = new ArrayList<>();
 
             //---
-            //TODO implememt https://www.geometrictools.com/Documentation/TriangulationByEarClipping.pdf
-            // very important
-            if(false)
+            if(triangles.isEmpty())
             {
-                for(Vector2 a : points)
+                //---
+                //TODO implememt https://www.geometrictools.com/Documentation/TriangulationByEarClipping.pdf
+                // very important
+                if(false)
                 {
-                    for(Vector2 b : points)
+                    for(Vector2 a : points)
                     {
-                        if(a == b) continue;
-                        for(Vector2 c : points)
+                        for(Vector2 b : points)
                         {
-                            if(a == c || b == c) continue;
-
-                            if(new Vector2(b.getX() - a.getX(), b.getY() - a.getY()).angle(
-                                    new Vector2(c.getX() - a.getX(), c.getY() - a.getY())
-                            ) >= Math.PI)
+                            if(a == b) continue;
+                            for(Vector2 c : points)
                             {
-                                continue;
+                                if(a == c || b == c) continue;
+
+                                if(new Vector2(b.getX() - a.getX(), b.getY() - a.getY()).angle(
+                                        new Vector2(c.getX() - a.getX(), c.getY() - a.getY())
+                                ) >= Math.PI)
+                                {
+                                    continue;
+                                }
+
+                                // TODO In theory we should do a proper check here whether or not the line is actually completely
+                                //  inside the polygon but I am currently not aware of an easy way to do it, so this is only
+                                //  for polygons with 4 points. ^^
+                                Line _02 = new Line(a, c);
+                                Vector2 randomPoint = new Vector2(_02.getStart().getX(), _02.getStart().getY()).add(
+                                        new Vector2.Random().normalise().mul(
+                                                _02.getEnd().getX() - _02.getStart().getX(),
+                                                _02.getEnd().getY() - _02.getStart().getY()
+                                        )
+                                );
+
+                                if(this.isPointInside(randomPoint))
+                                {
+                                    triangles.add(new Vector2[] {a, b, c});
+                                }
+
                             }
-
-                            // TODO In theory we should do a proper check here whether or not the line is actually completely
-                            //  inside the polygon but I am currently not aware of an easy way to do it, so this is only
-                            //  for polygons with 4 points. ^^
-                            Line _02 = new Line(a, c);
-                            Vector2 randomPoint = new Vector2(_02.getStart().getX(), _02.getStart().getY()).add(
-                                    new Vector2.Random().normalise().mul(
-                                            _02.getEnd().getX() - _02.getStart().getX(),
-                                            _02.getEnd().getY() - _02.getStart().getY()
-                                    )
-                            );
-
-                            if(this.isPointInside(randomPoint))
-                            {
-                                triangles.add(new Vector2[] {a, b, c});
-                            }
-
                         }
                     }
                 }
-            }
 
-            //---
-            if(true)
-            {
                 for(int i = 1; i <= this.points.length - 2; i++)
                 {
-                    triangles.add(new Vector2[] {
+                    this.triangles.add(new Vector2[] {
                             this.points[0], this.points[i], this.points[(i + 1)]
                     });
                 }
             }
-
-            assert !triangles.isEmpty();
 
             return triangles;
         }
@@ -187,7 +185,12 @@ public abstract class PointContainer {
          */
         private boolean isPointInside(Vector2 point)
         {
-            return getTriangles().stream().anyMatch(e -> isInTriangle(e[0], e[1], e[2], point));
+            for (Vector2[] e : getTriangles()) {
+                if (isInTriangle(e[0], e[1], e[2], point)) {
+                    return true;
+                }
+            }
+            return false;
         }
 
         private static boolean isInTriangle(Vector2 A, Vector2 B, Vector2 C, Vector2 P)
@@ -211,13 +214,14 @@ public abstract class PointContainer {
 
         @Override
         public void translate(Vector2 vector) {
+            this.triangles.clear();
             for (int i = 0; i < this.points.length; i++) {
                 this.points[i] = this.points[i].add(vector);
             }
 
-            for(int i = 0; i < points.length; i++)
+            for(int i = 0; i < this.points.length; i++)
             {
-                lines[i] = new Line(points[i], points[(i + 1) % points.length]);
+                this.lines[i] = new Line(this.points[i], this.points[(i + 1) % this.points.length]);
             }
         }
 
@@ -316,6 +320,19 @@ public abstract class PointContainer {
             {
                 this.start = start;
                 this.end = end;
+            }
+            else if(start.getX() == end.getX())
+            {
+                if(start.getY() <= end.getY())
+                {
+                    this.start = start;
+                    this.end = end;
+                }
+                else
+                {
+                    this.start = end;
+                    this.end = end;
+                }
             }
             else
             {
@@ -668,12 +685,36 @@ public abstract class PointContainer {
         double xToCheck = xValue/parallelDenominator;
         double yToCheck = yValue/parallelDenominator;
 
-        if (((x1 >= xToCheck && x2 <= xToCheck) || (x2 >= xToCheck && x1 <= xToCheck)) && ((y1 >= yToCheck && y2 <= yToCheck) || (y2 >= yToCheck && y1 <= yToCheck)))
-            if (((x3 >= xToCheck && x4 <= xToCheck) || (x4 >= xToCheck && x3 <= xToCheck)) && ((y3 >= yToCheck && y4 <= yToCheck) || (y4 >= yToCheck && y3 <= yToCheck))) {
+        if (((geq(x1, xToCheck) && leq(x2, xToCheck)) || (geq(x2, xToCheck) && leq(x1, xToCheck))) && ((geq(y1, yToCheck) && leq(y2, yToCheck)) || (geq(y2, yToCheck) && leq(y1, yToCheck))))
+        {
+            if (((geq(x3, xToCheck) && leq(x4, xToCheck)) || (geq(x4, xToCheck) && leq(x3, xToCheck))) && ((geq(y3, yToCheck) && leq(y4, yToCheck)) || (geq(y4, yToCheck) && leq(y3, yToCheck)))) {
                 return new Vector2(xToCheck, yToCheck);
             }
+        }
 
         return null;
+    }
+
+    /**
+     * Performs <code>a >= b</code> check, allows 1E-10 delta.
+     * @param a
+     * @param b
+     * @return
+     */
+    private static boolean geq(double a, double b)
+    {
+        return (a > b) || Math.abs(a - b) < 1E-10;
+    }
+
+    /**
+     * Performs <code>a <= b</code> check, allows 1E-10 delta.
+     * @param a
+     * @param b
+     * @return
+     */
+    private static boolean leq(double a, double b)
+    {
+        return (a < b) || Math.abs(a - b) < 1E-10;
     }
 
     private static Vector2 twoLinesIntersect(Line a, Line b) {

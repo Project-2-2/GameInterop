@@ -21,21 +21,25 @@ public class AgentMovementTest extends SimpleUnitTest {
             int counter = 0;
             int step = 0;
 
-            long time = System.currentTimeMillis();
-            for(; step < 100_000; step++) {
+            for(; step < 30_000; step++) {
                 game.turn();
 
-                if (lastPosition.distance(guard.getPosition()) < 1E-3) {
+                if (lastPosition.distance(guard.getPosition()) < 1E-1) {
                     counter++;
-                } else {
-                    max = Math.max(max, counter);
-                    if(max >= STUCK_LIMIT) break;
+
+                    if(counter >= STUCK_LIMIT)
+                    {
+                        max = counter;
+                        break;
+                    }
+                }
+                else
+                {
                     counter = 0;
                 }
 
                 lastPosition = guard.getPosition().clone();
             }
-            System.out.println("time@10k: " + (System.currentTimeMillis() - time));
 
             assertTrue(max < STUCK_LIMIT, String.format("Agent got stuck after %d steps. Check seed to reproduce. " +
                     "Seed: %d", step, Game._RANDOM_SEED));

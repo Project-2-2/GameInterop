@@ -7,16 +7,19 @@ import Group9.map.parser.Parser;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.event.EventHandler;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 public class Map extends Application {
 
@@ -47,7 +50,6 @@ public class Map extends Application {
 
 		Group root = new Group();
 		Scene scene = new Scene(root, 1920, 1280,Color.BURLYWOOD);
-
 		s.setScene(scene);
 		s.setMaximized(true);
 		s.setTitle("Map ");
@@ -60,16 +62,28 @@ public class Map extends Application {
 	    thread.start();
 
 		AnimationTimer animationTimer = new AnimationTimer() {
+
+			private long last = 0;
+
 			@Override
 			public void handle(long now) {
-				game.query(() -> Platform.runLater(() -> {
-					movingObjects.getChildren().clear();
-					movingObjects.getChildren().add(Map.this.getMovingObjects());
-				}));
+				if(now - last >= TimeUnit.MILLISECONDS.toNanos(33))
+				{
+					last = now;
+					game.query((lock) -> {
+						movingObjects.getChildren().clear();
+						movingObjects.getChildren().add(Map.this.getMovingObjects());
+
+						lock.release();
+					});
+				}
 			}
 		};
 		animationTimer.start();
 
+		s.setOnCloseRequest(event -> {
+			game.getRunningLoop().set(false);
+		});
 	}
 
 

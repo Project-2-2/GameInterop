@@ -37,13 +37,16 @@ import Interop.Utils.Utils;
 import java.util.*;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
 public class Game implements Runnable {
 
     public final static Random _RANDOM;
-    public final static long _RANDOM_SEED = 1L; //System.nanoTime();
+    public final static long _RANDOM_SEED = 71301630770476L; //System.nanoTime();
     static {
+        System.out.println("seed: " + _RANDOM_SEED);
         _RANDOM = new Random(_RANDOM_SEED);
     }
 
@@ -57,6 +60,8 @@ public class Game implements Runnable {
     private Set<AgentContainer<?>> justTeleported = new HashSet<>();
 
     private Team winner = null;
+
+    private AtomicBoolean runningLoop = new AtomicBoolean(false);
 
     //---
     private Semaphore lock = new Semaphore(1);
@@ -90,12 +95,14 @@ public class Game implements Runnable {
             //@todo the 10 ms basically guarantee that it will get a lock when this method gets called. this leads to
             //  smoother ui updates but it is not guaranteed, so if someone has a fairly week computer this method
             //  might lead to a choppy ui experience.
-            lock.tryAcquire(10, TimeUnit.MILLISECONDS);
-        } catch (InterruptedException e) {
+            //if(lock.tryAcquire(10, TimeUnit.MILLISECONDS))
+            {
+            }
+            callback.update(lock);
+        } catch (Exception e) {
             e.printStackTrace();
         }
-        callback.update();
-        lock.release();
+
     }
 
     public List<GuardContainer> getGuards() {
@@ -109,6 +116,10 @@ public class Game implements Runnable {
     public GameMap getGameMap()
     {
         return gameMap;
+    }
+
+    public AtomicBoolean getRunningLoop() {
+        return runningLoop;
     }
 
     /**
@@ -125,7 +136,8 @@ public class Game implements Runnable {
     @Override
     public void run()
     {
-        while (this.winner == null)
+        runningLoop.set(true);
+        while (this.winner == null && runningLoop.get())
         {
             this.winner = this.turn();
             if(false)
@@ -176,8 +188,11 @@ public class Game implements Runnable {
      * Executes one full turn of the game.
      * @return
      */
+    int i = 0;
+    int c = 2480;
     public final Team turn()
     {
+        i++;
 
         this.cooldown();
         Team winner = null;
@@ -187,16 +202,9 @@ public class Game implements Runnable {
         {
             if(!(intruder.isCaptured()))
             {
-                try {
-                    lock.acquire();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-
                 final IntruderAction action = intruder.getAgent().getAction(this.generateIntruderPercepts(intruder));
                 actionSuccess.put(intruder, executeAction(intruder, action));
 
-                lock.release();
                 if((winner = checkForWinner()) != null)
                 {
                     return winner;
@@ -206,16 +214,10 @@ public class Game implements Runnable {
 
         for(GuardContainer guard : this.guards)
         {
-            try {
-                lock.acquire();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
 
             final GuardAction action = guard.getAgent().getAction(this.generateGuardPercepts(guard));
             actionSuccess.put(guard, executeAction(guard, action));
 
-            lock.release();
             if((winner = checkForWinner()) != null)
             {
                 return winner;
@@ -283,22 +285,26 @@ public class Game implements Runnable {
                 // + the radius of the agent; because the center of the agent is moved
                 // + epsilon; because of the limitations of floating point numbers numerical mistakes will happen and thus
                 //              a safety margin is required.
-                final double epsilon = 9E-2;
+                final double epsilon = 0;
                 final double length = distance + agentContainer.getShape().getRadius() + epsilon;
 
 
                 final Vector2 end = agentContainer.getPosition().add(agentContainer.getDirection().mul(length));
                 PointContainer.Line line = new PointContainer.Line(agentContainer.getPosition(), end);
-                Vector2 normal = line.getNormal().mul(agentContainer.getShape().getRadius());
-                Vector2 pointA = normal.add(line.getStart());
-                Vector2 pointC = normal.add(line.getEnd());
-                Vector2 pointB = normal.flip().add(line.getStart());
-                Vector2 pointD = normal.flip().add(line.getEnd());
+
+                final Vector2 move = agentContainer.getDirection().mul(length);
+
+                Vector2 pointA = agentContainer.getPosition().add(line.getNormal());
+                Vector2 pointB = pointA.add(move);
+                Vector2 pointD = agentContainer.getPosition().sub(line.getNormal());
+                Vector2 pointC = pointD.add(move);
+
                 PointContainer.Polygon quadrilateral = new PointContainer.Polygon(pointA, pointB, pointC, pointD);
                 if(gameMap.isMoveIntersecting(quadrilateral, ObjectPerceptType::isSolid))
                 {
                     return false;
                 }
+                System.out.println();
             }
 
             if(isSprinting)
@@ -531,7 +537,13 @@ public class Game implements Runnable {
 
     public interface QueryUpdate
     {
-        void update();
+        /**
+         * Is called once the game logic thread has been locked, and operations can be sable performed. -
+         *  Note (!!!): It is the responsibility of the caller to release {@link Semaphore#release()} the lock once
+         *  it has completed its operations.
+         * @param lock
+         */
+        void update(Semaphore lock);
     }
 
 }

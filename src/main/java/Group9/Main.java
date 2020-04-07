@@ -12,49 +12,27 @@ public class Main {
 
     public static void main(String[] args) {
 
-        /*Graph<String> graph = new Graph<>();
-        Vertex<String> a = new Vertex<>("a");
-        Vertex<String> b = new Vertex<>("b");
-        Vertex<String> c = new Vertex<>("c");
-        Vertex<String> d = new Vertex<>("d");
-        Vertex<String> e = new Vertex<>("e");
-        Vertex<String> __ = new Vertex<>("__");
+        // ,,,
+        PointContainer.Polygon wall = new PointContainer.Polygon(
+                new Vector2(60.0,12.0), new Vector2(60.0,36.0), new Vector2(61.0,36.0),
+                new Vector2(61.0,12.0)
+        );
 
-        graph.add(a, b, c, d, e, __);
-        graph.addEdge(a, b, 10, true);
-        graph.addEdge(a, d, 30, true);
-        graph.addEdge(b, c, 20.5, true);
-        graph.addEdge(c, d, 5, true);
-        graph.addEdge(d, e, 5, true);
 
-        graph.shortestPath(a, __);*/
+        PointContainer.Polygon move = new PointContainer.Polygon(
+                new Vector2(59.43349636341895,14.333224990404418),
+                new Vector2(61.318334753821354, 14.093674907821876),
+                new Vector2(61.06617677215552, 12.109634496871985),
+                new Vector2(59.18133838175312, 12.349184579454526)
+        );
+        //System.out.println(PointContainer.intersect(move, wall));
 
-        // How to read in a map from a file
-        //GameMap map = Parser.parseFile("./src/main/java/Group9/map/maps/test.map");
+        PointContainer.Line a = new PointContainer.Line(new Vector2(59.43349636341895,14.333224990404418), new Vector2(61.318334753821354, 14.093674907821876));
+        PointContainer.Line b = new PointContainer.Line(new Vector2(60.0,12.0), new Vector2(60.0,36.0));
 
-        GameMap gameMap = Parser.parseFile("./src/main/java/Group9/map/maps/test.map");
+        PointContainer.intersect(a, b);
+        System.out.println(PointContainer.intersect(a, b));
 
-        Game game = new Game(gameMap, 1);
-        game.run();
-        //game.start();
-
-        //\left(-60,-40\right),\left(-60,-39\right),\left(60,-39\right),\left(60,-40\right)
-
-        /*System.out.println(PointContainer.intersect(
-            new PointContainer.Quadrilateral(
-                new Vector2(-60, -40), new Vector2(-60, -39), new Vector2(60, -39), new Vector2(60, -40)
-            ),
-            //\left(-55,-39.5\right),\left(-53,-39.5\right),\left(-55,-37.5\right),\left(-53,-37.5\right)
-            new PointContainer.Quadrilateral(
-                new Vector2(-55, -39.5), new Vector2(-55, -37.5), new Vector2(-53, -37.5), new Vector2(-53, -39.5)
-            )
-
-        ));
-            /*new PointContainer.Quadrilateral(
-                    new Vector2(-4, -28), new Vector2(0, -28), new Vector2(0, -29), new Vector2(-4, -29)
-            )*/
-        //TODO limit tree depth
-        //TODO check whether or not the order of the points matter
 
     }
 
