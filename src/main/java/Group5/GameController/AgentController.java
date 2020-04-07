@@ -116,6 +116,12 @@ public class AgentController {
 
     }
 
+    public String getAgentType()
+    {
+        return agentType;
+    }
+
+
     public Distance getViewRange() {
         Distance viewRange;
         if (this.agentType.equals("guard")) {
