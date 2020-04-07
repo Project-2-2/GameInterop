@@ -35,7 +35,7 @@ public class Hearing {
     }
     public SoundPercepts getSounds(AgentController perceptor){
         Point position = perceptor.getPosition();
-        Set<SoundPercept> sounds= new HashSet<SoundPercept>();;
+        Set<SoundPercept> sounds= new HashSet<SoundPercept>();
         ArrayList<AgentController> agents = mapInfo.getAgents();
         ArrayList<Door> doors= mapInfo.doors;
         ArrayList<Window> windows= mapInfo.windows;
