@@ -28,8 +28,8 @@ public class IntruderController extends AgentController {
 
 
 
-    protected IntruderController(Point position, double radius, double moveDistance, double sprintDistance, double maxAngleRotation,Distance viewRange, double radiusPheromone) {
-        super(position, radius, maxAngleRotation,"intruder",viewRange,radiusPheromone);
+    protected IntruderController(Point position, double radius, double moveDistance, double sprintDistance, double maxAngleRotation,Distance viewRange) {
+        super(position, radius, maxAngleRotation,"intruder",viewRange);
         normalMoveDistance = new Distance(moveDistance);
         this.sprintDistance = new Distance(sprintDistance);
         sprintCooldownTimer=false;

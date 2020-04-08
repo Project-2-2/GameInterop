@@ -11,12 +11,15 @@ import java.util.Set;
 public class Hearing {
 
     private MapInfo mapInfo;
-    private Set<Door> doorActions;
-    private Set<Window> windowActions;
-    private Set<Point> yells;
+    private ArrayList<Door> doorActions;
+    private ArrayList<Window> windowActions;
+    private ArrayList<Point> yells;
 
     public Hearing(MapInfo map){
         this.mapInfo = map;
+        doorActions = new ArrayList<>();
+        windowActions = new ArrayList<>();
+        yells = new ArrayList<>();
     }
 
     public void doorSound(Door door){

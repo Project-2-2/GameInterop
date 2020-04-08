@@ -32,11 +32,10 @@ public class AgentController {
 
     protected boolean teleported;
 
-    protected double radiusPheromone;
 
 
 
-    protected AgentController(Point position, double radius, double maxRotation, String type, Distance viewRange, double radiusPheromone){
+    protected AgentController(Point position, double radius, double maxRotation, String type, Distance viewRange){
         this.position = position;
         this.radius = radius;
         Point direction = new Point(position.getX(),position.getY());
@@ -50,7 +49,6 @@ public class AgentController {
         this.guardViewRange=viewRange;
         onSentryTower=false;
         inShadedArea=false;
-        this.radiusPheromone=radiusPheromone;
 
     }
 
@@ -183,7 +181,7 @@ public class AgentController {
     }
 
     public static void main(String[] args){
-        IntruderController i = new IntruderController(new Point(1,1),1 , 2, 2, 2, new Distance(2),0);
+        IntruderController i = new IntruderController(new Point(1,1),1 , 2, 2, 2, new Distance(2));
 
         Angle a = i.getRelativeAngle(new Point(2,2), new Point(3, 2));
         System.out.println(a.getDegrees());

@@ -22,8 +22,8 @@ public class GuardController extends AgentController {
 
     protected Explorer explorer;
 
-    protected GuardController(Point position, double radius, double maxAngleRotation, double moveDistance, Distance viewRange, double radiusPheromone) {
-        super(position, radius, maxAngleRotation,"guard",viewRange,radiusPheromone);
+    protected GuardController(Point position, double radius, double maxAngleRotation, double moveDistance, Distance viewRange) {
+        super(position, radius, maxAngleRotation,"guard",viewRange);
         normalMoveDistance = new Distance(moveDistance);
         explorer = new Explorer(1, this);
     }
