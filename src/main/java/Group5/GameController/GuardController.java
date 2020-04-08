@@ -8,6 +8,7 @@ import Interop.Action.Yell;
 import Interop.Geometry.Angle;
 import Interop.Geometry.Distance;
 import Interop.Geometry.Point;
+import Interop.Percept.Smell.SmellPercept;
 import Interop.Percept.Smell.SmellPerceptType;
 
 public class GuardController extends AgentController {
@@ -53,14 +54,16 @@ public class GuardController extends AgentController {
         hearing.yellSound(this.getPosition());
     }
 
-    /*
-    //TODO smell has to be implemented
-    public void dropPheromone(DropPheromone dropPheromone){
-        super.dropPheromone(dropPheromone);
+
+    public boolean dropPheromone(SmellPercept type){
+        if (super.dropPheromone(type)){
+            GameRunner.addPheromoneGuards(type, super.getPosition());
+            return true;
+        }
+
+        return false;
 
     }
-
-     */
 
 
 

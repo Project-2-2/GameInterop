@@ -8,6 +8,7 @@ import Interop.Action.Sprint;
 import Interop.Geometry.Angle;
 import Interop.Geometry.Distance;
 import Interop.Geometry.Point;
+import Interop.Percept.Smell.SmellPercept;
 import Interop.Percept.Smell.SmellPerceptType;
 
 public class IntruderController extends AgentController {
@@ -81,14 +82,16 @@ public class IntruderController extends AgentController {
 
     }
 
-    /*
-    //TODO smell has to be implemented
-    public void dropPheromone(DropPheromone dropPheromone){
-        super.dropPheromone(dropPheromone, SmellPerceptType.Pheromone1);
+
+    public boolean dropPheromone(SmellPercept type){
+        if (super.dropPheromone(type)){
+            GameRunner.addPheromoneIntruders(type, super.getPosition());
+            return true;
+        }
+
+        return false;
 
     }
-
-     */
 
 
     //TODO IMPLEMENT COOLDOWN

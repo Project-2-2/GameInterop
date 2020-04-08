@@ -55,16 +55,15 @@ public class GameRunner {
 
     private boolean gameEnded;
 
-    protected ArrayList<Pheromone> guardPheromones;
-    protected ArrayList<Pheromone> intruderpheromones;
+
+    protected static PheromoneStorage pheromoneStorage;
 
     public GameRunner() {
         mapInfo = new MapInfo();
         timer = new Timer();
         checkIfWon = 0;
         gameEnded = false;
-        guardPheromones = new ArrayList<>();
-        intruderpheromones = new ArrayList<>();
+        pheromoneStorage = new PheromoneStorage();
     }
 
     public static void main(String[] args) throws IOException {
@@ -230,6 +229,7 @@ public class GameRunner {
             }
         }
 
+        checkIfIntruderCaught();
         checkGameEnded();
 
     }
@@ -568,10 +568,6 @@ public class GameRunner {
                 }else{
                     mapInfo.intruders.get(i).pheroMoneCoolDownCounter=0;
                     mapInfo.intruders.get(i).pheroMoneCooldownTimer=false;
-                    if (intruderpheromones.size()>=1){
-                        intruderpheromones.remove(0);
-                    }
-
                 }
             }
         }
@@ -583,9 +579,6 @@ public class GameRunner {
                 }else{
                     mapInfo.guards.get(i).pheroMoneCoolDownCounter=0;
                     mapInfo.guards.get(i).pheroMoneCooldownTimer=false;
-                    if (guardPheromones.size()>=1){
-                        guardPheromones.remove(0);
-                    }
 
                 }
             }
@@ -620,11 +613,20 @@ public class GameRunner {
     //TODO smell has to be implemented
     public void dropPheromone(DropPheromone dropPheromone){
         SmellPercept smell = new SmellPercept(dropPheromone.getType(),new Distance(mapInfo.radiusPheromone));
-        if(mapInfo.intruders.get(0).dropPheromone(smell)){
-            intruderpheromones.add(new Pheromone(dropPheromone.getType(),mapInfo.intruders.get(0).getPosition(),0,mapInfo.radiusPheromone));
-        }
+        mapInfo.intruders.get(0).dropPheromone(smell);
 
     }
+
+    protected static void addPheromoneIntruders(SmellPercept smell, Point position){
+        pheromoneStorage.addPheromone(new Pheromone(smell.getType(),position,5,mapInfo.radiusPheromone),false);
+
+    }
+
+    protected static void addPheromoneGuards(SmellPercept smell, Point position){
+        pheromoneStorage.addPheromone(new Pheromone(smell.getType(),position,5,mapInfo.radiusPheromone),true);
+
+    }
+
 
 
 }

@@ -22,6 +22,9 @@ public class Smell {
         //TODO add the pheromones to the game runner/map info
      //  ArrayList<Pheromone> guardPheromones =  GameRunner.StoredPheromones.getGuardPheromones();
 
+        //This return the pheromonestorage where all the pheromones are added
+        PheromoneStorage pheromoneStorage = GameRunner.pheromoneStorage;
+
 
 
 
