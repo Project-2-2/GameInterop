@@ -19,25 +19,20 @@ public class PheromoneStorage {
     }
 
     public void updatePheromones() {
-        ArrayList<Pheromone> noSmell = new ArrayList<>();
 
-        for (int i = 0; i < guardPheromones.size(); i++) {
-            guardPheromones.get(i).setTurnsLeft(guardPheromones.get(i).getTurnsLeft()-1);
+        for (Pheromone pheromone : guardPheromones) {
+            pheromone.setTurnsLeft(pheromone.getTurnsLeft()-1);
 
-            if (guardPheromones.get(i).getTurnsLeft() <= 0)
-            { noSmell.add(guardPheromones.get(i)); }
+            if (pheromone.getTurnsLeft() <= 0)
+            { guardPheromones.remove(pheromone); }
         }
-        guardPheromones.removeAll(noSmell);
-        noSmell.clear();
 
-        for (int i = 0; i < intruderPheromones.size(); i++) {
-            intruderPheromones.get(i).setTurnsLeft(intruderPheromones.get(i).getTurnsLeft()-1);
+        for (Pheromone pheromone : intruderPheromones) {
+            pheromone.setTurnsLeft(pheromone.getTurnsLeft()-1);
 
-            if (intruderPheromones.get(i).getTurnsLeft() <= 0)
-            { noSmell.add(intruderPheromones.get(i)); }
+            if (pheromone.getTurnsLeft() <= 0)
+            { intruderPheromones.remove(pheromone); }
         }
-        intruderPheromones.removeAll(noSmell);
-        noSmell.clear();
     }
 
     public void addPheromone( Pheromone pheromone, boolean isGuard) {
