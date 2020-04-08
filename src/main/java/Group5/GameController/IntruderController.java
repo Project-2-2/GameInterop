@@ -6,6 +6,7 @@ import Interop.Action.Move;
 import Interop.Action.Rotate;
 import Interop.Action.Sprint;
 import Interop.Geometry.Angle;
+import Interop.Geometry.Direction;
 import Interop.Geometry.Distance;
 import Interop.Geometry.Point;
 import Interop.Percept.Smell.SmellPercept;
@@ -108,6 +109,7 @@ public class IntruderController extends AgentController {
             position = newPosition;
         }
     }
+
 
 
 }

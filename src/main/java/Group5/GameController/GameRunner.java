@@ -8,6 +8,7 @@ import Interop.Action.DropPheromone;
 import Interop.Action.Move;
 import Interop.Action.Rotate;
 import Interop.Geometry.Angle;
+import Interop.Geometry.Direction;
 import Interop.Geometry.Distance;
 import Interop.Geometry.Point;
 import Interop.Percept.Smell.SmellPercept;
@@ -625,6 +626,17 @@ public class GameRunner {
     protected static void addPheromoneGuards(SmellPercept smell, Point position){
         pheromoneStorage.addPheromone(new Pheromone(smell.getType(),position,5,mapInfo.radiusPheromone),true);
 
+    }
+
+    public static Direction getTargetDirection(){
+        Point targetArea = new Point(mapInfo.targetArea.x1,mapInfo.targetArea.y1);
+        Direction targetAngle = targetArea.getClockDirection();
+
+        Point intruderLocation = mapInfo.intruders.get(0).getLocation();
+        Direction intruderAngle = intruderLocation.getClockDirection();
+
+        Direction targetDirection = Direction.fromRadians(targetAngle.getRadians()-intruderAngle.getRadians());
+        return targetDirection;
     }
 
 
