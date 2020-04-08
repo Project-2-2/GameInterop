@@ -84,7 +84,7 @@ public class AgentViewTesting extends SimpleUnitTest {
                     }
                 });
             }
-        });
+        }, true);
     }
 
     private static void _test_ObjectPerceptsForAgent_WithEmpty_Walls_Doors_Windows_SentryTower() {

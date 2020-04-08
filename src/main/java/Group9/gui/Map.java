@@ -37,7 +37,7 @@ public class Map extends Application {
 
 	    //Draw Map
 		gameMap = Parser.parseFile("./src/main/java/Group9/map/maps/test_2.map");
-		game = new Game(gameMap);
+		game = new Game(gameMap, false);
 
 		//Map
 		Rectangle map = new Rectangle(0,0,gameMap.getGameSettings().getWidth()*Scale.scale,gameMap.getGameSettings().getHeight()*Scale.scale);

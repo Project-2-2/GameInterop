@@ -23,7 +23,7 @@ public class ShowMap extends Application implements Function<AgentContainer<?>, 
     @Override
     public void start(Stage primaryStage) {
         GameMap gameMap = Parser.parseFile("./src/main/java/Group9/map/maps/test.map");
-        Game game = new Game(gameMap);
+        Game game = new Game(gameMap, true);
 
         Group root = new Group();
         primaryStage.setScene(new Scene(root, 1280, 720));

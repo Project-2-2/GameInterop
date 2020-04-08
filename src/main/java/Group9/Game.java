@@ -45,7 +45,7 @@ import java.util.stream.Collectors;
 public class Game implements Runnable {
 
     public final static Random _RANDOM;
-    public final static long _RANDOM_SEED = 44370552330634L; //System.nanoTime();
+    public final static long _RANDOM_SEED = System.nanoTime();
     static {
         System.out.println("seed: " + _RANDOM_SEED);
         _RANDOM = new Random(_RANDOM_SEED);
@@ -66,16 +66,18 @@ public class Game implements Runnable {
     private AtomicBoolean runningLoop = new AtomicBoolean(false);
 
     //---
+    private final boolean queryIntent;
     private Semaphore lock = new Semaphore(1);
 
-    public Game(GameMap gameMap)
+    public Game(GameMap gameMap, final boolean queryIntent)
     {
-        this(gameMap, new DefaultAgentFactory());
+        this(gameMap, new DefaultAgentFactory(), queryIntent);
     }
 
-    public Game(GameMap gameMap, IAgentFactory agentFactory)
+    public Game(GameMap gameMap, IAgentFactory agentFactory, final boolean queryIntent)
     {
         gameMap.setGame(this);
+        this.queryIntent = queryIntent;
         this.gameMap = gameMap;
         this.scenarioPercepts = gameMap.getGameSettings().getScenarioPercepts();
         this.settings = gameMap.getGameSettings();
@@ -99,6 +101,12 @@ public class Game implements Runnable {
      */
     public void query(QueryUpdate callback, boolean safeRead)
     {
+        if(!this.queryIntent && !safeRead)
+        {
+            throw new IllegalArgumentException("queryIntent=false and safeRead=false. Please indicate a queryIntent " +
+                    "so that the controller can properly lock itself or perform a safe-read operation.");
+        }
+
         try {
             //@todo the 10 ms basically guarantee that it will get a lock when this method gets called. this leads to
             //  smoother ui updates but it is not guaranteed, so if someone has a fairly week computer this method
@@ -243,14 +251,21 @@ public class Game implements Runnable {
 
     private void lockin(Runnable callable)
     {
-        try {
-            this.lock.acquire();
-            callable.run();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } finally {
-            this.lock.release();
+        if(this.queryIntent)
+        {
+            try {
+                this.lock.acquire();
+                callable.run();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } finally {
+                this.lock.release();
+            }
         }
+        else {
+            callable.run();
+        }
+
     }
 
     private <T> boolean executeAction(AgentContainer<T> agentContainer, Action action)

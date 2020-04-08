@@ -10,7 +10,7 @@ public class AgentMovementTest extends SimpleUnitTest {
 
     public static void main(String[] args) {
         it("Game::<check_if_agent_gets_stuck>", () -> {
-            Game game = new Game(Parser.parseFile("./src/main/java/Group9/map/maps/test_2.map"));
+            Game game = new Game(Parser.parseFile("./src/main/java/Group9/map/maps/test_2.map"), false);
 
             GuardContainer guard = game.getGuards().get(0);
             Vector2 lastPosition = guard.getPosition().clone();

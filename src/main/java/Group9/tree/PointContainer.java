@@ -576,43 +576,6 @@ public abstract class PointContainer {
         };
     }
 
-    /*private static Vector2[] circleLineIntersect(Circle circle, Line line){
-        //https://mathworld.wolfram.com/Circle-LineIntersection.html
-        Vector2[] returnArray = new Vector2[0];
-        double r = circle.getRadius();
-        Vector2 centerCircle = circle.getCenter();
-
-        double dx = line.getEnd().getX() - line.getStart().getX(); //- 2*centerCircle.getX();
-        double dy = line.getEnd().getY() - line.getStart().getY(); //- 2*centerCircle.getY();
-        double dr = Math.sqrt(dx*dx + dy*dy);
-
-        double sgndy =  dy >= 0 ? 1 : -1;
-
-        double determinant = determinant(line.getStart().getX()-centerCircle.getX(),line.getStart().getY()-centerCircle.getY(),
-                line.getEnd().getX()-centerCircle.getX(),line.getEnd().getY()-centerCircle.getY());
-
-        double discriminant = r*r * dr*dr - (determinant*determinant);
-
-        if(Math.abs(discriminant) < Math.ulp(0)) {
-            returnArray = new Vector2[1];
-            double returnX = (determinant * dy) / (dr*dr);
-            double returnY = (-determinant * dx) / (dr*dr);
-            returnArray[0] = new Vector2(returnX+centerCircle.getX(), returnY+centerCircle.getY());
-
-        }  else if(discriminant > 0) {
-            returnArray = new Vector2[2];
-            double returnX1 = ((determinant * dy) - (sgndy * dx * Math.sqrt(discriminant)))/(dr*dr);
-            double returnX2 = ((determinant * dy) + (sgndy * dx * Math.sqrt(discriminant)))/(dr*dr);
-            double sqrtD = Math.abs(dy) * Math.sqrt(discriminant);
-            double returnY1 = ((-determinant * dx) - sqrtD)/(dr*dr);
-            double returnY2 = ((-determinant * dx) + sqrtD)/(dr*dr);
-            returnArray[0] = new Vector2(returnX1+centerCircle.getX(), returnY1+centerCircle.getY());
-            returnArray[1] = new Vector2(returnX2+centerCircle.getX(), returnY2+centerCircle.getY());
-        }
-
-        return returnArray;
-    }*/
-
     /**
      * Calculate whether 2 lines intersect with each other
      * @param a_start start point of line 1.
