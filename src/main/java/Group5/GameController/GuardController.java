@@ -53,11 +53,14 @@ public class GuardController extends AgentController {
         hearing.yellSound(this.getPosition());
     }
 
+    /*
     //TODO smell has to be implemented
     public void dropPheromone(DropPheromone dropPheromone){
-        super.dropPheromone(dropPheromone,SmellPerceptType.Pheromone2);
+        super.dropPheromone(dropPheromone);
 
     }
+
+     */
 
 
 

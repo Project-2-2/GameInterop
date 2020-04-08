@@ -4,11 +4,14 @@ package Group5.GameController;
 import Group5.UI.DrawableDialogueBox;
 import Group5.UI.MapViewer;
 import Interop.Action.Action;
+import Interop.Action.DropPheromone;
 import Interop.Action.Move;
 import Interop.Action.Rotate;
 import Interop.Geometry.Angle;
 import Interop.Geometry.Distance;
 import Interop.Geometry.Point;
+import Interop.Percept.Smell.SmellPercept;
+import Interop.Percept.Smell.SmellPerceptType;
 import Interop.Percept.Vision.ObjectPercept;
 import Interop.Percept.Vision.ObjectPerceptType;
 import Interop.Percept.Vision.ObjectPercepts;
@@ -52,11 +55,16 @@ public class GameRunner {
 
     private boolean gameEnded;
 
+    protected ArrayList<Pheromone> guardPheromones;
+    protected ArrayList<Pheromone> intruderpheromones;
+
     public GameRunner() {
         mapInfo = new MapInfo();
         timer = new Timer();
         checkIfWon = 0;
         gameEnded = false;
+        guardPheromones = new ArrayList<>();
+        intruderpheromones = new ArrayList<>();
     }
 
     public static void main(String[] args) throws IOException {
@@ -560,6 +568,10 @@ public class GameRunner {
                 }else{
                     mapInfo.intruders.get(i).pheroMoneCoolDownCounter=0;
                     mapInfo.intruders.get(i).pheroMoneCooldownTimer=false;
+                    if (intruderpheromones.size()>=1){
+                        intruderpheromones.remove(0);
+                    }
+
                 }
             }
         }
@@ -571,6 +583,10 @@ public class GameRunner {
                 }else{
                     mapInfo.guards.get(i).pheroMoneCoolDownCounter=0;
                     mapInfo.guards.get(i).pheroMoneCooldownTimer=false;
+                    if (guardPheromones.size()>=1){
+                        guardPheromones.remove(0);
+                    }
+
                 }
             }
         }
@@ -600,5 +616,16 @@ public class GameRunner {
     public ObjectPercepts getVision(){
         return vision.vision(mapInfo.intruders.get(0));
     }
+
+    //TODO smell has to be implemented
+    public void dropPheromone(DropPheromone dropPheromone){
+        SmellPercept smell = new SmellPercept(dropPheromone.getType(),new Distance(mapInfo.radiusPheromone));
+        if(mapInfo.intruders.get(0).dropPheromone(smell)){
+            intruderpheromones.add(new Pheromone(dropPheromone.getType(),mapInfo.intruders.get(0).getPosition(),0,mapInfo.radiusPheromone));
+        }
+
+    }
+
+
 }
 

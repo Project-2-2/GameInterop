@@ -8,6 +8,7 @@ import Interop.Action.NoAction;
 import Interop.Geometry.Angle;
 import Interop.Geometry.Distance;
 import Interop.Geometry.Point;
+import Interop.Percept.Smell.SmellPercept;
 import Interop.Percept.Smell.SmellPerceptType;
 import Interop.Percept.Vision.FieldOfView;
 import Interop.Percept.Vision.ObjectPercept;
@@ -176,13 +177,15 @@ public class AgentController {
 
 
 
-    //TODO smell has to be implemented
-    public void dropPheromone(DropPheromone dropPheromone, SmellPerceptType type){
+    public boolean dropPheromone(SmellPercept type){
         if (pheroMoneCooldownTimer){
-            return;
+            return false;
         }
 
         pheroMoneCooldownTimer=true;
+
+
+        return true;
 
 
     }

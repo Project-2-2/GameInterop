@@ -81,11 +81,14 @@ public class IntruderController extends AgentController {
 
     }
 
+    /*
     //TODO smell has to be implemented
     public void dropPheromone(DropPheromone dropPheromone){
         super.dropPheromone(dropPheromone, SmellPerceptType.Pheromone1);
 
     }
+
+     */
 
 
     //TODO IMPLEMENT COOLDOWN
