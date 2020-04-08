@@ -13,7 +13,7 @@ public class Parser {
 
     public static GameMap parseFile(String path)
     {
-        GameMap.Builder builder = new GameMap.Builder();
+        Builder builder = new Builder();
 
         try {
             Files.lines(Paths.get(path)).forEachOrdered(line -> {

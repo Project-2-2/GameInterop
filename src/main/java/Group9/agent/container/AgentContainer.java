@@ -1,7 +1,9 @@
 package Group9.agent.container;
 
+import Group9.map.ViewRange;
 import Group9.map.area.EffectArea;
 import Group9.map.area.ModifyViewEffect;
+import Group9.map.area.ModifyViewRangeEffect;
 import Group9.math.Vector2;
 import Group9.tree.PointContainer;
 import Interop.Geometry.Distance;
@@ -51,6 +53,16 @@ public abstract class AgentContainer<T> {
 
     public FieldOfView getFOV(Set<EffectArea> areas)
     {
+        Optional<ModifyViewRangeEffect> viewRangeEffect = areas.stream()
+                .filter(a -> a instanceof ModifyViewRangeEffect)
+                .map(a -> (ModifyViewRangeEffect) a).findAny();
+
+        if(viewRangeEffect.isPresent())
+        {
+            return new FieldOfView(new Distance(viewRangeEffect.get().get(this).getMax()), normalFOV.getViewAngle());
+        }
+
+        //---
         Optional<ModifyViewEffect> viewAffectedArea = areas.stream()
                 .filter(a -> a instanceof ModifyViewEffect)
                 .map(a -> (ModifyViewEffect) a).findAny();
@@ -87,6 +99,11 @@ public abstract class AgentContainer<T> {
     public int getCooldown(Cooldown cooldown)
     {
         return this.cooldowns.getOrDefault(cooldown, -1);
+    }
+
+    public boolean isCoolingDown()
+    {
+        return !this.cooldowns.isEmpty();
     }
 
     public boolean hasCooldown(Cooldown cooldown)

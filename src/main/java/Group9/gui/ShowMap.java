@@ -23,10 +23,10 @@ public class ShowMap extends Application implements Function<AgentContainer<?>, 
     @Override
     public void start(Stage primaryStage) {
         GameMap gameMap = Parser.parseFile("./src/main/java/Group9/map/maps/test.map");
-        Game game = new Game(gameMap, 3);
+        Game game = new Game(gameMap);
 
         Group root = new Group();
-        primaryStage.setScene(new Scene(root, 1000, 1000));
+        primaryStage.setScene(new Scene(root, 1280, 720));
         List<MapObject> mapObjects = gameMap.getObjects();
         mapObjects.forEach(m -> root.getChildren().add(GUIConverter.convert(m)));
         System.out.println(root.getChildren().get(0).getClass());

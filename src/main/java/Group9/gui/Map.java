@@ -37,10 +37,10 @@ public class Map extends Application {
 
 	    //Draw Map
 		gameMap = Parser.parseFile("./src/main/java/Group9/map/maps/test_2.map");
-		game = new Game(gameMap, 1);
+		game = new Game(gameMap);
 
 		//Map
-		Rectangle map = new Rectangle(0,0,gameMap.getWidth()*Scale.scale,gameMap.getHeight()*Scale.scale);
+		Rectangle map = new Rectangle(0,0,gameMap.getGameSettings().getWidth()*Scale.scale,gameMap.getGameSettings().getHeight()*Scale.scale);
 		map.setFill(Color.LIGHTGREEN);
 		map.setStroke(Color.BLACK);
 		map.setStrokeWidth(3);
@@ -93,8 +93,8 @@ public class Map extends Application {
 		//@performance we would probably want to use a mutex or something like that instead of always copying the entire list
 		new ArrayList<>(gameMap.getDynamicObjects()).stream().filter(Objects::nonNull).forEach(d -> movingObjects.getChildren().add(GUIConverter.convert(d)));
 
-		game.getGuards().forEach(g -> movingObjects.getChildren().add(GUIConverter.convert(g, g.getFOV(gameMap.getEffectAreas(g)), gameMap.getAgentVisionCone(g, g.getFOV(gameMap.getEffectAreas(g))), gameMap.getViewAngle().getDegrees())));
-		game.getIntruders().forEach(i -> movingObjects.getChildren().add(GUIConverter.convert(i, i.getFOV(gameMap.getEffectAreas(i)), gameMap.getAgentVisionCone(i, i.getFOV(gameMap.getEffectAreas(i))), gameMap.getViewAngle().getDegrees())));
+		game.getGuards().forEach(g -> movingObjects.getChildren().add(GUIConverter.convert(g, g.getFOV(gameMap.getEffectAreas(g)), gameMap.getAgentVisionCone(g, g.getFOV(gameMap.getEffectAreas(g)), null), gameMap.getGameSettings().getViewAngle().getDegrees())));
+		game.getIntruders().forEach(i -> movingObjects.getChildren().add(GUIConverter.convert(i, i.getFOV(gameMap.getEffectAreas(i)), gameMap.getAgentVisionCone(i, i.getFOV(gameMap.getEffectAreas(i)), null), gameMap.getGameSettings().getViewAngle().getDegrees())));
 		return movingObjects;
 	}
 
