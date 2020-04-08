@@ -632,7 +632,7 @@ public class GameRunner {
         Point targetArea = new Point(mapInfo.targetArea.x1,mapInfo.targetArea.y1);
         Direction targetAngle = targetArea.getClockDirection();
 
-        Point intruderLocation = mapInfo.intruders.get(0).getLocation();
+        Point intruderLocation = mapInfo.intruders.get(0).getPosition();
         Direction intruderAngle = intruderLocation.getClockDirection();
 
         Direction targetDirection = Direction.fromRadians(targetAngle.getRadians()-intruderAngle.getRadians());
