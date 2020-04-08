@@ -13,6 +13,7 @@ import Interop.Geometry.Distance;
 import Interop.Geometry.Point;
 import Interop.Percept.Smell.SmellPercept;
 import Interop.Percept.Smell.SmellPerceptType;
+import Interop.Percept.Sound.SoundPercepts;
 import Interop.Percept.Vision.ObjectPercept;
 import Interop.Percept.Vision.ObjectPerceptType;
 import Interop.Percept.Vision.ObjectPercepts;
@@ -234,6 +235,7 @@ public class GameRunner {
 
         checkIfIntruderCaught();
         checkGameEnded();
+        hearing.clearSounds();
 
     }
 
@@ -582,7 +584,6 @@ public class GameRunner {
                 }else{
                     mapInfo.guards.get(i).pheroMoneCoolDownCounter=0;
                     mapInfo.guards.get(i).pheroMoneCooldownTimer=false;
-
                 }
             }
         }
@@ -611,6 +612,10 @@ public class GameRunner {
 
     public ObjectPercepts getVision(){
         return vision.vision(mapInfo.intruders.get(0));
+    }
+
+    public SoundPercepts getSound(){
+        return hearing.getSounds(mapInfo.intruders.get(0));
     }
 
     //TODO smell has to be implemented
