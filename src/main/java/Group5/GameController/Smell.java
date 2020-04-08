@@ -33,7 +33,7 @@ public class Smell {
             for (Pheromone guardPheromone:guardPheromones) {
                 Point pheromoneLocation = guardPheromone.getLocation();
                 Distance distance = new Distance(agentPosition,pheromoneLocation);
-                if(distance.getValue()<=guardPheromone.getRadius()+agent.radiusPheromone)
+                if(distance.getValue()<=guardPheromone.getRadius())
                 {
                     SmellPercept pheromoneDetected = new SmellPercept(guardPheromone.getType(),distance);
                     smellPerceptsSet.add(pheromoneDetected);
@@ -48,7 +48,7 @@ public class Smell {
             for (Pheromone intruderPheromone:intruderPheromones) {
                 Point pheromoneLocation = intruderPheromone.getLocation();
                 Distance distance = new Distance(agentPosition,pheromoneLocation);
-                if(distance.getValue()<=intruderPheromone.getRadius()+agent.radiusPheromone)
+                if(distance.getValue()<=intruderPheromone.getRadius())
                 {
                     SmellPercept pheromoneDetected = new SmellPercept(intruderPheromone.getType(),distance);
                     smellPerceptsSet.add(pheromoneDetected);

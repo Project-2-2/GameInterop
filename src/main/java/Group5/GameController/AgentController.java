@@ -1,22 +1,10 @@
 package Group5.GameController;
 
 
-import Group5.Agent.Explorer;
-import Interop.Action.DropPheromone;
-import Interop.Action.Move;
-import Interop.Action.NoAction;
 import Interop.Geometry.Angle;
 import Interop.Geometry.Distance;
 import Interop.Geometry.Point;
 import Interop.Percept.Smell.SmellPercept;
-import Interop.Percept.Smell.SmellPerceptType;
-import Interop.Percept.Vision.FieldOfView;
-import Interop.Percept.Vision.ObjectPercept;
-import Interop.Percept.Vision.ObjectPercepts;
-
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * this class checks for every agent which movements it can do
@@ -165,7 +153,7 @@ public class AgentController {
 
         Point newPosition = new Point(newX,newY);
 
-        if(GameRunner.moveValidility(position,newPosition,distance,maxDistance)){
+        if(GameRunner.moveValidity(position,newPosition,distance,maxDistance)){
             if (teleported==false){
                 position = newPosition;
             }

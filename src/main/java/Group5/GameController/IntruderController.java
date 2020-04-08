@@ -1,16 +1,12 @@
 package Group5.GameController;
 
 import Group5.Agent.Explorer;
-import Interop.Action.DropPheromone;
 import Interop.Action.Move;
 import Interop.Action.Rotate;
 import Interop.Action.Sprint;
-import Interop.Geometry.Angle;
-import Interop.Geometry.Direction;
 import Interop.Geometry.Distance;
 import Interop.Geometry.Point;
 import Interop.Percept.Smell.SmellPercept;
-import Interop.Percept.Smell.SmellPerceptType;
 
 public class IntruderController extends AgentController {
 
@@ -73,7 +69,7 @@ public class IntruderController extends AgentController {
 
         Point newPosition = new Point(newX,newY);
 
-        if(GameRunner.moveValidility(position,newPosition,sprint.getDistance(),sprintDistance)){
+        if(GameRunner.moveValidity(position,newPosition,sprint.getDistance(),sprintDistance)){
             position = newPosition;
         }
 
@@ -105,7 +101,7 @@ public class IntruderController extends AgentController {
 
         Point newPosition = new Point(newX,newY);
 
-        if(GameRunner.moveValidility(position,newPosition,distance,sprintDistance)){
+        if(GameRunner.moveValidity(position,newPosition,distance,sprintDistance)){
             position = newPosition;
         }
     }

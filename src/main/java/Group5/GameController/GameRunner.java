@@ -323,7 +323,7 @@ public class GameRunner {
      * checks if movement is valid
      * returns the postion after movement
      */
-    protected static boolean moveValidility(Point from, Point to, Distance distance, Distance maxDistance){
+    protected static boolean moveValidity(Point from, Point to, Distance distance, Distance maxDistance){
         mapInfo.intruders.get(0).onSentryTower=false;
         ArrayList<Area> walls= mapInfo.walls;
 
