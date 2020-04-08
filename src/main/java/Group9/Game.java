@@ -38,13 +38,14 @@ import Interop.Utils.Utils;
 
 import java.util.*;
 import java.util.concurrent.Semaphore;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 public class Game implements Runnable {
 
     public final static Random _RANDOM;
-    public final static long _RANDOM_SEED = 104244483073653L;// System.nanoTime();
+    public final static long _RANDOM_SEED = System.nanoTime();
     static {
         System.out.println("seed: " + _RANDOM_SEED);
         _RANDOM = new Random(_RANDOM_SEED);
@@ -91,20 +92,24 @@ public class Game implements Runnable {
      *
      * @param callback The method which should be called once the lock has been acquired.
      */
-    public void query(QueryUpdate callback)
+    public void query(QueryUpdate callback, boolean safeRead)
     {
         try {
             //@todo the 10 ms basically guarantee that it will get a lock when this method gets called. this leads to
             //  smoother ui updates but it is not guaranteed, so if someone has a fairly week computer this method
             //  might lead to a choppy ui experience.
-            //if(lock.tryAcquire(10, TimeUnit.MILLISECONDS))
+            if(safeRead)
             {
+                callback.update(null);
             }
-            callback.update(lock);
+            else
+            {
+                lock.acquireUninterruptibly();
+                callback.update(lock);
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
-
     }
 
     public List<GuardContainer> getGuards() {
@@ -142,7 +147,7 @@ public class Game implements Runnable {
         while (this.winner == null && runningLoop.get())
         {
             this.winner = this.turn();
-            if(true)
+            if(false)
             {
                 try {
                     Thread.sleep(100);
@@ -192,7 +197,8 @@ public class Game implements Runnable {
      */
     public final Team turn()
     {
-        this.cooldown();
+        lockin(this::cooldown);
+
         Team winner = null;
 
         // Note: Intruders move first.
@@ -200,8 +206,11 @@ public class Game implements Runnable {
         {
             if(!(intruder.isCaptured()))
             {
-                final IntruderAction action = intruder.getAgent().getAction(this.generateIntruderPercepts(intruder));
-                actionSuccess.put(intruder, executeAction(intruder, action));
+
+                lockin(() -> {
+                    final IntruderAction action = intruder.getAgent().getAction(this.generateIntruderPercepts(intruder));
+                    actionSuccess.put(intruder, executeAction(intruder, action));
+                });
 
                 if((winner = checkForWinner()) != null)
                 {
@@ -213,8 +222,10 @@ public class Game implements Runnable {
         for(GuardContainer guard : this.guards)
         {
 
-            final GuardAction action = guard.getAgent().getAction(this.generateGuardPercepts(guard));
-            actionSuccess.put(guard, executeAction(guard, action));
+            lockin(() -> {
+                final GuardAction action = guard.getAgent().getAction(this.generateGuardPercepts(guard));
+                actionSuccess.put(guard, executeAction(guard, action));
+            });
 
             if((winner = checkForWinner()) != null)
             {
@@ -223,6 +234,18 @@ public class Game implements Runnable {
         }
 
         return null;
+    }
+
+    private void lockin(Runnable callable)
+    {
+        try {
+            this.lock.acquire();
+            callable.run();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } finally {
+            this.lock.release();
+        }
     }
 
     private <T> boolean executeAction(AgentContainer<T> agentContainer, Action action)

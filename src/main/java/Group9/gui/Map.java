@@ -73,9 +73,7 @@ public class Map extends Application {
 					game.query((lock) -> {
 						movingObjects.getChildren().clear();
 						movingObjects.getChildren().add(Map.this.getMovingObjects());
-
-						lock.release();
-					});
+					}, true);
 				}
 			}
 		};
@@ -90,8 +88,10 @@ public class Map extends Application {
 	public Group getMovingObjects()
 	{
 		Group movingObjects = new Group();
-		//@performance we would probably want to use a mutex or something like that instead of always copying the entire list
-		new ArrayList<>(gameMap.getDynamicObjects()).stream().filter(Objects::nonNull).forEach(d -> movingObjects.getChildren().add(GUIConverter.convert(d)));
+		new ArrayList<>(gameMap.getDynamicObjects())
+				.stream()
+				.filter(Objects::nonNull)
+				.forEach(d -> movingObjects.getChildren().add(GUIConverter.convert(d)));
 
 		game.getGuards().forEach(g -> movingObjects.getChildren().add(GUIConverter.convert(g, g.getFOV(gameMap.getEffectAreas(g)), gameMap.getAgentVisionCone(g, g.getFOV(gameMap.getEffectAreas(g)), null), gameMap.getGameSettings().getViewAngle().getDegrees())));
 		game.getIntruders().forEach(i -> movingObjects.getChildren().add(GUIConverter.convert(i, i.getFOV(gameMap.getEffectAreas(i)), gameMap.getAgentVisionCone(i, i.getFOV(gameMap.getEffectAreas(i)), null), gameMap.getGameSettings().getViewAngle().getDegrees())));

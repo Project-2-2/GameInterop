@@ -29,7 +29,7 @@ public class RandomAgent implements Guard {
         }
         else
         {
-            return new Move(new Distance(percepts.getScenarioGuardPercepts().getMaxMoveDistanceGuard().getValue()));
+            return new Move(new Distance(percepts.getScenarioGuardPercepts().getMaxMoveDistanceGuard().getValue() * 0.5));
         }
     }
 
