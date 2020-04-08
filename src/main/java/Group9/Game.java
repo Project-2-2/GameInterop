@@ -101,25 +101,26 @@ public class Game implements Runnable {
      */
     public void query(QueryUpdate callback, boolean safeRead)
     {
-        if(!this.queryIntent && !safeRead)
+        if(safeRead)
         {
-            throw new IllegalArgumentException("queryIntent=false and safeRead=false. Please indicate a queryIntent " +
-                    "so that the controller can properly lock itself or perform a safe-read operation.");
+            callback.update(null);
+            return;
+        }
+        else
+        {
+            if(!this.queryIntent)
+            {
+                throw new IllegalArgumentException("queryIntent=false and safeRead=false. Please indicate a queryIntent " +
+                        "so that the controller can properly lock itself or perform a safe-read operation.");
+            }
         }
 
         try {
             //@todo the 10 ms basically guarantee that it will get a lock when this method gets called. this leads to
             //  smoother ui updates but it is not guaranteed, so if someone has a fairly week computer this method
             //  might lead to a choppy ui experience.
-            if(safeRead)
-            {
-                callback.update(null);
-            }
-            else
-            {
-                lock.acquireUninterruptibly();
-                callback.update(lock);
-            }
+            lock.acquireUninterruptibly();
+            callback.update(lock);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -211,8 +212,6 @@ public class Game implements Runnable {
     public final Team turn()
     {
         lockin(this::cooldown);
-
-        Team winner = null;
 
         // Note: Intruders move first.
         for(IntruderContainer intruder : this.intruders)

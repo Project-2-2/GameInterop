@@ -2,6 +2,7 @@ package Group9.map;
 
 import Group9.Game;
 import Group9.agent.container.AgentContainer;
+import Group9.agent.container.IntruderContainer;
 import Group9.map.area.EffectArea;
 import Group9.map.dynamic.DynamicObject;
 import Group9.map.objects.*;
@@ -206,18 +207,24 @@ public class GameMap {
                 Vector2 relative = point
                         .sub(agentContainer.getPosition()) // move relative to agent
                         .rotated(agentContainer.getDirection().getClockDirection()); //rotated back
-                objectPoints.put(relative, mo.getType());
+                if(relative.length() > 0)
+                {
+                    objectPoints.put(relative, mo.getType());
+                }
             }
         }
 
         // --- perceive intruders
-        for (AgentContainer<Intruder> intruder : this.game.getIntruders()) {
-            if(intruder == agentContainer) continue;
+        for (IntruderContainer intruder : this.game.getIntruders()) {
+            if(intruder == agentContainer || intruder.isCaptured()) continue;
             for (Vector2 point : PointContainer.intersectionPoints(intruder.getShape(), line)) {
                 Vector2 relative = point
                         .sub(agentContainer.getPosition()) // move relative to agent
                         .rotated(agentContainer.getDirection().getClockDirection()); //rotated back
-                objectPoints.put(relative, ObjectPerceptType.Intruder);
+                if(relative.length() > 0)
+                {
+                    objectPoints.put(relative, ObjectPerceptType.Intruder);
+                }
             }
         }
 
@@ -228,7 +235,10 @@ public class GameMap {
                 Vector2 relative = point
                         .sub(agentContainer.getPosition()) // move relative to agent
                         .rotated(agentContainer.getDirection().getClockDirection()); //rotated back
-                objectPoints.put(relative, ObjectPerceptType.Guard);
+                if(relative.length() > 0)
+                {
+                    objectPoints.put(relative, ObjectPerceptType.Guard);
+                }
             }
         }
 

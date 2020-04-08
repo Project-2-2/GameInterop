@@ -10,5 +10,6 @@ public class GroupTests extends SimpleUnitTest {
         PointContainerTest.main(args);
         AgentMovementTest.main(args);
         AgentViewTesting.main(args);
+        GameWinningConditions.main(args);
     }
 }

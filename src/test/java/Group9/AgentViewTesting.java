@@ -1,6 +1,7 @@
 package Group9;
 
 import Group9.agent.container.AgentContainer;
+import Group9.agent.factories.DummyAgentFactory;
 import Group9.agent.factories.IAgentFactory;
 import Group9.map.GameMap;
 import Group9.map.GameSettings;
@@ -44,7 +45,7 @@ public class AgentViewTesting extends SimpleUnitTest {
         it("GameMap#getObjectPerceptsForAgent (Intruder <sees> Guard)", AgentViewTesting::_test_getObjectPerceptsForAgent_Intruder_Sees_Guard);
     }
 
-    private static Game _createGame(double viewDistance, double viewAngle, boolean spawnGuard, boolean spawnIntruder)
+    private static Game _createGame(double viewDistance, double viewAngle, int guards, int intruders)
     {
         ScenarioPercepts scenarioPercepts = new ScenarioPercepts(GameMode.CaptureAllIntruders, new Distance(1),
                 Angle.fromRadians(1), new SlowDownModifiers(1, 1, 1),
@@ -60,31 +61,9 @@ public class AgentViewTesting extends SimpleUnitTest {
         )));
 
         GameMap gameMap = new GameMap(new GameSettings(scenarioPercepts, 100, 100, one, 1,
-                one, one, 1, 1, 1, new Distance(viewDistance), one, new Distance(viewDistance),
+                one, one, 1, guards, intruders, new Distance(viewDistance), one, new Distance(viewDistance),
                 one, new ViewRange(0, 1), one, one,  one, one, Angle.fromRadians(viewAngle), 45, 1), objects);
-        return new Game(gameMap, new IAgentFactory() {
-            @Override
-            public List<Intruder> createIntruders(int amount) {
-                if(!spawnIntruder) return new ArrayList<>();
-                return Arrays.asList(new Intruder() {
-                    @Override
-                    public IntruderAction getAction(IntruderPercepts percepts) {
-                        return null;
-                    }
-                });
-            }
-
-            @Override
-            public List<Guard> createGuards(int amount) {
-                if(!spawnGuard) return new ArrayList<>();
-                return Arrays.asList(new Guard() {
-                    @Override
-                    public GuardAction getAction(GuardPercepts percepts) {
-                        return null;
-                    }
-                });
-            }
-        }, true);
+        return new Game(gameMap, new DummyAgentFactory(false), true);
     }
 
     private static void _test_ObjectPerceptsForAgent_WithEmpty_Walls_Doors_Windows_SentryTower() {
@@ -94,7 +73,7 @@ public class AgentViewTesting extends SimpleUnitTest {
         double viewAngle = Math.PI / 2D;
         //---
 
-        Game game = _createGame(viewDistance, viewAngle, true, false);
+        Game game = _createGame(viewDistance, viewAngle, 1, 0);
         GameMap gameMap = game.getGameMap();
 
         AgentContainer<Guard> agentContainer = game.getGuards().get(0);
@@ -146,7 +125,7 @@ public class AgentViewTesting extends SimpleUnitTest {
         double viewAngle = Math.PI / 2D;
         //---
 
-        Game game = _createGame(viewDistance, viewAngle, true, false);
+        Game game = _createGame(viewDistance, viewAngle, 1, 0);
         GameMap gameMap = game.getGameMap();
 
         AgentContainer<Guard> agentContainer = game.getGuards().get(0);
@@ -166,7 +145,7 @@ public class AgentViewTesting extends SimpleUnitTest {
         double viewAngle = Math.PI / 2D;
         //---
 
-        Game game = _createGame(viewDistance, viewAngle, true, false);
+        Game game = _createGame(viewDistance, viewAngle, 1, 0);
         GameMap gameMap = game.getGameMap();
 
         AgentContainer<Guard> agentContainer = game.getGuards().get(0);
@@ -193,7 +172,7 @@ public class AgentViewTesting extends SimpleUnitTest {
         double viewAngle = Math.PI / 2D;
         //---
 
-        Game game = _createGame(viewDistance, viewAngle, true, false);
+        Game game = _createGame(viewDistance, viewAngle, 1, 0);
         GameMap gameMap = game.getGameMap();
 
         AgentContainer<Guard> agentContainer = game.getGuards().get(0);
@@ -220,7 +199,7 @@ public class AgentViewTesting extends SimpleUnitTest {
         double viewAngle = Math.PI / 2D;
         //---
 
-        Game game = _createGame(viewDistance, viewAngle, true, false);
+        Game game = _createGame(viewDistance, viewAngle, 1, 0);
         GameMap gameMap = game.getGameMap();
 
         AgentContainer<Guard> agentContainer = game.getGuards().get(0);
@@ -247,7 +226,7 @@ public class AgentViewTesting extends SimpleUnitTest {
         double viewAngle = Math.PI / 2D;
         //---
 
-        Game game = _createGame(viewDistance, viewAngle, true, false);
+        Game game = _createGame(viewDistance, viewAngle, 1, 0);
         GameMap gameMap = game.getGameMap();
 
         AgentContainer<Guard> agentContainer = game.getGuards().get(0);
@@ -274,7 +253,7 @@ public class AgentViewTesting extends SimpleUnitTest {
         double viewAngle = Math.PI / 2D;
         //---
 
-        Game game = _createGame(viewDistance, viewAngle, true, false);
+        Game game = _createGame(viewDistance, viewAngle, 1, 0);
         GameMap gameMap = game.getGameMap();
 
         AgentContainer<Guard> agentContainer = game.getGuards().get(0);
@@ -301,7 +280,7 @@ public class AgentViewTesting extends SimpleUnitTest {
         double viewAngle = Math.PI / 2D;
         //---
 
-        Game game = _createGame(viewDistance, viewAngle, true, false);
+        Game game = _createGame(viewDistance, viewAngle, 1, 0);
         GameMap gameMap = game.getGameMap();
 
         AgentContainer<Guard> agentContainer = game.getGuards().get(0);
@@ -328,7 +307,7 @@ public class AgentViewTesting extends SimpleUnitTest {
         double viewAngle = Math.PI / 2D;
         //---
 
-        Game game = _createGame(viewDistance, viewAngle, true, true);
+        Game game = _createGame(viewDistance, viewAngle, 1, 1);
         GameMap gameMap = game.getGameMap();
 
         AgentContainer<Guard> guard = game.getGuards().get(0);
@@ -355,7 +334,7 @@ public class AgentViewTesting extends SimpleUnitTest {
         double viewAngle = Math.PI / 2D;
         //---
 
-        Game game = _createGame(viewDistance, viewAngle, true, true);
+        Game game = _createGame(viewDistance, viewAngle, 1, 1);
         GameMap gameMap = game.getGameMap();
 
         AgentContainer<Guard> guard = game.getGuards().get(0);

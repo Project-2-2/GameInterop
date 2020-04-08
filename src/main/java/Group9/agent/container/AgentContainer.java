@@ -98,7 +98,7 @@ public abstract class AgentContainer<T> {
 
     public int getCooldown(Cooldown cooldown)
     {
-        return this.cooldowns.getOrDefault(cooldown, -1);
+        return this.cooldowns.getOrDefault(cooldown, 0);
     }
 
     public boolean isCoolingDown()
