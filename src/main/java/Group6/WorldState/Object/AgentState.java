@@ -53,6 +53,8 @@ public abstract class AgentState implements Object {
         return location.isInside(area);
     }
 
+    public double getRADIUS(){return RADIUS;}
+
     public Circle getCircle() {
         return new Circle(location, RADIUS);
     }

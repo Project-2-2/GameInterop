@@ -61,7 +61,7 @@ public class GuardState extends AgentState {
     }
     public Agent getAgentGui(){
 
-        return new Agent(1,getLocation().getX(),getLocation().getY());
+        return new Group6.GUI.Guard(1,getLocation().getX(),getLocation().getY());
 
     }
 
