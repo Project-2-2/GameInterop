@@ -18,9 +18,10 @@ public class PheromoneStorage {
         return intruderPheromones;
     }
 
-    public void updatePheromones() {
+    public void updatePheromones() {    //Update the list of pheromones currently released, the turns they have left and their shapes
 
         for (Pheromone pheromone : guardPheromones) {
+            pheromone.updateShape();
             pheromone.setTurnsLeft(pheromone.getTurnsLeft()-1);
 
             if (pheromone.getTurnsLeft() <= 0)
@@ -28,6 +29,7 @@ public class PheromoneStorage {
         }
 
         for (Pheromone pheromone : intruderPheromones) {
+            pheromone.updateShape();
             pheromone.setTurnsLeft(pheromone.getTurnsLeft()-1);
 
             if (pheromone.getTurnsLeft() <= 0)

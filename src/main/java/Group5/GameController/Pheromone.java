@@ -26,16 +26,16 @@ public class Pheromone {
                 this.shape.setFill(Color.rgb(20, 120, 200, 0.8));
                 break;
             case Pheromone2:
-                this.shape.setFill(Color.rgb(100, 50, 100, 0.8));
+                this.shape.setFill(Color.rgb(80, 70, 100, 0.8));
                 break;
             case Pheromone3:
                 this.shape.setFill(Color.rgb(10, 150, 130, 0.8));
                 break;
             case Pheromone4:
-                this.shape.setFill(Color.rgb(100, 70, 180, 0.8));
+                this.shape.setFill(Color.rgb(120, 50, 180, 0.8));
                 break;
             case Pheromone5:
-                this.shape.setFill(Color.rgb(180, 50, 180, 0.8));
+                this.shape.setFill(Color.rgb(250, 50, 150, 0.8));
                 break;
         }
 
@@ -45,6 +45,8 @@ public class Pheromone {
     public int getTurnsLeft() {
         return turnsLeft;
     }
+
+    public double getRadius(){ return radius; }
 
     public SmellPerceptType getType() {
         return type;
@@ -62,5 +64,11 @@ public class Pheromone {
         this.location = location;
         this.shape.setCenterX(this.location.getX());
         this.shape.setCenterY(this.location.getY());
+    }
+
+    public void updateShape() {
+        this.radius = this.radius - (this.radius/turnsLeft);
+        this.shape.setRadiusX(this.radius);
+        this.shape.setRadiusY(this.radius);
     }
 }
