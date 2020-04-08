@@ -3,6 +3,8 @@ package Group9;
 import Group9.agent.container.AgentContainer;
 import Group9.agent.container.GuardContainer;
 import Group9.agent.container.IntruderContainer;
+import Group9.agent.factories.DefaultAgentFactory;
+import Group9.agent.factories.IAgentFactory;
 import Group9.map.GameMap;
 import Group9.map.GameSettings;
 import Group9.map.ViewRange;
@@ -18,7 +20,6 @@ import Interop.Agent.Guard;
 import Interop.Agent.Intruder;
 import Interop.Geometry.Direction;
 import Interop.Geometry.Distance;
-import Interop.Geometry.Point;
 import Interop.Percept.AreaPercepts;
 import Interop.Percept.GuardPercepts;
 import Interop.Percept.IntruderPercepts;
@@ -44,7 +45,7 @@ import java.util.stream.Collectors;
 public class Game implements Runnable {
 
     public final static Random _RANDOM;
-    public final static long _RANDOM_SEED = System.nanoTime();
+    public final static long _RANDOM_SEED = 44370552330634L; //System.nanoTime();
     static {
         System.out.println("seed: " + _RANDOM_SEED);
         _RANDOM = new Random(_RANDOM_SEED);
@@ -69,7 +70,12 @@ public class Game implements Runnable {
 
     public Game(GameMap gameMap)
     {
+        this(gameMap, new DefaultAgentFactory());
+    }
 
+    public Game(GameMap gameMap, IAgentFactory agentFactory)
+    {
+        gameMap.setGame(this);
         this.gameMap = gameMap;
         this.scenarioPercepts = gameMap.getGameSettings().getScenarioPercepts();
         this.settings = gameMap.getGameSettings();
@@ -77,10 +83,10 @@ public class Game implements Runnable {
         Spawn.Guard guardSpawn = gameMap.getObjects(Spawn.Guard.class).get(0);
         Spawn.Intruder intruderSpawn = gameMap.getObjects(Spawn.Intruder.class).get(0);
 
-        AgentsFactory.createGuards(settings.getNumGuards()).forEach(a -> this.guards.add(new GuardContainer(a,
+        agentFactory.createGuards(settings.getNumGuards()).forEach(a -> this.guards.add(new GuardContainer(a,
                 guardSpawn.getContainer().getAsPolygon().generateRandomLocation().toVexing(), new Vector2(0, 1).normalise().toVexing(),
                 new FieldOfView(settings.getGuardViewRangeNormal(), settings.getViewAngle()))));
-        AgentsFactory.createIntruders(settings.getNumIntruders()).forEach(a -> this.intruders.add(new IntruderContainer(a,
+        agentFactory.createIntruders(settings.getNumIntruders()).forEach(a -> this.intruders.add(new IntruderContainer(a,
                 intruderSpawn.getContainer().getAsPolygon().generateRandomLocation().toVexing(), new Vector2(0, 1).normalise().toVexing(),
                 new FieldOfView(settings.getIntruderViewRangeNormal(), settings.getViewAngle()))));
     }

@@ -139,4 +139,14 @@ public abstract class AgentContainer<T> {
         PHEROMONE
     }
 
+    @Override
+    public String toString() {
+        return "AgentContainer{" +
+                "agent=" + agent +
+                ", normalFOV=" + normalFOV +
+                ", shape=" + shape +
+                ", direction=" + direction +
+                ", cooldowns=" + cooldowns +
+                '}';
+    }
 }

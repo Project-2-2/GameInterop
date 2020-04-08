@@ -9,5 +9,6 @@ public class GroupTests extends SimpleUnitTest {
         Vector2Test.main(args);
         PointContainerTest.main(args);
         AgentMovementTest.main(args);
+        AgentViewTesting.main(args);
     }
 }

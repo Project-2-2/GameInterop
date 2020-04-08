@@ -1,4 +1,4 @@
-package Group9;
+package Group9.agent.factories;
 
 import Group9.agent.DeepSpace;
 import Group9.agent.RandomAgent;
@@ -17,12 +17,13 @@ import java.util.List;
  * For example:
  * Agents must not hold ANY references to common objects or references to each other.
  */
-public class AgentsFactory {
-    static public List<Intruder> createIntruders(int number) {
+public class DefaultAgentFactory implements IAgentFactory {
+
+    public List<Intruder> createIntruders(int number) {
         return Collections.emptyList();
     }
 
-    static public List<Guard> createGuards(int number) {
+    public List<Guard> createGuards(int number) {
         List<Guard> guards = new ArrayList<>();
         for(int i = 0; i < number; i++)
         {

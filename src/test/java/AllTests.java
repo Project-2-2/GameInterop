@@ -1,10 +1,8 @@
-import Interop.Agent.Guard;
-import Interop.Agent.Intruder;
+import Group9.agent.factories.DefaultAgentFactory;
 import Interop.InteropTests;
 import SimpleUnitTest.SimpleUnitTest;
 
 import java.lang.reflect.Method;
-import java.util.List;
 
 /**
  * This tests are run by GitHub Actions.
@@ -56,7 +54,7 @@ public class AllTests extends SimpleUnitTest {
         testAgentsFactory(Group6.AgentsFactory.class);
         testAgentsFactory(Group7.AgentsFactory.class);
         testAgentsFactory(Group8.AgentsFactory.class);
-        testAgentsFactory(Group9.AgentsFactory.class);
+        testAgentsFactory(DefaultAgentFactory.class);
         testAgentsFactory(Group10.AgentsFactory.class);
         testAgentsFactory(Group11.AgentsFactory.class);
     }
