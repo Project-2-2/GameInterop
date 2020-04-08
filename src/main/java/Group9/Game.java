@@ -38,7 +38,6 @@ import Interop.Utils.Utils;
 
 import java.util.*;
 import java.util.concurrent.Semaphore;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
@@ -495,11 +494,13 @@ public class Game implements Runnable {
     private IntruderPercepts generateIntruderPercepts(IntruderContainer intruder)
     {
 
-        Vector2 direction = this.gameMap.getObjects(TargetArea.class).get(0).getContainer()
-                                            .getCenter().sub(intruder.getDirection()).normalise();
+        final Vector2 direction = this.gameMap.getObjects(TargetArea.class).get(0).getContainer().getCenter()
+                .sub(intruder.getPosition()).normalise();
+
+        final double angle = direction.angle(intruder.getDirection());
 
         return new IntruderPercepts(
-                Direction.fromClockAngle(new Point(direction.getX(), direction.getY())),
+                Direction.fromRadians(angle),
                 generateVisionPercepts(intruder),
                 generateSoundPercepts(intruder),
                 generateSmellPercepts(intruder),

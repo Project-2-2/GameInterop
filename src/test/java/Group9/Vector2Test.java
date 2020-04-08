@@ -320,7 +320,7 @@ public class Vector2Test extends SimpleUnitTest {
     private static void test_angle() {
         assertEqual(new Vector2(1, 0).angle(new Vector2(0, 1)), Math.PI / 2, 1E-9);
         assertEqual(new Vector2(1, 0).angle(new Vector2(-1, 0)), Math.PI, 1E-9);
-        assertEqual(new Vector2(1, 0).angle(new Vector2(0, -1)), Math.PI / 2, 1E-9);
+        assertEqual(new Vector2(1, 0).angle(new Vector2(0, -1)), -Math.PI / 2, 1E-9);
         assertEqual(new Vector2(1, 0).angle(new Vector2(1, 0)), 0, 1E-9);
     }
 

@@ -100,9 +100,7 @@ public class Vector2 {
 
     public double angle(Vector2 other)
     {
-        return Math.acos(
-                (this.dot(other) / (this.length() * other.length()))
-        );
+        return Math.atan2(other.getY(), other.getX()) - Math.atan2(this.getY(), this.getX());
     }
 
     public double distance(Vector2 other)
