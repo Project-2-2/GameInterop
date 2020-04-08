@@ -230,6 +230,8 @@ public class GameRunner {
             }
         }
 
+        pheromoneStorage.updatePheromones();
+
         checkIfIntruderCaught();
         checkGameEnded();
 
