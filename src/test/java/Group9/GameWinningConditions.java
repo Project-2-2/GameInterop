@@ -25,14 +25,18 @@ public class GameWinningConditions extends SimpleUnitTest {
 
     public static void main(String[] args) {
         it("GameWinningConditions::CaptureAllIntruders::<guard_captures_intruder>",
-                GameWinningConditions::test_guard_captures_intruder_capture_all_intruders);
+                GameWinningConditions::_test_capture_all_intruders_guard_captures_intruder);
         it("GameWinningConditions::CaptureAllIntruders::<guard_captures_two_moving_intruders>",
-                GameWinningConditions::test_guard_captures_two_seperate_intruders_caputure_all_intruders);
+                GameWinningConditions::_test_capture_all_intruders_guard_captures_two_seperate_intruders);
         it("GameWinningConditions::CaptureAllIntruders::<intruder_wins_in_three_turns>",
-                GameWinningConditions::_test_intruder_wins_in_three_rounds);
+                () -> _test_intruder_wins_in_three_rounds(GameMode.CaptureAllIntruders));
+        it("GameWinningConditions::CaptureOneIntruder::<guard_captures_one_of_two_intruder>",
+                GameWinningConditions::_test_capture_one_intruder_guard_captures_intruder);
+        it("GameWinningConditions::CaptureOneIntruder::<intruder_wins_in_three_turns>",
+                () -> _test_intruder_wins_in_three_rounds(GameMode.CaptureOneIntruder));
     }
 
-    private static void test_guard_captures_intruder_capture_all_intruders() {
+    private static void _test_capture_all_intruders_guard_captures_intruder() {
         ScenarioPercepts scenarioPercepts = new ScenarioPercepts(GameMode.CaptureAllIntruders, new Distance(6),
                 Angle.fromRadians(1), new SlowDownModifiers(1, 1, 1),
                 new Distance(1), 1);
@@ -67,7 +71,7 @@ public class GameWinningConditions extends SimpleUnitTest {
         assertTrue(game.getWinner() == Game.Team.GUARDS);
     }
 
-    private static void test_guard_captures_two_seperate_intruders_caputure_all_intruders() {
+    private static void _test_capture_all_intruders_guard_captures_two_seperate_intruders() {
         ScenarioPercepts scenarioPercepts = new ScenarioPercepts(GameMode.CaptureAllIntruders, new Distance(6),
                 Angle.fromRadians(1), new SlowDownModifiers(1, 1, 1),
                 new Distance(1), 1);
@@ -114,8 +118,8 @@ public class GameWinningConditions extends SimpleUnitTest {
         assertTrue(intruderB.isCaptured());
     }
 
-    private static void _test_intruder_wins_in_three_rounds() {
-        ScenarioPercepts scenarioPercepts = new ScenarioPercepts(GameMode.CaptureAllIntruders, new Distance(6),
+    private static void _test_intruder_wins_in_three_rounds(GameMode gameMode) {
+        ScenarioPercepts scenarioPercepts = new ScenarioPercepts(gameMode, new Distance(6),
                 Angle.fromRadians(1), new SlowDownModifiers(1, 1, 1),
                 new Distance(1), 1);
         Distance one = new Distance(1);
@@ -172,5 +176,44 @@ public class GameWinningConditions extends SimpleUnitTest {
         game.turn();
         assertTrue(game.turn() == Game.Team.INTRUDERS);
         assertEqual(intruder.getZoneCounter(), 3);
+    }
+
+    private static void _test_capture_one_intruder_guard_captures_intruder() {
+        ScenarioPercepts scenarioPercepts = new ScenarioPercepts(GameMode.CaptureOneIntruder, new Distance(6),
+                Angle.fromRadians(1), new SlowDownModifiers(1, 1, 1),
+                new Distance(1), 1);
+        Distance one = new Distance(1);
+        List<MapObject> objects = new ArrayList<>();
+
+        objects.add(new Spawn.Guard(new PointContainer.Polygon(
+                new Vector2.Origin(), new Vector2(0, 1), new Vector2(1, 1), new Vector2(1, 0)
+        )));
+        objects.add(new Spawn.Intruder(new PointContainer.Polygon(
+                new Vector2.Origin(), new Vector2(0, 1), new Vector2(1, 1), new Vector2(1, 0)
+        )));
+
+        // --- out of reach
+        objects.add(new TargetArea(new PointContainer.Polygon(
+                new Vector2(100, 0), new Vector2(100, 1), new Vector2(101, 1), new Vector2(101, 0)
+        )));
+
+        GameMap gameMap = new GameMap(new GameSettings(scenarioPercepts, 100, 100, one, 3,
+                one, one, 1, 1, 2, new Distance(6), one, new Distance(6),
+                one, new ViewRange(0, 1), one, one, one, one, Angle.fromRadians(Math.PI / 2), 45, 1), objects);
+        Game game = new Game(gameMap, new DummyAgentFactory(true), true);
+
+        IntruderContainer intruderA = game.getIntruders().get(0);
+        IntruderContainer intruderB = game.getIntruders().get(1);
+
+        intruderA.moveTo(new Vector2(0.5, 2));
+        intruderB.moveTo(new Vector2(50, 50));
+
+        GuardContainer guard = game.getGuards().get(0);
+        guard.moveTo(new Vector2(0.5, 0));
+
+        assertTrue(game.turn() == Game.Team.GUARDS);
+        assertTrue(game.getWinner() == Game.Team.GUARDS);
+        assertTrue(intruderA.isCaptured());
+        assertTrue(!intruderB.isCaptured());
     }
 }
