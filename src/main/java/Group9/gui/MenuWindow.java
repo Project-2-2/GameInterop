@@ -125,7 +125,7 @@ public class MenuWindow extends Application {
             @Override
             public void handle(MouseEvent event) {
                 FileChooser f = new FileChooser();
-                String path = Paths.get("src/main/java/group9/map/maps").toAbsolutePath().toString();
+                String path = Paths.get("src/main/java/Group9/map/maps").toAbsolutePath().toString();
                 f.setInitialDirectory(new File(path));
                 selectedFile = f.showOpenDialog(primaryStage).toString();
             }
