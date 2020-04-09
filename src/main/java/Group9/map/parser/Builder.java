@@ -282,8 +282,8 @@ public class Builder
         ));
         return this;
     }
-    public Builder sentry(PointContainer.Polygon quadrilateral){
-        this.object(new SentryTower(quadrilateral, sentrySlowdownModifier, this.sentryViewRange));
+    public Builder sentry(PointContainer.Polygon outsideArea, PointContainer.Polygon insideArea){
+        this.object(new SentryTower(insideArea, sentrySlowdownModifier, this.sentryViewRange));
         return this;
     }
 

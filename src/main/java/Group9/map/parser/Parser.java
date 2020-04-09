@@ -66,7 +66,7 @@ public class Parser {
                         } break;
 
                         case "sentry": {
-                            builder.sentry(quadrilateralFromData(data));
+                            builder.sentry(quadrilateralFromData(data), quadrilateralFromData(data, 8));
                         } break;
 
                         case "gamemode": {
