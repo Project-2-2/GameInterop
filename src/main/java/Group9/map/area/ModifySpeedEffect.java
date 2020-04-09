@@ -1,6 +1,7 @@
 package Group9.map.area;
 
 import Group9.agent.container.AgentContainer;
+import Group9.map.objects.MapObject;
 import Group9.tree.PointContainer;
 import Interop.Agent.Guard;
 import Interop.Agent.Intruder;
@@ -10,8 +11,8 @@ public class ModifySpeedEffect extends EffectArea<Double> {
     private double guardModifier;
     private double intruderModifier;
 
-    public ModifySpeedEffect(PointContainer pointContainer, double guardModifier, double intruderModifier) {
-        super(pointContainer);
+    public ModifySpeedEffect(MapObject parent, PointContainer pointContainer, double guardModifier, double intruderModifier) {
+        super(parent, pointContainer);
 
         this.guardModifier = guardModifier;
         this.intruderModifier = intruderModifier;

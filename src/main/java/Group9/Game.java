@@ -81,16 +81,52 @@ public class Game implements Runnable {
         this.gameMap = gameMap;
         this.scenarioPercepts = gameMap.getGameSettings().getScenarioPercepts();
         this.settings = gameMap.getGameSettings();
+        List<MapObject> solids = this.getGameMap().getObjects().stream().filter(e -> e.getType().isSolid()).collect(Collectors.toList());
 
-        Spawn.Guard guardSpawn = gameMap.getObjects(Spawn.Guard.class).get(0);
-        Spawn.Intruder intruderSpawn = gameMap.getObjects(Spawn.Intruder.class).get(0);
+        {
 
-        agentFactory.createGuards(settings.getNumGuards()).forEach(a -> this.guards.add(new GuardContainer(a,
-                guardSpawn.getContainer().getAsPolygon().generateRandomLocation().toVexing(), new Vector2(0, 1).normalise().toVexing(),
-                new FieldOfView(settings.getGuardViewRangeNormal(), settings.getViewAngle()))));
-        agentFactory.createIntruders(settings.getNumIntruders()).forEach(a -> this.intruders.add(new IntruderContainer(a,
-                intruderSpawn.getContainer().getAsPolygon().generateRandomLocation().toVexing(), new Vector2(0, 1).normalise().toVexing(),
-                new FieldOfView(settings.getIntruderViewRangeNormal(), settings.getViewAngle()))));
+            Spawn.Guard guardSpawn = gameMap.getObjects(Spawn.Guard.class).get(0);
+            List<Vector2> usedSpawns = new ArrayList<>();
+            agentFactory.createGuards(settings.getNumGuards()).forEach(a -> {
+                Vector2 spawn = generateRandomSpawnLocation(guardSpawn.getArea().getAsPolygon(),
+                        new PointContainer.Circle(new Vector2.Origin(), AgentContainer._RADIUS), solids, usedSpawns);
+                GuardContainer guardContainer = new GuardContainer(a, spawn, new Vector2(0, 1).normalise(),
+                        new FieldOfView(settings.getGuardViewRangeNormal(), settings.getViewAngle()));
+                this.guards.add(guardContainer);
+                usedSpawns.add(spawn);
+            });
+        }
+
+        {
+            Spawn.Intruder intruderSpawn = gameMap.getObjects(Spawn.Intruder.class).get(0);
+            List<Vector2> usedSpawns = new ArrayList<>();
+            agentFactory.createIntruders(settings.getNumIntruders()).forEach(e -> {
+                Vector2 spawn = generateRandomSpawnLocation(intruderSpawn.getArea().getAsPolygon(),
+                        new PointContainer.Circle(new Vector2.Origin(), AgentContainer._RADIUS), solids, usedSpawns);
+                IntruderContainer intruderContainer = new IntruderContainer(e, spawn, new Vector2(0, 1).normalise(),
+                        new FieldOfView(settings.getIntruderViewRangeNormal(), settings.getViewAngle()));
+                this.intruders.add(intruderContainer);
+                usedSpawns.add(spawn);
+            });
+        }
+    }
+
+    public static Vector2 generateRandomSpawnLocation(PointContainer.Polygon area, PointContainer.Circle circle,
+                                                      List<MapObject> avoid, List<Vector2> occupied)
+    {
+
+        final Vector2[] point = new Vector2[] { circle.getCenter() };
+        final double radius = circle.getRadius();
+
+        do
+        {
+            point[0] = area.generateRandomLocation();
+        }
+        while (occupied.stream().anyMatch(e -> e.distance(point[0]) <= radius * 2D) ||
+                avoid.stream().anyMatch(e -> PointContainer.intersect(e.getContainer(), new PointContainer.Circle(point[0], radius))));
+
+        return point[0];
+
     }
 
     /**
@@ -285,7 +321,7 @@ public class Game implements Runnable {
             return false;
         }
 
-            //@performance cleanup
+        //@performance cleanup
         Set<EffectArea> effectAreas = gameMap.getEffectAreas(agentContainer);
         Optional<EffectArea> modifySpeedEffect = effectAreas.stream().filter(e -> e instanceof ModifySpeedEffect).findAny();
         Optional<EffectArea> soundEffect = effectAreas.stream().filter(e -> e instanceof SoundEffect).findAny();
@@ -334,10 +370,7 @@ public class Game implements Runnable {
                 // --- To check for collisions, we create a bounding box. The length of this box has to be the
                 // distance the agent wants to move
                 // + the radius of the agent; because the center of the agent is moved
-                // + epsilon; because of the limitations of floating point numbers numerical mistakes will happen and thus
-                //              a safety margin is required.
-                final double epsilon = 0;
-                final double length = distance + agentContainer.getShape().getRadius() + epsilon;
+                final double length = distance + agentContainer.getShape().getRadius();
 
 
                 final Vector2 end = agentContainer.getPosition().add(agentContainer.getDirection().mul(length));
@@ -373,9 +406,16 @@ public class Game implements Runnable {
 
             if(!justTeleported.contains(agentContainer) && locationEffect.isPresent())
             {
-                Vector2 pos = ((ModifyLocationEffect) locationEffect.get()).get(agentContainer);
-                agentContainer.moveTo(pos);
-                justTeleported.add(agentContainer);
+                if(locationEffect.get().getParent() instanceof TeleportArea)
+                {
+                    PointContainer.Polygon connectedArea = ((TeleportArea) locationEffect.get().getParent()).getConnected().getArea().getAsPolygon();
+                    List<MapObject> solids = this.getGameMap().getObjects().stream().filter(e -> e.getType().isSolid()).collect(Collectors.toList());
+
+                    final Vector2 position = generateRandomSpawnLocation(connectedArea, agentContainer.getShape(), solids,
+                            new ArrayList<>());
+                    agentContainer.moveTo(position);
+                    justTeleported.add(agentContainer);
+                }
             }
             else if(justTeleported.contains(agentContainer) && !locationEffect.isPresent())
             {

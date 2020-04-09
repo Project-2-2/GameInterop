@@ -111,7 +111,7 @@ public class GameMap {
     private double calculateRayConstant()
     {
 
-        double min = Math.min(0.5,  // radius of agent
+        double min = Math.min(AgentContainer._RADIUS,  // radius of agent
                 gameSettings.getScenarioPercepts().getRadiusPheromone().getValue() / gameSettings.getPheromoneExpireRounds());
 
         Queue<PointContainer> containers = this.mapObjects.stream()

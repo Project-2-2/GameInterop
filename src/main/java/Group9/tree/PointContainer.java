@@ -183,7 +183,7 @@ public abstract class PointContainer {
          * @param point
          * @return true, if inside, otherwise false.
          */
-        private boolean isPointInside(Vector2 point)
+        public boolean isPointInside(Vector2 point)
         {
             for (Vector2[] e : getTriangles()) {
                 if (isInTriangle(e[0], e[1], e[2], point)) {

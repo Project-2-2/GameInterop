@@ -6,6 +6,7 @@ import Group9.tree.PointContainer;
 import Interop.Percept.Vision.ObjectPerceptType;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class MapObject implements Container<PointContainer> {
@@ -35,6 +36,11 @@ public class MapObject implements Container<PointContainer> {
     @Override
     public PointContainer getContainer() {
         return this.area;
+    }
+
+    public void addEffects(EffectArea<?> ...effects)
+    {
+        this.effects.addAll(Arrays.asList(effects));
     }
 
     public List<EffectArea> getEffects() {

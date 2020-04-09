@@ -15,11 +15,10 @@ public class Door extends MapObject {
                 double guardViewModifier, double intruderViewModifier,
                 double soundRadius,
                 double guardSpeedModifier, double intruderSpeedModifier) {
-        super(area, Arrays.asList(
-                new ModifyViewEffect(area, guardViewModifier, intruderViewModifier),
-                new SoundEffect(area, SoundPerceptType.Noise, soundRadius),
-                new ModifySpeedEffect(area, guardSpeedModifier, intruderSpeedModifier)
-        ), ObjectPerceptType.Door);
+        super(area, ObjectPerceptType.Door);
+        this.addEffects(new ModifyViewEffect(this, area, guardViewModifier, intruderViewModifier),
+                new SoundEffect(this, area, SoundPerceptType.Noise, soundRadius),
+                new ModifySpeedEffect(this, area, guardSpeedModifier, intruderSpeedModifier));
     }
 
 }

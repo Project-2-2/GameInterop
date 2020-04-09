@@ -1,5 +1,6 @@
 package Group9.agent.container;
 
+import Group9.math.Vector2;
 import Interop.Agent.Intruder;
 import Interop.Geometry.Point;
 import Interop.Percept.Vision.FieldOfView;
@@ -9,7 +10,7 @@ public class IntruderContainer extends AgentContainer<Intruder> {
     private boolean captured = false;
     private int zoneCounter = 0;
 
-    public IntruderContainer(Intruder agent, Point position, Point direction, FieldOfView normalFOV) {
+    public IntruderContainer(Intruder agent, Vector2 position, Vector2 direction, FieldOfView normalFOV) {
         super(agent, position, direction, normalFOV);
     }
 

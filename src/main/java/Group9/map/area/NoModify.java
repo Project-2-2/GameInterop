@@ -5,7 +5,7 @@ import Group9.agent.container.AgentContainer;
 public class NoModify extends EffectArea<Double> {
 
     public NoModify() {
-        super(null);
+        super(null, null);
     }
 
     @Override

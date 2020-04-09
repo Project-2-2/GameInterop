@@ -7,7 +7,6 @@ import Group9.tree.PointContainer;
 import Interop.Percept.Vision.ObjectPerceptType;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 public class TeleportArea extends MapObject {
 
@@ -23,7 +22,7 @@ public class TeleportArea extends MapObject {
         {
             getEffects().clear();
             getEffects().add(
-                    new ModifyLocationEffect(getArea()) {
+                    new ModifyLocationEffect(this, getArea()) {
                         @Override
                         public Vector2 get(AgentContainer<?> agentContainer) {
                             return TeleportArea.this.connected.getArea().getAsPolygon().generateRandomLocation();

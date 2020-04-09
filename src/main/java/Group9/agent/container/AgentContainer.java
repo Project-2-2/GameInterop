@@ -1,18 +1,18 @@
 package Group9.agent.container;
 
-import Group9.map.ViewRange;
 import Group9.map.area.EffectArea;
 import Group9.map.area.ModifyViewEffect;
 import Group9.map.area.ModifyViewRangeEffect;
 import Group9.math.Vector2;
 import Group9.tree.PointContainer;
 import Interop.Geometry.Distance;
-import Interop.Geometry.Point;
 import Interop.Percept.Vision.FieldOfView;
 
 import java.util.*;
 
 public abstract class AgentContainer<T> {
+
+    public final static double _RADIUS = 0.5;
 
     private T agent;
     private FieldOfView normalFOV;
@@ -21,11 +21,11 @@ public abstract class AgentContainer<T> {
 
     public Map<Cooldown, Integer> cooldowns = new HashMap<>();
 
-    public AgentContainer(T agent, Point position, Point direction, FieldOfView normalFOV)
+    public AgentContainer(T agent, Vector2 position, Vector2 direction, FieldOfView normalFOV)
     {
         this.agent = agent;
-        this.shape = new PointContainer.Circle(Vector2.from(position), 0.5);
-        this.direction = Vector2.from(direction);
+        this.shape = new PointContainer.Circle(position, _RADIUS);
+        this.direction = direction;
         this.normalFOV = normalFOV;
 
         assert (this.direction.length() - 1) < 1E-9;
@@ -69,7 +69,7 @@ public abstract class AgentContainer<T> {
 
         if(viewAffectedArea.isPresent())
         {
-            return new FieldOfView(new Distance(viewAffectedArea.get().get(this)), normalFOV.getViewAngle());
+            return new FieldOfView(new Distance(viewAffectedArea.get().get(this) * normalFOV.getRange().getValue()), normalFOV.getViewAngle());
         }
 
         return this.normalFOV;
