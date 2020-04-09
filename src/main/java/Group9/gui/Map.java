@@ -26,14 +26,18 @@ public class Map extends Application {
 
 
 	@Override
-	public void start(Stage s) throws Exception {
+	public void start(Stage s) throws Exception
+	{
+		start(s, "./src/main/java/Group9/map/maps/test_2.map");
+	}
+	public void start(Stage s, String path) throws Exception {
 		VBox vBox = new VBox();
 	    vBox.setPrefWidth(200);
 	    vBox.setPrefHeight(50);
 
 
 	    //Draw Map
-		gameMap = Parser.parseFile("./src/main/java/Group9/map/maps/test_2.map");
+		gameMap = Parser.parseFile(path);
 		game = new Game(gameMap, false);
 
 		//Map

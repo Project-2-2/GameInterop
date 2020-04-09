@@ -14,7 +14,11 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+
+import java.io.File;
+import java.nio.file.Paths;
 
 //import java.awt.Polygon;
 
@@ -25,6 +29,8 @@ public class MenuWindow extends Application {
         launch(args);
 
     }
+
+    String selectedFile;// = "./src/main/java/Group9/map/maps/test_2.map";
 
     public void start(Stage primaryStage) {
 
@@ -80,7 +86,7 @@ public class MenuWindow extends Application {
                if (event.getSource() == start) {
             	   Map x = new Map();
             	   try {
-					x.start(primaryStage);
+					x.start(primaryStage, selectedFile);
 				} catch (Exception e) {
 
 					e.printStackTrace();
@@ -92,6 +98,40 @@ public class MenuWindow extends Application {
             }
 
         };
+
+        //filechooser
+        Button chooseMap = new Button("Choose map");
+        chooseMap.setFont(Font.font("Times New Roman", FontWeight.BOLD, 30));
+        chooseMap.setTextFill(Color.WHITE);
+        chooseMap.setTranslateX(600);
+        chooseMap.setTranslateY(400);
+        chooseMap.setMinWidth(vBox.getPrefWidth());
+        chooseMap.setMinHeight(vBox.getPrefHeight());
+        chooseMap.setStyle("-fx-border-color: white;-fx-border-width:3px;-fx-background-color:BLACK");
+        chooseMap.setOnMousePressed(event -> {
+            chooseMap.setStyle("-fx-border-color: white;-fx-border-width:3px;-fx-background-color:DARKSLATEGREY");
+        });
+        chooseMap.setOnMouseEntered(event -> {
+            chooseMap.setStyle("-fx-border-color: white;-fx-border-width:3px;-fx-background-color:SIENNA");
+
+        });
+        chooseMap.setOnMouseExited(event -> {
+            chooseMap.setStyle("-fx-border-color: white;-fx-border-width:3px;-fx-background-color:BLACK");
+
+        });
+
+
+        chooseMap.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                FileChooser f = new FileChooser();
+                String path = Paths.get("src/main/java/group9/map/maps").toAbsolutePath().toString();
+                f.setInitialDirectory(new File(path));
+                selectedFile = f.showOpenDialog(primaryStage).toString();
+            }
+        });
+
+
         //Background image.
         /*ImageView background = new ImageView("menuImg.jpg");
         background.setFitHeight(650);
@@ -108,7 +148,7 @@ public class MenuWindow extends Application {
        	Group r = new Group();
        	Scene scene = new Scene(r, 970, 630);
         //r.getChildren().add(background);
-        r.getChildren().addAll(title,start,quit);
+        r.getChildren().addAll(title,start,quit,chooseMap);
 
         primaryStage.setScene(scene);
         primaryStage.setTitle("Multi-agents Surveillance");
