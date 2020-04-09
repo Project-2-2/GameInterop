@@ -20,6 +20,12 @@ public abstract class PointContainer {
      */
     abstract public Vector2 getCenter();
 
+    /**
+     * Returns the area of the container.
+     * @return
+     */
+    abstract public double getArea();
+
     @Override
     public PointContainer clone() throws CloneNotSupportedException {
         if(this instanceof Line)
@@ -56,6 +62,8 @@ public abstract class PointContainer {
         private Line[] lines;
         private List<Vector2[]> triangles = new ArrayList<>();
 
+        private double area = -1;
+
         public Polygon(Vector2 ...points)
         {
             if(points.length < 3)
@@ -71,15 +79,21 @@ public abstract class PointContainer {
             }
         }
 
+        @Override
         public double getArea()
         {
-            double area = 0;
-            for(int i = 0; i < points.length; i++)
+            if(area == -1)
             {
-                area += (points[i].getX() * points[(i + 1) % points.length].getY()
-                        - points[(i + 1) % points.length].getX() * points[i].getY());
+                area = 0;
+                for(int i = 0; i < points.length; i++)
+                {
+                    area += (points[i].getX() * points[(i + 1) % points.length].getY()
+                            - points[(i + 1) % points.length].getX() * points[i].getY());
+                }
+                this.area = Math.abs(area) * 0.5;
             }
-            return Math.abs(area) * 0.5;
+
+            return area;
         }
 
         public Vector2[] getPoints() {
@@ -268,11 +282,13 @@ public abstract class PointContainer {
     {
         private Vector2 center;
         private double radius;
+        private double area;
 
         public Circle(Vector2 center, double radius)
         {
             this.center = center;
             this.radius = radius;
+            this.area = Math.pow(radius, 2) * Math.PI * 2D;
         }
 
         public boolean isInside(Vector2 point)
@@ -287,6 +303,11 @@ public abstract class PointContainer {
         @Override
         public Vector2 getCenter() {
             return center;
+        }
+
+        @Override
+        public double getArea() {
+            return this.area;
         }
 
         @Override
@@ -377,6 +398,11 @@ public abstract class PointContainer {
         @Override
         public Vector2 getCenter() {
             return this.start.add(this.end).mul(0.5);
+        }
+
+        @Override
+        public double getArea() {
+            return 0;
         }
 
         @Override

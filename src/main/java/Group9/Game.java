@@ -20,6 +20,7 @@ import Interop.Agent.Guard;
 import Interop.Agent.Intruder;
 import Interop.Geometry.Direction;
 import Interop.Geometry.Distance;
+import Interop.Geometry.Point;
 import Interop.Percept.AreaPercepts;
 import Interop.Percept.GuardPercepts;
 import Interop.Percept.IntruderPercepts;
@@ -45,7 +46,7 @@ import java.util.stream.Collectors;
 public class Game implements Runnable {
 
     public final static Random _RANDOM;
-    public final static long _RANDOM_SEED = System.nanoTime();
+    public final static long _RANDOM_SEED = 64921105828523L; // System.nanoTime();
     static {
         System.out.println("seed: " + _RANDOM_SEED);
         _RANDOM = new Random(_RANDOM_SEED);
@@ -86,44 +87,82 @@ public class Game implements Runnable {
         {
 
             Spawn.Guard guardSpawn = gameMap.getObjects(Spawn.Guard.class).get(0);
-            List<Vector2> usedSpawns = new ArrayList<>();
+            List<PointContainer.Circle> usedSpawns = new ArrayList<>();
             agentFactory.createGuards(settings.getNumGuards()).forEach(a -> {
                 Vector2 spawn = generateRandomSpawnLocation(guardSpawn.getArea().getAsPolygon(),
                         new PointContainer.Circle(new Vector2.Origin(), AgentContainer._RADIUS), solids, usedSpawns);
                 GuardContainer guardContainer = new GuardContainer(a, spawn, new Vector2(0, 1).normalise(),
                         new FieldOfView(settings.getGuardViewRangeNormal(), settings.getViewAngle()));
                 this.guards.add(guardContainer);
-                usedSpawns.add(spawn);
+                usedSpawns.add(guardContainer.getShape());
             });
         }
 
         {
             Spawn.Intruder intruderSpawn = gameMap.getObjects(Spawn.Intruder.class).get(0);
-            List<Vector2> usedSpawns = new ArrayList<>();
+            List<PointContainer.Circle> usedSpawns = new ArrayList<>();
             agentFactory.createIntruders(settings.getNumIntruders()).forEach(e -> {
                 Vector2 spawn = generateRandomSpawnLocation(intruderSpawn.getArea().getAsPolygon(),
                         new PointContainer.Circle(new Vector2.Origin(), AgentContainer._RADIUS), solids, usedSpawns);
                 IntruderContainer intruderContainer = new IntruderContainer(e, spawn, new Vector2(0, 1).normalise(),
                         new FieldOfView(settings.getIntruderViewRangeNormal(), settings.getViewAngle()));
                 this.intruders.add(intruderContainer);
-                usedSpawns.add(spawn);
+                usedSpawns.add(intruderContainer.getShape());
             });
         }
     }
 
+    /**
+     * Generates a random point within the area. The circle is the one that is supposed to be placed inside. If the
+     * circle is not intersecting with anything in the avoid list, it might be placed along the border of the area.
+     * @param area The area it should be placed inside in.
+     * @param circle The circle that should be placed.
+     * @param avoid The objects the circle is not allowed to intersect with.
+     * @param occupied The circles that already have been placed, if no other objects need to be placed just pass an EmptyList.
+     * @return A point where the circle can be placed without conflicts.
+     */
     public static Vector2 generateRandomSpawnLocation(PointContainer.Polygon area, PointContainer.Circle circle,
-                                                      List<MapObject> avoid, List<Vector2> occupied)
+                                                      List<MapObject> avoid, List<PointContainer.Circle> occupied)
     {
 
         final Vector2[] point = new Vector2[] { circle.getCenter() };
         final double radius = circle.getRadius();
 
+        /*
+          Note: Okay, the problem with generating a random location like this is that it might run into the issue
+          of infinitely looping if it is actually impossible to place the circle inside. The packing density with circles
+          of a square is roughly ~90%, and thus if all areas added up plus the new one are bigger than that it is impossible
+          to place it inside.
+
+          Source: http://datagenetics.com/blog/june32014/index.html
+         */
+        if(area.getArea() * 0.90 < occupied.stream().mapToDouble(PointContainer::getArea).sum() + circle.getArea())
+        {
+            throw new IllegalArgumentException(String.format("The area can only hold %d circles with radius %.2f. The new " +
+                    "circle will not be able to fit.", (int) ((area.getArea() * 0.9D) / circle.getArea()), circle.getRadius()));
+        }
+
+        int i = 0;
+
         do
         {
-            point[0] = area.generateRandomLocation();
+
+            do {
+                i++;
+
+                if(i % 1000 == 0)
+                {
+                    System.err.printf("Game#generateRandomSpawnLocation tried %d to generate a valid location. - This " +
+                            "can happen if the spawn area for either intruders or guards does not support the specified amount " +
+                            "of agents.\n", i);
+                }
+
+                point[0] = area.generateRandomLocation();
+            }
+            while (occupied.stream().anyMatch(e -> e.getCenter().distance(point[0]) <= radius * 2D));
+
         }
-        while (occupied.stream().anyMatch(e -> e.distance(point[0]) <= radius * 2D) ||
-                avoid.stream().anyMatch(e -> PointContainer.intersect(e.getContainer(), new PointContainer.Circle(point[0], radius))));
+        while (avoid.stream().anyMatch(e -> PointContainer.intersect(e.getContainer(), new PointContainer.Circle(point[0], radius))));
 
         return point[0];
 

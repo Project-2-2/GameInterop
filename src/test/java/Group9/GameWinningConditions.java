@@ -44,10 +44,10 @@ public class GameWinningConditions extends SimpleUnitTest {
         List<MapObject> objects = new ArrayList<>();
 
         objects.add(new Spawn.Guard(new PointContainer.Polygon(
-                new Vector2.Origin(), new Vector2(0, 1), new Vector2(1, 1), new Vector2(1, 0)
+                new Vector2.Origin(), new Vector2(0, 5), new Vector2(1, 5), new Vector2(1, 0)
         )));
         objects.add(new Spawn.Intruder(new PointContainer.Polygon(
-                new Vector2.Origin(), new Vector2(0, 1), new Vector2(1, 1), new Vector2(1, 0)
+                new Vector2.Origin(), new Vector2(0, 5), new Vector2(1, 5), new Vector2(1, 0)
         )));
 
         // --- out of reach
@@ -79,10 +79,10 @@ public class GameWinningConditions extends SimpleUnitTest {
         List<MapObject> objects = new ArrayList<>();
 
         objects.add(new Spawn.Guard(new PointContainer.Polygon(
-                new Vector2.Origin(), new Vector2(0, 1), new Vector2(1, 1), new Vector2(1, 0)
+                new Vector2.Origin(), new Vector2(0, 5), new Vector2(1, 5), new Vector2(1, 0)
         )));
         objects.add(new Spawn.Intruder(new PointContainer.Polygon(
-                new Vector2.Origin(), new Vector2(0, 1), new Vector2(1, 1), new Vector2(1, 0)
+                new Vector2.Origin(), new Vector2(0, 5), new Vector2(1, 5), new Vector2(1, 0)
         )));
 
         // --- out of reach
@@ -126,10 +126,10 @@ public class GameWinningConditions extends SimpleUnitTest {
         List<MapObject> objects = new ArrayList<>();
 
         objects.add(new Spawn.Guard(new PointContainer.Polygon(
-                new Vector2.Origin(), new Vector2(0, 1), new Vector2(1, 1), new Vector2(1, 0)
+                new Vector2.Origin(), new Vector2(0, 5), new Vector2(1, 5), new Vector2(1, 0)
         )));
         objects.add(new Spawn.Intruder(new PointContainer.Polygon(
-                new Vector2.Origin(), new Vector2(0, 1), new Vector2(1, 1), new Vector2(1, 0)
+                new Vector2.Origin(), new Vector2(0, 5), new Vector2(1, 5), new Vector2(1, 0)
         )));
 
         // --- out of reach
@@ -186,10 +186,10 @@ public class GameWinningConditions extends SimpleUnitTest {
         List<MapObject> objects = new ArrayList<>();
 
         objects.add(new Spawn.Guard(new PointContainer.Polygon(
-                new Vector2.Origin(), new Vector2(0, 1), new Vector2(1, 1), new Vector2(1, 0)
+                new Vector2.Origin(), new Vector2(0, 5), new Vector2(1, 5), new Vector2(1, 0)
         )));
         objects.add(new Spawn.Intruder(new PointContainer.Polygon(
-                new Vector2.Origin(), new Vector2(0, 1), new Vector2(1, 1), new Vector2(1, 0)
+                new Vector2.Origin(), new Vector2(0, 5), new Vector2(1, 5), new Vector2(1, 0)
         )));
 
         // --- out of reach

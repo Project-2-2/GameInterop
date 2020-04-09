@@ -2,21 +2,16 @@ package Group9;
 
 import Group9.agent.container.AgentContainer;
 import Group9.agent.factories.DummyAgentFactory;
-import Group9.agent.factories.IAgentFactory;
 import Group9.map.GameMap;
 import Group9.map.GameSettings;
 import Group9.map.ViewRange;
 import Group9.map.objects.*;
 import Group9.math.Vector2;
 import Group9.tree.PointContainer;
-import Interop.Action.GuardAction;
-import Interop.Action.IntruderAction;
 import Interop.Agent.Guard;
 import Interop.Agent.Intruder;
 import Interop.Geometry.Angle;
 import Interop.Geometry.Distance;
-import Interop.Percept.GuardPercepts;
-import Interop.Percept.IntruderPercepts;
 import Interop.Percept.Scenario.GameMode;
 import Interop.Percept.Scenario.ScenarioPercepts;
 import Interop.Percept.Scenario.SlowDownModifiers;
@@ -26,7 +21,6 @@ import Interop.Percept.Vision.ObjectPerceptType;
 import SimpleUnitTest.SimpleUnitTest;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
@@ -54,10 +48,10 @@ public class AgentViewTesting extends SimpleUnitTest {
         List<MapObject> objects = new ArrayList<>();
 
         objects.add(new Spawn.Guard(new PointContainer.Polygon(
-                new Vector2.Origin(), new Vector2(0, 1), new Vector2(1, 1), new Vector2(1, 0)
+                new Vector2.Origin(), new Vector2(0, 5), new Vector2(1, 5), new Vector2(1, 0)
         )));
         objects.add(new Spawn.Intruder(new PointContainer.Polygon(
-                new Vector2.Origin(), new Vector2(0, 1), new Vector2(1, 1), new Vector2(1, 0)
+                new Vector2.Origin(), new Vector2(0, 5), new Vector2(1, 5), new Vector2(1, 0)
         )));
 
         GameMap gameMap = new GameMap(new GameSettings(scenarioPercepts, 100, 100, one, 1,
@@ -77,6 +71,7 @@ public class AgentViewTesting extends SimpleUnitTest {
         GameMap gameMap = game.getGameMap();
 
         AgentContainer<Guard> agentContainer = game.getGuards().get(0);
+        agentContainer.moveTo(new Vector2.Origin());
 
         assertEqual(gameMap.getGameSettings().getGuardViewRangeNormal().getValue(), viewDistance, 0);
         assertEqual(gameMap.getGameSettings().getViewAngle().getRadians(), viewAngle, 0);
@@ -129,6 +124,7 @@ public class AgentViewTesting extends SimpleUnitTest {
         GameMap gameMap = game.getGameMap();
 
         AgentContainer<Guard> agentContainer = game.getGuards().get(0);
+        agentContainer.moveTo(new Vector2.Origin());
 
         assertEqual(gameMap.getGameSettings().getGuardViewRangeNormal().getValue(), viewDistance, 0);
         assertEqual(gameMap.getGameSettings().getViewAngle().getRadians(), viewAngle, 0);
@@ -149,6 +145,7 @@ public class AgentViewTesting extends SimpleUnitTest {
         GameMap gameMap = game.getGameMap();
 
         AgentContainer<Guard> agentContainer = game.getGuards().get(0);
+        agentContainer.moveTo(new Vector2.Origin());
 
         assertEqual(gameMap.getGameSettings().getGuardViewRangeNormal().getValue(), viewDistance, 0);
         assertEqual(gameMap.getGameSettings().getViewAngle().getRadians(), viewAngle, 0);
@@ -176,6 +173,7 @@ public class AgentViewTesting extends SimpleUnitTest {
         GameMap gameMap = game.getGameMap();
 
         AgentContainer<Guard> agentContainer = game.getGuards().get(0);
+        agentContainer.moveTo(new Vector2.Origin());
 
         assertEqual(gameMap.getGameSettings().getGuardViewRangeNormal().getValue(), viewDistance, 0);
         assertEqual(gameMap.getGameSettings().getViewAngle().getRadians(), viewAngle, 0);
@@ -203,6 +201,7 @@ public class AgentViewTesting extends SimpleUnitTest {
         GameMap gameMap = game.getGameMap();
 
         AgentContainer<Guard> agentContainer = game.getGuards().get(0);
+        agentContainer.moveTo(new Vector2.Origin());
 
         assertEqual(gameMap.getGameSettings().getGuardViewRangeNormal().getValue(), viewDistance, 0);
         assertEqual(gameMap.getGameSettings().getViewAngle().getRadians(), viewAngle, 0);
@@ -230,6 +229,7 @@ public class AgentViewTesting extends SimpleUnitTest {
         GameMap gameMap = game.getGameMap();
 
         AgentContainer<Guard> agentContainer = game.getGuards().get(0);
+        agentContainer.moveTo(new Vector2.Origin());
 
         assertEqual(gameMap.getGameSettings().getGuardViewRangeNormal().getValue(), viewDistance, 0);
         assertEqual(gameMap.getGameSettings().getViewAngle().getRadians(), viewAngle, 0);
@@ -257,6 +257,7 @@ public class AgentViewTesting extends SimpleUnitTest {
         GameMap gameMap = game.getGameMap();
 
         AgentContainer<Guard> agentContainer = game.getGuards().get(0);
+        agentContainer.moveTo(new Vector2.Origin());
 
         assertEqual(gameMap.getGameSettings().getGuardViewRangeNormal().getValue(), viewDistance, 0);
         assertEqual(gameMap.getGameSettings().getViewAngle().getRadians(), viewAngle, 0);
@@ -284,6 +285,7 @@ public class AgentViewTesting extends SimpleUnitTest {
         GameMap gameMap = game.getGameMap();
 
         AgentContainer<Guard> agentContainer = game.getGuards().get(0);
+        agentContainer.moveTo(new Vector2.Origin());
 
         assertEqual(gameMap.getGameSettings().getGuardViewRangeNormal().getValue(), viewDistance, 0);
         assertEqual(gameMap.getGameSettings().getViewAngle().getRadians(), viewAngle, 0);
