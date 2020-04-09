@@ -298,7 +298,7 @@ public class PointContainerTest extends SimpleUnitTest {
         {
             PointContainer.Circle a = new PointContainer.Circle(new Vector2.Origin(), 1);
             PointContainer.Line b = new PointContainer.Line(new Vector2(0.25, 0.25), new Vector2(0.5, 0.5));
-            assertTrue(PointContainer.intersect(a, b));
+            assertTrue(!PointContainer.intersect(a, b));
         }
 
         {

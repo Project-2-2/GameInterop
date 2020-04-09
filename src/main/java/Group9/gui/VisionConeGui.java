@@ -3,7 +3,6 @@ package Group9.gui;
 import Group9.math.Vector2;
 import javafx.scene.shape.*;
 
-import java.util.Iterator;
 import java.util.Set;
 
 public class VisionConeGui extends Path implements GameObject {

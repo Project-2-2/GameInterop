@@ -1,7 +1,6 @@
 package Group9.gui;
 
-        import Group9.gui.InternalWallGui;
-        import javafx.scene.paint.Color;
+import javafx.scene.paint.Color;
 
 public class TeleportGui extends InternalWallGui {
 

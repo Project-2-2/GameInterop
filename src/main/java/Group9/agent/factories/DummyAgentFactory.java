@@ -1,13 +1,10 @@
 package Group9.agent.factories;
 
-import Interop.Action.GuardAction;
-import Interop.Action.IntruderAction;
 import Interop.Action.Move;
 import Interop.Action.NoAction;
 import Interop.Agent.Guard;
 import Interop.Agent.Intruder;
 import Interop.Geometry.Distance;
-import Interop.Percept.IntruderPercepts;
 
 import java.util.LinkedList;
 import java.util.List;

@@ -3,7 +3,6 @@ package Group9;
 import Group9.agent.container.GuardContainer;
 import Group9.map.parser.Parser;
 import Group9.math.Vector2;
-import Interop.Agent.Guard;
 import SimpleUnitTest.SimpleUnitTest;
 
 public class AgentMovementTest extends SimpleUnitTest {
@@ -22,7 +21,7 @@ public class AgentMovementTest extends SimpleUnitTest {
             int step = 0;
 
             long time = System.currentTimeMillis();
-            for(; step < 100_000; step++) {
+            for(; step < 20_000; step++) {
                 game.turn();
 
                 if (lastPosition.distance(guard.getPosition()) < 1E-1) {
