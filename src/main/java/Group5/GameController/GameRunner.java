@@ -616,7 +616,7 @@ public class GameRunner {
      * @return true if movement is valid otherwise false
      */
     public void sprint(Sprint sprint){
-        return mapInfo.intruders.get(0).sprint(sprint);
+        mapInfo.intruders.get(0).sprint(sprint);
     }
 
     /**
