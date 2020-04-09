@@ -3,20 +3,24 @@ package Group5.GameController;
 
 import Group5.UI.DrawableDialogueBox;
 import Group5.UI.MapViewer;
-import Interop.Action.Action;
-import Interop.Action.DropPheromone;
-import Interop.Action.Move;
-import Interop.Action.Rotate;
+import Interop.Action.*;
 import Interop.Geometry.Angle;
 import Interop.Geometry.Direction;
 import Interop.Geometry.Distance;
 import Interop.Geometry.Point;
+import Interop.Percept.AreaPercepts;
+import Interop.Percept.GuardPercepts;
+import Interop.Percept.IntruderPercepts;
+import Interop.Percept.Percepts;
+import Interop.Percept.Scenario.GameMode;
+import Interop.Percept.Scenario.ScenarioGuardPercepts;
+import Interop.Percept.Scenario.ScenarioIntruderPercepts;
+import Interop.Percept.Scenario.ScenarioPercepts;
 import Interop.Percept.Smell.SmellPercept;
 import Interop.Percept.Smell.SmellPerceptType;
+import Interop.Percept.Smell.SmellPercepts;
 import Interop.Percept.Sound.SoundPercepts;
-import Interop.Percept.Vision.ObjectPercept;
-import Interop.Percept.Vision.ObjectPerceptType;
-import Interop.Percept.Vision.ObjectPercepts;
+import Interop.Percept.Vision.*;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.embed.swing.JFXPanel;
@@ -34,6 +38,7 @@ public class GameRunner {
 
     private Vision vision;
     private static Hearing hearing;
+    private Smell smell;
 
     private boolean paused;
 
@@ -66,6 +71,9 @@ public class GameRunner {
         checkIfWon = 0;
         gameEnded = false;
         pheromoneStorage = new PheromoneStorage();
+        smell = new Smell();
+        vision = new Vision();
+        hearing = new Hearing(mapInfo);
     }
 
     public static void main(String[] args) throws IOException {
@@ -152,7 +160,7 @@ public class GameRunner {
         coolDownTimers();
 
 
-        ObjectPercepts visionPercepts = getVision();
+        ObjectPercepts visionPercepts = getVision(mapInfo.intruders.get(0));
         Set<ObjectPercept> percepts =visionPercepts.getAll();
 //       System.out.println(percepts.size());
         if (percepts.size()>0){
@@ -603,6 +611,15 @@ public class GameRunner {
     }
 
     /**
+     * call this method to sprint
+     *
+     * @return true if movement is valid otherwise false
+     */
+    public void sprint(Sprint sprint){
+        return mapInfo.intruders.get(0).sprint(sprint);
+    }
+
+    /**
      * call this method to rotate the agent
      * @param rotate
      */
@@ -610,15 +627,67 @@ public class GameRunner {
         mapInfo.intruders.get(0).rotate(rotate.getAngle());
     }
 
-    public ObjectPercepts getVision(){
-        return vision.vision(mapInfo.intruders.get(0));
+
+    /**
+     * call this method to yell as a guard
+     */
+    public void yell(Yell yell){
+        mapInfo.guards.get(0).yell(hearing);
     }
 
-    public SoundPercepts getSound(){
-        return hearing.getSounds(mapInfo.intruders.get(0));
+    private ObjectPercepts getVision(AgentController agent){
+        return vision.vision(agent);
     }
 
-    //TODO smell has to be implemented
+    private SoundPercepts getSound(AgentController agent){
+        return hearing.getSounds(agent);
+    }
+
+    private SmellPercepts getSmell(AgentController agent){return smell.getSmell(agent);}
+
+
+    /**
+     * INTRUDER AGENTS SHOULDD CALL THIS METHOD TO GET THE INTRUDER PERCEPTS
+     * @return
+     */
+    public ArrayList<IntruderPercepts> getPerceptIntruders(){
+
+        ScenarioPercepts scenerio = new ScenarioPercepts(GameMode.CaptureOneIntruder,new Distance(mapInfo.captureDistance),Angle.fromDegrees(mapInfo.maxRotationAngleDegrees),mapInfo.slowDownModifiers,new Distance(mapInfo.radiusPheromone),mapInfo.pheromoneCooldown);
+        ScenarioIntruderPercepts scenerioI = new ScenarioIntruderPercepts(scenerio,mapInfo.winConditionIntruderRounds,new Distance(mapInfo.maxMoveDistanceIntruder),new Distance(mapInfo.maxSprintDistanceIntruder),mapInfo.sprintCooldown);
+        ArrayList<IntruderPercepts> allIntruderPercepts = new ArrayList<>();
+        for (int i = 0; i>mapInfo.intruders.size();i++){
+            VisionPrecepts vision = new VisionPrecepts(new FieldOfView(new Distance(10),Angle.fromDegrees(45)),getVision(mapInfo.intruders.get(i)));
+            SoundPercepts sound = getSound(mapInfo.intruders.get(i));
+            SmellPercepts smell = getSmell(mapInfo.intruders.get(i));
+            AreaPercepts areaPercepts = new AreaPercepts(false,false,mapInfo.intruders.get(i).onSentryTower,false);
+            IntruderPercepts intruderPercepts = new IntruderPercepts(mapInfo.intruders.get(i).getTargetDirection(),vision,sound,smell,areaPercepts,scenerioI,true);
+            allIntruderPercepts.add(intruderPercepts);
+        }
+        return allIntruderPercepts;
+    }
+
+    /**
+     * Guard AGENTS SHOULDD CALL THIS METHOD TO GET THE INTRUDER PERCEPTS
+     * @return
+     */
+    public ArrayList<GuardPercepts> getPerceptGuards(){
+
+        ScenarioPercepts scenerio = new ScenarioPercepts(GameMode.CaptureOneIntruder,new Distance(mapInfo.captureDistance),Angle.fromDegrees(mapInfo.maxRotationAngleDegrees),mapInfo.slowDownModifiers,new Distance(mapInfo.radiusPheromone),mapInfo.pheromoneCooldown);
+
+        ScenarioGuardPercepts scenerioG=new ScenarioGuardPercepts(scenerio,new Distance(mapInfo.maxMoveDistanceIntruder));
+        ArrayList<GuardPercepts> allGuardPercepts = new ArrayList<>();
+        for (int i = 0; i>mapInfo.guards.size();i++){
+            VisionPrecepts vision = new VisionPrecepts(new FieldOfView(new Distance(10),Angle.fromDegrees(45)),getVision(mapInfo.guards.get(i)));
+            SoundPercepts sound = getSound(mapInfo.guards.get(i));
+            SmellPercepts smell = getSmell(mapInfo.guards.get(i));
+            AreaPercepts areaPercepts = new AreaPercepts(false,false,mapInfo.guards.get(i).onSentryTower,false);
+            GuardPercepts guardPercepts = new GuardPercepts(vision,sound,smell,areaPercepts,scenerioG,true);
+            allGuardPercepts.add(guardPercepts);
+        }
+        return allGuardPercepts;
+    }
+
+
     public void dropPheromone(DropPheromone dropPheromone){
         SmellPercept smell = new SmellPercept(dropPheromone.getType(),new Distance(mapInfo.radiusPheromone));
         mapInfo.intruders.get(0).dropPheromone(smell);
@@ -635,11 +704,11 @@ public class GameRunner {
 
     }
 
-    public static Direction getTargetDirection(){
+    public static Direction getTargetDirection(IntruderController intruder){
         Point targetArea = new Point(mapInfo.targetArea.x1,mapInfo.targetArea.y1);
         Direction targetAngle = targetArea.getClockDirection();
 
-        Point intruderLocation = mapInfo.intruders.get(0).getPosition();
+        Point intruderLocation = intruder.getPosition();
         Direction intruderAngle = intruderLocation.getClockDirection();
 
         Direction targetDirection = Direction.fromRadians(targetAngle.getRadians()-intruderAngle.getRadians());

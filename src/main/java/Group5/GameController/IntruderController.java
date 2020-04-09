@@ -4,6 +4,7 @@ import Group5.Agent.Explorer;
 import Interop.Action.Move;
 import Interop.Action.Rotate;
 import Interop.Action.Sprint;
+import Interop.Geometry.Direction;
 import Interop.Geometry.Distance;
 import Interop.Geometry.Point;
 import Interop.Percept.Smell.SmellPercept;
@@ -21,7 +22,7 @@ public class IntruderController extends AgentController {
     protected boolean sprintCooldownTimer;
     protected int sprintCoolDownCounter;
 
-    public Explorer explorer;
+    protected Explorer explorer;
 
     protected boolean isCaptured;
 
@@ -104,6 +105,10 @@ public class IntruderController extends AgentController {
         if(GameRunner.moveValidity(position,newPosition,distance,sprintDistance)){
             position = newPosition;
         }
+    }
+
+    protected Direction getTargetDirection(){
+        return GameRunner.getTargetDirection(this);
     }
 
 
