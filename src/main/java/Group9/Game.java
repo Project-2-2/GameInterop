@@ -367,6 +367,26 @@ public class Game implements Runnable {
         //---
 
 
+        //--- check if intruder is in target area
+        if(isIntruder)
+        {
+            IntruderContainer intruderContainer = (IntruderContainer) agentContainer;
+            if(gameMap.getObjects(TargetArea.class).stream().anyMatch(e -> PointContainer.intersect(e.getContainer(), agentContainer.getShape())))
+            {
+                intruderContainer.setZoneCounter(intruderContainer.getZoneCounter() + 1);
+            }
+            else
+            {
+                intruderContainer.setZoneCounter(0);
+            }
+        } else
+        //--- check if guard is close enough to capture
+        {
+            this.intruders.stream()
+                    .filter(e -> e.getPosition().distance(agentContainer.getPosition()) <= settings.getScenarioPercepts().getCaptureDistance().getValue())
+                    .forEach(e -> e.setCaptured(true));
+        }
+
         if(action instanceof Move || action instanceof Sprint)
         {
             final double slowdownModifier = (double) modifySpeedEffect.orElseGet(NoModify::new).get(agentContainer);
@@ -469,26 +489,6 @@ public class Game implements Runnable {
 
             });
 
-            //--- check if intruder is in target area
-            if(isIntruder)
-            {
-                IntruderContainer intruderContainer = (IntruderContainer) agentContainer;
-                if(gameMap.getObjects(TargetArea.class).stream().anyMatch(e -> PointContainer.intersect(e.getContainer(), agentContainer.getShape())))
-                {
-                    intruderContainer.setZoneCounter(intruderContainer.getZoneCounter() + 1);
-                }
-                else
-                {
-                    intruderContainer.setZoneCounter(0);
-                }
-            }
-            //--- check if guard is close enough to capture
-            else
-            {
-                this.intruders.stream()
-                        .filter(e -> e.getPosition().distance(agentContainer.getPosition()) <= settings.getScenarioPercepts().getCaptureDistance().getValue())
-                        .forEach(e -> e.setCaptured(true));
-            }
             return true;
         }
         else if(action instanceof Rotate)
@@ -595,7 +595,7 @@ public class Game implements Runnable {
         final Vector2 direction = this.gameMap.getObjects(TargetArea.class).get(0).getContainer().getCenter()
                 .sub(intruder.getPosition()).normalise();
 
-        final double angle = direction.angle(intruder.getDirection());
+        final double angle = Math.acos(intruder.getDirection().dot(direction));
 
         return new IntruderPercepts(
                 Direction.fromRadians(angle),

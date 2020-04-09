@@ -1,14 +1,14 @@
 package Group9.agent;
 
 import Group9.Game;
-import Interop.Action.DropPheromone;
-import Interop.Action.GuardAction;
-import Interop.Action.Move;
-import Interop.Action.Rotate;
+import Interop.Action.*;
 import Interop.Agent.Guard;
+import Interop.Agent.Intruder;
 import Interop.Geometry.Angle;
 import Interop.Geometry.Distance;
 import Interop.Percept.GuardPercepts;
+import Interop.Percept.IntruderPercepts;
+import Interop.Percept.Scenario.SlowDownModifiers;
 import Interop.Percept.Smell.SmellPerceptType;
 
 public class RandomAgent implements Guard {
@@ -29,8 +29,27 @@ public class RandomAgent implements Guard {
         }
         else
         {
-            return new Move(new Distance(percepts.getScenarioGuardPercepts().getMaxMoveDistanceGuard().getValue() * 0.5));
+            return new Move(new Distance(percepts.getScenarioGuardPercepts().getMaxMoveDistanceGuard().getValue() * getSpeedModifier(percepts)));
         }
+    }
+
+    private double getSpeedModifier(GuardPercepts guardPercepts)
+    {
+        SlowDownModifiers slowDownModifiers =  guardPercepts.getScenarioGuardPercepts().getScenarioPercepts().getSlowDownModifiers();
+        if(guardPercepts.getAreaPercepts().isInWindow())
+        {
+            return slowDownModifiers.getInWindow();
+        }
+        else if(guardPercepts.getAreaPercepts().isInSentryTower())
+        {
+            return slowDownModifiers.getInSentryTower();
+        }
+        else if(guardPercepts.getAreaPercepts().isInDoor())
+        {
+            return slowDownModifiers.getInDoor();
+        }
+
+        return 1;
     }
 
 }
