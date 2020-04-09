@@ -6,6 +6,9 @@ import Group9.math.Vector2;
 import java.util.*;
 import java.util.function.Function;
 
+import static Group9.PiMath.geq;
+import static Group9.PiMath.leq;
+
 public abstract class PointContainer {
 
     /**
@@ -373,6 +376,16 @@ public abstract class PointContainer {
             return this.end;
         }
 
+        public boolean isPointOnLine(Vector2 p)
+        {
+            double length = this.start.distance(this.end);
+
+            double start_p = this.start.distance(p);
+            double end_p = this.end.distance(p);
+
+            return Math.abs(start_p + end_p - length) < 1E-9;
+        }
+
         public Vector2 getNormal()
         {
             double dx = end.getX() - start.getX();
@@ -582,24 +595,44 @@ public abstract class PointContainer {
 
         if(discriminant == 0)
         {
-            return new Vector2[] {
-                new Vector2(
+            Vector2 candidate = new Vector2(
                     (D * dy + sgn.apply(dy) * dx * Math.sqrt(discriminant)) / Math.pow(dr, 2),
                     (-D * dx + Math.abs(dy) * Math.sqrt(discriminant)) / Math.pow(dr, 2)
-                ),
-            };
+            ).add(circle.getCenter());
+
+            if(line.isPointOnLine(candidate))
+            {
+                return new Vector2[] { candidate };
+            }
+            return new Vector2[0];
         }
 
-        return new Vector2[] {
-            new Vector2(
+        Vector2 candidateA = new Vector2(
                 (D * dy + sgn.apply(dy) * dx * Math.sqrt(discriminant)) / Math.pow(dr, 2),
                 (-D * dx + Math.abs(dy) * Math.sqrt(discriminant)) / Math.pow(dr, 2)
-            ),
-            new Vector2(
+        ).add(circle.getCenter());
+        Vector2 candidateB = new Vector2(
                 (D * dy - sgn.apply(dy) * dx * Math.sqrt(discriminant)) / Math.pow(dr, 2),
                 (-D * dx - Math.abs(dy) * Math.sqrt(discriminant)) / Math.pow(dr, 2)
-            )
-        };
+        ).add(circle.getCenter());
+
+        boolean a = line.isPointOnLine(candidateA);
+        boolean b = line.isPointOnLine(candidateB);
+
+        if(a && b)
+        {
+            return new Vector2[] { candidateA, candidateB };
+        }
+        else if(a)
+        {
+            return new Vector2[] { candidateA };
+        }
+        else if(b)
+        {
+            return new Vector2[] { candidateB };
+        }
+
+        return new Vector2[0];
     }
 
     /**
@@ -682,28 +715,6 @@ public abstract class PointContainer {
         }
 
         return null;
-    }
-
-    /**
-     * Performs <code>a >= b</code> check, allows 1E-10 delta.
-     * @param a
-     * @param b
-     * @return
-     */
-    private static boolean geq(double a, double b)
-    {
-        return (a > b) || Math.abs(a - b) < 1E-10;
-    }
-
-    /**
-     * Performs <code>a <= b</code> check, allows 1E-10 delta.
-     * @param a
-     * @param b
-     * @return
-     */
-    private static boolean leq(double a, double b)
-    {
-        return (a < b) || Math.abs(a - b) < 1E-10;
     }
 
     private static Vector2 twoLinesIntersect(Line a, Line b) {

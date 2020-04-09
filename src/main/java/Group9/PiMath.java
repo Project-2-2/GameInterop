@@ -14,4 +14,27 @@ public class PiMath {
         return Math.max(lower, Math.min(upper, value));
     }
 
+    /**
+     * Performs <code>a >= b</code> check, allows 1E-10 delta.
+     * @param a
+     * @param b
+     * @return
+     */
+    public static boolean geq(double a, double b)
+    {
+        return (a > b) || Math.abs(a - b) < 1E-10;
+    }
+
+    /**
+     * Performs <code>a <= b</code> check, allows 1E-10 delta.
+     * @param a
+     * @param b
+     * @return
+     */
+    public static boolean leq(double a, double b)
+    {
+        return (a < b) || Math.abs(a - b) < 1E-10;
+    }
+
+
 }

@@ -5,18 +5,11 @@ import Group9.agent.container.AgentContainer;
 import Group9.agent.container.IntruderContainer;
 import Group9.map.area.EffectArea;
 import Group9.map.dynamic.DynamicObject;
-import Group9.map.objects.*;
+import Group9.map.objects.MapObject;
 import Group9.math.Vector2;
 import Group9.tree.PointContainer;
 import Group9.tree.QuadTree;
 import Interop.Agent.Guard;
-import Interop.Agent.Intruder;
-import Interop.Geometry.Angle;
-import Interop.Geometry.Distance;
-import Interop.Geometry.Point;
-import Interop.Percept.Scenario.GameMode;
-import Interop.Percept.Scenario.ScenarioPercepts;
-import Interop.Percept.Scenario.SlowDownModifiers;
 import Interop.Percept.Vision.FieldOfView;
 import Interop.Percept.Vision.ObjectPercept;
 import Interop.Percept.Vision.ObjectPerceptType;
@@ -197,7 +190,12 @@ public class GameMap {
      * @param line
      * @return
      */
-    public Set<ObjectPercept> getObjectPerceptsInLine(AgentContainer agentContainer, PointContainer.Line line) {
+    public Set<ObjectPercept> getObjectPerceptsInLine(AgentContainer agentContainer, FieldOfView fov, PointContainer.Line line) {
+
+        /*
+         * fov
+         */
+
         // --- all points where line and objects intersect sorted by proximity to start of line
         Map<Vector2, ObjectPerceptType> objectPoints = new HashMap<>();
 
@@ -207,7 +205,7 @@ public class GameMap {
                 Vector2 relative = point
                         .sub(agentContainer.getPosition()) // move relative to agent
                         .rotated(agentContainer.getDirection().getClockDirection()); //rotated back
-                if(relative.length() > 0)
+                if(relative.length() > 0 && fov.isInView(relative.toVexing()))
                 {
                     objectPoints.put(relative, mo.getType());
                 }
@@ -221,7 +219,7 @@ public class GameMap {
                 Vector2 relative = point
                         .sub(agentContainer.getPosition()) // move relative to agent
                         .rotated(agentContainer.getDirection().getClockDirection()); //rotated back
-                if(relative.length() > 0)
+                if(relative.length() > 0 && fov.isInView(relative.toVexing()))
                 {
                     objectPoints.put(relative, ObjectPerceptType.Intruder);
                 }
@@ -235,7 +233,7 @@ public class GameMap {
                 Vector2 relative = point
                         .sub(agentContainer.getPosition()) // move relative to agent
                         .rotated(agentContainer.getDirection().getClockDirection()); //rotated back
-                if(relative.length() > 0)
+                if(relative.length() > 0 && fov.isInView(relative.toVexing()))
                 {
                     objectPoints.put(relative, ObjectPerceptType.Guard);
                 }
@@ -278,9 +276,8 @@ public class GameMap {
         //System.out.println("angle-a: " + agentContainer.getDirection().getClockDirection());
         for (Vector2[] ray : getAgentVisionCone(agentContainer, fov, viewRange)) {
             objectsInSight.addAll(
-                    getObjectPerceptsInLine(agentContainer, new PointContainer.Line(ray[0], ray[1]))
+                    getObjectPerceptsInLine(agentContainer, fov, new PointContainer.Line(ray[0], ray[1]))
                             .stream()
-                            //TODO sometimes the distance from origin is exactly 0. is the agent perceiving itself?
                             .filter(e -> fov.isInView(e.getPoint()))
                             .collect(Collectors.toList())
             );

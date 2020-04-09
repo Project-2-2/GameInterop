@@ -20,7 +20,6 @@ import Interop.Agent.Guard;
 import Interop.Agent.Intruder;
 import Interop.Geometry.Direction;
 import Interop.Geometry.Distance;
-import Interop.Geometry.Point;
 import Interop.Percept.AreaPercepts;
 import Interop.Percept.GuardPercepts;
 import Interop.Percept.IntruderPercepts;
@@ -46,7 +45,7 @@ import java.util.stream.Collectors;
 public class Game implements Runnable {
 
     public final static Random _RANDOM;
-    public final static long _RANDOM_SEED = 64921105828523L; // System.nanoTime();
+    public final static long _RANDOM_SEED = 3702399255504L; //System.nanoTime();
     static {
         System.out.println("seed: " + _RANDOM_SEED);
         _RANDOM = new Random(_RANDOM_SEED);

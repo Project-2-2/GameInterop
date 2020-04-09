@@ -7,8 +7,6 @@ import Group9.tree.PointContainer;
 import Interop.Percept.Sound.SoundPerceptType;
 import Interop.Percept.Vision.ObjectPerceptType;
 
-import java.util.Arrays;
-
 public class Door extends MapObject {
 
     public Door(PointContainer.Polygon area,

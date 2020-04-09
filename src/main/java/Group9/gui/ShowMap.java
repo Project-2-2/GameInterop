@@ -2,8 +2,6 @@ package Group9.gui;
 
 import Group9.Game;
 import Group9.agent.container.AgentContainer;
-import Group9.gui.GUIConverter;
-import Group9.gui.InternalWallGui;
 import Group9.map.GameMap;
 import Group9.map.objects.MapObject;
 import Group9.map.parser.Parser;

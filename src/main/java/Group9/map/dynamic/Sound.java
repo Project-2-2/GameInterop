@@ -1,7 +1,6 @@
 package Group9.map.dynamic;
 
 import Group9.agent.container.AgentContainer;
-import Group9.gui.YellGui;
 import Interop.Percept.Sound.SoundPerceptType;
 
 public class Sound extends DynamicObject<AgentContainer<?>> {
