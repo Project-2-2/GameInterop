@@ -30,8 +30,8 @@ public class MenuWindow extends Application {
 
     }
 
-    String selectedFile;// = "./src/main/java/Group9/map/maps/test_2.map";
-
+    String selectedFile;
+    
     public void start(Stage primaryStage) {
 
 	   VBox vBox = new VBox();
