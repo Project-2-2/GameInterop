@@ -442,7 +442,7 @@ public class Game implements Runnable {
                 Vector2 pointC = pointD.add(move);
 
                 PointContainer.Polygon quadrilateral = new PointContainer.Polygon(pointA, pointB, pointC, pointD);
-                if(gameMap.isMoveIntersecting(quadrilateral, ObjectPerceptType::isSolid))
+                if(gameMap.isMoveIntersecting(agentContainer, quadrilateral))
                 {
                     return false;
                 }

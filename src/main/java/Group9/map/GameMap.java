@@ -1,6 +1,7 @@
 package Group9.map;
 
 import Group9.Game;
+import Group9.PiMath;
 import Group9.agent.container.AgentContainer;
 import Group9.agent.container.IntruderContainer;
 import Group9.map.area.EffectArea;
@@ -139,6 +140,76 @@ public class GameMap {
         return 2D / min;
     }
 
+    /**
+     * This function returns all map objects that have a chance of being seen by the agent. This is done by drawing a
+     * line that is the normal to the agent's direction vector. Anything that lies on the wrong side of line gets culled
+     * since it is impossible to see for the agent.
+     *
+     * @param agentContainer
+     * @return
+     */
+    public List<MapObject> getFilteredObjects(AgentContainer<?> agentContainer, Predicate<MapObject> filter)
+    {
+
+        // --- If the field of view is greater than 180° (-> Pi) then this method does not work.
+        if(gameSettings.getViewAngle().getRadians() >= Math.PI) {
+            if(filter == null)
+            {
+                return this.mapObjects;
+            }
+            return this.mapObjects.stream().filter(filter).collect(Collectors.toList());
+        }
+
+        // --- Create a line that is perpendicular to the direction vector
+        Vector2 end = agentContainer.getPosition().add(agentContainer.getDirection());
+        PointContainer.Line line = new PointContainer.Line(agentContainer.getPosition(), end);
+        Vector2 normal = line.getNormal();
+        Vector2 a = agentContainer.getPosition().add(normal);
+        Vector2 b = agentContainer.getPosition().sub(normal);
+
+        // --- Determine the sign of the end point. This tells us on which side of the line the objects are that we can see.
+        final double sign = Math.signum((b.getX() - a.getX()) * (end.getY() - a.getY()) - (b.getY() - a.getY()) * (end.getX() - a.getX()));
+
+        assert sign != 0;
+
+        Function<Vector2, Boolean> keep = c -> {
+            double r = (b.getX() - a.getX()) * (c.getY() - a.getY()) - (b.getY() - a.getY()) * (c.getX() - a.getX());
+
+            if(sign > 0)
+            {
+                return PiMath.geq(r, 0);
+            }
+            else if(sign < 0)
+            {
+                return PiMath.leq(r, 0);
+            }
+            return true;
+        };
+
+        Stream<MapObject> stream = this.mapObjects
+                .stream();
+
+        if(filter != null)
+        {
+            stream = stream.filter(filter);
+        }
+
+        return stream
+                .filter(e -> {
+
+                    // --- Note: This only supports polygons as of now.
+                    if(!(e.getContainer() instanceof PointContainer.Polygon)) return true;
+
+                    for(Vector2 c : e.getArea().getAsPolygon().getPoints())
+                    {
+                        if(keep.apply(c)) return true;
+                    }
+
+                    return false;
+                })
+                .collect(Collectors.toList());
+    }
+
     public <T extends MapObject> List<T> getObjects(Class<T> clazz)
     {
         return this.mapObjects.stream()
@@ -174,12 +245,10 @@ public class GameMap {
                 .collect(Collectors.toUnmodifiableSet());
     }
 
-    public boolean isMoveIntersecting(PointContainer.Polygon agentMove, Predicate<ObjectPerceptType> filter){
-        for (MapObject e : this.mapObjects) {
-            if (e.getType().isSolid()) {
-                if (PointContainer.intersect(e.getContainer(), agentMove)) {
-                    return true;
-                }
+    public boolean isMoveIntersecting(AgentContainer<?> agentContainer, PointContainer.Polygon agentMove){
+        for (MapObject e : getFilteredObjects(agentContainer, e -> e.getType().isSolid())) {
+            if (PointContainer.intersect(e.getContainer(), agentMove)) {
+                return true;
             }
         }
         return false;
@@ -190,17 +259,12 @@ public class GameMap {
      * @param line
      * @return
      */
-    public Set<ObjectPercept> getObjectPerceptsInLine(AgentContainer agentContainer, FieldOfView fov, PointContainer.Line line) {
-
-        /*
-         * fov
-         */
-
+    public Set<ObjectPercept> getObjectPerceptsInLine(List<MapObject> filteredObjects, AgentContainer agentContainer, FieldOfView fov, PointContainer.Line line) {
         // --- all points where line and objects intersect sorted by proximity to start of line
         Map<Vector2, ObjectPerceptType> objectPoints = new HashMap<>();
 
         // --- perceive map objects
-        for (MapObject mo : this.mapObjects) {
+        for (MapObject mo : filteredObjects) {
             for (Vector2 point : PointContainer.intersectionPoints(mo.getContainer(), line)) {
                 Vector2 relative = point
                         .sub(agentContainer.getPosition()) // move relative to agent
@@ -243,7 +307,7 @@ public class GameMap {
         // --- sort by distance
         List<Map.Entry<Vector2, ObjectPerceptType>> entries = objectPoints.entrySet()
                 .stream()
-                .sorted(Comparator.comparingDouble(a -> line.getStart().distance(a.getKey())))
+                .sorted(Comparator.comparingDouble(e -> line.getStart().distance(e.getKey())))
                 .filter(e -> e.getKey().distance(agentContainer.getPosition()) > 0)
                 .collect(Collectors.toList());
 
@@ -274,9 +338,10 @@ public class GameMap {
     public <T> Set<ObjectPercept> getObjectPerceptsForAgent(AgentContainer<T> agentContainer, FieldOfView fov, ViewRange viewRange) {
         Set<ObjectPercept> objectsInSight = new HashSet<>();
         //System.out.println("angle-a: " + agentContainer.getDirection().getClockDirection());
+        List<MapObject> filteredObjects = getFilteredObjects(agentContainer, null);
         for (Vector2[] ray : getAgentVisionCone(agentContainer, fov, viewRange)) {
             objectsInSight.addAll(
-                    getObjectPerceptsInLine(agentContainer, fov, new PointContainer.Line(ray[0], ray[1]))
+                    getObjectPerceptsInLine(filteredObjects, agentContainer, fov, new PointContainer.Line(ray[0], ray[1]))
                             .stream()
                             .filter(e -> fov.isInView(e.getPoint()))
                             .collect(Collectors.toList())

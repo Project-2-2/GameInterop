@@ -21,7 +21,7 @@ public class AgentMovementTest extends SimpleUnitTest {
             int step = 0;
 
             long time = System.currentTimeMillis();
-            for(; step < 20_000; step++) {
+            for(; step < 100_000; step++) {
                 game.turn();
 
                 if (lastPosition.distance(guard.getPosition()) < 1E-1) {
