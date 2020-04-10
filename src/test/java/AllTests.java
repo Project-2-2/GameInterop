@@ -14,6 +14,7 @@ public class AllTests extends SimpleUnitTest {
 
     public static void main(String[] args) {
         InteropTests.main(args);
+        JavaFXTests.main(args);
         testGroups(args);
         testAgentFactories();
     }
