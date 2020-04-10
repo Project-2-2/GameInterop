@@ -110,6 +110,10 @@ public class Game implements Runnable {
         }
     }
 
+    public Map<AgentContainer<?>, Boolean> getActionSuccess() {
+        return actionSuccess;
+    }
+
     /**
      * Generates a random point within the area. The circle is the one that is supposed to be placed inside. If the
      * circle is not intersecting with anything in the avoid list, it might be placed along the border of the area.
@@ -189,9 +193,6 @@ public class Game implements Runnable {
         }
 
         try {
-            //@todo the 10 ms basically guarantee that it will get a lock when this method gets called. this leads to
-            //  smoother ui updates but it is not guaranteed, so if someone has a fairly week computer this method
-            //  might lead to a choppy ui experience.
             lock.acquireUninterruptibly();
             callback.update(lock);
         } catch (Exception e) {
@@ -503,10 +504,6 @@ public class Game implements Runnable {
         }
         else if(action instanceof Yell)
         {
-            if(!isGuard)
-            {
-                return false;
-            }
             gameMap.getDynamicObjects().add(new Sound(
                     SoundPerceptType.Yell,
                     agentContainer,
@@ -517,11 +514,6 @@ public class Game implements Runnable {
         }
         else if(action instanceof DropPheromone)
         {
-            //--- check cooldown
-            if(agentContainer.hasCooldown(AgentContainer.Cooldown.PHEROMONE))
-            {
-                return false;
-            }
 
             //--- check whether there is already one in this place
             if(gameMap.getDynamicObjects(Pheromone.class).stream()
@@ -532,6 +524,9 @@ public class Game implements Runnable {
             {
                 return false;
             }
+
+            agentContainer.addCooldown(AgentContainer.Cooldown.PHEROMONE, gameMap.getGameSettings().getScenarioPercepts().getPheromoneCooldown());
+
             DropPheromone dropPheromone = (DropPheromone) action;
 
             gameMap.getDynamicObjects().add(new Pheromone(
