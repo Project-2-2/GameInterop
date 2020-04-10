@@ -32,7 +32,6 @@ import Interop.Percept.Sound.SoundPercept;
 import Interop.Percept.Sound.SoundPerceptType;
 import Interop.Percept.Sound.SoundPercepts;
 import Interop.Percept.Vision.FieldOfView;
-import Interop.Percept.Vision.ObjectPerceptType;
 import Interop.Percept.Vision.ObjectPercepts;
 import Interop.Percept.Vision.VisionPrecepts;
 import Interop.Utils.Utils;
@@ -45,7 +44,7 @@ import java.util.stream.Collectors;
 public class Game implements Runnable {
 
     public final static Random _RANDOM;
-    public final static long _RANDOM_SEED = 3702399255504L; //System.nanoTime();
+    public final static long _RANDOM_SEED = System.nanoTime();
     static {
         System.out.println("seed: " + _RANDOM_SEED);
         _RANDOM = new Random(_RANDOM_SEED);
