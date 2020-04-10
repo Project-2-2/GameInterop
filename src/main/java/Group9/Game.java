@@ -405,23 +405,7 @@ public class Game implements Runnable {
                 return false;
             }
 
-            boolean isSprinting = (distance > minSprint);
-
-            if(isSprinting)
-            {
-                //--- guards are not allowed to sprint
-                if(isGuard)
-                {
-                    return false;
-                }
-                else
-                {
-                    if(agentContainer.getCooldown(AgentContainer.Cooldown.SPRINTING) > 0 || distance > maxSprint)
-                    {
-                        return false;
-                    }
-                }
-            }
+            final boolean isSprinting = (distance > minSprint);
 
             //--- check for movement collision
             {
