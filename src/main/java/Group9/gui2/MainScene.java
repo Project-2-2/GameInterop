@@ -12,6 +12,7 @@ import Group9.map.parser.Parser;
 import Group9.math.Vector2;
 import Interop.Geometry.Angle;
 import Interop.Geometry.Point;
+import Interop.Percept.Vision.FieldOfView;
 import javafx.beans.value.ChangeListener;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -23,6 +24,8 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
+import javafx.scene.shape.ArcType;
 import javafx.scene.text.Font;
 import javafx.scene.text.TextAlignment;
 
@@ -266,30 +269,31 @@ public class MainScene extends Scene {
         g.fillOval(x-radius/2,y-radius/2,radius,radius);
     }
     private void drawAgent(GraphicsContext g, AgentContainer<?> agent) {
-        Vector2 p = agent.getPosition();
-        double radius = 1*mapScale*settings.agentScale;
-        double x = p.getX()*mapScale;
-        double y = p.getY()*mapScale;
-        g.fillOval(x-radius/2,y-radius/2,radius,radius);
-        g.setStroke(Color.WHITE);
-        double pointerLength = 5;
-        //Point vector = getDirectionVector(agent.getAngle(),pointerLength*mapScale);
-        Vector2 direction = agent.getDirection().mul(pointerLength * mapScale);
-        //Point vector1 = getDirectionVector(new Angle(agent.getAngle().getRadians()+(map.getViewAngle().getRadians()/2)), 5*mapScale);
-        //Point vector2 = getDirectionVector(new Angle(agent.getAngle().getRadians()-(map.getViewAngle().getRadians()/2)), 5*mapScale);
-        //double x2 = (x+vector1.getX());
-        //double y2 = (y+vector1.getY());
-        double x1 = (x+direction.getX());
-        double y1 = (y+direction.getY());
-        //double x3 = (x+vector2.getX());
-        //double y3 = (y+vector2.getY());
-        g.setLineWidth(2);
-        g.setTextAlign(TextAlignment.CENTER);
-        g.strokeLine(x,y,x1,y1);
-        //g.strokeLine(x,y,x2,y2);
-        //g.strokeLine(x,y,x3,y3);
-        double w = pointerLength*mapScale;
-        //g.fillArc(x-w/2,y-w/2,w ,w,45,45,ArcType.ROUND);
+
+        Vector2 center = agent.getPosition().mul(mapScale);
+
+        {
+            double radius = 1*mapScale*settings.agentScale * AgentContainer._RADIUS;
+            double x = center.getX();
+            double y = center.getY();
+            g.fillOval(x-radius/2,y-radius/2,radius,radius);
+        }
+
+        {
+
+            FieldOfView fov = agent.getFOV(map.getEffectAreas(agent));
+
+            final double r = fov.getRange().getValue() * mapScale;
+            final double alpha = fov.getViewAngle().getRadians();
+
+            final double angle = agent.getDirection().rotated(alpha / 2).getClockDirection() - Math.PI / 2;
+            g.setStroke(g.getFill());
+
+            g.strokeArc(center.getX() - r, center.getY() - r, r*2, r*2,
+                    (angle / (2 * Math.PI)) * 360,
+                    fov.getViewAngle().getDegrees(), ArcType.ROUND);
+
+        }
 
     }
     private void calcScale(){
