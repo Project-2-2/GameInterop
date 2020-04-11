@@ -1,0 +1,24 @@
+.bg-nav{
+    -fx-background-color: #343538;
+}
+.bg-light{
+    -fx-background-color: #f3f3f3;
+}
+.canvas-border{
+    -fx-border-color: black;
+    -fx-border-width: 2px;
+}
+.nav-button{
+    -fx-text-fill: white;
+    -fx-font-size: 18;
+    -fx-text-alignment: center;
+    -fx-padding: 10;
+}
+.nav-button:hover{
+    -fx-background-color: #7B7E85;
+}
+.menu-background-label{
+    -fx-text-fill: white;
+    -fx-font-size: 18;
+    -fx-text-alignment: center;
+}
