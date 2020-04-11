@@ -1,6 +1,5 @@
 package Group9.agent;
 
-import Group9.PiMath;
 import Group9.math.Vector2;
 import Group9.math.graph.Edge;
 import Group9.math.graph.Graph;
@@ -72,6 +71,7 @@ public class DeepSpace implements Guard {
             if(actionHistory.getAction() == ActionHistory.Action.SWITCH_STATE)
             {
                 this.state = actionHistory.getValue();
+            }
                 switch (state)
                 {
                     case EXPLORE_360_ADD_VERTEX:
@@ -86,6 +86,7 @@ public class DeepSpace implements Guard {
                         this.planning.offer(new ActionHistory<>(ActionHistory.Action.SWITCH_STATE, State.EXPLORE_360));
                         break;
                     case EXPLORE_360:
+                        System.out.println("explore");
                         this.currentVertex.getContent().add(percepts);
                         break;
 
@@ -95,15 +96,14 @@ public class DeepSpace implements Guard {
 
                     default: this.explorePoint(percepts); break;
                 }
-            }
-            else
+            //else
             {
                 switch (actionHistory.action)
                 {
                     case MOVE: return new Move(new Distance(actionHistory.<Double>getValue()));
                     case ROTATE: return new Rotate(Angle.fromRadians(actionHistory.<Double>getValue()));
 
-                    default: throw new IllegalArgumentException(String.format("%s is not supported.", actionHistory.action));
+                    //default: throw new IllegalArgumentException(String.format("%s is not supported.", actionHistory.action));
                 }
             }
 
@@ -135,7 +135,7 @@ public class DeepSpace implements Guard {
                 Optional<Vector2> target = positions.stream().filter(e -> !isInsideOtherVertex(currentVertex, e)).findAny();
                 if(target.isPresent())
                 {
-                    this.moveTowardsPoint(guardPercepts, this.position, this.direction, target.get());
+                    this.moveTowardsPoint(guardPercepts, this.direction, this.position, target.get());
                     this.explorePoint(guardPercepts);
                     return;
                 }
@@ -194,7 +194,7 @@ public class DeepSpace implements Guard {
                 //--- if the path has only length 2 then we are only walking from the current vertex to a previous vertex
                 if(shortestPath.size() == 2)
                 {
-                    moveTowardsPoint(guardPercepts, currentVertex.getContent().getCenter().sub(this.position).normalise(),
+                    moveTowardsPoint(guardPercepts, this.direction,
                             this.position, shortestPath.get(1).getContent().getCenter());
                 }
                 else
@@ -223,7 +223,7 @@ public class DeepSpace implements Guard {
     private void moveTowardsPoint(GuardPercepts percepts, Vector2 direction, Vector2 source, Vector2 target)
     {
         Vector2 desiredDirection = target.sub(source).normalise();
-        double rotationDiff = PiMath.getDistanceBetweenAngles(direction.getClockDirection(), desiredDirection.getClockDirection());
+        double rotationDiff = (direction.angle(desiredDirection) + Math.PI) % Math.PI;
 
         if(Math.abs(rotationDiff) > 1E-10)
         {
@@ -250,6 +250,7 @@ public class DeepSpace implements Guard {
         double maxRotation = percepts.getScenarioGuardPercepts().getScenarioPercepts().getMaxRotationAngle().getRadians();
         int fullRotations = (int) (alpha / maxRotation);
         double restRotation = alpha % maxRotation;
+
         for(int i = 0; i < fullRotations; i++)
         {
             planning.offer(new ActionHistory<>(ActionHistory.Action.ROTATE, maxRotation));
@@ -276,6 +277,7 @@ public class DeepSpace implements Guard {
     private void rotate(double theta)
     {
         this.direction = direction.rotated(theta);
+        System.out.println(direction.length() == 0);
     }
 
     private enum State

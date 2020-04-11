@@ -250,14 +250,7 @@ public class ActionTests extends SimpleUnitTest {
         }}, new ArrayList<>());
 
         // --- turn
-        try {
-            game.turn();
-            assertTrue(false);
-
-        } catch (IllegalArgumentException expected)
-        {
-            assertTrue(true);
-        }
+        Asserts.assertException(game::turn, IllegalArgumentException.class);
     }
 
     private static void _test_intruder_drop_pheromone() {
@@ -323,13 +316,7 @@ public class ActionTests extends SimpleUnitTest {
         assertTrue(game.getGameMap().getDynamicObjects(Sound.class).isEmpty());
 
         // --- turn
-        try {
-            game.turn();
-            assertTrue(false);
-        } catch (ClassCastException expected)
-        {
-            assertTrue(true);
-        }
+        Asserts.assertException(game::turn, ClassCastException.class);
     }
 
     private static void _test_intruder_rotate() {
@@ -416,14 +403,7 @@ public class ActionTests extends SimpleUnitTest {
         }});
 
         // --- turn
-        try {
-            game.turn();
-            assertTrue(false);
-
-        } catch (IllegalArgumentException expected)
-        {
-            assertTrue(true);
-        }
+        Asserts.assertException(game::turn, IllegalArgumentException.class);
     }
 
     private static class QueueGuard extends QueueAgent implements Guard {

@@ -247,7 +247,7 @@ public class Game implements Runnable {
     }
 
     /**
-     * Checks whether any of the teams fulfil their win condition.
+     * Checks whether any of the teams fulfil their win ropcondition.
      * @return A team that has won, otherwise null.
      */
     private Team checkForWinner()
@@ -535,7 +535,7 @@ public class Game implements Runnable {
             while (iterator.hasNext()) {
                 DynamicObject e = iterator.next();
                 e.setLifetime(e.getLifetime() - 1);
-                if(e.getLifetime() == 0)
+                if(e.getLifetime() <= 0)
                 {
                     iterator.remove();
                 }

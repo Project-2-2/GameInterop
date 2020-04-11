@@ -122,7 +122,7 @@ public abstract class AgentContainer<T> {
         while (iterator.hasNext())
         {
             Map.Entry<Cooldown, Integer> entry = iterator.next();
-            if(entry.getValue() - 1 == 0)
+            if(entry.getValue() - 1 <= 0)
             {
                 iterator.remove();
             }

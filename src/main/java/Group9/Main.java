@@ -1,5 +1,7 @@
 package Group9;
 
+import Group9.agent.factories.DefaultAgentFactory;
+import Group9.map.parser.Parser;
 import Group9.math.Vector2;
 import Group9.tree.PointContainer;
 
@@ -7,6 +9,9 @@ import Group9.tree.PointContainer;
 public class Main {
 
     public static void main(String[] args) {
+
+        Game game = new Game(Parser.parseFile("yourfile"), new DefaultAgentFactory(), false);
+        game.run();
 
         //Line{start=Vector2{x=10.402091197212645, y=109.61228558829279, length=110.10475309070263}, end=Vector2{x=12.698191791403183, y=115.15556278336051, length=115.853561510744}}
         //Vector2{x=11.391114889615475, y=112.0, length=112.57778421353132}
