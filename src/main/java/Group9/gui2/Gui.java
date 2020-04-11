@@ -1,18 +1,24 @@
 package Group9.gui2;
-import Group11.Control.Helpers.Movables;
-import Group11.Control.Helpers.MultiMap;
+
+import Group9.agent.container.GuardContainer;
+import Group9.agent.container.IntruderContainer;
+import Group9.map.dynamic.DynamicObject;
 import javafx.application.Application;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
+import java.util.List;
+
 public class Gui extends Application {
 
-    private MainScene scene = new MainScene(new StackPane());
-    private Stage primary = new Stage();
     private MainController mainController = new MainController(this);
+    private MainScene scene = new MainScene(new StackPane(), mainController.getGame().getGameMap());
+    private Stage primary = new Stage();
+
     public static void Gui(String[] args) {
         launch(args);
     }
+
     @Override
     public void start(Stage primaryStage) {
         primaryStage.setHeight(GuiSettings.defaultHeight);
@@ -25,8 +31,9 @@ public class Gui extends Application {
         Thread thread = new Thread(mainController);
         thread.start();
     }
-    public void drawMovables(MultiMap<String, Movables> movablesMultiMap){
-        scene.drawMovables(movablesMultiMap);
+
+    public void drawMovables(List<GuardContainer> guards, List<IntruderContainer> intruders, List<DynamicObject> objects){
+        scene.drawMovables(guards, intruders, objects);
     }
 
 }
