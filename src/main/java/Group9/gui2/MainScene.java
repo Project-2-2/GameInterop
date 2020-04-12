@@ -62,7 +62,7 @@ public class MainScene extends Scene {
     private Settings settings = new Settings();
     private HBox quickSettings = new HBox();
     private HBox quickSettingsBar = new HBox();
-    private Slider animationSpeedSlider = new Slider(0.0,1,0.5);
+    private Slider animationSpeedSlider = new Slider(0,120,15);
     private Slider slider = new Slider(0.0,1,0.5);
     private Label sliderInfo = new Label("0.5");
     private StackPane playContainer = new StackPane();
@@ -71,8 +71,10 @@ public class MainScene extends Scene {
     private Label stop = new Label();
     private HBox animationSettings = new HBox();
     private Label animationLabel = new Label("Speed");
-    private Label animationSliderInfo = new Label("0.5");
+    private Label animationSliderInfo = new Label("15");
     private final GameMap map;
+    private Gui gui;
+    private FileChooser fileChooser = new FileChooser();
 
     //Buttons
     private Label reloadMapButton = new Label("ReloadMap");
@@ -83,8 +85,9 @@ public class MainScene extends Scene {
 
     ///Agent
     private List<MapObject> elements;
-    public MainScene(StackPane mainStack, GameMap map) {
+    public MainScene(StackPane mainStack, GameMap map,Gui gui) {
         super(mainStack);
+        this.gui = gui;
         this.mainStack = mainStack;
         this.map = map;
         elements = map.getObjects();
@@ -208,6 +211,10 @@ public class MainScene extends Scene {
                 draw();
             }
         });
+        reloadMapButton.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
+            gui.restartGame();
+            gui.getMainController().updateGameSpeed((int) animationSpeedSlider.getValue());
+        } );
         button1.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
             settings.toggleText();
             draw();
@@ -217,7 +224,11 @@ public class MainScene extends Scene {
             draw();
         } );
         button3.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
-            //TODO add filechooser
+            File file = fileChooser.showOpenDialog(gui.getPrimary());
+            if(file != null){
+                gui.setMapFile(file);
+                gui.restartGame();
+            }
         } );
         reloadMapButton.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
             rescaleMap();
@@ -225,6 +236,11 @@ public class MainScene extends Scene {
        slider.valueProperty().addListener((observableValue, number, t1) -> {
 
        });
+        animationSpeedSlider.valueProperty().addListener((observableValue, number, t1) -> {
+            int newVal = t1.intValue();
+            animationSliderInfo.setText(String.valueOf(newVal));
+            gui.getMainController().updateGameSpeed(newVal);
+        });
     }
     public void rescale(){
         scale();

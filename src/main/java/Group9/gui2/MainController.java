@@ -24,10 +24,10 @@ public class MainController implements Runnable {
     private int historyIndex = 0;
     private final List<History> history = new LinkedList<>();
 
-    public MainController(Gui gui){
+    private AnimationTimer animator;
+    public MainController(Gui gui, File mapFile){
         this.gui = gui;
-        File file = new File("./src/main/java/Group9/map/maps/test_2.map");
-        game = new Game(Parser.parseFile(file.getAbsolutePath()), new DefaultAgentFactory(), false, -1, new Callback<Game>() {
+        game = new Game(Parser.parseFile(mapFile.getAbsolutePath()), new DefaultAgentFactory(), false, -1, new Callback<Game>() {
             @Override
             public void call(Game game) {
                 historyIndex++;
@@ -67,7 +67,7 @@ public class MainController implements Runnable {
 
     @Override
     public void run() {
-        AnimationTimer animator = new AnimationTimer(){
+             animator = new AnimationTimer(){
             @Override
             public void handle(long now){
                 synchronized (history)
@@ -98,6 +98,15 @@ public class MainController implements Runnable {
             history.dynamicObjects.addAll(dynamicObjects);
             return history;
         }
+    }
+    public void kill(){
+        game.getRunningLoop().set(false);
+        if(animator!=null){
+            animator.stop();
+        }
+    }
+    public void updateGameSpeed(int gameSpeed){
+        game.getTicks().set(gameSpeed);
     }
 
 }

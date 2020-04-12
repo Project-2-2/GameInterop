@@ -256,6 +256,9 @@ public class Game implements Runnable {
         runningLoop.set(true);
         while (this.winner == null && runningLoop.get())
         {
+            if(ticks.get() <=0){
+                continue;
+            }
             this.winner = this.turn();
             if(this.turnTickCallback != null)
             {
