@@ -227,7 +227,7 @@ public class MainScene extends Scene {
             }
         }
     }
-    public void drawMovables(List<GuardContainer> guards, List<IntruderContainer> intruders, List<DynamicObject> objects){
+    public void drawMovables(List<GuardContainer> guards, List<IntruderContainer> intruders, List<DynamicObject<?>> objects){
         GraphicsContext g = canvasAgents.getGraphicsContext2D();
         g.clearRect(0,0,canvasAgents.getWidth(),canvasAgents.getHeight());
 

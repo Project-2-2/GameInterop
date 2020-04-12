@@ -32,7 +32,7 @@ public class Gui extends Application {
         thread.start();
     }
 
-    public void drawMovables(List<GuardContainer> guards, List<IntruderContainer> intruders, List<DynamicObject> objects){
+    public void drawMovables(List<GuardContainer> guards, List<IntruderContainer> intruders, List<DynamicObject<?>> objects){
         scene.drawMovables(guards, intruders, objects);
     }
 

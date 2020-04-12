@@ -1,5 +1,6 @@
 package Group9.agent.container;
 
+import Group9.Game;
 import Group9.map.area.EffectArea;
 import Group9.map.area.ModifyViewEffect;
 import Group9.map.area.ModifyViewRangeEffect;
@@ -10,7 +11,7 @@ import Interop.Percept.Vision.FieldOfView;
 
 import java.util.*;
 
-public abstract class AgentContainer<T> {
+public class AgentContainer<T> {
 
     public final static double _RADIUS = 0.5;
 
@@ -148,5 +149,10 @@ public abstract class AgentContainer<T> {
                 ", direction=" + direction +
                 ", cooldowns=" + cooldowns +
                 '}';
+    }
+
+    public AgentContainer<T> clone(Game game) {
+            return new AgentContainer<T>(this.agent, this.getPosition().clone(), this.direction.clone(),
+                    this.getFOV(game.getGameMap().getEffectAreas(this)));
     }
 }
