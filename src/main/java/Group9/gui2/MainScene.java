@@ -11,6 +11,7 @@ import Group9.map.objects.*;
 import Group9.math.Vector2;
 import Interop.Geometry.Angle;
 import Interop.Geometry.Point;
+import Interop.Percept.Vision.FieldOfView;
 import javafx.beans.value.ChangeListener;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -24,6 +25,8 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
+import javafx.scene.shape.ArcType;
 import javafx.scene.text.Font;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.FileChooser;
@@ -311,19 +314,31 @@ public class MainScene extends Scene {
         g.fillOval(x-radius/2,y-radius/2,radius,radius);
     }
     private void drawAgent(GraphicsContext g, AgentContainer<?> agent) {
-        Vector2 p = agent.getPosition();
-        double radius = 1*mapScale*settings.agentScale;
-        double x = p.getX()*mapScale;
-        double y = p.getY()*mapScale;
-        g.fillOval(x-radius/2,y-radius/2,radius,radius);
-        g.setStroke(Color.WHITE);
-        double pointerLength = 5;
-        Vector2 direction = agent.getDirection().mul(pointerLength * mapScale);
-        double x1 = (x+direction.getX());
-        double y1 = (y+direction.getY());
-        g.setLineWidth(2);
-        g.setTextAlign(TextAlignment.CENTER);
-        g.strokeLine(x,y,x1,y1);
+
+        Vector2 center = agent.getPosition().mul(mapScale);
+
+        {
+            double radius = 1*mapScale*settings.agentScale * AgentContainer._RADIUS;
+            double x = center.getX();
+            double y = center.getY();
+            g.fillOval(x-radius/2,y-radius/2,radius,radius);
+        }
+
+        {
+
+            FieldOfView fov = agent.getFOV(map.getEffectAreas(agent));
+
+            final double r = fov.getRange().getValue() * mapScale;
+            final double alpha = fov.getViewAngle().getRadians();
+
+            final double angle = agent.getDirection().rotated(alpha / 2).getClockDirection() - Math.PI / 2;
+            g.setStroke(g.getFill());
+
+            g.strokeArc(center.getX() - r, center.getY() - r, r*2, r*2,
+                    (angle / (2 * Math.PI)) * 360,
+                    fov.getViewAngle().getDegrees(), ArcType.ROUND);
+
+        }
 
     }
     private void calcScale(){

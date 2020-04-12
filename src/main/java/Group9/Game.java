@@ -38,7 +38,9 @@ import Interop.Utils.Utils;
 
 import java.util.*;
 import java.util.concurrent.Semaphore;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 public class Game implements Runnable {
@@ -63,6 +65,8 @@ public class Game implements Runnable {
     private Team winner = null;
 
     private AtomicBoolean runningLoop = new AtomicBoolean(false);
+    private final AtomicInteger ticks;
+    private long lastTick = System.nanoTime();
 
     //---
     private final boolean queryIntent;
@@ -70,12 +74,19 @@ public class Game implements Runnable {
 
     public Game(GameMap gameMap, final boolean queryIntent)
     {
-        this(gameMap, new DefaultAgentFactory(), queryIntent);
+        this(gameMap, new DefaultAgentFactory(), queryIntent, -1);
     }
 
     public Game(GameMap gameMap, IAgentFactory agentFactory, final boolean queryIntent)
     {
+        this(gameMap, new DefaultAgentFactory(), queryIntent, -1);
+    }
+
+
+    public Game(GameMap gameMap, IAgentFactory agentFactory, final boolean queryIntent, int ticks)
+    {
         gameMap.setGame(this);
+        this.ticks = new AtomicInteger(ticks);
         this.queryIntent = queryIntent;
         this.gameMap = gameMap;
         this.scenarioPercepts = gameMap.getGameSettings().getScenarioPercepts();
@@ -108,6 +119,10 @@ public class Game implements Runnable {
                 usedSpawns.add(intruderContainer.getShape());
             });
         }
+    }
+
+    public AtomicInteger getTicks() {
+        return ticks;
     }
 
     public Map<AgentContainer<?>, Boolean> getActionSuccess() {
@@ -235,13 +250,21 @@ public class Game implements Runnable {
         while (this.winner == null && runningLoop.get())
         {
             this.winner = this.turn();
-            if(false)
+            if(this.ticks.get() > 0)
             {
-                try {
-                    Thread.sleep(100);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
+                long delta = System.nanoTime() - lastTick;
+                long frameTime = (long) (1E+9D / this.ticks.get());
+                lastTick = System.nanoTime();
+
+                if(delta < frameTime)
+                {
+                    try {
+                        Thread.sleep(TimeUnit.NANOSECONDS.toMillis(frameTime - delta));
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
                 }
+
             }
         }
     }
