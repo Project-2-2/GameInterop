@@ -37,7 +37,6 @@ public class MainController implements Runnable {
                     });
                 }};
             animator.start();
-            //TODO: Simulate Game
     }
 
 

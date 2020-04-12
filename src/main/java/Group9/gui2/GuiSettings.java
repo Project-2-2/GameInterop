@@ -8,6 +8,7 @@ public class GuiSettings {
     public static final double defaultHeight = 1000;
     public static final double defaultWidth = 1800;
     public static final double buttonHeight = 50;
+    public static final double quickSettingsBarHeight = 40;
     //Colors
             //dark blue
     public static final Color backgroundColor = Color.web("#282A37",1);

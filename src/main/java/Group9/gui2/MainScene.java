@@ -8,16 +8,17 @@ import Group9.map.dynamic.DynamicObject;
 import Group9.map.dynamic.Pheromone;
 import Group9.map.dynamic.Sound;
 import Group9.map.objects.*;
-import Group9.map.parser.Parser;
 import Group9.math.Vector2;
 import Interop.Geometry.Angle;
 import Interop.Geometry.Point;
 import javafx.beans.value.ChangeListener;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Label;
+import javafx.scene.control.Slider;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
@@ -25,6 +26,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.TextAlignment;
+import javafx.stage.FileChooser;
 
 import java.io.File;
 import java.util.List;
@@ -55,14 +57,25 @@ public class MainScene extends Scene {
     private Canvas canvasAgents = new Canvas(200,200);
     private double mapScale = 1;
     private Settings settings = new Settings();
-
+    private HBox quickSettings = new HBox();
+    private HBox quickSettingsBar = new HBox();
+    private Slider animationSpeedSlider = new Slider(0.0,1,0.5);
+    private Slider slider = new Slider(0.0,1,0.5);
+    private Label sliderInfo = new Label("0.5");
+    private StackPane playContainer = new StackPane();
+    private StackPane stopContainer = new StackPane();
+    private Label play = new Label();
+    private Label stop = new Label();
+    private HBox animationSettings = new HBox();
+    private Label animationLabel = new Label("Speed");
+    private Label animationSliderInfo = new Label("0.5");
     private final GameMap map;
 
     //Buttons
     private Label reloadMapButton = new Label("ReloadMap");
     private Label button1 = new Label("Toggle Description");
     private Label button2 = new Label("Toggle Agent-Zoom");
-    private Label button3 = new Label("Button 3");
+    private Label button3 = new Label("Load Map");
     private Label button4 = new Label("Button 4");
 
     ///Agent
@@ -78,15 +91,21 @@ public class MainScene extends Scene {
         listener();
     }
     private void build(){
-        menu.getChildren().addAll(reloadMapButton,button1,button2,button3,button4);
+        menu.getChildren().addAll(reloadMapButton,button1,button2,button3,button4,animationSettings);
         menuPane.getChildren().add(menu);
         canvasPane.getChildren().add(canvas);
         canvasPane.getChildren().add(canvasAgents);
+        canvasPane.getChildren().add(quickSettings);
         mainHBox.getChildren().add(menuBackground);
         mainHBox.getChildren().add(canvasPane);
         mainStack.getChildren().add(mainHBox);
         mainStack.getChildren().add(menuPane);
         menuBackground.getChildren().add(menuBackgroundLabel);
+        playContainer.getChildren().add(play);
+        stopContainer.getChildren().add(stop);
+        quickSettingsBar.getChildren().addAll(playContainer,stopContainer,slider,sliderInfo);
+        quickSettings.getChildren().add(quickSettingsBar);
+        animationSettings.getChildren().addAll(animationLabel,animationSpeedSlider,animationSliderInfo);
     }
     private void scale(){
         double height = this.getHeight();
@@ -106,6 +125,8 @@ public class MainScene extends Scene {
         canvas.setHeight(map.getGameSettings().getHeight()*mapScale);
         canvasAgents.setWidth(map.getGameSettings().getWidth()*mapScale);
         canvasAgents.setHeight(map.getGameSettings().getHeight()*mapScale);
+        quickSettingsBar.setMaxHeight(GuiSettings.quickSettingsBarHeight);
+        quickSettingsBar.setMinHeight(GuiSettings.quickSettingsBarHeight);
         //Buttons
         reloadMapButton.setMaxSize(GuiSettings.widthMenuFocus,GuiSettings.buttonHeight);
         reloadMapButton.setMinSize(GuiSettings.widthMenuFocus,GuiSettings.buttonHeight);
@@ -117,6 +138,10 @@ public class MainScene extends Scene {
         button3.setMinSize(GuiSettings.widthMenuFocus,GuiSettings.buttonHeight);
         button4.setMaxSize(GuiSettings.widthMenuFocus,GuiSettings.buttonHeight);
         button4.setMinSize(GuiSettings.widthMenuFocus,GuiSettings.buttonHeight);
+        animationSettings.setMaxSize(GuiSettings.widthMenuFocus,GuiSettings.buttonHeight);
+        animationSettings.setMinSize(GuiSettings.widthMenuFocus,GuiSettings.buttonHeight);
+        slider.setPrefWidth(800);
+        quickSettingsBar.setMaxWidth(800);
 
     }
     private void style(){
@@ -135,6 +160,20 @@ public class MainScene extends Scene {
         button2.getStyleClass().add("nav-button");
         button3.getStyleClass().add("nav-button");
         button4.getStyleClass().add("nav-button");
+        play.getStyleClass().add("play-button");
+        stop.getStyleClass().add("stop-button");
+        slider.getStyleClass().add("sDark");
+        animationSpeedSlider.getStyleClass().add("sLight");
+        animationSettings.getStyleClass().add("animation-slider-pane");
+        playContainer.getStyleClass().add("button-container");
+        stopContainer.getStyleClass().add("button-container");
+        animationLabel.getStyleClass().add("animation-label");
+        animationSliderInfo.getStyleClass().add("animation-label");
+        quickSettings.setAlignment(Pos.BOTTOM_CENTER);
+        quickSettingsBar.setPadding(new Insets(10));
+        quickSettingsBar.setSpacing(5);
+        quickSettingsBar.setAlignment(Pos.CENTER);
+
     }
     private void listener(){
         ChangeListener<Number> stageSizeListener = (observable, oldValue, newValue) -> rescale();
@@ -174,9 +213,15 @@ public class MainScene extends Scene {
             settings.toggleAgentScale();
             draw();
         } );
+        button3.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
+            //TODO add filechooser
+        } );
         reloadMapButton.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
             rescaleMap();
         } );
+       slider.valueProperty().addListener((observableValue, number, t1) -> {
+
+       });
     }
     public void rescale(){
         scale();
@@ -273,23 +318,12 @@ public class MainScene extends Scene {
         g.fillOval(x-radius/2,y-radius/2,radius,radius);
         g.setStroke(Color.WHITE);
         double pointerLength = 5;
-        //Point vector = getDirectionVector(agent.getAngle(),pointerLength*mapScale);
         Vector2 direction = agent.getDirection().mul(pointerLength * mapScale);
-        //Point vector1 = getDirectionVector(new Angle(agent.getAngle().getRadians()+(map.getViewAngle().getRadians()/2)), 5*mapScale);
-        //Point vector2 = getDirectionVector(new Angle(agent.getAngle().getRadians()-(map.getViewAngle().getRadians()/2)), 5*mapScale);
-        //double x2 = (x+vector1.getX());
-        //double y2 = (y+vector1.getY());
         double x1 = (x+direction.getX());
         double y1 = (y+direction.getY());
-        //double x3 = (x+vector2.getX());
-        //double y3 = (y+vector2.getY());
         g.setLineWidth(2);
         g.setTextAlign(TextAlignment.CENTER);
         g.strokeLine(x,y,x1,y1);
-        //g.strokeLine(x,y,x2,y2);
-        //g.strokeLine(x,y,x3,y3);
-        double w = pointerLength*mapScale;
-        //g.fillArc(x-w/2,y-w/2,w ,w,45,45,ArcType.ROUND);
 
     }
     private void calcScale(){
