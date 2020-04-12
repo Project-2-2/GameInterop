@@ -13,11 +13,13 @@ import Interop.Geometry.Angle;
 import Interop.Geometry.Point;
 import Interop.Percept.Vision.FieldOfView;
 import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.input.MouseEvent;
@@ -63,22 +65,25 @@ public class MainScene extends Scene {
     private HBox quickSettings = new HBox();
     private HBox quickSettingsBar = new HBox();
     private Slider animationSpeedSlider = new Slider(0,120,15);
-    private Slider slider = new Slider(0.0,1,0.5);
+    private Slider slider = new Slider(0.0,1,1);
     private Label sliderInfo = new Label("0.5");
     private StackPane playContainer = new StackPane();
     private StackPane stopContainer = new StackPane();
     private Label play = new Label();
     private Label stop = new Label();
     private HBox animationSettings = new HBox();
+    private HBox maxSpeedSetting = new HBox();
+    private Label maxSpeedLabel = new Label("Maximum Speed");
     private Label animationLabel = new Label("Speed");
     private Label animationSliderInfo = new Label("15");
     private final GameMap map;
     private Gui gui;
     private FileChooser fileChooser = new FileChooser();
     private boolean hasHistory = false;
+    private CheckBox maxSpeed = new CheckBox();
 
     //Buttons
-    private Label reloadMapButton = new Label("ReloadMap");
+    private Label reloadMapButton = new Label("Reload Map");
     private Label button1 = new Label("Toggle Description");
     private Label button2 = new Label("Toggle Agent-Zoom");
     private Label button3 = new Label("Load Map");
@@ -98,7 +103,7 @@ public class MainScene extends Scene {
         listener();
     }
     private void build(){
-        menu.getChildren().addAll(reloadMapButton,button1,button2,button3,button4,animationSettings);
+        menu.getChildren().addAll(reloadMapButton,button1,button2,button3,button4,animationSettings,maxSpeedSetting);
         menuPane.getChildren().add(menu);
         canvasPane.getChildren().add(canvas);
         canvasPane.getChildren().add(canvasAgents);
@@ -112,6 +117,7 @@ public class MainScene extends Scene {
         stopContainer.getChildren().add(stop);
         quickSettingsBar.getChildren().addAll(playContainer,stopContainer,slider,sliderInfo);
         quickSettings.getChildren().add(quickSettingsBar);
+        maxSpeedSetting.getChildren().addAll(maxSpeedLabel,maxSpeed);
         animationSettings.getChildren().addAll(animationLabel,animationSpeedSlider,animationSliderInfo);
     }
     private void scale(){
@@ -147,6 +153,8 @@ public class MainScene extends Scene {
         button4.setMinSize(GuiSettings.widthMenuFocus,GuiSettings.buttonHeight);
         animationSettings.setMaxSize(GuiSettings.widthMenuFocus,GuiSettings.buttonHeight);
         animationSettings.setMinSize(GuiSettings.widthMenuFocus,GuiSettings.buttonHeight);
+        maxSpeedSetting.setMaxSize(GuiSettings.widthMenuFocus,GuiSettings.buttonHeight);
+        maxSpeedSetting.setMinSize(GuiSettings.widthMenuFocus,GuiSettings.buttonHeight);
         slider.setPrefWidth(800);
         quickSettingsBar.setMaxWidth(800);
 
@@ -176,6 +184,8 @@ public class MainScene extends Scene {
         stopContainer.getStyleClass().add("button-container");
         animationLabel.getStyleClass().add("animation-label");
         animationSliderInfo.getStyleClass().add("animation-label");
+        maxSpeedSetting.getStyleClass().add("animation-slider-pane");
+        maxSpeedLabel.getStyleClass().add("animation-label");
         quickSettings.setAlignment(Pos.BOTTOM_CENTER);
         quickSettingsBar.setPadding(new Insets(10));
         quickSettingsBar.setSpacing(5);
@@ -245,12 +255,20 @@ public class MainScene extends Scene {
             animationSliderInfo.setText(String.valueOf(newVal));
             gui.getMainController().updateGameSpeed(newVal);
         });
+        maxSpeed.selectedProperty().addListener((observableValue, aBoolean, t1) -> {
+            if(t1){
+                gui.getMainController().updateGameSpeed(-1);
+            }else{
+                gui.getMainController().updateGameSpeed((int) animationSpeedSlider.getValue());
+            }
+        });
     }
     public void activateHistory(){
         hasHistory =true;
         gui.getMainController().getHistoryViewIndex().get();
         int age = gui.getMainController().getHistoryIndex();
         slider.setMax(age);
+        slider.setValue(age);
         slider.setMin(0);
     }
     public void rescale(){
