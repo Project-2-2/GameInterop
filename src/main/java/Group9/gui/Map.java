@@ -2,6 +2,7 @@ package Group9.gui;
 
 import Group9.Game;
 import Group9.agent.factories.DeepSpaceFactory;
+import Group9.agent.factories.DefaultAgentFactory;
 import Group9.map.GameMap;
 import Group9.map.objects.MapObject;
 import Group9.map.parser.Parser;
@@ -39,7 +40,7 @@ public class Map extends Application {
 
 	    //Draw Map
 		gameMap = Parser.parseFile(path);
-		game = new Game(gameMap, new DeepSpaceFactory(), false);
+		game = new Game(gameMap, new DefaultAgentFactory(), false);
 
 		//Map
 		Rectangle map = new Rectangle(0,0,gameMap.getGameSettings().getWidth()*Scale.scale,gameMap.getGameSettings().getHeight()*Scale.scale);
