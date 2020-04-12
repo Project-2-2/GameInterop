@@ -2,7 +2,6 @@ package Group9.gui2;
 
 import Group9.Callback;
 import Group9.Game;
-import Group9.agent.container.AgentContainer;
 import Group9.agent.container.GuardContainer;
 import Group9.agent.container.IntruderContainer;
 import Group9.agent.factories.DefaultAgentFactory;
@@ -30,7 +29,7 @@ public class MainController implements Runnable {
     private AnimationTimer animator;
     public MainController(Gui gui, File mapFile){
         this.gui = gui;
-        game = new Game(Parser.parseFile(mapFile.getAbsolutePath()), new DefaultAgentFactory(), false, 60, new Callback<Game>() {
+        game = new Game(Parser.parseFile(mapFile.getAbsolutePath()), new DefaultAgentFactory(), false, -1, new Callback<Game>() {
             @Override
             public void call(Game game) {
                 historyIndex++;
@@ -76,7 +75,8 @@ public class MainController implements Runnable {
                 {
                     if(!history.isEmpty())
                     {
-                        int index = historyViewIndex.get() == -1 ? (historyIndex == history.size() ? historyIndex - 1 : historyIndex) : historyViewIndex.get();
+                        int index = historyViewIndex.get() == -1 ? (historyIndex == history.size() ? historyIndex - 1 : historyIndex) :
+                                (historyViewIndex.get() == history.size() ? historyViewIndex.get() - 1 : historyViewIndex.get());
                         History entry = history.get(index).clone();
                         gui.drawMovables(entry.guardContainers, entry.intruderContainers, entry.dynamicObjects);
                     }

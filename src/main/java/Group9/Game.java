@@ -256,14 +256,18 @@ public class Game implements Runnable {
         runningLoop.set(true);
         while (this.winner == null && runningLoop.get())
         {
-            if(ticks.get() <=0){
+            // --- at 0 ticks pause, if -1 we want to go as fas as possible
+            if(ticks.get() == 0 ){
                 continue;
             }
+
             this.winner = this.turn();
             if(this.turnTickCallback != null)
             {
                 this.turnTickCallback.call(this);
             }
+
+            // --- > 0 -> restrict
             if(this.ticks.get() > 0)
             {
                 long delta = System.nanoTime() - lastTick;
