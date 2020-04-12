@@ -144,7 +144,7 @@ public abstract class AgentContainer<T> {
     public String toString() {
         return "AgentContainer{" +
                 "agent=" + agent +
-                ", normalFOV=" + normalFOV +
+                ", normalFOV=" + String.format("FieldOfView{range=%.16f, viewAngle=%.16f (rad)}", normalFOV.getRange().getValue(), normalFOV.getViewAngle().getRadians()) +
                 ", shape=" + shape +
                 ", direction=" + direction +
                 ", cooldowns=" + cooldowns +

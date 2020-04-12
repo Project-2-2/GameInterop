@@ -58,6 +58,30 @@ public class MainController implements Runnable {
         return game;
     }
 
+    public History getCurrentHistory() {
+        int index = historyViewIndex.get() == -1 ? (historyIndex == history.size() ? historyIndex - 1 : historyIndex) :
+                (historyViewIndex.get() == history.size() ? historyViewIndex.get() - 1 : historyViewIndex.get());
+        return history.get(index).clone();
+    }
+
+    public void kill(){
+        game.getRunningLoop().set(false);
+        if(animator!=null){
+            animator.stop();
+        }
+    }
+    public void updateGameSpeed(int gameSpeed){
+        game.getTicks().set(gameSpeed);
+    }
+
+    public AtomicInteger getHistoryViewIndex() {
+        return historyViewIndex;
+    }
+
+    public int getHistoryIndex() {
+        return historyIndex;
+    }
+
     @Override
     public void run() {
         animator = new AnimationTimer(){
@@ -70,9 +94,7 @@ public class MainController implements Runnable {
                 {
                     if(!history.isEmpty())
                     {
-                        int index = historyViewIndex.get() == -1 ? (historyIndex == history.size() ? historyIndex - 1 : historyIndex) :
-                                (historyViewIndex.get() == history.size() ? historyViewIndex.get() - 1 : historyViewIndex.get());
-                        History entry = history.get(index).clone();
+                        History entry = getCurrentHistory();
                         gui.drawMovables(entry.guardContainers, entry.intruderContainers, entry.dynamicObjects);
                     }
                 }
@@ -96,22 +118,5 @@ public class MainController implements Runnable {
             history.dynamicObjects.addAll(dynamicObjects);
             return history;
         }
-    }
-    public void kill(){
-        game.getRunningLoop().set(false);
-        if(animator!=null){
-            animator.stop();
-        }
-    }
-    public void updateGameSpeed(int gameSpeed){
-        game.getTicks().set(gameSpeed);
-    }
-
-    public AtomicInteger getHistoryViewIndex() {
-        return historyViewIndex;
-    }
-
-    public int getHistoryIndex() {
-        return historyIndex;
     }
 }

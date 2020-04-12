@@ -13,7 +13,6 @@ import Interop.Geometry.Angle;
 import Interop.Geometry.Point;
 import Interop.Percept.Vision.FieldOfView;
 import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -29,7 +28,6 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.Paint;
 import javafx.scene.shape.ArcType;
 import javafx.scene.text.Font;
 import javafx.scene.text.TextAlignment;
@@ -37,6 +35,7 @@ import javafx.stage.FileChooser;
 
 import java.io.File;
 import java.util.List;
+import java.util.Optional;
 
 public class MainScene extends Scene {
     class Settings{
@@ -277,6 +276,27 @@ public class MainScene extends Scene {
                 gui.getMainController().updateGameSpeed((int) animationSpeedSlider.getValue());
             }
         });
+
+        this.canvasPane.setOnMouseClicked(event -> {
+            Vector2 scene = new Vector2(event.getSceneX(), event.getSceneY())
+                    .sub(canvasAgents.getBoundsInParent().getMinX(), canvasAgents.getBoundsInParent().getMinY())
+                    .mul(1D / mapScale);
+
+            MainController.History entry = gui.getMainController().getCurrentHistory();
+            Optional<IntruderContainer> intruder = entry.intruderContainers.stream()
+                    .filter(e -> e.getPosition().distance(scene) < 15).findAny();
+            Optional<GuardContainer> guard = entry.guardContainers.stream()
+                    .filter(e -> e.getPosition().distance(scene) < 15).findAny();
+
+            if(intruder.isPresent())
+            {
+                System.out.println(intruder);
+            }
+            else if(guard.isPresent())
+            {
+                System.out.println(guard);
+            }
+        });
     }
     public void activateHistory(){
         hasHistory =true;
@@ -378,7 +398,7 @@ public class MainScene extends Scene {
         Vector2 center = agent.getPosition().mul(mapScale);
 
         {
-            double radius = 1*mapScale*settings.agentScale * AgentContainer._RADIUS;
+            double radius = mapScale*settings.agentScale * AgentContainer._RADIUS;
             double x = center.getX();
             double y = center.getY();
             g.fillOval(x-radius/2,y-radius/2,radius,radius);
@@ -411,18 +431,7 @@ public class MainScene extends Scene {
             this.mapScale = width/map.getGameSettings().getWidth()*0.9;
         }
     }
-    protected Point getCenter(Point[] p){
-        double a1 = (p[2].getY()-p[0].getY())/(p[2].getX()-p[0].getX());
-        double b1 = p[0].getY()-(p[0].getX()*a1);
-        double a2 = (p[3].getY()-p[1].getY())/(p[3].getX()-p[1].getX());
-        double b2 = p[1].getY()-(p[1].getX()*a2);
-        if(a1 == a2){
-            return p[0];
-        }
-        double x = (b2-b1)/(a1-a2);
-        double y = a1*x+b1;
-        return new Point(x,y);
-    }
+
     protected GraphicElement calculateGraphicElement(MapObject element){
         if(element instanceof Wall){
             return new GraphicElement(GuiSettings.wallColor,"",true);
@@ -461,12 +470,6 @@ public class MainScene extends Scene {
         }
         return newPoints;
     }
-    private Point getDirectionVector(Angle angle, double length){
-        double x = -length*Math.cos(angle.getRadians());
-        double y = length*Math.sin(angle.getRadians());
-        return new Point(x,y);
-    }
-
     public boolean isHasHistory() {
         return hasHistory;
     }
