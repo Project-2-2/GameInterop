@@ -67,6 +67,8 @@ public class Game implements Runnable {
     private AtomicBoolean runningLoop = new AtomicBoolean(false);
     private final AtomicInteger ticks;
     private long lastTick = System.nanoTime();
+    private final Callback<Game> turnTickCallback;
+    private final Callback<Game> roundTickCallback;
 
     //---
     private final boolean queryIntent;
@@ -74,19 +76,24 @@ public class Game implements Runnable {
 
     public Game(GameMap gameMap, final boolean queryIntent)
     {
-        this(gameMap, new DefaultAgentFactory(), queryIntent, -1);
+        this(gameMap, new DefaultAgentFactory(), queryIntent, -1, null, null);
     }
 
     public Game(GameMap gameMap, IAgentFactory agentFactory, final boolean queryIntent)
     {
-        this(gameMap, new DefaultAgentFactory(), queryIntent, -1);
+        this(gameMap, agentFactory, queryIntent, -1, null, null);
     }
 
 
-    public Game(GameMap gameMap, IAgentFactory agentFactory, final boolean queryIntent, int ticks)
+    public Game(GameMap gameMap, IAgentFactory agentFactory, final boolean queryIntent, int ticks,
+                Callback<Game> turnTickCallback, Callback<Game> roundTickCallback)
     {
         gameMap.setGame(this);
+        this.turnTickCallback = turnTickCallback;
+        this.roundTickCallback = roundTickCallback;
         this.ticks = new AtomicInteger(ticks);
+
+
         this.queryIntent = queryIntent;
         this.gameMap = gameMap;
         this.scenarioPercepts = gameMap.getGameSettings().getScenarioPercepts();
@@ -195,7 +202,7 @@ public class Game implements Runnable {
     {
         if(safeRead)
         {
-            callback.update(null);
+            callback.call(null);
             return;
         }
         else
@@ -209,7 +216,7 @@ public class Game implements Runnable {
 
         try {
             lock.acquireUninterruptibly();
-            callback.update(lock);
+            callback.call(lock);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -253,6 +260,10 @@ public class Game implements Runnable {
                 continue;
             }
             this.winner = this.turn();
+            if(this.turnTickCallback != null)
+            {
+                this.turnTickCallback.call(this);
+            }
             if(this.ticks.get() > 0)
             {
                 long delta = System.nanoTime() - lastTick;
@@ -324,6 +335,11 @@ public class Game implements Runnable {
                     actionSuccess.put(intruder, executeAction(intruder, action));
                 });
 
+                if(this.turnTickCallback != null)
+                {
+                    this.roundTickCallback.call(this);
+                }
+
                 if((winner = checkForWinner()) != null)
                 {
                     return winner;
@@ -338,6 +354,11 @@ public class Game implements Runnable {
                 final GuardAction action = guard.getAgent().getAction(this.generateGuardPercepts(guard));
                 actionSuccess.put(guard, executeAction(guard, action));
             });
+
+            if(this.turnTickCallback != null)
+            {
+                this.roundTickCallback.call(this);
+            }
 
             if((winner = checkForWinner()) != null)
             {
@@ -557,9 +578,9 @@ public class Game implements Runnable {
     {
         // --- iterate over dynamic objects (sounds) and adjust lifetime or remove
         {
-            Iterator<DynamicObject> iterator = gameMap.getDynamicObjects().iterator();
+            Iterator<DynamicObject<?>> iterator = gameMap.getDynamicObjects().iterator();
             while (iterator.hasNext()) {
-                DynamicObject e = iterator.next();
+                DynamicObject<?> e = iterator.next();
                 e.setLifetime(e.getLifetime() - 1);
                 if(e.getLifetime() <= 0)
                 {
@@ -692,7 +713,7 @@ public class Game implements Runnable {
          *  it has completed its operations.
          * @param lock
          */
-        void update(Semaphore lock);
+        void call(Semaphore lock);
     }
 
 }

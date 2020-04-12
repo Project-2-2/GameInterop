@@ -1,5 +1,6 @@
 package Group9.agent.container;
 
+import Group9.Game;
 import Group9.map.area.EffectArea;
 import Group9.map.area.ModifyViewEffect;
 import Group9.map.area.ModifyViewRangeEffect;
@@ -149,4 +150,6 @@ public abstract class AgentContainer<T> {
                 ", cooldowns=" + cooldowns +
                 '}';
     }
+
+    public abstract AgentContainer<T> clone(Game game);
 }
