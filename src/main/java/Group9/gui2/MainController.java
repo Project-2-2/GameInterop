@@ -27,7 +27,7 @@ public class MainController implements Runnable {
     private AnimationTimer animator;
     public MainController(Gui gui, File mapFile){
         this.gui = gui;
-        game = new Game(Parser.parseFile(mapFile.getAbsolutePath()), new DefaultAgentFactory(), false, -1, new Callback<Game>() {
+        game = new Game(Parser.parseFile(mapFile.getAbsolutePath()), new DefaultAgentFactory(), false, 60, new Callback<Game>() {
             @Override
             public void call(Game game) {
                 historyIndex++;
@@ -67,7 +67,7 @@ public class MainController implements Runnable {
 
     @Override
     public void run() {
-             animator = new AnimationTimer(){
+        animator = new AnimationTimer(){
             @Override
             public void handle(long now){
                 synchronized (history)
@@ -78,7 +78,7 @@ public class MainController implements Runnable {
                         gui.drawMovables(entry.guardContainers, entry.intruderContainers, entry.dynamicObjects);
                     }
                 }
-            }};
+        }};
         animator.start();
     }
 
