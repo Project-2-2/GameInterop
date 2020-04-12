@@ -11,7 +11,7 @@ import Interop.Percept.Vision.FieldOfView;
 
 import java.util.*;
 
-public class AgentContainer<T> {
+public abstract class AgentContainer<T> {
 
     public final static double _RADIUS = 0.5;
 
@@ -151,8 +151,5 @@ public class AgentContainer<T> {
                 '}';
     }
 
-    public AgentContainer<T> clone(Game game) {
-            return new AgentContainer<T>(this.agent, this.getPosition().clone(), this.direction.clone(),
-                    this.getFOV(game.getGameMap().getEffectAreas(this)));
-    }
+    public abstract AgentContainer<T> clone(Game game);
 }

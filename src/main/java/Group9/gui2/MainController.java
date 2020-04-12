@@ -22,7 +22,7 @@ public class MainController implements Runnable {
     private final Game game;
 
     private int historyIndex = 0;
-    private List<History> history = new LinkedList<>();
+    private final List<History> history = new LinkedList<>();
 
     public MainController(Gui gui){
         this.gui = gui;
@@ -34,29 +34,26 @@ public class MainController implements Runnable {
             }
         }, new Callback<>() {
             @Override
-            public void call(AgentContainer<?> agentContainer) {
-                History entry = null;
-                if (historyIndex == history.size()) {
-                    history.add(historyIndex, entry = new History());
-                } else
+            public void call(Game game) {
+                synchronized (history)
                 {
-                    entry = history.get(historyIndex);
-                }
+                    History entry = null;
+                    if (historyIndex == history.size()) {
+                        history.add(historyIndex, entry = new History());
+                    } else
+                    {
+                        entry = history.get(historyIndex);
+                    }
 
-                if(agentContainer instanceof GuardContainer)
-                {
-                    entry.guardContainers.add((GuardContainer) agentContainer);
-                }
-                else
-                {
-                    entry.intruderContainers.add((IntruderContainer) agentContainer);
-                }
+                    entry.guardContainers.addAll(game.getGuards().stream().map(e -> e.clone(game)).collect(Collectors.toList()));
+                    entry.intruderContainers.addAll(game.getIntruders().stream().map(e -> e.clone(game)).collect(Collectors.toList()));
 
-                entry.dynamicObjects.addAll(
-                        game.getGameMap().getDynamicObjects().stream()
-                                .map(DynamicObject::clone)
-                                .collect(Collectors.toList())
-                );
+                    entry.dynamicObjects.addAll(
+                            game.getGameMap().getDynamicObjects().stream()
+                                    .map(DynamicObject::clone)
+                                    .collect(Collectors.toList())
+                    );
+                }
             }
         });
 
@@ -73,10 +70,13 @@ public class MainController implements Runnable {
         AnimationTimer animator = new AnimationTimer(){
             @Override
             public void handle(long now){
-                if(!history.isEmpty())
+                synchronized (history)
                 {
-                    History entry = history.get(historyIndex == history.size() ? historyIndex - 1 : historyIndex).clone();
-                    gui.drawMovables(entry.guardContainers, entry.intruderContainers, entry.dynamicObjects);
+                    if(!history.isEmpty())
+                    {
+                        History entry = history.get(historyIndex == history.size() ? historyIndex - 1 : historyIndex).clone();
+                        gui.drawMovables(entry.guardContainers, entry.intruderContainers, entry.dynamicObjects);
+                    }
                 }
             }};
         animator.start();

@@ -68,7 +68,7 @@ public class Game implements Runnable {
     private final AtomicInteger ticks;
     private long lastTick = System.nanoTime();
     private final Callback<Game> turnTickCallback;
-    private final Callback<AgentContainer<?>> roundTickCallback;
+    private final Callback<Game> roundTickCallback;
 
     //---
     private final boolean queryIntent;
@@ -86,7 +86,7 @@ public class Game implements Runnable {
 
 
     public Game(GameMap gameMap, IAgentFactory agentFactory, final boolean queryIntent, int ticks,
-                Callback<Game> turnTickCallback, Callback<AgentContainer<?>> roundTickCallback)
+                Callback<Game> turnTickCallback, Callback<Game> roundTickCallback)
     {
         gameMap.setGame(this);
         this.turnTickCallback = turnTickCallback;
@@ -334,7 +334,7 @@ public class Game implements Runnable {
 
                 if(this.turnTickCallback != null)
                 {
-                    this.roundTickCallback.call(intruder);
+                    this.roundTickCallback.call(this);
                 }
 
                 if((winner = checkForWinner()) != null)
@@ -354,7 +354,7 @@ public class Game implements Runnable {
 
             if(this.turnTickCallback != null)
             {
-                this.roundTickCallback.call(guard);
+                this.roundTickCallback.call(this);
             }
 
             if((winner = checkForWinner()) != null)
