@@ -12,6 +12,7 @@ import Group9.math.Vector2;
 import Interop.Geometry.Angle;
 import Interop.Geometry.Point;
 import Interop.Percept.Vision.FieldOfView;
+import javafx.animation.AnimationTimer;
 import javafx.beans.value.ChangeListener;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -36,6 +37,7 @@ import javafx.stage.FileChooser;
 import java.io.File;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 public class MainScene extends Scene {
     class Settings{
@@ -71,6 +73,7 @@ public class MainScene extends Scene {
     private StackPane playContainer = new StackPane();
     private StackPane stopContainer = new StackPane();
     private Label play = new Label();
+    private AnimationTimer playbackAnimationTimer = null;
     private Label stop = new Label();
     private HBox animationSettings = new HBox();
     private HBox maxSpeedSetting = new HBox();
@@ -191,7 +194,7 @@ public class MainScene extends Scene {
         quickSettingsBar.setPadding(new Insets(10));
         quickSettingsBar.setSpacing(5);
         quickSettingsBar.setAlignment(Pos.CENTER);
-
+        stop.setDisable(true);
     }
     private void listener(){
         ChangeListener<Number> stageSizeListener = (observable, oldValue, newValue) -> rescale();
@@ -297,6 +300,59 @@ public class MainScene extends Scene {
                 System.out.println(guard);
             }
         });
+
+        play.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
+            if(!play.isDisabled())
+            {
+                stop.setDisable(false);
+                play.setDisable(true);
+                this.playbackAnimationTimer = new AnimationTimer() {
+
+                    private long lastFrame = System.nanoTime();
+                    private double drawFrames = 0;
+
+                    @Override
+                    public void handle(long now) {
+
+                        double delta = (now - lastFrame);
+
+                        final double frameTime = 1E9 / animationSpeedSlider.getValue();
+
+                        if(delta >= frameTime)
+                        {
+                            if(gui.getMainController().getHistoryViewIndex().get() < gui.getMainController().getHistoryIndex())
+                            {
+                                this.lastFrame = now;
+                                drawFrames += (delta / frameTime);
+
+                                final int frames = (int) drawFrames;
+                                drawFrames -= frames;
+                                slider.setValue(gui.getMainController().getHistoryViewIndex().get() + frames);
+                            }
+                            else
+                            {
+                                stop.setDisable(true);
+                                play.setDisable(false);
+                                this.stop();
+                            }
+                        }
+
+                    }
+                };
+                this.playbackAnimationTimer.start();
+
+            }
+        });
+
+        stop.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
+            if(play.isDisabled())
+            {
+                play.setDisable(false);
+                stop.setDisable(true);
+                this.playbackAnimationTimer.stop();
+                this.playbackAnimationTimer = null;
+            }
+        });
     }
     public void activateHistory(){
         hasHistory =true;
@@ -388,7 +444,7 @@ public class MainScene extends Scene {
     }
     private void drawPheromone(GraphicsContext g, Pheromone pheromone){
         Vector2 z = pheromone.getCenter();
-        double radius = 1*mapScale*settings.agentScale;
+        double radius = mapScale * pheromone.getRadius();
         double x = z.getX()*mapScale;
         double y = z.getY()*mapScale;
         g.fillOval(x-radius/2,y-radius/2,radius,radius);
