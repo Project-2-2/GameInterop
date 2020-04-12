@@ -75,6 +75,7 @@ public class MainScene extends Scene {
     private final GameMap map;
     private Gui gui;
     private FileChooser fileChooser = new FileChooser();
+    private boolean hasHistory = false;
 
     //Buttons
     private Label reloadMapButton = new Label("ReloadMap");
@@ -234,13 +235,23 @@ public class MainScene extends Scene {
             rescaleMap();
         } );
        slider.valueProperty().addListener((observableValue, number, t1) -> {
-
+           if(hasHistory){
+               int newVal = t1.intValue();
+               gui.getMainController().getHistoryViewIndex().set(newVal);
+           }
        });
         animationSpeedSlider.valueProperty().addListener((observableValue, number, t1) -> {
             int newVal = t1.intValue();
             animationSliderInfo.setText(String.valueOf(newVal));
             gui.getMainController().updateGameSpeed(newVal);
         });
+    }
+    public void activateHistory(){
+        hasHistory =true;
+        gui.getMainController().getHistoryViewIndex().get();
+        int age = gui.getMainController().getHistoryIndex();
+        slider.setMax(age);
+        slider.setMin(0);
     }
     public void rescale(){
         scale();
@@ -421,5 +432,9 @@ public class MainScene extends Scene {
         double x = -length*Math.cos(angle.getRadians());
         double y = length*Math.sin(angle.getRadians());
         return new Point(x,y);
+    }
+
+    public boolean isHasHistory() {
+        return hasHistory;
     }
 }

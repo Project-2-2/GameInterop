@@ -30,7 +30,7 @@ public class MainController implements Runnable {
     private AnimationTimer animator;
     public MainController(Gui gui, File mapFile){
         this.gui = gui;
-        game = new Game(Parser.parseFile(mapFile.getAbsolutePath()), new DefaultAgentFactory(), false, 60, new Callback<Game>() {
+        game = new Game(Parser.parseFile(mapFile.getAbsolutePath()), new DefaultAgentFactory(), false, 1000, new Callback<Game>() {
             @Override
             public void call(Game game) {
                 historyIndex++;
@@ -72,6 +72,9 @@ public class MainController implements Runnable {
         animator = new AnimationTimer(){
             @Override
             public void handle(long now){
+                if(game.getWinner()!=null){
+                    gui.activateHistory();
+                }
                 synchronized (history)
                 {
                     if(!history.isEmpty())
@@ -112,4 +115,11 @@ public class MainController implements Runnable {
         game.getTicks().set(gameSpeed);
     }
 
+    public AtomicInteger getHistoryViewIndex() {
+        return historyViewIndex;
+    }
+
+    public int getHistoryIndex() {
+        return historyIndex;
+    }
 }

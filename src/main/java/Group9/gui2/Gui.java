@@ -36,7 +36,11 @@ public class Gui extends Application {
     public void drawMovables(List<GuardContainer> guards, List<IntruderContainer> intruders, List<DynamicObject<?>> objects){
         scene.drawMovables(guards, intruders, objects);
     }
-
+    public void activateHistory(){
+        if(!scene.isHasHistory()){
+            scene.activateHistory();
+        }
+    }
     public Stage getPrimary() {
         return primary;
     }
