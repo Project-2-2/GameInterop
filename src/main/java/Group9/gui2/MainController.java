@@ -29,7 +29,7 @@ public class MainController implements Runnable {
     private AnimationTimer animator;
     public MainController(Gui gui, File mapFile){
         this.gui = gui;
-        game = new Game(Parser.parseFile(mapFile.getAbsolutePath()), new DefaultAgentFactory(), false, -1, new Callback<Game>() {
+        game = new Game(Parser.parseFile(mapFile.getAbsolutePath()), new DefaultAgentFactory(), false, 15, new Callback<Game>() {
             @Override
             public void call(Game game) {
                 synchronized (history)
