@@ -7,12 +7,13 @@ import javafx.application.Application;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
+import java.io.File;
 import java.util.List;
 
 public class Gui extends Application {
-
-    private MainController mainController = new MainController(this);
-    private MainScene scene = new MainScene(new StackPane(), mainController.getGame().getGameMap());
+    private File mapFile = new File("./src/main/java/Group9/map/maps/test_2.map");
+    private MainController mainController = new MainController(this,mapFile);
+    private MainScene scene = new MainScene(new StackPane(), mainController.getGame().getGameMap(),this);
     private Stage primary = new Stage();
 
     public static void Gui(String[] args) {
@@ -36,4 +37,25 @@ public class Gui extends Application {
         scene.drawMovables(guards, intruders, objects);
     }
 
+    public Stage getPrimary() {
+        return primary;
+    }
+
+    public MainController getMainController() {
+        return mainController;
+    }
+    public void restartGame(){
+        mainController.kill();
+        mainController = new MainController(this,mapFile);
+        Thread thread = new Thread(mainController);
+        thread.start();
+    }
+
+    public void setMapFile(File mapFile) {
+        this.mapFile = mapFile;
+    }
+
+    public File getMapFile() {
+        return mapFile;
+    }
 }

@@ -11,13 +11,11 @@ import java.util.ArrayList;
 public class MainController implements Runnable {
 
     private Gui gui;
-    public boolean run = true;
     private Game game;
-    public MainController(Gui gui){
+    private AnimationTimer animator;
+    public MainController(Gui gui, File mapFile){
         this.gui = gui;
-        File file = new File("./src/main/java/Group9/map/maps/test_2.map");
-        game = new Game(Parser.parseFile(file.getAbsolutePath()), new DefaultAgentFactory(), false, 5);
-
+        game = new Game(Parser.parseFile(mapFile.getAbsolutePath()), new DefaultAgentFactory(), false, 15);
         Thread gameThread = new Thread(game);
         gameThread.start();
     }
@@ -28,7 +26,7 @@ public class MainController implements Runnable {
 
     @Override
     public void run() {
-            AnimationTimer animator = new AnimationTimer(){
+             animator = new AnimationTimer(){
                 @Override
                 public void handle(long now){
                     game.query((lock) -> {
@@ -38,6 +36,15 @@ public class MainController implements Runnable {
 
                 }};
             animator.start();
+    }
+    public void kill(){
+        game.getRunningLoop().set(false);
+        if(animator!=null){
+            animator.stop();
+        }
+    }
+    public void updateGameSpeed(int gameSpeed){
+        game.getTicks().set(gameSpeed);
     }
 
 
