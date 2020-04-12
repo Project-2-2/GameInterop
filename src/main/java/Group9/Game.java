@@ -421,8 +421,10 @@ public class Game implements Runnable {
         } else
         //--- check if guard is close enough to capture
         {
+            FieldOfView fov = agentContainer.getFOV(this.getGameMap().getEffectAreas(agentContainer));
             this.intruders.stream()
                     .filter(e -> e.getPosition().distance(agentContainer.getPosition()) <= settings.getScenarioPercepts().getCaptureDistance().getValue())
+                    .filter(e -> Math.abs(e.getDirection().angle(agentContainer.getDirection())) <= fov.getViewAngle().getRadians() / 2)
                     .forEach(e -> e.setCaptured(true));
         }
 

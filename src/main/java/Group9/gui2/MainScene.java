@@ -22,6 +22,8 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
@@ -243,13 +245,26 @@ public class MainScene extends Scene {
         } );
         reloadMapButton.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
             rescaleMap();
-        } );
-       slider.valueProperty().addListener((observableValue, number, t1) -> {
+        });
+
+        slider.addEventHandler(KeyEvent.KEY_PRESSED, event -> {
+            event.consume();
+            int shiftModifier = event.isShiftDown() ? 10 : 0;
+            if(event.getCode() == KeyCode.RIGHT)
+            {
+                slider.setValue(Math.min((int) (slider.getValue() + 1 + shiftModifier), gui.getMainController().getHistoryIndex()));
+            }
+            else if(event.getCode() == KeyCode.LEFT)
+            {
+                slider.setValue(Math.max((int) (slider.getValue() - (1 + shiftModifier)), 0));
+            }
+        });
+        slider.valueProperty().addListener((observableValue, number, t1) -> {
            if(hasHistory){
                int newVal = t1.intValue();
                gui.getMainController().getHistoryViewIndex().set(newVal);
            }
-       });
+        });
         animationSpeedSlider.valueProperty().addListener((observableValue, number, t1) -> {
             int newVal = t1.intValue();
             animationSliderInfo.setText(String.valueOf(newVal));
