@@ -23,7 +23,7 @@ public class MainController implements Runnable {
 
     private AtomicInteger historyViewIndex = new AtomicInteger(-1);
 
-    private int historyIndex = 0;
+    private int historyIndex = -1;
     private final List<History> history = new LinkedList<>();
 
     private AnimationTimer animator;
@@ -32,20 +32,11 @@ public class MainController implements Runnable {
         game = new Game(Parser.parseFile(mapFile.getAbsolutePath()), new DefaultAgentFactory(), false, -1, new Callback<Game>() {
             @Override
             public void call(Game game) {
-                historyIndex++;
-            }
-        }, new Callback<>() {
-            @Override
-            public void call(Game game) {
                 synchronized (history)
                 {
-                    History entry = null;
-                    if (historyIndex == history.size()) {
-                        history.add(historyIndex, entry = new History());
-                    } else
-                    {
-                        entry = history.get(historyIndex);
-                    }
+                    historyIndex++;
+                    History entry = new History();
+                    history.add(historyIndex, entry);
 
                     entry.guardContainers = game.getGuards().stream().map(e -> e.clone(game)).collect(Collectors.toList());
                     entry.intruderContainers = game.getIntruders().stream().map(e -> e.clone(game)).collect(Collectors.toList());
@@ -54,6 +45,7 @@ public class MainController implements Runnable {
                     entry.dynamicObjects = game.getGameMap().getDynamicObjects().stream()
                             .map(DynamicObject::clone)
                             .collect(Collectors.toList());
+
                 }
             }
         });
