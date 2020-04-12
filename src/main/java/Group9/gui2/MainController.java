@@ -14,12 +14,15 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 public class MainController implements Runnable {
 
     private final Gui gui;
     private final Game game;
+
+    private AtomicInteger historyViewIndex = new AtomicInteger(-1);
 
     private int historyIndex = 0;
     private final List<History> history = new LinkedList<>();
@@ -45,14 +48,13 @@ public class MainController implements Runnable {
                         entry = history.get(historyIndex);
                     }
 
-                    entry.guardContainers.addAll(game.getGuards().stream().map(e -> e.clone(game)).collect(Collectors.toList()));
-                    entry.intruderContainers.addAll(game.getIntruders().stream().map(e -> e.clone(game)).collect(Collectors.toList()));
+                    entry.guardContainers = game.getGuards().stream().map(e -> e.clone(game)).collect(Collectors.toList());
+                    entry.intruderContainers = game.getIntruders().stream().map(e -> e.clone(game)).collect(Collectors.toList());
 
-                    entry.dynamicObjects.addAll(
-                            game.getGameMap().getDynamicObjects().stream()
-                                    .map(DynamicObject::clone)
-                                    .collect(Collectors.toList())
-                    );
+
+                    entry.dynamicObjects = game.getGameMap().getDynamicObjects().stream()
+                            .map(DynamicObject::clone)
+                            .collect(Collectors.toList());
                 }
             }
         });
@@ -74,7 +76,8 @@ public class MainController implements Runnable {
                 {
                     if(!history.isEmpty())
                     {
-                        History entry = history.get(historyIndex == history.size() ? historyIndex - 1 : historyIndex).clone();
+                        int index = historyViewIndex.get() == -1 ? (historyIndex == history.size() ? historyIndex - 1 : historyIndex) : historyViewIndex.get();
+                        History entry = history.get(index).clone();
                         gui.drawMovables(entry.guardContainers, entry.intruderContainers, entry.dynamicObjects);
                     }
                 }
