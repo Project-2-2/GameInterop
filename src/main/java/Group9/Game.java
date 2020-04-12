@@ -68,7 +68,6 @@ public class Game implements Runnable {
     private final AtomicInteger ticks;
     private long lastTick = System.nanoTime();
     private final Callback<Game> turnTickCallback;
-    private final Callback<Game> roundTickCallback;
 
     //---
     private final boolean queryIntent;
@@ -76,21 +75,20 @@ public class Game implements Runnable {
 
     public Game(GameMap gameMap, final boolean queryIntent)
     {
-        this(gameMap, new DefaultAgentFactory(), queryIntent, -1, null, null);
+        this(gameMap, new DefaultAgentFactory(), queryIntent, -1, null);
     }
 
     public Game(GameMap gameMap, IAgentFactory agentFactory, final boolean queryIntent)
     {
-        this(gameMap, agentFactory, queryIntent, -1, null, null);
+        this(gameMap, agentFactory, queryIntent, -1, null);
     }
 
 
     public Game(GameMap gameMap, IAgentFactory agentFactory, final boolean queryIntent, int ticks,
-                Callback<Game> turnTickCallback, Callback<Game> roundTickCallback)
+                Callback<Game> turnTickCallback)
     {
         gameMap.setGame(this);
         this.turnTickCallback = turnTickCallback;
-        this.roundTickCallback = roundTickCallback;
         this.ticks = new AtomicInteger(ticks);
 
 
@@ -339,11 +337,6 @@ public class Game implements Runnable {
                     actionSuccess.put(intruder, executeAction(intruder, action));
                 });
 
-                if(this.turnTickCallback != null)
-                {
-                    this.roundTickCallback.call(this);
-                }
-
                 if((winner = checkForWinner()) != null)
                 {
                     return winner;
@@ -358,11 +351,6 @@ public class Game implements Runnable {
                 final GuardAction action = guard.getAgent().getAction(this.generateGuardPercepts(guard));
                 actionSuccess.put(guard, executeAction(guard, action));
             });
-
-            if(this.turnTickCallback != null)
-            {
-                this.roundTickCallback.call(this);
-            }
 
             if((winner = checkForWinner()) != null)
             {
