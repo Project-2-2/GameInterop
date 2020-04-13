@@ -37,4 +37,6 @@ public class GuiSettings {
             //bright purple
     public static final Color teleportColor = Color.web("#C275FF",1);
 
+    public static final Color pheromoneColor = Color.web("#ffba00",0.5);
+
 }

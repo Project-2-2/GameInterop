@@ -30,6 +30,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -106,6 +107,8 @@ public class MainScene extends Scene {
     private Label button1 = new Label("Toggle Description");
     private Label button2 = new Label("Toggle Agent-Zoom");
     private Label button3 = new Label("Load Map");
+    private Label button5 = new Label("Reload Game");
+    private Label helpButton = new Label("Help");
     private Label button4 = new Label(String.format("Render Video%s", (ffmpegInstalled ? "" : "(ffmpeg unavailable)")));
 
     ///Agent
@@ -117,12 +120,12 @@ public class MainScene extends Scene {
         this.map = map;
         elements = map.getObjects();
         build();
-        scale();
+        scale(true);
         style();
         listener();
     }
     private void build(){
-        menu.getChildren().addAll(reloadMapButton,button1,button2,button3,button4,animationSettings,maxSpeedSetting);
+        menu.getChildren().addAll(reloadMapButton,button1,button2,button3,button5,button4,animationSettings,maxSpeedSetting,helpButton);
         menuPane.getChildren().add(menu);
         canvasPane.getChildren().add(canvas);
         canvasPane.getChildren().add(canvasAgents);
@@ -139,10 +142,10 @@ public class MainScene extends Scene {
         maxSpeedSetting.getChildren().addAll(maxSpeedLabel,maxSpeed);
         animationSettings.getChildren().addAll(animationLabel,animationSpeedSlider,animationSliderInfo);
     }
-    private void scale(){
+    private void scale(boolean first){
         double height = this.getHeight();
         double width = this.getWidth();
-        if(height<=0){
+        if(first){
             height = GuiSettings.defaultHeight;
             width = GuiSettings.defaultWidth;
         }
@@ -170,6 +173,10 @@ public class MainScene extends Scene {
         button3.setMinSize(GuiSettings.widthMenuFocus,GuiSettings.buttonHeight);
         button4.setMaxSize(GuiSettings.widthMenuFocus,GuiSettings.buttonHeight);
         button4.setMinSize(GuiSettings.widthMenuFocus,GuiSettings.buttonHeight);
+        button5.setMaxSize(GuiSettings.widthMenuFocus,GuiSettings.buttonHeight);
+        button5.setMinSize(GuiSettings.widthMenuFocus,GuiSettings.buttonHeight);
+        helpButton.setMaxSize(GuiSettings.widthMenuFocus,GuiSettings.buttonHeight);
+        helpButton.setMinSize(GuiSettings.widthMenuFocus,GuiSettings.buttonHeight);
         button4.setDisable(!ffmpegInstalled);
         animationSettings.setMaxSize(GuiSettings.widthMenuFocus,GuiSettings.buttonHeight);
         animationSettings.setMinSize(GuiSettings.widthMenuFocus,GuiSettings.buttonHeight);
@@ -195,6 +202,8 @@ public class MainScene extends Scene {
         button2.getStyleClass().add("nav-button");
         button3.getStyleClass().add("nav-button");
         button4.getStyleClass().add("nav-button");
+        button5.getStyleClass().add("nav-button");
+        helpButton.getStyleClass().add("nav-button");
         play.getStyleClass().add("play-button");
         stop.getStyleClass().add("stop-button");
         slider.getStyleClass().add("sDark");
@@ -244,16 +253,7 @@ public class MainScene extends Scene {
             }
         });
         reloadMapButton.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
-            play.setDisable(true);
-            stop.setDisable(true);
-            if(playbackAnimationTimer != null)
-            {
-                playbackAnimationTimer.stop();
-                playbackAnimationTimer = null;
-            }
-            hasHistory = false;
-            gui.restartGame();
-            gui.getMainController().updateGameSpeed((int) animationSpeedSlider.getValue());
+            rescaleMap();
         } );
         button1.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
             settings.toggleText();
@@ -273,8 +273,17 @@ public class MainScene extends Scene {
         button4.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
             generateVideo();
         });
-        reloadMapButton.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
-            rescaleMap();
+        button5.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
+            play.setDisable(true);
+            stop.setDisable(true);
+            if(playbackAnimationTimer != null)
+            {
+                playbackAnimationTimer.stop();
+                playbackAnimationTimer = null;
+            }
+            hasHistory = false;
+            gui.restartGame();
+            gui.getMainController().updateGameSpeed((int) animationSpeedSlider.getValue());
         });
 
         slider.addEventHandler(KeyEvent.KEY_PRESSED, event -> {
@@ -392,12 +401,12 @@ public class MainScene extends Scene {
         play.setDisable(false);
     }
     public void rescale(){
-        scale();
+        scale(false);
         draw();
     }
     public void rescaleMap(){
         calcScale();
-        scale();
+        scale(false);
         draw();
     }
     private void draw(){
@@ -470,12 +479,14 @@ public class MainScene extends Scene {
 
     private void generateVideo()
     {
-        if(hasHistory)
+        if(!hasHistory)
         {
             AtomicBoolean hasRenderedFrames = new AtomicBoolean(false);
             VBox root = new VBox();
             Stage stage = new Stage();
             Scene scene = new Scene(root, 720, 360);
+            File style = new File("./src/main/java/Group9/gui2/style.css");
+            scene.getStylesheets().add(style.toURI().toString());
             stage.setScene(scene);
 
             TextArea console = new TextArea();
@@ -486,8 +497,8 @@ public class MainScene extends Scene {
             ));
             resolution.getSelectionModel().select(1);
 
-            Button selectFileLocation = new Button("Select file location");
-            Button renderButton = new Button("Render video...");
+            Button selectFileLocation = new Button("Select location");
+            Button renderButton = new Button("Render");
             renderButton.setDisable(true);
 
             Slider fpsSlider = new Slider(1, 120, 30);
@@ -498,9 +509,14 @@ public class MainScene extends Scene {
             fpsSlider.setMajorTickUnit(10);
             fpsSlider.setShowTickLabels(true);
             fpsSlider.setShowTickMarks(true);
-
-            root.getChildren().addAll(selectFileLocation, resolution, renderButton, fpsSlider, console);
+            root.getChildren().addAll(selectFileLocation, resolution, fpsSlider, renderButton, console);
             AtomicReference<File> output = new AtomicReference<>();
+            //Styling
+            fpsSlider.getStyleClass().add("sDark");
+            root.getStyleClass().add("video-interface");
+            resolution.getStyleClass().add("drop-box");
+            selectFileLocation.getStyleClass().add("safe-button");
+            renderButton.getStyleClass().add("safe-button-2");
 
             {
 
@@ -613,22 +629,11 @@ public class MainScene extends Scene {
     public void drawMovables(List<GuardContainer> guards, List<IntruderContainer> intruders, List<DynamicObject<?>> objects){
         GraphicsContext g = canvasAgents.getGraphicsContext2D();
         g.clearRect(0,0,canvasAgents.getWidth(),canvasAgents.getHeight());
-
-        g.setFill(GuiSettings.guardColor);
-        for(GuardContainer movables : guards){
-            drawAgent(g, movables);
-        }
-
-        g.setFill(GuiSettings.intruderColor);
-        for(IntruderContainer movables : intruders){
-            drawAgent(g, movables);
-        }
-
         for(DynamicObject<?> dynamicObject : objects)
         {
             if(dynamicObject instanceof Pheromone)
             {
-                g.setFill(Color.ORANGERED);
+                g.setFill(GuiSettings.pheromoneColor);
                 drawPheromone(g, (Pheromone) dynamicObject);
 
             }
@@ -642,7 +647,15 @@ public class MainScene extends Scene {
                 throw new IllegalArgumentException();
             }
         }
+        g.setFill(GuiSettings.guardColor);
+        for(GuardContainer movables : guards){
+            drawAgent(g, movables);
+        }
 
+        g.setFill(GuiSettings.intruderColor);
+        for(IntruderContainer movables : intruders){
+            drawAgent(g, movables);
+        }
     }
     private void drawPheromone(GraphicsContext g, Pheromone pheromone){
         Vector2 z = pheromone.getCenter();

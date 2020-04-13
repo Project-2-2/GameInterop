@@ -72,8 +72,8 @@
 }
 .sDark .thumb{
     -fx-background-color:  #343538;
-    -fx-border-radius: 10;
     -fx-border-color: white;
+    -fx-text-fill: white;
 }
 .sDark .track{
     -fx-background-color:   #343538;
@@ -97,4 +97,50 @@
     -fx-text-fill: white;
     -fx-font-size: 18;
     -fx-text-alignment: center;
+}
+.video-interface{
+    -fx-padding: 5 10;
+    -fx-spacing: 3;
+}
+.drop-box{
+    -fx-border-width: 2;
+    -fx-border-color: #343538;
+    -fx-background-color: white;
+    -size: 140;
+    -fx-min-width: -size;
+    -fx-max-width: -size;
+}
+.drop-box:hover{
+    -fx-border-color: #7B7E85;
+}
+.safe-button{
+    -fx-border-width: 2;
+    -fx-border-color: #343538;
+    -fx-background-color: white;
+    -size: 140;
+    -fx-min-width: -size;
+    -fx-max-width: -size;
+}
+.safe-button:hover{
+    -fx-border-color: #7B7E85;
+    -fx-background-color: #fcfcfc;
+
+}
+.safe-button-2{
+    -fx-border-width: 2;
+    -fx-border-color: #343538;
+    -fx-background-color: white;
+}
+.safe-button-2:hover{
+    -fx-border-color: #7B7E85;
+    -fx-background-color: #fcfcfc;
+}
+.sound-symbol{
+    -fx-background-color: #343538;
+    -size: 30;
+    -fx-min-height: -size;
+    -fx-min-width: -size;
+    -fx-max-height: -size;
+    -fx-max-width: -size;
+    -fx-shape: "M176 432c0 44.112-35.888 80-80 80s-80-35.888-80-80 35.888-80 80-80 80 35.888 80 80zM25.26 25.199l13.6 272C39.499 309.972 50.041 320 62.83 320h66.34c12.789 0 23.331-10.028 23.97-22.801l13.6-272C167.425 11.49 156.496 0 142.77 0H49.23C35.504 0 24.575 11.49 25.26 25.199z";
 }
