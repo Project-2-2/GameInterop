@@ -289,6 +289,9 @@ public class MainScene extends Scene {
             gui.restartGame();
             gui.getMainController().updateGameSpeed((int) animationSpeedSlider.getValue());
         });
+        helpButton.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
+            openHelp();
+        });
 
         slider.addEventHandler(KeyEvent.KEY_PRESSED, event -> {
             event.consume();
@@ -668,6 +671,22 @@ public class MainScene extends Scene {
             stage.showAndWait();
 
         }
+    }
+    private void openHelp(){
+            VBox root = new VBox();
+            Stage stage = new Stage();
+            stage.setTitle("Help");
+            Scene scene = new Scene(root, 720, 360);
+            File style = new File("./src/main/java/Group9/gui2/style.css");
+            scene.getStylesheets().add(style.toURI().toString());
+            root.getStyleClass().add("video-interface");
+            Label helpText = new Label("ladla lda");
+            helpText.getStyleClass().add("help-Text");
+            root.getChildren().add(helpText);
+            stage.setScene(scene);
+            stage.initOwner(gui.getPrimary());
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.showAndWait();
     }
 
     private boolean isFFMPEGInstalled()
