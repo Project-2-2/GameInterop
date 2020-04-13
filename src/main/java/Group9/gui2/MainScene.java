@@ -132,7 +132,7 @@ public class MainScene extends Scene {
     }
     private void build(){
         menu.getChildren().addAll(loadMapButton, reloadButton, reloadMapButton, descriptionButton, toggleZoomButton,
-                renderButton,animationSettings,maxSpeedSetting,helpButton);
+                renderButton,animationSettings, history,maxSpeedSetting,helpButton);
         menuPane.getChildren().add(menu);
         canvasPane.getChildren().add(canvas);
         canvasPane.getChildren().add(canvasAgents);

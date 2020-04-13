@@ -27,8 +27,11 @@ public class MainController implements Runnable {
     private final List<History> history = new LinkedList<>();
 
     private AnimationTimer animator;
+    private final boolean generateHistory;
+
     public MainController(Gui gui, File mapFile,boolean generateHistory){
         this.gui = gui;
+        this.generateHistory = generateHistory;
         game = new Game(Parser.parseFile(mapFile.getAbsolutePath()), new DefaultAgentFactory(), false, 15, new Callback<Game>() {
             @Override
             public void call(Game game) {
@@ -89,16 +92,26 @@ public class MainController implements Runnable {
         animator = new AnimationTimer(){
             @Override
             public void handle(long now){
-                if(game.getWinner()!=null){
-                    gui.activateHistory();
-                }
-                synchronized (history)
+                if(generateHistory)
                 {
-                    if(!history.isEmpty())
-                    {
-                        History entry = getCurrentHistory();
-                        gui.drawMovables(entry.guardContainers, entry.intruderContainers, entry.dynamicObjects);
+                    if(game.getWinner()!=null){
+                        gui.activateHistory();
                     }
+                    synchronized (history)
+                    {
+                        if(!history.isEmpty())
+                        {
+                            History entry = getCurrentHistory();
+                            gui.drawMovables(entry.guardContainers, entry.intruderContainers, entry.dynamicObjects);
+                        }
+                    }
+                }
+                else
+                {
+                    game.query((lock) -> {
+                        gui.drawMovables(new ArrayList<>(game.getGuards()), new ArrayList<>(game.getIntruders()),
+                                new ArrayList<>(game.getGameMap().getDynamicObjects()));
+                    }, true);
                 }
         }};
         animator.start();
