@@ -8,20 +8,24 @@ import Group9.map.dynamic.DynamicObject;
 import Group9.map.dynamic.Pheromone;
 import Group9.map.dynamic.Sound;
 import Group9.map.objects.*;
+import Group9.map.objects.Window;
 import Group9.math.Vector2;
-import Interop.Geometry.Angle;
-import Interop.Geometry.Point;
 import Interop.Percept.Vision.FieldOfView;
 import javafx.animation.AnimationTimer;
 import javafx.beans.value.ChangeListener;
+import javafx.collections.FXCollections;
+import javafx.embed.swing.SwingFXUtils;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.SnapshotParameters;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.control.CheckBox;
+import javafx.scene.control.*;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.Slider;
+import javafx.scene.control.TextArea;
+import javafx.scene.image.WritableImage;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
@@ -33,11 +37,20 @@ import javafx.scene.shape.ArcType;
 import javafx.scene.text.Font;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.FileChooser;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class MainScene extends Scene {
     class Settings{
@@ -86,12 +99,14 @@ public class MainScene extends Scene {
     private boolean hasHistory = false;
     private CheckBox maxSpeed = new CheckBox();
 
+    private final boolean ffmpegInstalled = isFFMPEGInstalled();
+
     //Buttons
     private Label reloadMapButton = new Label("Reload Map");
     private Label button1 = new Label("Toggle Description");
     private Label button2 = new Label("Toggle Agent-Zoom");
     private Label button3 = new Label("Load Map");
-    private Label button4 = new Label("Button 4");
+    private Label button4 = new Label(String.format("Render Video%s", (ffmpegInstalled ? "" : "(ffmpeg unavailable)")));
 
     ///Agent
     private List<MapObject> elements;
@@ -155,6 +170,7 @@ public class MainScene extends Scene {
         button3.setMinSize(GuiSettings.widthMenuFocus,GuiSettings.buttonHeight);
         button4.setMaxSize(GuiSettings.widthMenuFocus,GuiSettings.buttonHeight);
         button4.setMinSize(GuiSettings.widthMenuFocus,GuiSettings.buttonHeight);
+        button4.setDisable(!ffmpegInstalled);
         animationSettings.setMaxSize(GuiSettings.widthMenuFocus,GuiSettings.buttonHeight);
         animationSettings.setMinSize(GuiSettings.widthMenuFocus,GuiSettings.buttonHeight);
         maxSpeedSetting.setMaxSize(GuiSettings.widthMenuFocus,GuiSettings.buttonHeight);
@@ -194,6 +210,7 @@ public class MainScene extends Scene {
         quickSettingsBar.setPadding(new Insets(10));
         quickSettingsBar.setSpacing(5);
         quickSettingsBar.setAlignment(Pos.CENTER);
+        play.setDisable(true);
         stop.setDisable(true);
     }
     private void listener(){
@@ -227,6 +244,14 @@ public class MainScene extends Scene {
             }
         });
         reloadMapButton.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
+            play.setDisable(true);
+            stop.setDisable(true);
+            if(playbackAnimationTimer != null)
+            {
+                playbackAnimationTimer.stop();
+                playbackAnimationTimer = null;
+            }
+            hasHistory = false;
             gui.restartGame();
             gui.getMainController().updateGameSpeed((int) animationSpeedSlider.getValue());
         } );
@@ -245,6 +270,9 @@ public class MainScene extends Scene {
                 gui.restartGame();
             }
         } );
+        button4.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
+            generateVideo();
+        });
         reloadMapButton.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
             rescaleMap();
         });
@@ -353,14 +381,15 @@ public class MainScene extends Scene {
                 this.playbackAnimationTimer = null;
             }
         });
+
     }
     public void activateHistory(){
         hasHistory =true;
-        gui.getMainController().getHistoryViewIndex().get();
         int age = gui.getMainController().getHistoryIndex();
         slider.setMax(age);
         slider.setValue(age);
         slider.setMin(0);
+        play.setDisable(false);
     }
     public void rescale(){
         scale();
@@ -408,6 +437,179 @@ public class MainScene extends Scene {
             }
         }
     }
+
+    private void generateScreenshot(File file)
+    {
+
+        WritableImage writableImage = new WritableImage((int) Math.rint(canvas.getWidth()),
+                (int) Math.rint(canvas.getHeight()));
+        BufferedImage screenshot = new BufferedImage((int) writableImage.getWidth(), (int) writableImage.getHeight(),
+                BufferedImage.TYPE_INT_ARGB);
+        Graphics graphics = screenshot.getGraphics();
+
+        {
+            canvas.snapshot(null, writableImage);
+            graphics.drawImage(SwingFXUtils.fromFXImage(writableImage, null), 0, 0, null);
+        }
+
+        {
+            SnapshotParameters snapshotParameters = new SnapshotParameters();
+            snapshotParameters.setFill(Color.rgb(0, 0, 0, 0));
+            canvasAgents.snapshot(snapshotParameters, writableImage);
+            graphics.drawImage(SwingFXUtils.fromFXImage(writableImage, null), 0, 0, null);
+        }
+
+        graphics.dispose();
+
+        try {
+            ImageIO.write(screenshot, "png", file);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void generateVideo()
+    {
+        if(hasHistory)
+        {
+            AtomicBoolean hasRenderedFrames = new AtomicBoolean(false);
+            VBox root = new VBox();
+            Stage stage = new Stage();
+            Scene scene = new Scene(root, 720, 360);
+            stage.setScene(scene);
+
+            TextArea console = new TextArea();
+            console.setEditable(false);
+
+            ComboBox<String> resolution = new ComboBox<>(FXCollections.observableArrayList(
+                    "1280x720", "1920x1080", "3840x2160"
+            ));
+            resolution.getSelectionModel().select(1);
+
+            Button selectFileLocation = new Button("Select file location");
+            Button renderButton = new Button("Render video...");
+            renderButton.setDisable(true);
+
+            Slider fpsSlider = new Slider(1, 120, 30);
+            fpsSlider.valueProperty().addListener((obs, oldval, newVal) -> fpsSlider.setValue(newVal.intValue()));
+            fpsSlider.setSnapToTicks(true);
+            fpsSlider.setBlockIncrement(1);
+            fpsSlider.setMinorTickCount(5);
+            fpsSlider.setMajorTickUnit(10);
+            fpsSlider.setShowTickLabels(true);
+            fpsSlider.setShowTickMarks(true);
+
+            root.getChildren().addAll(selectFileLocation, resolution, renderButton, fpsSlider, console);
+            AtomicReference<File> output = new AtomicReference<>();
+
+            {
+
+                selectFileLocation.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
+                    FileChooser fileChooser = new FileChooser();
+                    File file = fileChooser.showSaveDialog(stage);
+                    if(file != null)
+                    {
+                        String path = file.getAbsolutePath();
+                        int index = path.lastIndexOf(".");
+                        if(index == -1 || !path.substring(index).equalsIgnoreCase(".mp4"))
+                        {
+                            path += ".mp4";
+                        }
+                        output.set(new File(path));
+                        renderButton.setDisable(false);
+                    }
+                });
+
+            }
+
+            {
+                renderButton.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
+
+                    File tempDirectory = new File(String.format("%s/gameinterop", System.getProperty("java.io.tmpdir")));
+
+                    if(!hasRenderedFrames.get())
+                    {
+                        hasRenderedFrames.set(true);
+
+                        if(tempDirectory.exists()) {
+                            try {
+                                deleteDirectory(tempDirectory);
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                                return;
+                            }
+                        }
+
+                        if(!tempDirectory.mkdir())
+                        {
+                            return;
+                        }
+
+                        for(int i = 0; i <= gui.getMainController().getHistoryIndex(); i++)
+                        {
+                            gui.getMainController().getHistoryViewIndex().set(i);
+                            MainController.History entry = gui.getMainController().getCurrentHistory();
+                            drawMovables(entry.guardContainers, entry.intruderContainers, entry.dynamicObjects);
+                            generateScreenshot(new File(String.format("%s/%d.png", tempDirectory.getAbsolutePath(), i)));
+                        }
+                    }
+
+                    try {
+
+                        final String frameWidth = resolution.getSelectionModel().getSelectedItem().split("x")[0];
+                        Process pr = Runtime.getRuntime().exec(String.format(
+                                "ffmpeg -y -framerate %.2f -start_number 0 -i %s/%%d.png -vf scale=%s:trunc(ow/a/2)*2:flags=lanczos -c:v libx264 -preset slow -crf 21 %s",
+                                fpsSlider.getValue(), tempDirectory.getAbsolutePath(), frameWidth, output.get().getAbsolutePath()));
+
+                        BufferedReader log = new BufferedReader(new InputStreamReader(pr.getErrorStream()));
+                        log.lines().map(line -> line + "\n").forEach(console::appendText);
+
+                        pr.waitFor();
+                        pr.destroy();
+                        log.close();
+
+                        stage.setOnCloseRequest((closeRequest) -> {
+                            System.out.println("delete me");
+                            try {
+                                deleteDirectory(tempDirectory);
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        });
+                    } catch (IOException | InterruptedException e) {
+                        e.printStackTrace();
+                    }
+
+                });
+            }
+
+            stage.initOwner(gui.getPrimary());
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.showAndWait();
+
+        }
+    }
+
+    private boolean isFFMPEGInstalled()
+    {
+        try {
+            Process test = Runtime.getRuntime().exec("ffmpeg");
+            return test.waitFor() == 1;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    private void deleteDirectory(File f) throws IOException {
+        if (f.isDirectory()) {
+            for (File c : f.listFiles())
+            {
+                deleteDirectory(c);
+            }
+        }
+        f.delete();
+    }
+
     public void drawMovables(List<GuardContainer> guards, List<IntruderContainer> intruders, List<DynamicObject<?>> objects){
         GraphicsContext g = canvasAgents.getGraphicsContext2D();
         g.clearRect(0,0,canvasAgents.getWidth(),canvasAgents.getHeight());
