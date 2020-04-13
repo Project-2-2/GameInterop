@@ -12,6 +12,7 @@ import Group9.map.objects.*;
 import Group9.math.Vector2;
 import Interop.Percept.Vision.FieldOfView;
 import javafx.animation.AnimationTimer;
+import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
@@ -52,7 +53,9 @@ import java.io.InputStreamReader;
 import java.nio.IntBuffer;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 
@@ -442,7 +445,7 @@ public class MainScene extends Scene {
         }
     }
 
-    private void generateScreenshot(File file)
+    private void generateScreenshot(MainController.History history, File file)
     {
 
         Function<WritableImage, BufferedImage> convert = (input) -> {
@@ -459,23 +462,39 @@ public class MainScene extends Scene {
             return bufferedImage;
         };
 
-        WritableImage writableImage = new WritableImage((int) Math.rint(canvas.getWidth()),
-                (int) Math.rint(canvas.getHeight()));
-        BufferedImage screenshot = new BufferedImage((int) writableImage.getWidth(), (int) writableImage.getHeight(),
+        BufferedImage screenshot = new BufferedImage((int) canvas.getWidth(), (int) canvas.getHeight(),
                 BufferedImage.TYPE_INT_ARGB);
         Graphics graphics = screenshot.getGraphics();
 
+        AtomicInteger i = new AtomicInteger();
         {
-            canvas.snapshot(null, writableImage);
+            WritableImage writableImage = new WritableImage((int) Math.rint(canvas.getWidth()),
+                    (int) Math.rint(canvas.getHeight()));
+            i.incrementAndGet();
+            Platform.runLater(() -> {
+
+                canvas.snapshot(null, writableImage);
+                i.decrementAndGet();
+            });
+            while (i.get() > 0);
             graphics.drawImage(convert.apply(writableImage), 0, 0, null);
         }
 
         {
-            SnapshotParameters snapshotParameters = new SnapshotParameters();
-            snapshotParameters.setFill(Color.rgb(0, 0, 0, 0));
-            canvasAgents.snapshot(snapshotParameters, writableImage);
+            WritableImage writableImage = new WritableImage((int) Math.rint(canvas.getWidth()),
+                    (int) Math.rint(canvas.getHeight()));
+            i.incrementAndGet();
+            Platform.runLater(() -> {
+                drawMovables(history.guardContainers, history.intruderContainers, history.dynamicObjects);
+                SnapshotParameters snapshotParameters = new SnapshotParameters();
+                snapshotParameters.setFill(Color.rgb(0, 0, 0, 0));
+                canvasAgents.snapshot(snapshotParameters, writableImage);
+                i.decrementAndGet();
+            });
+            while (i.get() > 0);
             graphics.drawImage(convert.apply(writableImage), 0, 0, null);
         }
+
 
         graphics.dispose();
 
@@ -563,39 +582,47 @@ public class MainScene extends Scene {
                             return;
                         }
 
-                        for(int i = 0; i <= gui.getMainController().getHistoryIndex(); i++)
-                        {
-                            gui.getMainController().getHistoryViewIndex().set(i);
-                            MainController.History entry = gui.getMainController().getCurrentHistory();
-                            drawMovables(entry.guardContainers, entry.intruderContainers, entry.dynamicObjects);
-                            generateScreenshot(new File(String.format("%s/%d.png", tempDirectory.getAbsolutePath(), i)));
-                        }
-                    }
+                        Semaphore lock = new Semaphore(1);
+                        Thread thread = new Thread(() -> {
+                                lock.acquireUninterruptibly();
+                            Canvas background = new Canvas(this.canvas.getWidth(), this.canvas.getHeight());
+                            for(int i = 0; i <= gui.getMainController().getHistoryIndex(); i++)
+                            {
+                                gui.getMainController().getHistoryViewIndex().set(i);
+                                MainController.History entry = gui.getMainController().getCurrentHistory();
 
-                    try {
+                                generateScreenshot(entry, new File(String.format("%s/%d.png", tempDirectory.getAbsolutePath(), i)));
+                                console.appendText(String.valueOf((double) i / gui.getMainController().getHistoryIndex()) + "\n");
+                            };
 
-                        final String frameWidth = resolution.getSelectionModel().getSelectedItem().split("x")[0];
-                        Process pr = Runtime.getRuntime().exec(String.format(
-                                "ffmpeg -y -framerate %.2f -start_number 0 -i %s/%%d.png -vf scale=%s:trunc(ow/a/2)*2:flags=lanczos -c:v libx264 -preset slow -crf 21 %s",
-                                fpsSlider.getValue(), tempDirectory.getAbsolutePath(), frameWidth, output.get().getAbsolutePath()));
-
-                        BufferedReader log = new BufferedReader(new InputStreamReader(pr.getErrorStream()));
-                        log.lines().map(line -> line + "\n").forEach(console::appendText);
-
-                        pr.waitFor();
-                        pr.destroy();
-                        log.close();
-
-                        stage.setOnCloseRequest((closeRequest) -> {
-                            System.out.println("delete me");
                             try {
-                                deleteDirectory(tempDirectory);
-                            } catch (IOException e) {
+
+                                final String frameWidth = resolution.getSelectionModel().getSelectedItem().split("x")[0];
+                                Process pr = Runtime.getRuntime().exec(String.format(
+                                        "ffmpeg -y -framerate %.2f -start_number 0 -i %s/%%d.png -vf scale=%s:trunc(ow/a/2)*2:flags=lanczos -c:v libx264 -preset slow -crf 21 %s",
+                                        fpsSlider.getValue(), tempDirectory.getAbsolutePath(), frameWidth, output.get().getAbsolutePath()));
+
+                                BufferedReader log = new BufferedReader(new InputStreamReader(pr.getErrorStream()));
+                                log.lines().map(line -> line + "\n").forEach(console::appendText);
+
+                                pr.waitFor();
+                                pr.destroy();
+                                log.close();
+
+                                stage.setOnCloseRequest((closeRequest) -> {
+                                    try {
+                                        deleteDirectory(tempDirectory);
+                                    } catch (IOException e) {
+                                        e.printStackTrace();
+                                    }
+                                });
+                            } catch (IOException | InterruptedException e) {
                                 e.printStackTrace();
                             }
+
+                            lock.release();
                         });
-                    } catch (IOException | InterruptedException e) {
-                        e.printStackTrace();
+                        thread.start();
                     }
 
                 });
