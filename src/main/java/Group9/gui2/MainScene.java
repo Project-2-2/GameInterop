@@ -7,24 +7,24 @@ import Group9.map.GameMap;
 import Group9.map.dynamic.DynamicObject;
 import Group9.map.dynamic.Pheromone;
 import Group9.map.dynamic.Sound;
-import Group9.map.objects.*;
 import Group9.map.objects.Window;
+import Group9.map.objects.*;
 import Group9.math.Vector2;
 import Interop.Percept.Vision.FieldOfView;
 import javafx.animation.AnimationTimer;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
-import javafx.embed.swing.SwingFXUtils;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.control.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
+import javafx.scene.control.*;
+import javafx.scene.image.PixelReader;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -51,6 +51,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Function;
 
 public class MainScene extends Scene {
     class Settings{
@@ -441,6 +442,20 @@ public class MainScene extends Scene {
     private void generateScreenshot(File file)
     {
 
+        Function<WritableImage, BufferedImage> convert = (input) -> {
+            BufferedImage bufferedImage = new BufferedImage((int) Math.rint(input.getWidth()), (int) Math.rint(input.getHeight()),
+                    BufferedImage.TYPE_INT_ARGB);
+            PixelReader pixelReader = input.getPixelReader();
+
+            for (int x = 0; x < input.getWidth(); x++) {
+                for (int y = 0; y < input.getHeight(); y++) {
+                    bufferedImage.setRGB(x, y, pixelReader.getArgb(x, y));
+                }
+            }
+
+            return bufferedImage;
+        };
+
         WritableImage writableImage = new WritableImage((int) Math.rint(canvas.getWidth()),
                 (int) Math.rint(canvas.getHeight()));
         BufferedImage screenshot = new BufferedImage((int) writableImage.getWidth(), (int) writableImage.getHeight(),
@@ -449,14 +464,14 @@ public class MainScene extends Scene {
 
         {
             canvas.snapshot(null, writableImage);
-            graphics.drawImage(SwingFXUtils.fromFXImage(writableImage, null), 0, 0, null);
+            graphics.drawImage(convert.apply(writableImage), 0, 0, null);
         }
 
         {
             SnapshotParameters snapshotParameters = new SnapshotParameters();
             snapshotParameters.setFill(Color.rgb(0, 0, 0, 0));
             canvasAgents.snapshot(snapshotParameters, writableImage);
-            graphics.drawImage(SwingFXUtils.fromFXImage(writableImage, null), 0, 0, null);
+            graphics.drawImage(convert.apply(writableImage), 0, 0, null);
         }
 
         graphics.dispose();
