@@ -24,8 +24,10 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.*;
+import javafx.scene.image.PixelFormat;
 import javafx.scene.image.PixelReader;
 import javafx.scene.image.WritableImage;
+import javafx.scene.image.WritablePixelFormat;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
@@ -47,6 +49,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.IntBuffer;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -445,13 +448,13 @@ public class MainScene extends Scene {
         Function<WritableImage, BufferedImage> convert = (input) -> {
             BufferedImage bufferedImage = new BufferedImage((int) Math.rint(input.getWidth()), (int) Math.rint(input.getHeight()),
                     BufferedImage.TYPE_INT_ARGB);
-            PixelReader pixelReader = input.getPixelReader();
-
-            for (int x = 0; x < input.getWidth(); x++) {
-                for (int y = 0; y < input.getHeight(); y++) {
-                    bufferedImage.setRGB(x, y, pixelReader.getArgb(x, y));
-                }
-            }
+            IntBuffer buffer = IntBuffer.allocate(bufferedImage.getWidth() * bufferedImage.getHeight());
+            // copy...
+            input.getPixelReader().getPixels(0, 0, bufferedImage.getWidth(), bufferedImage.getHeight(), WritablePixelFormat.getIntArgbInstance(),
+                    buffer, bufferedImage.getWidth());
+            // ...paste
+            bufferedImage.setRGB(0, 0, bufferedImage.getWidth(), bufferedImage.getHeight(), buffer.array(),
+                    0, bufferedImage.getWidth());
 
             return bufferedImage;
         };
