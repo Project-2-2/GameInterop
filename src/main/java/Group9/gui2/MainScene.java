@@ -516,7 +516,7 @@ public class MainScene extends Scene {
 
     private void generateVideo()
     {
-        if(!hasHistory)
+        if(hasHistory)
         {
             AtomicBoolean hasRenderedFrames = new AtomicBoolean(false);
             VBox root = new VBox();
