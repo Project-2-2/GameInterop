@@ -281,6 +281,7 @@ public class MainScene extends Scene {
             if(file != null){
                 gui.setMapFile(file);
                 gui.restartGame(history.isSelected());
+                updateButtons();
             }
         } );
         renderButton.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
@@ -296,6 +297,7 @@ public class MainScene extends Scene {
             }
             hasHistory = false;
             gui.restartGame(history.isSelected());
+            updateButtons();
             if(maxSpeed.isSelected()){
                 gui.getMainController().updateGameSpeed(-1);
             }else{
@@ -411,6 +413,13 @@ public class MainScene extends Scene {
             }
         });
 
+    }
+    public void updateButtons()
+    {
+        this.play.setDisable(!history.isSelected());
+        this.stop.setDisable(!history.isSelected());
+        this.slider.setDisable(!history.isSelected());
+        this.renderButton.setDisable(!history.isSelected());
     }
     public void activateHistory(){
         hasHistory =true;
