@@ -12,7 +12,7 @@ import java.util.List;
 
 public class Gui extends Application {
     private File mapFile = new File("./src/main/java/Group9/map/maps/test_2.map");
-    private MainController mainController = new MainController(this,mapFile);
+    private MainController mainController = new MainController(this,mapFile,true);
     private MainScene scene = new MainScene(new StackPane(), mainController.getGame().getGameMap(),this);
     private Stage primary = new Stage();
 
@@ -31,7 +31,12 @@ public class Gui extends Application {
         scene.rescale();
         Thread thread = new Thread(mainController);
         thread.start();
+        primaryStage.setOnCloseRequest(event -> {
+            System.out.println("See Ya");
+            mainController.kill();
+        });
     }
+
 
     public void drawMovables(List<GuardContainer> guards, List<IntruderContainer> intruders, List<DynamicObject<?>> objects){
         scene.drawMovables(guards, intruders, objects);
@@ -48,9 +53,9 @@ public class Gui extends Application {
     public MainController getMainController() {
         return mainController;
     }
-    public void restartGame(){
+    public void restartGame(boolean generateHistory){
         mainController.kill();
-        mainController = new MainController(this,mapFile);
+        mainController = new MainController(this,mapFile, generateHistory);
         Thread thread = new Thread(mainController);
         thread.start();
     }
