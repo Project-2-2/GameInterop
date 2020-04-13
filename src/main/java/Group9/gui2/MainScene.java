@@ -516,12 +516,14 @@ public class MainScene extends Scene {
 
     private void generateVideo()
     {
-        if(hasHistory)
+        if(!hasHistory)
         {
             AtomicBoolean hasRenderedFrames = new AtomicBoolean(false);
             VBox root = new VBox();
             Stage stage = new Stage();
             Scene scene = new Scene(root, 720, 360);
+            StackPane progressBarHolder = new StackPane();
+            ProgressBar progressBar = new ProgressBar();
             File style = new File("./src/main/java/Group9/gui2/style.css");
             scene.getStylesheets().add(style.toURI().toString());
             stage.setScene(scene);
@@ -546,14 +548,19 @@ public class MainScene extends Scene {
             fpsSlider.setMajorTickUnit(10);
             fpsSlider.setShowTickLabels(true);
             fpsSlider.setShowTickMarks(true);
-            root.getChildren().addAll(selectFileLocation, resolution, fpsSlider, renderButton, console);
+            progressBarHolder.getChildren().add(progressBar);
+            root.getChildren().addAll(selectFileLocation, resolution, fpsSlider, renderButton,progressBarHolder, console);
             AtomicReference<File> output = new AtomicReference<>();
             //Styling
+            progressBarHolder.setMinWidth(360);
+            progressBarHolder.setAlignment(Pos.CENTER);
             fpsSlider.getStyleClass().add("sDark");
+            progressBar.getStyleClass().add("progress-bar-style");
             root.getStyleClass().add("video-interface");
             resolution.getStyleClass().add("drop-box");
             selectFileLocation.getStyleClass().add("safe-button");
             renderButton.getStyleClass().add("safe-button-2");
+            progressBar.setProgress(0.5);
 
             {
 
