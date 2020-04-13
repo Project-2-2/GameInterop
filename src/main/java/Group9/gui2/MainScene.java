@@ -25,15 +25,12 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.*;
-import javafx.scene.image.PixelFormat;
-import javafx.scene.image.PixelReader;
 import javafx.scene.image.WritableImage;
 import javafx.scene.image.WritablePixelFormat;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -54,7 +51,6 @@ import java.io.InputStreamReader;
 import java.nio.IntBuffer;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
@@ -110,13 +106,13 @@ public class MainScene extends Scene {
     private final boolean ffmpegInstalled = isFFMPEGInstalled();
 
     //Buttons
-    private Label reloadMapButton = new Label("Reload Map");
-    private Label button1 = new Label("Toggle Description");
-    private Label button2 = new Label("Toggle Agent-Zoom");
-    private Label button3 = new Label("Load Map");
-    private Label button5 = new Label("Reload Game");
+    private Label reloadMapButton = new Label("Scale Map");
+    private Label descriptionButton = new Label("Toggle Description");
+    private Label toggleZoomButton = new Label("Toggle Agent-Zoom");
+    private Label loadMapButton = new Label("Load Map");
+    private Label renderButton = new Label(String.format("Render Video%s", (ffmpegInstalled ? "" : " (ffmpeg unavailable)")));
+    private Label reloadButton = new Label("Reload Game");
     private Label helpButton = new Label("Help");
-    private Label button4 = new Label(String.format("Render Video%s", (ffmpegInstalled ? "" : "(ffmpeg unavailable)")));
 
     ///Agent
     private List<MapObject> elements;
@@ -132,7 +128,8 @@ public class MainScene extends Scene {
         listener();
     }
     private void build(){
-        menu.getChildren().addAll(reloadMapButton,button1,button2,button3,button5,button4,animationSettings,maxSpeedSetting,helpButton);
+        menu.getChildren().addAll(loadMapButton, reloadButton, reloadMapButton, descriptionButton, toggleZoomButton,
+                renderButton,animationSettings,maxSpeedSetting,helpButton);
         menuPane.getChildren().add(menu);
         canvasPane.getChildren().add(canvas);
         canvasPane.getChildren().add(canvasAgents);
@@ -172,19 +169,19 @@ public class MainScene extends Scene {
         //Buttons
         reloadMapButton.setMaxSize(GuiSettings.widthMenuFocus,GuiSettings.buttonHeight);
         reloadMapButton.setMinSize(GuiSettings.widthMenuFocus,GuiSettings.buttonHeight);
-        button1.setMaxSize(GuiSettings.widthMenuFocus,GuiSettings.buttonHeight);
-        button1.setMinSize(GuiSettings.widthMenuFocus,GuiSettings.buttonHeight);
-        button2.setMaxSize(GuiSettings.widthMenuFocus,GuiSettings.buttonHeight);
-        button2.setMinSize(GuiSettings.widthMenuFocus,GuiSettings.buttonHeight);
-        button3.setMaxSize(GuiSettings.widthMenuFocus,GuiSettings.buttonHeight);
-        button3.setMinSize(GuiSettings.widthMenuFocus,GuiSettings.buttonHeight);
-        button4.setMaxSize(GuiSettings.widthMenuFocus,GuiSettings.buttonHeight);
-        button4.setMinSize(GuiSettings.widthMenuFocus,GuiSettings.buttonHeight);
-        button5.setMaxSize(GuiSettings.widthMenuFocus,GuiSettings.buttonHeight);
-        button5.setMinSize(GuiSettings.widthMenuFocus,GuiSettings.buttonHeight);
+        descriptionButton.setMaxSize(GuiSettings.widthMenuFocus,GuiSettings.buttonHeight);
+        descriptionButton.setMinSize(GuiSettings.widthMenuFocus,GuiSettings.buttonHeight);
+        toggleZoomButton.setMaxSize(GuiSettings.widthMenuFocus,GuiSettings.buttonHeight);
+        toggleZoomButton.setMinSize(GuiSettings.widthMenuFocus,GuiSettings.buttonHeight);
+        loadMapButton.setMaxSize(GuiSettings.widthMenuFocus,GuiSettings.buttonHeight);
+        loadMapButton.setMinSize(GuiSettings.widthMenuFocus,GuiSettings.buttonHeight);
+        renderButton.setMaxSize(GuiSettings.widthMenuFocus,GuiSettings.buttonHeight);
+        renderButton.setMinSize(GuiSettings.widthMenuFocus,GuiSettings.buttonHeight);
+        reloadButton.setMaxSize(GuiSettings.widthMenuFocus,GuiSettings.buttonHeight);
+        reloadButton.setMinSize(GuiSettings.widthMenuFocus,GuiSettings.buttonHeight);
         helpButton.setMaxSize(GuiSettings.widthMenuFocus,GuiSettings.buttonHeight);
         helpButton.setMinSize(GuiSettings.widthMenuFocus,GuiSettings.buttonHeight);
-        button4.setDisable(!ffmpegInstalled);
+        renderButton.setDisable(!ffmpegInstalled);
         animationSettings.setMaxSize(GuiSettings.widthMenuFocus,GuiSettings.buttonHeight);
         animationSettings.setMinSize(GuiSettings.widthMenuFocus,GuiSettings.buttonHeight);
         maxSpeedSetting.setMaxSize(GuiSettings.widthMenuFocus,GuiSettings.buttonHeight);
@@ -205,11 +202,11 @@ public class MainScene extends Scene {
         menu.setVisible(false);
         menuPane.setMouseTransparent(true);
         menuBackgroundLabel.getStyleClass().add("menu-background-label");
-        button1.getStyleClass().add("nav-button");
-        button2.getStyleClass().add("nav-button");
-        button3.getStyleClass().add("nav-button");
-        button4.getStyleClass().add("nav-button");
-        button5.getStyleClass().add("nav-button");
+        descriptionButton.getStyleClass().add("nav-button");
+        toggleZoomButton.getStyleClass().add("nav-button");
+        loadMapButton.getStyleClass().add("nav-button");
+        renderButton.getStyleClass().add("nav-button");
+        reloadButton.getStyleClass().add("nav-button");
         helpButton.getStyleClass().add("nav-button");
         play.getStyleClass().add("play-button");
         stop.getStyleClass().add("stop-button");
@@ -262,25 +259,25 @@ public class MainScene extends Scene {
         reloadMapButton.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
             rescaleMap();
         } );
-        button1.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
+        descriptionButton.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
             settings.toggleText();
             draw();
         } );
-        button2.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
+        toggleZoomButton.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
             settings.toggleAgentScale();
             draw();
         } );
-        button3.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
+        loadMapButton.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
             File file = fileChooser.showOpenDialog(gui.getPrimary());
             if(file != null){
                 gui.setMapFile(file);
                 gui.restartGame();
             }
         } );
-        button4.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
+        renderButton.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
             generateVideo();
         });
-        button5.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
+        reloadButton.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
             play.setDisable(true);
             stop.setDisable(true);
             if(playbackAnimationTimer != null)
