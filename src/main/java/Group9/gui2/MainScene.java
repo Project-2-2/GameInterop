@@ -454,7 +454,7 @@ public class MainScene extends Scene {
         }
     }
 
-    private void generateScreenshot(MainController.History history, File file)
+    private void generateScreenshot(AtomicBoolean rendering, MainController.History history, File file)
     {
 
         Function<WritableImage, BufferedImage> convert = (input) -> {
@@ -508,7 +508,10 @@ public class MainScene extends Scene {
         graphics.dispose();
 
         try {
-            ImageIO.write(screenshot, "png", file);
+            if(rendering.get())
+            {
+                ImageIO.write(screenshot, "png", file);
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -516,7 +519,7 @@ public class MainScene extends Scene {
 
     private void generateVideo()
     {
-        if(!hasHistory)
+        if(hasHistory)
         {
             AtomicBoolean hasRenderedFrames = new AtomicBoolean(false);
             VBox root = new VBox();
@@ -575,10 +578,34 @@ public class MainScene extends Scene {
 
             }
 
+            AtomicBoolean rendering = new AtomicBoolean(true);
             {
                 renderButton.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
 
                     File tempDirectory = new File(String.format("%s/gameinterop", System.getProperty("java.io.tmpdir")));
+
+                    Thread renderVideoThread = new Thread(() -> {
+                        try {
+                            renderButton.setDisable(true);
+
+                            final String frameWidth = resolution.getSelectionModel().getSelectedItem().split("x")[0];
+                            Process pr = Runtime.getRuntime().exec(String.format(
+                                    "ffmpeg -y -framerate %.2f -start_number 0 -i %s/%%d.png -vf scale=%s:trunc(ow/a/2)*2:flags=lanczos -c:v libx264 -preset slow -crf 21 %s",
+                                    fpsSlider.getValue(), tempDirectory.getAbsolutePath(), frameWidth, output.get().getAbsolutePath()));
+
+                            BufferedReader log = new BufferedReader(new InputStreamReader(pr.getErrorStream()));
+                            log.lines().map(line -> line + "\n").forEach(console::appendText);
+
+                            pr.waitFor();
+                            pr.destroy();
+                            log.close();
+
+                            renderButton.setDisable(false);
+
+                        } catch (IOException | InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    });
 
                     if(!hasRenderedFrames.get())
                     {
@@ -598,48 +625,34 @@ public class MainScene extends Scene {
                             return;
                         }
 
-                        Semaphore lock = new Semaphore(1);
-                        Thread thread = new Thread(() -> {
-                                lock.acquireUninterruptibly();
-                            Canvas background = new Canvas(this.canvas.getWidth(), this.canvas.getHeight());
-                            for(int i = 0; i <= gui.getMainController().getHistoryIndex(); i++)
+
+                        Thread generateFramesThread = new Thread(() -> {
+                            renderButton.setDisable(true);
+                            for(int i = 0; i <= gui.getMainController().getHistoryIndex() && rendering.get(); i++)
                             {
                                 gui.getMainController().getHistoryViewIndex().set(i);
                                 MainController.History entry = gui.getMainController().getCurrentHistory();
 
-                                generateScreenshot(entry, new File(String.format("%s/%d.png", tempDirectory.getAbsolutePath(), i)));
-                                console.appendText(String.valueOf((double) i / gui.getMainController().getHistoryIndex()) + "\n");
+                                generateScreenshot(rendering, entry, new File(String.format("%s/%d.png", tempDirectory.getAbsolutePath(), i)));
+                                //(i / gui.getMainController().getHistoryIndex()) * 0.9
                             };
+                            renderVideoThread.start();
 
-                            try {
-
-                                final String frameWidth = resolution.getSelectionModel().getSelectedItem().split("x")[0];
-                                Process pr = Runtime.getRuntime().exec(String.format(
-                                        "ffmpeg -y -framerate %.2f -start_number 0 -i %s/%%d.png -vf scale=%s:trunc(ow/a/2)*2:flags=lanczos -c:v libx264 -preset slow -crf 21 %s",
-                                        fpsSlider.getValue(), tempDirectory.getAbsolutePath(), frameWidth, output.get().getAbsolutePath()));
-
-                                BufferedReader log = new BufferedReader(new InputStreamReader(pr.getErrorStream()));
-                                log.lines().map(line -> line + "\n").forEach(console::appendText);
-
-                                pr.waitFor();
-                                pr.destroy();
-                                log.close();
-
-                                stage.setOnCloseRequest((closeRequest) -> {
-                                    try {
-                                        deleteDirectory(tempDirectory);
-                                    } catch (IOException e) {
-                                        e.printStackTrace();
-                                    }
-                                });
-                            } catch (IOException | InterruptedException e) {
-                                e.printStackTrace();
-                            }
-
-                            lock.release();
                         });
-                        thread.start();
+                        generateFramesThread.start();
+
+                    } else {
+                        renderVideoThread.start();
                     }
+
+                    stage.setOnCloseRequest((closeRequest) -> {
+                        try {
+                            rendering.set(false);
+                            deleteDirectory(tempDirectory);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    });
 
                 });
             }
