@@ -526,7 +526,7 @@ public class MainScene extends Scene {
             Stage stage = new Stage();
             Scene scene = new Scene(root, 720, 360);
             StackPane progressBarHolder = new StackPane();
-            ProgressBar progressBar = new ProgressBar();
+            ProgressBar progressBar = new ProgressBar(0);
             File style = new File("./src/main/java/Group9/gui2/style.css");
             scene.getStylesheets().add(style.toURI().toString());
             stage.setScene(scene);
@@ -563,7 +563,6 @@ public class MainScene extends Scene {
             resolution.getStyleClass().add("drop-box");
             selectFileLocation.getStyleClass().add("safe-button");
             renderButton.getStyleClass().add("safe-button-2");
-            progressBar.setProgress(0.5);
 
             {
 
@@ -594,6 +593,7 @@ public class MainScene extends Scene {
                     Thread renderVideoThread = new Thread(() -> {
                         try {
                             renderButton.setDisable(true);
+                            progressBar.setProgress(0.92);
 
                             final String frameWidth = resolution.getSelectionModel().getSelectedItem().split("x")[0];
                             Process pr = Runtime.getRuntime().exec(String.format(
@@ -606,6 +606,8 @@ public class MainScene extends Scene {
                             pr.waitFor();
                             pr.destroy();
                             log.close();
+
+                            progressBar.setProgress(1);
 
                             renderButton.setDisable(false);
 
@@ -641,7 +643,7 @@ public class MainScene extends Scene {
                                 MainController.History entry = gui.getMainController().getCurrentHistory();
 
                                 generateScreenshot(rendering, entry, new File(String.format("%s/%d.png", tempDirectory.getAbsolutePath(), i)));
-                                //(i / gui.getMainController().getHistoryIndex()) * 0.9
+                                progressBar.setProgress((i / (double) gui.getMainController().getHistoryIndex()) * 0.9D);
                             };
                             renderVideoThread.start();
 
