@@ -132,7 +132,8 @@ public class MainScene extends Scene {
     }
     private void build(){
         menu.getChildren().addAll(loadMapButton, reloadButton, reloadMapButton, descriptionButton, toggleZoomButton,
-                renderButton,animationSettings, history,maxSpeedSetting,helpButton);
+                renderButton,animationSettings, historyPane,maxSpeedSetting,helpButton);
+        historyPane.getChildren().addAll(historyLabel,history);
         menuPane.getChildren().add(menu);
         canvasPane.getChildren().add(canvas);
         canvasPane.getChildren().add(canvasAgents);
@@ -295,7 +296,11 @@ public class MainScene extends Scene {
             }
             hasHistory = false;
             gui.restartGame(history.isSelected());
-            gui.getMainController().updateGameSpeed((int) animationSpeedSlider.getValue());
+            if(maxSpeed.isSelected()){
+                gui.getMainController().updateGameSpeed(-1);
+            }else{
+                gui.getMainController().updateGameSpeed((int) animationSpeedSlider.getValue());
+            }
         });
         helpButton.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
             openHelp();
