@@ -27,25 +27,27 @@ public class MainController implements Runnable {
     private final List<History> history = new LinkedList<>();
 
     private AnimationTimer animator;
-    public MainController(Gui gui, File mapFile){
+    public MainController(Gui gui, File mapFile,boolean generateHistory){
         this.gui = gui;
         game = new Game(Parser.parseFile(mapFile.getAbsolutePath()), new DefaultAgentFactory(), false, 15, new Callback<Game>() {
             @Override
             public void call(Game game) {
-                synchronized (history)
-                {
-                    historyIndex++;
-                    History entry = new History();
-                    history.add(historyIndex, entry);
+                if(generateHistory){
+                    synchronized (history)
+                    {
+                        historyIndex++;
+                        History entry = new History();
+                        history.add(historyIndex, entry);
 
-                    entry.guardContainers = game.getGuards().stream().map(e -> e.clone(game)).collect(Collectors.toList());
-                    entry.intruderContainers = game.getIntruders().stream().map(e -> e.clone(game)).collect(Collectors.toList());
+                        entry.guardContainers = game.getGuards().stream().map(e -> e.clone(game)).collect(Collectors.toList());
+                        entry.intruderContainers = game.getIntruders().stream().map(e -> e.clone(game)).collect(Collectors.toList());
 
 
-                    entry.dynamicObjects = game.getGameMap().getDynamicObjects().stream()
-                            .map(DynamicObject::clone)
-                            .collect(Collectors.toList());
+                        entry.dynamicObjects = game.getGameMap().getDynamicObjects().stream()
+                                .map(DynamicObject::clone)
+                                .collect(Collectors.toList());
 
+                    }
                 }
             }
         });

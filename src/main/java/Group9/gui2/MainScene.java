@@ -101,6 +101,9 @@ public class MainScene extends Scene {
     private Label maxSpeedLabel = new Label("Maximum Speed");
     private Label animationLabel = new Label("Speed");
     private Label animationSliderInfo = new Label("15");
+    private HBox historyPane = new HBox();
+    private Label historyLabel = new Label("Safe History");
+    private CheckBox history = new CheckBox();
     private final GameMap map;
     private Gui gui;
     private FileChooser fileChooser = new FileChooser();
@@ -132,7 +135,8 @@ public class MainScene extends Scene {
         listener();
     }
     private void build(){
-        menu.getChildren().addAll(reloadMapButton,button1,button2,button3,button5,button4,animationSettings,maxSpeedSetting,helpButton);
+        menu.getChildren().addAll(reloadMapButton,button1,button2,button3,button5,button4,animationSettings,maxSpeedSetting, historyPane,helpButton);
+        historyPane.getChildren().addAll(historyLabel,history);
         menuPane.getChildren().add(menu);
         canvasPane.getChildren().add(canvas);
         canvasPane.getChildren().add(canvasAgents);
@@ -187,6 +191,8 @@ public class MainScene extends Scene {
         button4.setDisable(!ffmpegInstalled);
         animationSettings.setMaxSize(GuiSettings.widthMenuFocus,GuiSettings.buttonHeight);
         animationSettings.setMinSize(GuiSettings.widthMenuFocus,GuiSettings.buttonHeight);
+        historyPane.setMaxSize(GuiSettings.widthMenuFocus,GuiSettings.buttonHeight);
+        historyPane.setMinSize(GuiSettings.widthMenuFocus,GuiSettings.buttonHeight);
         maxSpeedSetting.setMaxSize(GuiSettings.widthMenuFocus,GuiSettings.buttonHeight);
         maxSpeedSetting.setMinSize(GuiSettings.widthMenuFocus,GuiSettings.buttonHeight);
         slider.setPrefWidth(800);
@@ -216,9 +222,11 @@ public class MainScene extends Scene {
         slider.getStyleClass().add("sDark");
         animationSpeedSlider.getStyleClass().add("sLight");
         animationSettings.getStyleClass().add("animation-slider-pane");
+        historyPane.getStyleClass().add("animation-slider-pane");
         playContainer.getStyleClass().add("button-container");
         stopContainer.getStyleClass().add("button-container");
         animationLabel.getStyleClass().add("animation-label");
+        historyLabel.getStyleClass().add("animation-label");
         animationSliderInfo.getStyleClass().add("animation-label");
         maxSpeedSetting.getStyleClass().add("animation-slider-pane");
         maxSpeedLabel.getStyleClass().add("animation-label");
@@ -226,6 +234,7 @@ public class MainScene extends Scene {
         quickSettingsBar.setPadding(new Insets(10));
         quickSettingsBar.setSpacing(5);
         quickSettingsBar.setAlignment(Pos.CENTER);
+        history.setSelected(true);
         play.setDisable(true);
         stop.setDisable(true);
     }
@@ -274,7 +283,7 @@ public class MainScene extends Scene {
             File file = fileChooser.showOpenDialog(gui.getPrimary());
             if(file != null){
                 gui.setMapFile(file);
-                gui.restartGame();
+                gui.restartGame(history.isSelected());
             }
         } );
         button4.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
@@ -289,7 +298,7 @@ public class MainScene extends Scene {
                 playbackAnimationTimer = null;
             }
             hasHistory = false;
-            gui.restartGame();
+            gui.restartGame(history.isSelected());
             gui.getMainController().updateGameSpeed((int) animationSpeedSlider.getValue());
         });
         helpButton.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
