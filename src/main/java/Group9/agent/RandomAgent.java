@@ -18,13 +18,12 @@ public class RandomAgent implements Guard {
     @Override
     public GuardAction getAction(GuardPercepts percepts) {
 
-        if(false && Math.random() < 0.25)
-        {
-            return new DropPheromone(SmellPerceptType.values()[(int) (Math.random() * SmellPerceptType.values().length)]);
-        }
-
         if(!percepts.wasLastActionExecuted())
         {
+            if(Math.random() < 0.1)
+            {
+                return new DropPheromone(SmellPerceptType.values()[(int) (Math.random() * SmellPerceptType.values().length)]);
+            }
             return new Rotate(Angle.fromRadians(percepts.getScenarioGuardPercepts().getScenarioPercepts().getMaxRotationAngle().getRadians() * Game._RANDOM.nextDouble()));
         }
         else

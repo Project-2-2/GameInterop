@@ -3,7 +3,7 @@ package Group9.map.dynamic;
 import Group9.math.Vector2;
 import Group9.tree.PointContainer;
 
-public class DynamicObject<T> extends PointContainer.Circle {
+public abstract class DynamicObject<T> extends PointContainer.Circle implements Cloneable {
 
     private T source;
     private int lifetime;
@@ -38,4 +38,6 @@ public class DynamicObject<T> extends PointContainer.Circle {
         this.lifetime = lifetime;
     }
 
+    @Override
+    public abstract DynamicObject<T> clone();
 }

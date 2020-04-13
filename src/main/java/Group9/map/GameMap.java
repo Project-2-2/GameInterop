@@ -31,7 +31,7 @@ public class GameMap {
     private QuadTree<MapObject> quadTree;
     private List<MapObject> mapObjects;
 
-    private List<DynamicObject> dynamicObjects = new ArrayList<>();
+    private List<DynamicObject<?>> dynamicObjects = new ArrayList<>();
 
     private Game game;
 
@@ -222,7 +222,7 @@ public class GameMap {
         return this.mapObjects;
     }
 
-    public List<DynamicObject> getDynamicObjects() {
+    public List<DynamicObject<?>> getDynamicObjects() {
         return dynamicObjects;
     }
 
