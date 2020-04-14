@@ -1,12 +1,11 @@
 package Group9.agent.factories;
 
-import Group9.agent.RandomAgent;
+import Group9.agent.deepspace.DeepSpace;
 import Group9.agent.RandomIntruderAgent;
 import Interop.Agent.Guard;
 import Interop.Agent.Intruder;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -32,8 +31,9 @@ public class DefaultAgentFactory implements IAgentFactory {
         List<Guard> guards = new ArrayList<>();
         for(int i = 0; i < number; i++)
         {
-            guards.add(new RandomAgent());
-            //guards.add(new DeepSpace());
+            //guards.add(new RandomAgent());
+//            guards.add(new RandomAgent());
+            guards.add(new DeepSpace());
         }
         return guards;
     }
