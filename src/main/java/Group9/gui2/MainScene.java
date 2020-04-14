@@ -753,7 +753,7 @@ public class MainScene extends Scene {
         }
 
         try {
-            new ProcessBuilder("ffmpeg").start().waitFor();
+            new ProcessBuilder("cmd.exe /c ffmpeg").start().waitFor();
             this.ffmpegWindows = true;
         } catch (Exception e) {
             this.ffmpegWindows = false;
