@@ -1,5 +1,6 @@
 package Group9.agent.container;
 
+import Group9.Game;
 import Group9.math.Vector2;
 import Interop.Agent.Intruder;
 import Interop.Percept.Vision.FieldOfView;
@@ -33,4 +34,16 @@ public class IntruderContainer extends AgentContainer<Intruder> {
         this.captured = captured;
     }
 
+    @Override
+    public IntruderContainer clone(Game game) {
+        IntruderContainer cloned = new IntruderContainer(getAgent(), getPosition().clone(), getDirection().clone(),
+                getFOV(game.getGameMap().getEffectAreas(this)));
+        cloned.setZoneCounter(getZoneCounter());
+        cloned.setCaptured(isCaptured());
+        for(Cooldown cooldown : Cooldown.values())
+        {
+            cloned.addCooldown(cooldown, this.getCooldown(cooldown));
+        }
+        return cloned;
+    }
 }

@@ -117,7 +117,7 @@ public class Parser {
                             builder.sprintCooldown(Integer.parseInt(data[0]));
                         } break;
 
-                        case "pheremoncooldown": {
+                        case "pheromonecooldown": {
                             builder.pheromoneCooldown(Integer.parseInt(data[0]));
                         } break;
 

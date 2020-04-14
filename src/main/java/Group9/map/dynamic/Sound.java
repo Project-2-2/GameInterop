@@ -16,4 +16,8 @@ public class Sound extends DynamicObject<AgentContainer<?>> {
         return type;
     }
 
+    @Override
+    public Sound clone() {
+        return new Sound(type, getSource(), getRadius(), getLifetime());
+    }
 }
