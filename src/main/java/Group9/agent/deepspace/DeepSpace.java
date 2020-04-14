@@ -67,6 +67,8 @@ public class DeepSpace implements Guard {
             curState = curState.getStateHandlerClass().getNextState();
         } while (actionToDo instanceof Inaction || actionToDo == null);
 
+        lastAction = actionToDo;
+
         return actionToDo;
     }
 
