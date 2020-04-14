@@ -11,6 +11,7 @@ import Interop.Geometry.Angle;
 import Interop.Geometry.Distance;
 import Interop.Percept.GuardPercepts;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -24,8 +25,6 @@ public class DeepSpace implements Guard {
     // by checking for collisions a long a straight path between the two vertices. might be expensive to run, and should
     // simply be but on a different thread, so it can be done while other agents perform their moves.
 
-    private StateType state = StateType.INITIAL;
-
     private Vector2 position = new Vector2(0, 0);
     private Vector2 direction = new Vector2(0, 1).normalise();
 
@@ -36,8 +35,20 @@ public class DeepSpace implements Guard {
     private StateType curState;
     private GuardAction lastAction = null;
 
+    private final EnumMap<StateType, StateHandler> stateHandlers;
+
     public DeepSpace() {
         curState = StateType.INITIAL;
+        stateHandlers = new EnumMap<>(StateType.class);
+
+        // Maps 'StateType' to 'instance of StateType state handler class'
+        EnumSet.allOf(StateType.class).forEach(t -> {
+            try {
+                stateHandlers.put(t, t.getStateHandlerClass().getConstructor().newInstance());
+            } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException | InstantiationException e) {
+                e.printStackTrace();
+            }
+        });
     }
 
     @Override
@@ -63,8 +74,8 @@ public class DeepSpace implements Guard {
         assert curState != null : "Current state is null. Not initialized?";
 
         do {
-            actionToDo = curState.getStateHandlerClass().execute(percepts, this);
-            curState = curState.getStateHandlerClass().getNextState();
+            actionToDo = stateHandlers.get(curState).execute(percepts, this);
+            curState = stateHandlers.get(curState).getNextState();
         } while (actionToDo instanceof Inaction || actionToDo == null);
 
         lastAction = actionToDo;
