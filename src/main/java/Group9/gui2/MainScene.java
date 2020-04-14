@@ -49,6 +49,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.IntBuffer;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -106,6 +107,8 @@ public class MainScene extends Scene {
     private boolean hasHistory = false;
     private CheckBox maxSpeed = new CheckBox();
 
+    private boolean ffmpegWindows;
+    private boolean ffmpegLinux;
     private final boolean ffmpegInstalled = isFFMPEGInstalled();
 
     //Buttons
@@ -618,16 +621,32 @@ public class MainScene extends Scene {
                             progressBar.setProgress(0.92);
 
                             final String frameWidth = resolution.getSelectionModel().getSelectedItem().split("x")[0];
-                            Process pr = Runtime.getRuntime().exec(String.format(
-                                    "ffmpeg -y -framerate %.2f -start_number 0 -i %s/%%d.png -vf scale=%s:trunc(ow/a/2)*2:flags=lanczos -c:v libx264 -preset slow -crf 21 %s",
-                                    fpsSlider.getValue(), tempDirectory.getAbsolutePath(), frameWidth, output.get().getAbsolutePath()));
 
-                            BufferedReader log = new BufferedReader(new InputStreamReader(pr.getErrorStream()));
-                            log.lines().map(line -> line + "\n").forEach(console::appendText);
+                            Process pr = null;
+
+                            if(ffmpegWindows)
+                            {
+                                pr = new ProcessBuilder(String.format(
+                                        "ffmpeg -y -framerate %.2f -start_number 0 -i %s\\%%d.png -vf \"scale=%s:trunc(ow/a/2)*2:flags=lanczos\" -c:v libx264 -preset slow -crf 21 %s",
+                                        fpsSlider.getValue(), tempDirectory.getAbsolutePath(), frameWidth, output.get().getAbsolutePath()).split(" "))
+                                        .redirectErrorStream(true).start();
+                            }
+                            else if(ffmpegLinux)
+                            {
+                                pr = Runtime.getRuntime().exec(String.format(
+                                        "ffmpeg -y -framerate %.2f -start_number 0 -i %s/%%d.png -vf scale=%s:trunc(ow/a/2)*2:flags=lanczos -c:v libx264 -preset slow -crf 21 %s",
+                                            fpsSlider.getValue(), tempDirectory.getAbsolutePath(), frameWidth, output.get().getAbsolutePath()));
+                            }
+
+                            BufferedReader logInfo = new BufferedReader(new InputStreamReader(pr.getInputStream()));
+                            BufferedReader logError = new BufferedReader(new InputStreamReader(pr.getErrorStream()));
+                            logInfo.lines().map(line -> line + "\n").forEach(console::appendText);
+                            logError.lines().map(line -> line + "\n").forEach(console::appendText);
 
                             pr.waitFor();
                             pr.destroy();
-                            log.close();
+                            logInfo.close();
+                            logError.close();
 
                             progressBar.setProgress(1);
 
@@ -664,7 +683,8 @@ public class MainScene extends Scene {
                                 gui.getMainController().getHistoryViewIndex().set(i);
                                 MainController.History entry = gui.getMainController().getCurrentHistory();
 
-                                generateScreenshot(rendering, entry, new File(String.format("%s/%d.png", tempDirectory.getAbsolutePath(), i)));
+                                generateScreenshot(rendering, entry, new File(String.format("%s%s%d.png", tempDirectory.getAbsolutePath(),
+                                        File.separator, i)));
                                 progressBar.setProgress((i / (double) gui.getMainController().getHistoryIndex()) * 0.9D);
                             };
                             renderVideoThread.start();
@@ -726,11 +746,20 @@ public class MainScene extends Scene {
     private boolean isFFMPEGInstalled()
     {
         try {
-            Process test = Runtime.getRuntime().exec("ffmpeg");
-            return test.waitFor() == 1;
+            Runtime.getRuntime().exec("ffmpeg");
+            this.ffmpegLinux = true;
         } catch (Exception e) {
-            return false;
+            this.ffmpegLinux = false;
         }
+
+        try {
+            new ProcessBuilder("ffmpeg").start().waitFor();
+            this.ffmpegWindows = true;
+        } catch (Exception e) {
+            this.ffmpegWindows = false;
+        }
+
+        return (ffmpegLinux || ffmpegWindows);
     }
 
     private void deleteDirectory(File f) throws IOException {
