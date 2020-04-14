@@ -746,17 +746,20 @@ public class MainScene extends Scene {
     private boolean isFFMPEGInstalled()
     {
         try {
-            Runtime.getRuntime().exec("ffmpeg");
-            this.ffmpegLinux = true;
-        } catch (Exception e) {
-            this.ffmpegLinux = false;
-        }
-
-        try {
-            new ProcessBuilder("cmd.exe /c ffmpeg").start().waitFor();
+            new ProcessBuilder("cmd.exe /c ffmpeg".split(" ")).start().waitFor();
             this.ffmpegWindows = true;
         } catch (Exception e) {
             this.ffmpegWindows = false;
+        }
+
+        if(!ffmpegWindows)
+        {
+            try {
+                Runtime.getRuntime().exec("ffmpeg");
+                this.ffmpegLinux = true;
+            } catch (Exception e) {
+                this.ffmpegLinux = false;
+            }
         }
 
         return (ffmpegLinux || ffmpegWindows);
