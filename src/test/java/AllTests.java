@@ -1,4 +1,3 @@
-import Group9.agent.factories.DefaultAgentFactory;
 import Interop.InteropTests;
 import SimpleUnitTest.SimpleUnitTest;
 
@@ -15,6 +14,7 @@ public class AllTests extends SimpleUnitTest {
 
     public static void main(String[] args) {
         InteropTests.main(args);
+        JavaFXTests.main(args);
         testGroups(args);
         testAgentFactories();
     }
@@ -54,7 +54,7 @@ public class AllTests extends SimpleUnitTest {
         testAgentsFactory(Group6.AgentsFactory.class);
         testAgentsFactory(Group7.AgentsFactory.class);
         testAgentsFactory(Group8.AgentsFactory.class);
-        testAgentsFactory(DefaultAgentFactory.class);
+        testAgentsFactory(Group9.AgentsFactory.class);
         testAgentsFactory(Group10.AgentsFactory.class);
         testAgentsFactory(Group11.AgentsFactory.class);
     }

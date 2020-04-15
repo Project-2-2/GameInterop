@@ -1,0 +1,164 @@
+.bg-nav{
+    -fx-background-color: #343538;
+}
+.bg-light{
+    -fx-background-color: #f3f3f3;
+}
+.canvas-border{
+    -fx-border-color: black;
+    -fx-border-width: 2px;
+}
+.nav-button{
+    -fx-text-fill: white;
+    -fx-font-size: 18;
+    -fx-text-alignment: center;
+    -fx-padding: 10;
+}
+.nav-button:hover{
+    -fx-background-color: #7B7E85;
+}
+.menu-background-label{
+    -fx-text-fill: white;
+    -fx-font-size: 18;
+    -fx-text-alignment: center;
+}
+.button-container{
+    -fx-alignment: center;
+    -size: 33;
+    -fx-min-height: -size;
+    -fx-min-width: -size;
+    -fx-max-height: -size;
+    -fx-max-width: -size;
+}
+.play-button{
+    -fx-background-color: #343538;
+    -size: 30;
+    -fx-min-height: -size;
+    -fx-min-width: -size;
+    -fx-max-height: -size;
+    -fx-max-width: -size;
+    -fx-shape: "M256 8C119 8 8 119 8 256s111 248 248 248 248-111 248-248S393 8 256 8zm115.7 272l-176 101c-15.8 8.8-35.7-2.5-35.7-21V152c0-18.4 19.8-29.8 35.7-21l176 107c16.4 9.2 16.4 32.9 0 42z";
+}
+.play-button:hover{
+    -size: 33;
+    -fx-min-height: -size;
+    -fx-min-width: -size;
+    -fx-max-height: -size;
+    -fx-max-width: -size;
+
+}
+.play-button:pressed{
+    -fx-background-color: #7B7E85;
+}
+.stop-button{
+    -fx-background-color: #343538;
+    -size: 30;
+    -fx-min-height: -size;
+    -fx-min-width: -size;
+    -fx-max-height: -size;
+    -fx-max-width: -size;
+    -fx-shape: "M256 8C119 8 8 119 8 256s111 248 248 248 248-111 248-248S393 8 256 8zm-16 328c0 8.8-7.2 16-16 16h-48c-8.8 0-16-7.2-16-16V176c0-8.8 7.2-16 16-16h48c8.8 0 16 7.2 16 16v160zm112 0c0 8.8-7.2 16-16 16h-48c-8.8 0-16-7.2-16-16V176c0-8.8 7.2-16 16-16h48c8.8 0 16 7.2 16 16v160z";
+}
+.stop-button:hover{
+    -size: 33;
+    -fx-min-height: -size;
+    -fx-min-width: -size;
+    -fx-max-height: -size;
+    -fx-max-width: -size;
+
+}
+.stop-button:pressed{
+    -fx-background-color: #7B7E85;
+}
+.sDark .thumb{
+    -fx-background-color:  #343538;
+    -fx-border-color: white;
+    -fx-text-fill: white;
+}
+.sDark .track{
+    -fx-background-color:   #343538;
+    -fx-background-radius: 5;
+}
+.sLight .thumb{
+    -fx-background-color: white;
+    -fx-border-radius: 10;
+    -fx-border-color: #343538;
+}
+.sLight .track{
+    -fx-background-color:  white;
+    -fx-background-radius: 5;
+}
+.animation-slider-pane{
+    -fx-padding: 10;
+    -fx-spacing: 10;
+    -fx-alignment:  CENTER-LEFT;
+}
+.animation-label{
+    -fx-text-fill: white;
+    -fx-font-size: 18;
+    -fx-text-alignment: center;
+}
+.video-interface{
+    -fx-padding: 5 10;
+    -fx-spacing: 3;
+}
+.drop-box{
+    -fx-border-width: 2;
+    -fx-border-color: #343538;
+    -fx-background-color: white;
+    -size: 140;
+    -fx-min-width: -size;
+    -fx-max-width: -size;
+}
+.drop-box:hover{
+    -fx-border-color: #7B7E85;
+}
+.safe-button{
+    -fx-border-width: 2;
+    -fx-border-color: #343538;
+    -fx-background-color: white;
+    -size: 140;
+    -fx-min-width: -size;
+    -fx-max-width: -size;
+}
+.safe-button:hover{
+    -fx-border-color: #7B7E85;
+    -fx-background-color: #fcfcfc;
+
+}
+.safe-button-2{
+    -fx-border-width: 2;
+    -fx-border-color: #343538;
+    -fx-background-color: white;
+}
+.safe-button-2:hover{
+    -fx-border-color: #7B7E85;
+    -fx-background-color: #fcfcfc;
+}
+.sound-symbol{
+    -fx-background-color: #343538;
+    -size: 30;
+    -fx-min-height: -size;
+    -fx-min-width: -size;
+    -fx-max-height: -size;
+    -fx-max-width: -size;
+    -fx-shape: "M176 432c0 44.112-35.888 80-80 80s-80-35.888-80-80 35.888-80 80-80 80 35.888 80 80zM25.26 25.199l13.6 272C39.499 309.972 50.041 320 62.83 320h66.34c12.789 0 23.331-10.028 23.97-22.801l13.6-272C167.425 11.49 156.496 0 142.77 0H49.23C35.504 0 24.575 11.49 25.26 25.199z";
+}
+.progress-bar-style{
+    -size: 500;
+    -fx-min-width: -size;
+    -fx-max-width: -size;
+}
+.progress-bar-style .track{
+    -fx-border-width: 2;
+    -fx-border-color: #343538;
+    -fx-background-color: white;
+    -fx-padding: 0;
+}
+.progress-bar-style .bar{
+    -fx-background-color:  #7B7E85;
+    -fx-border-width: 0;
+}
+.help-Text{
+    -fx-font-size: 18;
+}

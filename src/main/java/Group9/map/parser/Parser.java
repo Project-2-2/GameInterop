@@ -66,7 +66,7 @@ public class Parser {
                         } break;
 
                         case "sentry": {
-                            builder.sentry(quadrilateralFromData(data));
+                            builder.sentry(quadrilateralFromData(data), quadrilateralFromData(data, 8));
                         } break;
 
                         case "gamemode": {
@@ -117,7 +117,7 @@ public class Parser {
                             builder.sprintCooldown(Integer.parseInt(data[0]));
                         } break;
 
-                        case "pheremoncooldown": {
+                        case "pheromonecooldown": {
                             builder.pheromoneCooldown(Integer.parseInt(data[0]));
                         } break;
 

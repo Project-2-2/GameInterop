@@ -164,7 +164,7 @@ public class Vector2 {
 
     public static class Random extends Vector2 {
         public Random() {
-            super(Game._RANDOM.nextInt(), Game._RANDOM.nextInt());
+            super(Game._RANDOM.nextDouble(), Game._RANDOM.nextDouble());
         }
     }
 

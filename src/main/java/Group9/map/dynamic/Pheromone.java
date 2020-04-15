@@ -6,7 +6,7 @@ import Interop.Percept.Smell.SmellPerceptType;
 
 public class Pheromone extends DynamicObject<AgentContainer<?>> {
 
-    private SmellPerceptType type;
+    private final SmellPerceptType type;
     private final double initialRadius;
     private final int initialLifetime;
 
@@ -30,4 +30,8 @@ public class Pheromone extends DynamicObject<AgentContainer<?>> {
         return type;
     }
 
+    @Override
+    public Pheromone clone() {
+        return new Pheromone(type, getSource(), getCenter(), getRadius(), getLifetime());
+    }
 }

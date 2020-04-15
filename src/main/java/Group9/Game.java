@@ -32,20 +32,21 @@ import Interop.Percept.Sound.SoundPercept;
 import Interop.Percept.Sound.SoundPerceptType;
 import Interop.Percept.Sound.SoundPercepts;
 import Interop.Percept.Vision.FieldOfView;
-import Interop.Percept.Vision.ObjectPerceptType;
 import Interop.Percept.Vision.ObjectPercepts;
 import Interop.Percept.Vision.VisionPrecepts;
 import Interop.Utils.Utils;
 
 import java.util.*;
 import java.util.concurrent.Semaphore;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 public class Game implements Runnable {
 
     public final static Random _RANDOM;
-    public final static long _RANDOM_SEED = 3702399255504L; //System.nanoTime();
+    public final static long _RANDOM_SEED = System.nanoTime();
     static {
         System.out.println("seed: " + _RANDOM_SEED);
         _RANDOM = new Random(_RANDOM_SEED);
@@ -64,6 +65,9 @@ public class Game implements Runnable {
     private Team winner = null;
 
     private AtomicBoolean runningLoop = new AtomicBoolean(false);
+    private final AtomicInteger ticks;
+    private long lastTick = System.nanoTime();
+    private final Callback<Game> turnTickCallback;
 
     //---
     private final boolean queryIntent;
@@ -71,12 +75,23 @@ public class Game implements Runnable {
 
     public Game(GameMap gameMap, final boolean queryIntent)
     {
-        this(gameMap, new DefaultAgentFactory(), queryIntent);
+        this(gameMap, new DefaultAgentFactory(), queryIntent, -1, null);
     }
 
     public Game(GameMap gameMap, IAgentFactory agentFactory, final boolean queryIntent)
     {
+        this(gameMap, agentFactory, queryIntent, -1, null);
+    }
+
+
+    public Game(GameMap gameMap, IAgentFactory agentFactory, final boolean queryIntent, int ticks,
+                Callback<Game> turnTickCallback)
+    {
         gameMap.setGame(this);
+        this.turnTickCallback = turnTickCallback;
+        this.ticks = new AtomicInteger(ticks);
+
+
         this.queryIntent = queryIntent;
         this.gameMap = gameMap;
         this.scenarioPercepts = gameMap.getGameSettings().getScenarioPercepts();
@@ -109,6 +124,14 @@ public class Game implements Runnable {
                 usedSpawns.add(intruderContainer.getShape());
             });
         }
+    }
+
+    public AtomicInteger getTicks() {
+        return ticks;
+    }
+
+    public Map<AgentContainer<?>, Boolean> getActionSuccess() {
+        return actionSuccess;
     }
 
     /**
@@ -177,7 +200,7 @@ public class Game implements Runnable {
     {
         if(safeRead)
         {
-            callback.update(null);
+            callback.call(null);
             return;
         }
         else
@@ -190,11 +213,8 @@ public class Game implements Runnable {
         }
 
         try {
-            //@todo the 10 ms basically guarantee that it will get a lock when this method gets called. this leads to
-            //  smoother ui updates but it is not guaranteed, so if someone has a fairly week computer this method
-            //  might lead to a choppy ui experience.
             lock.acquireUninterruptibly();
-            callback.update(lock);
+            callback.call(lock);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -234,20 +254,39 @@ public class Game implements Runnable {
         runningLoop.set(true);
         while (this.winner == null && runningLoop.get())
         {
+            // --- at 0 ticks pause, if -1 we want to go as fas as possible
+            if(ticks.get() == 0 ){
+                continue;
+            }
+
             this.winner = this.turn();
-            if(false)
+            if(this.turnTickCallback != null)
             {
-                try {
-                    Thread.sleep(100);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
+                this.turnTickCallback.call(this);
+            }
+
+            // --- > 0 -> restrict
+            if(this.ticks.get() > 0)
+            {
+                long delta = System.nanoTime() - lastTick;
+                long frameTime = (long) (1E+9D / this.ticks.get());
+                lastTick = System.nanoTime();
+
+                if(delta < frameTime)
+                {
+                    try {
+                        Thread.sleep(TimeUnit.NANOSECONDS.toMillis(frameTime - delta));
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
                 }
+
             }
         }
     }
 
     /**
-     * Checks whether any of the teams fulfil their win condition.
+     * Checks whether any of the teams fulfil their win ropcondition.
      * @return A team that has won, otherwise null.
      */
     private Team checkForWinner()
@@ -367,6 +406,28 @@ public class Game implements Runnable {
         //---
 
 
+        //--- check if intruder is in target area
+        if(isIntruder)
+        {
+            IntruderContainer intruderContainer = (IntruderContainer) agentContainer;
+            if(gameMap.getObjects(TargetArea.class).stream().anyMatch(e -> PointContainer.intersect(e.getContainer(), agentContainer.getShape())))
+            {
+                intruderContainer.setZoneCounter(intruderContainer.getZoneCounter() + 1);
+            }
+            else
+            {
+                intruderContainer.setZoneCounter(0);
+            }
+        } else
+        //--- check if guard is close enough to capture
+        {
+            FieldOfView fov = agentContainer.getFOV(this.getGameMap().getEffectAreas(agentContainer));
+            this.intruders.stream()
+                    .filter(e -> e.getPosition().distance(agentContainer.getPosition()) <= settings.getScenarioPercepts().getCaptureDistance().getValue())
+                    .filter(e -> Math.abs(e.getDirection().angle(agentContainer.getDirection())) <= fov.getViewAngle().getRadians() / 2)
+                    .forEach(e -> e.setCaptured(true));
+        }
+
         if(action instanceof Move || action instanceof Sprint)
         {
             final double slowdownModifier = (double) modifySpeedEffect.orElseGet(NoModify::new).get(agentContainer);
@@ -385,23 +446,7 @@ public class Game implements Runnable {
                 return false;
             }
 
-            boolean isSprinting = (distance > minSprint);
-
-            if(isSprinting)
-            {
-                //--- guards are not allowed to sprint
-                if(isGuard)
-                {
-                    return false;
-                }
-                else
-                {
-                    if(agentContainer.getCooldown(AgentContainer.Cooldown.SPRINTING) > 0 || distance > maxSprint)
-                    {
-                        return false;
-                    }
-                }
-            }
+            final boolean isSprinting = (distance > minSprint);
 
             //--- check for movement collision
             {
@@ -422,7 +467,7 @@ public class Game implements Runnable {
                 Vector2 pointC = pointD.add(move);
 
                 PointContainer.Polygon quadrilateral = new PointContainer.Polygon(pointA, pointB, pointC, pointD);
-                if(gameMap.isMoveIntersecting(quadrilateral, ObjectPerceptType::isSolid))
+                if(gameMap.isMoveIntersecting(agentContainer, quadrilateral))
                 {
                     return false;
                 }
@@ -469,26 +514,6 @@ public class Game implements Runnable {
 
             });
 
-            //--- check if intruder is in target area
-            if(isIntruder)
-            {
-                IntruderContainer intruderContainer = (IntruderContainer) agentContainer;
-                if(gameMap.getObjects(TargetArea.class).stream().anyMatch(e -> PointContainer.intersect(e.getContainer(), agentContainer.getShape())))
-                {
-                    intruderContainer.setZoneCounter(intruderContainer.getZoneCounter() + 1);
-                }
-                else
-                {
-                    intruderContainer.setZoneCounter(0);
-                }
-            }
-            //--- check if guard is close enough to capture
-            else
-            {
-                this.intruders.stream()
-                        .filter(e -> e.getPosition().distance(agentContainer.getPosition()) <= settings.getScenarioPercepts().getCaptureDistance().getValue())
-                        .forEach(e -> e.setCaptured(true));
-            }
             return true;
         }
         else if(action instanceof Rotate)
@@ -504,10 +529,6 @@ public class Game implements Runnable {
         }
         else if(action instanceof Yell)
         {
-            if(!isGuard)
-            {
-                return false;
-            }
             gameMap.getDynamicObjects().add(new Sound(
                     SoundPerceptType.Yell,
                     agentContainer,
@@ -518,11 +539,6 @@ public class Game implements Runnable {
         }
         else if(action instanceof DropPheromone)
         {
-            //--- check cooldown
-            if(agentContainer.hasCooldown(AgentContainer.Cooldown.PHEROMONE))
-            {
-                return false;
-            }
 
             //--- check whether there is already one in this place
             if(gameMap.getDynamicObjects(Pheromone.class).stream()
@@ -533,6 +549,9 @@ public class Game implements Runnable {
             {
                 return false;
             }
+
+            agentContainer.addCooldown(AgentContainer.Cooldown.PHEROMONE, gameMap.getGameSettings().getScenarioPercepts().getPheromoneCooldown());
+
             DropPheromone dropPheromone = (DropPheromone) action;
 
             gameMap.getDynamicObjects().add(new Pheromone(
@@ -553,11 +572,11 @@ public class Game implements Runnable {
     {
         // --- iterate over dynamic objects (sounds) and adjust lifetime or remove
         {
-            Iterator<DynamicObject> iterator = gameMap.getDynamicObjects().iterator();
+            Iterator<DynamicObject<?>> iterator = gameMap.getDynamicObjects().iterator();
             while (iterator.hasNext()) {
-                DynamicObject e = iterator.next();
+                DynamicObject<?> e = iterator.next();
                 e.setLifetime(e.getLifetime() - 1);
-                if(e.getLifetime() == 0)
+                if(e.getLifetime() <= 0)
                 {
                     iterator.remove();
                 }
@@ -595,7 +614,7 @@ public class Game implements Runnable {
         final Vector2 direction = this.gameMap.getObjects(TargetArea.class).get(0).getContainer().getCenter()
                 .sub(intruder.getPosition()).normalise();
 
-        final double angle = direction.angle(intruder.getDirection());
+        final double angle = Math.acos(intruder.getDirection().dot(direction));
 
         return new IntruderPercepts(
                 Direction.fromRadians(angle),
@@ -688,7 +707,7 @@ public class Game implements Runnable {
          *  it has completed its operations.
          * @param lock
          */
-        void update(Semaphore lock);
+        void call(Semaphore lock);
     }
 
 }
