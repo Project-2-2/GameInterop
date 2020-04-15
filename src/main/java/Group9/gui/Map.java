@@ -28,9 +28,9 @@ public class Map extends Application {
 	@Override
 	public void start(Stage s) throws Exception
 	{
-		start(s, "./src/main/java/Group9/map/maps/test_2.map");
+		start(s, "./src/main/java/Group9/map/maps/test_2.map", "one", "one");
 	}
-	public void start(Stage s, String path) throws Exception {
+	public void start(Stage s, String path, String algoGuard, String algoIntruder) throws Exception {
 		VBox vBox = new VBox();
 	    vBox.setPrefWidth(200);
 	    vBox.setPrefHeight(50);

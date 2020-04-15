@@ -1,10 +1,16 @@
 package Group9.gui;
 
 import javafx.application.Application;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableArray;
+import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuItem;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
@@ -19,6 +25,7 @@ import javafx.stage.Stage;
 
 import java.io.File;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 
 //import java.awt.Polygon;
 
@@ -31,6 +38,8 @@ public class MenuWindow extends Application {
     }
 
     String selectedFile;
+    String algoGuard;
+    String algoIntruder;
     
     public void start(Stage primaryStage) {
 
@@ -86,7 +95,7 @@ public class MenuWindow extends Application {
                if (event.getSource() == start) {
             	   Map x = new Map();
             	   try {
-					x.start(primaryStage, selectedFile);
+					x.start(primaryStage, selectedFile, algoGuard, algoIntruder);
 				} catch (Exception e) {
 
 					e.printStackTrace();
@@ -127,9 +136,28 @@ public class MenuWindow extends Application {
                 FileChooser f = new FileChooser();
                 String path = Paths.get("src/main/java/Group9/map/maps").toAbsolutePath().toString();
                 f.setInitialDirectory(new File(path));
-                selectedFile = f.showOpenDialog(primaryStage).toString();
+                try
+                {
+                    selectedFile = f.showOpenDialog(primaryStage).toString();
+                }
+                catch (NullPointerException e)
+                {
+                    selectedFile = path;
+                }
+
             }
         });
+
+        //algo chooser
+        ChoiceBox<String> algoGuard = new ChoiceBox<>(FXCollections.observableArrayList("Choose Algorithm", "one", "two", "three"));
+        algoGuard.setLayoutX(600);
+        algoGuard.setLayoutY(200);
+        algoGuard.setValue("Choose Algorithm");
+
+        ChoiceBox<String> algoIntruder = new ChoiceBox<>(FXCollections.observableArrayList("Choose Algorithm","one", "two", "three"));
+        algoIntruder.setLayoutY(200);
+        algoIntruder.setLayoutX(800);
+        algoIntruder.setValue("Choose Algorithm");
 
 
         //Background image.
@@ -148,7 +176,7 @@ public class MenuWindow extends Application {
        	Group r = new Group();
        	Scene scene = new Scene(r, 970, 630);
         //r.getChildren().add(background);
-        r.getChildren().addAll(title,start,quit,chooseMap);
+        r.getChildren().addAll(title,start,quit,chooseMap,algoGuard,algoIntruder);
 
         primaryStage.setScene(scene);
         primaryStage.setTitle("Multi-agents Surveillance");
