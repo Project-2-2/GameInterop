@@ -1,4 +1,11 @@
 package Group6.GUI;
 
-public class Yell {
+import Group6.Geometry.Point;
+import javafx.scene.paint.Color;
+
+public class Yell extends Dot{
+    public Yell(Point center, double radius) {
+        super(center, radius);
+        setFill(Color.MAGENTA);
+    }
 }

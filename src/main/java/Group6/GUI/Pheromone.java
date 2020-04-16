@@ -1,4 +1,12 @@
 package Group6.GUI;
 
-public class Pheromone {
+
+import Group6.Geometry.Point;
+import javafx.scene.paint.Color;
+
+public class Pheromone extends Dot {
+    public Pheromone(Point center, double radius) {
+        super(center, radius);
+        setFill(Color.PINK);
+    }
 }
