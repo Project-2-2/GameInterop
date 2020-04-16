@@ -13,8 +13,18 @@ public class Cell {
     private Cell left;
     private Cell right;
     private final static double size = 1;
-    private boolean explored;
+    private double exploredPercentage;
     private boolean reachable;
+    public static int numOfCells;
+    private int visitedCount;
+
+    private boolean wall = false;
+    private boolean window = false;
+    private boolean door = false;
+    private boolean guard = false;
+    private boolean sentryTower = false;
+    private boolean target = false;
+    private boolean teleport = false;
     public Cell()
     {
         above = null;
@@ -93,6 +103,34 @@ public class Cell {
     }
     public Coordinate[] getPoints()
     {
-        Coordinate[] points = {new Coordinate(midX + 0.5 * size, midY + 0.5 * size), new Coordinate(midX - 0.5 * size, midY + 0.5 * size), new Coordinate(midX - 0.5 * size, midY - 0.5 * size), new Coordinate(midX + 0.5 * size, midY - 0.5 * size),};
+        Coordinate[] points = {new Coordinate(midX + 0.5 * size, midY + 0.5 * size), new Coordinate(midX - 0.5 * size, midY + 0.5 * size), new Coordinate(midX - 0.5 * size, midY - 0.5 * size), new Coordinate(midX + 0.5 * size, midY - 0.5 * size)};
+        return points;
+    }
+    public int getCount(){
+        return visitedCount;
+    }
+
+    public boolean hasWall(){
+        return wall;
+    }
+    public boolean hasDoor(){
+        return door;
+    }
+
+    public boolean hasWindow(){
+        return window;
+    }
+    public boolean hasTower(){
+        return sentryTower;
+    }
+    public boolean hasGuard(){
+        return guard;
+    }
+    public boolean hasTarget(){
+        return target;
+    }
+
+    public boolean hasTeleport(){
+        return teleport;
     }
 }
