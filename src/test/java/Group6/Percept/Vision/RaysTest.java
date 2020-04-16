@@ -98,11 +98,13 @@ public class RaysTest extends ExtendedUnitTest {
 
             List<LineSegment> rays = new Rays(guardState, fieldOfView, 4).toLineSegments();
 
+
             assertEqual(rays.size(), 4);
             assertEqual(rays.get(0), new LineSegment(new Point(0,0), new Point(0, -10)));
             assertEqual(rays.get(1), new LineSegment(new Point(0,0), new Point(-10, 0)));
             assertEqual(rays.get(2), new LineSegment(new Point(0,0), new Point(0, 10)));
             assertEqual(rays.get(3), new LineSegment(new Point(0,0), new Point(10, 0)));
+
 
         });
 
