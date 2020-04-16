@@ -98,9 +98,10 @@ public class DeepSpace implements Guard {
     {
         Queue<GuardAction> retActionsQueue = new LinkedList<>();
 
+        Set<Vertex<DataContainer>> visited = new HashSet<>();
+
         Function<Vertex<DataContainer>, LinkedList<Vertex<DataContainer>>> a = new Function<>() {
 
-            private Set<Vertex<DataContainer>> visited = new HashSet<>();
 
             @Override
             public LinkedList<Vertex<DataContainer>> apply(Vertex<DataContainer> dataContainerVertex) {
@@ -109,16 +110,17 @@ public class DeepSpace implements Guard {
                         .map(Edge::getEnd)
                         .filter(e -> !visited.contains(e))
                         .collect(Collectors.toCollection(LinkedList::new));
-                visited.addAll(list);
                 return list;
             }
         };
 
-        Vertex<DataContainer> vertex = currentVertex;
+        Vertex<DataContainer> vertex = null;
         Queue<Vertex<DataContainer>> vertices = new LinkedList<>();
+        vertices.add(currentVertex);
         do {
-            vertices.addAll(a.apply(vertex));
             vertex = vertices.poll();
+            vertices.addAll(a.apply(vertex));
+            visited.add(vertex);
 
             if(!vertex.getContent().isDeadend())
             {
@@ -131,13 +133,13 @@ public class DeepSpace implements Guard {
                 //--- walk to the center of the vertex it is currently exploring
                 if(this.position.distance(currentVertex.getContent().getCenter()) > 1E-8)
                 {
-                    retActionsQueue.addAll(moveTowardsPoint(guardPercepts, this.direction, this.position, this.currentVertex.getContent().getCenter()));
+                    retActionsQueue.addAll(moveTowardsPoint(guardPercepts, this.direction, this.position, vertex.getContent().getCenter()));
                 }
 
                 //--- if the path has only length 2 then we are only walking from the current vertex to a previous vertex
                 if(shortestPath.size() == 2)
                 {
-                    retActionsQueue.addAll(moveTowardsPoint(guardPercepts, currentVertex.getContent().getCenter().sub(this.position).normalise(),
+                    retActionsQueue.addAll(moveTowardsPoint(guardPercepts, this.direction,
                             this.position, shortestPath.get(1).getContent().getCenter()));
                 }
                 else
@@ -172,6 +174,10 @@ public class DeepSpace implements Guard {
         Vector2 desiredDirection = target.sub(source).normalise();
         double rotationDiff = PiMath.getDistanceBetweenAngles(direction.getClockDirection(), desiredDirection.getClockDirection());
 
+        if(rotationDiff < 0)
+        {
+            rotationDiff += Math.PI * 2;
+        }
         if(Math.abs(rotationDiff) > 1E-10)
         {
             retActionsQueue.addAll(this.planRotation(percepts, rotationDiff));

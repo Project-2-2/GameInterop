@@ -77,8 +77,14 @@ public class StateHandlerFindNewTarget implements StateHandler {
         ds.getCurrentVertex().getContent().setDeadend(true);
 
         // backtrack: get a list of actions to move us to a prev node/position that didn't lead to (or wasn't) a deadend
-        actionsQueue.addAll(ds.backtrack(guardPercepts));
-
-        return;
+        Queue<GuardAction> actions = ds.backtrack(guardPercepts);
+        if(actions.isEmpty())
+        {
+            System.out.println("Count: " + Arrays.toString(ds.graph.getVertices().stream().filter(e -> !e.getContent().isDeadend()).toArray()));
+        }
+        else
+        {
+            actionsQueue.addAll(actions);
+        }
     }
 }

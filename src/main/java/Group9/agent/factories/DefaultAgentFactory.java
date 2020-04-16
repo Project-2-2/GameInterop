@@ -1,5 +1,6 @@
 package Group9.agent.factories;
 
+import Group9.agent.RandomAgent;
 import Group9.agent.deepspace.DeepSpace;
 import Group9.agent.RandomIntruderAgent;
 import Interop.Agent.Guard;
