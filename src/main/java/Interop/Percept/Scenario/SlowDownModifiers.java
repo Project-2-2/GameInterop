@@ -7,7 +7,7 @@ import Interop.Utils.Require;
  *
  * This percepts allow agents to avoid issuing invalid move and sprint actions.
  *
- * Agent can perceive the current area based on area percepts:
+ * AgentGui can perceive the current area based on area percepts:
  * @see Interop.Percept.AreaPercepts
  */
 public final class SlowDownModifiers {

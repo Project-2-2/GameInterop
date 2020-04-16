@@ -1,7 +1,9 @@
 package Interop.Percept.Vision;
 
+import Group9.PiMath;
 import Interop.Geometry.*;
 import Interop.Utils.Require;
+import Interop.Utils.Utils;
 
 /**
  * Represents the field of view of an agent.
@@ -19,7 +21,7 @@ import Interop.Utils.Require;
  *        \ | /
  *         \|/
  *          V  <----- Angle
- *        Agent
+ *        AgentGui
  *    Coordinate: (0, 0)
  *
  */
