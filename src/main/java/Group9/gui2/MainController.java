@@ -1,5 +1,6 @@
 package Group9.gui2;
 
+import Group5.factories.AgentFactoryGroup5;
 import Group9.Callback;
 import Group9.Game;
 import Group9.agent.container.GuardContainer;
@@ -32,7 +33,8 @@ public class MainController implements Runnable {
     public MainController(Gui gui, File mapFile,boolean generateHistory){
         this.gui = gui;
         this.generateHistory = generateHistory;
-        game = new Game(Parser.parseFile(mapFile.getAbsolutePath()), new DefaultAgentFactory(), false, 15, new Callback<Game>() {
+        //I changed the defaultAgentfactory from group 9 to our factory but I don't know if that is allowed, this is the easiest way to use their GUI
+        game = new Game(Parser.parseFile(mapFile.getAbsolutePath()), new AgentFactoryGroup5(), false, 15, new Callback<Game>() {
             @Override
             public void call(Game game) {
                 if(generateHistory){
