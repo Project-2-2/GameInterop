@@ -34,6 +34,8 @@ public class MainController implements Runnable {
         this.gui = gui;
         this.generateHistory = generateHistory;
         //I changed the defaultAgentfactory from group 9 to our factory but I don't know if that is allowed, this is the easiest way to use their GUI
+        //To use the randommagents from group 9 use new DefaultAgentFactory() instead of new AgentFactoryGroup5(), these random agents are still better than ours
+        // so its worth to take a look into them
         game = new Game(Parser.parseFile(mapFile.getAbsolutePath()), new AgentFactoryGroup5(), false, 15, new Callback<Game>() {
             @Override
             public void call(Game game) {
