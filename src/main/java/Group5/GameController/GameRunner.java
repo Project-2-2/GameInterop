@@ -148,7 +148,7 @@ public class GameRunner {
                 });
             }
         };
-        long frameTimeInMilliseconds = (long) (1000.0 / FRAMES_PER_SECOND);
+        long frameTimeInMilliseconds = (long) (50.0 / FRAMES_PER_SECOND);
         this.timer.schedule(timerTask, 100, frameTimeInMilliseconds);
     }
 
@@ -171,8 +171,9 @@ public class GameRunner {
 
         for (IntruderController intruder : mapInfo.intruders){
             if (!intruder.isCaptured) {
-                Action nextAction = intruder.explorer.getAction(intruder, visionPercepts);
-//            System.out.println(nextAction);
+//                Action nextAction = intruder.explorer.getAction(intruder, visionPercepts);
+                IntruderAction nextAction = intruder.intruderAgent.getAction(intruder, visionPercepts);
+                //            System.out.println(nextAction);
                 if (nextAction instanceof Move) {
                     intruder.move((Move) nextAction);
 //                System.out.println(((Move) nextAction).getDistance().getValue());

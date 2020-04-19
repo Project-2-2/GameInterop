@@ -1,6 +1,7 @@
 package Group5.GameController;
 
 import Group5.Agent.Explorer;
+import Group5.Agent.IntruderAgent;
 import Interop.Action.Move;
 import Interop.Action.Rotate;
 import Interop.Action.Sprint;
@@ -23,7 +24,8 @@ public class IntruderController extends AgentController {
     protected int sprintCoolDownCounter;
 
     protected Explorer explorer;
-
+    protected IntruderAgent intruderAgent;
+    
     protected boolean isCaptured;
 
 
@@ -36,6 +38,7 @@ public class IntruderController extends AgentController {
         sprintCooldownTimer=false;
         sprintCoolDownCounter=0;
         explorer = new Explorer(1, this);
+        intruderAgent = new IntruderAgent(this);
         isCaptured=false;
     }
 
