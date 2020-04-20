@@ -13,7 +13,7 @@ public class Score{
 
 
     // Method to calculate score **might have to add evaluation function adjustments
-    public double getScoreCell(Cell2 cell){
+    public double getScoreCell(Cell cell){
         double scoreOfCell = 0;
 
         if(cell.hasWall()){scoreOfCell+= WALL_SCORE;}
@@ -24,15 +24,16 @@ public class Score{
         if(cell.hasTarget()){scoreOfCell+= TARGET_SCORE;}
         if(cell.hasTeleport()){scoreOfCell+= TELEPORT_SCORE;}
 
-        scoreOfCell+= (-2) * cell.getCout();
+        //TODO: redefine getCout() in cell
+        //scoreOfCell+= (-2) * cell.getCout();
         return scoreOfCell;
     }
 
     // Method to choose best of the available cells regarding the score
-    public Cell2 chooseBestCell(Cell2 [] cellsToCompare){
-        Cell2 bestCell = cellsToCompare[0];
+    public Cell chooseBestCell(Cell[] cellsToCompare){
+        Cell bestCell = cellsToCompare[0];
 
-        for (i = 1; i < cellsToCompare.length; i++){
+        for (int i = 1; i < cellsToCompare.length; i++){
             if(getScoreCell(cellsToCompare[i]) > getScoreCell(bestCell)) {
                 bestCell = cellsToCompare[i];
             }
