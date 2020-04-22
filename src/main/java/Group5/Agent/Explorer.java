@@ -336,8 +336,21 @@ public class Explorer implements Intruder {
      * @return
      */
     public IntruderAction explore(IntruderPercepts percepts){
+
+//        Rotate wallRotate = wallTurn(percepts.getVision().getObjects());
         return new Move(new Distance(1));
     }
+
+//    private Rotate wallTurn(ObjectPercepts percepts) {
+//
+//        ArrayList<ObjectPercept> visionObjects = new ArrayList<>();
+//        ArrayList<ObjectPercept> walls = new ArrayList<>();
+//        visionObjects.addAll(percepts.getAll());
+//        for (ObjectPercept p : visionObjects) {
+//            if(p.getType()== Wall)
+//
+//        }
+//    }
 }
 
 
