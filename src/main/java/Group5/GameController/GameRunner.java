@@ -88,7 +88,7 @@ public class GameRunner {
         //mapInfo.readMap(file.getPath());
 
         File file = DrawableDialogueBox.getFile();
-        String src = "src/main/java/Group5/Maps/testmap";
+        String src = "src/main/java/Group5/Maps/testmap2";
         //mapInfo.readMap(src);
         //tries to open the map without gui, otherwise open without gui
         try{
@@ -148,7 +148,7 @@ public class GameRunner {
                 });
             }
         };
-        long frameTimeInMilliseconds = (long) (50.0 / FRAMES_PER_SECOND);
+        long frameTimeInMilliseconds = (long) (100.0 / FRAMES_PER_SECOND);
         this.timer.schedule(timerTask, 100, frameTimeInMilliseconds);
     }
 

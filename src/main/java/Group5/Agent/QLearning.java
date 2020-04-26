@@ -56,13 +56,15 @@ public class QLearning {
     
     private State prevState;
     private State currState;
+    private int prevAction = 0;
+    private int currAction;
     private float epsilon;
     private float gamma;
     private float alpha;
     private List<Double> legalActions;
     private int numActions;
     private int numStates;
-    private float[][] qTable;
+    private double[][] qTable;
     
     private Point agentPosition;
     private ObjectPercept state;
@@ -86,34 +88,24 @@ public class QLearning {
         this.alpha = alpha;
         this.numActions = numActions;
         this.numStates = numStates;
-        this.qTable = new float[numStates][numActions];
+        this.qTable = new double[numStates][numActions];
+//        this.qTable = new double [][]{
+//                {0.0,0.0,0.0,0.0,0.0,0.0,0.0},
+//                {0.0,0.0,0.0,0.0,0.0,0.0,0.0},
+//                {-1.9662777989086195,-2.472447754072641,-2.4696678985330607,-2.4796416410479747,-1.9080988371698346,-1.737134594574407},
+//                {-0.6430906600515617,-0.6807711143525313,-0.6608904824194621,-0.6561722656360214,-0.6256462906671728,-0.6770173587089482},
+//                {-0.10000000149011612,0.0,0.0,0.0,0.0,0.0},
+//                {-1.8845545180957446,-1.9061786316237466,-1.8668967747145913,-1.9226932273347828,-1.717385686571351,-1.9255868290016818},
+//                {0.0,0.0,0.0,0.0,0.0,0.0,0.0},
+//                {-0.27100000362098214,-0.2967600048285723,-0.190000002682209,-0.190000002682209,-0.27100000362098214,-0.27100000362098214},
+//                {0.0,0.0,0.0,0.0,0.0,0.0,0.0},
+//                {-0.10000000149011612,0.0,0.0,-1.0222914416837978,-1.0040120377926016,0.0}
+//        };
         this.rn = new Random();
         this.epsilonDecay = 0.0001;
         this.agentController = agentController;
         this.actionQueue = new LinkedList<>();
     }
-    
-//    /*
-//     *@state   : The current x,y coordinates of the agent
-//     *Returns an ArrayList containing all legal moves for the agent to make
-//     */
-//    private ArrayList<double[]> getLegalMoves(Point agentPosition) {
-//
-//        ArrayList<double[]> legalMoves = new ArrayList<>();
-//        this.agentPosition = agentController.getPosition();
-//        double[] xCandidates =
-//                { this.agentPosition.getX() - 1, this.agentPosition.getX(), this.agentPosition.getX() + 1 };
-//        double[] yCandidates =
-//                { this.agentPosition.getY() - 1, this.agentPosition.getY(), this.agentPosition.getY() + 1 };
-//
-//        for (double x : xCandidates) {
-//            for (double y : yCandidates) {
-//                double[] move = { x, y };
-//                legalMoves.add(move);
-//            }
-//        }
-//        return legalMoves;
-//    }
     
     public int getMaxValueAction(ObjectPerceptType state) {
         State[] allStates = State.class.getEnumConstants();
@@ -123,38 +115,43 @@ public class QLearning {
                 stateIndex = tempState.value;
             }
         }
-        float[] qTablePart = qTable[stateIndex];
+        double[] qTablePart = qTable[stateIndex];
         int maxIndex = getMaxValue(qTablePart);
         double chance = Math.random();
         Random rand = new Random();
         
         if (chance < epsilon) {
-            return rand.nextInt(3);
+            return rand.nextInt(6);
         } else {
             return maxIndex;
         }
     }
     
-    protected void updateQTable(ObjectPerceptType state, ObjectPercepts objectsInVision, float reward) {
+    protected void updateQTable(ObjectPerceptType state, int currentAction, float reward) {
         State[] allStates = State.class.getEnumConstants();
         if (this.prevState == null) {
             this.prevState = State.EmptySpace;
         }
+        
+        this.currAction = currentAction;
     
-        for (State currState : allStates) {
-            if (state.name().equals(currState.name())) {
-                this.prevState = currState;
+        for (State cState : allStates) {
+            if (state.name().equals(cState.name())) {
+                this.currState = cState;
+                break;
             }
         }
-    
-        ArrayList<ObjectPercept> visionObjects = new ArrayList<>();
-        visionObjects.addAll(objectsInVision.getAll());
-        Vision.bubbleSort(visionObjects, agentController);
-        for (int i = 0; i < numActions; i++) {
-            //Bellman Equation
-            float update = reward + gamma * findMaxQState(this.prevState.value) - qTable[this.prevState.value][i];
-            qTable[this.prevState.value][i] = qTable[this.prevState.value][i] + alpha * update;
-        }
+        
+//        ArrayList<ObjectPercept> visionObjects = new ArrayList<>();
+//        visionObjects.addAll(objectsInVision.getAll());
+//        Vision.bubbleSort(visionObjects, agentController);
+        //Bellman Equation
+        double update = reward + gamma * findMaxQState(this.currState.value) - qTable[this.prevState.value][this.prevAction];
+        qTable[this.prevState.value][this.prevAction] = qTable[this.prevState.value][this.prevAction] + alpha * update;
+        
+        this.prevAction = this.currAction;
+        this.prevState = this.currState;
+        
 //        for (int i = 0; i < numStates; i++) {
 //            for (int j = 0; j < numActions; j++) {
 //                System.out.print("" + qTable[i][j] + ",");
@@ -164,15 +161,15 @@ public class QLearning {
 //        System.out.println();
     }
     
-    protected float [][] getQTable(){
+    protected double [][] getQTable(){
         return this.qTable;
     }
     
-    public float findMaxQState(int stateIndex) {
+    public double findMaxQState(int stateIndex) {
         
-        float[] qTablePart = qTable[stateIndex];
+        double[] qTablePart = qTable[stateIndex];
         int max = getMaxValue(qTablePart);
-        float maxValue = qTablePart[max];
+        double maxValue = qTablePart[max];
         return maxValue;
     }
     
@@ -181,10 +178,10 @@ public class QLearning {
      *         whole qTable as input
      * @return the index of the max value of the part of the Qtable that references the current state
      */
-    public int getMaxValue(float[] qTablePart) {
+    public int getMaxValue(double[] qTablePart) {
         //float[] array = Q_part;
         int max = 0;
-        float maxValue = qTablePart[0];
+        double maxValue = qTablePart[0];
         for (int i = 0; i < qTablePart.length; i++) {
             if (qTablePart[i] > maxValue) {
                 max = i;
@@ -195,19 +192,17 @@ public class QLearning {
     
     public void writeTableToFile(){
         StringBuilder builder = new StringBuilder();
-        for(int i = 0; i < numStates; i++)//for each row
-        {
-            for(int j = 0; j < numActions; j++)//for each column
-            {
-                builder.append(qTable[i][j]+"");//append to the output string
-                if(j < numActions - 1)//if this is not the last row element
-                    builder.append(",");//then add comma (if you don't like commas you can use spaces)
+        for(int i = 0; i < numStates; i++){
+            for(int j = 0; j < numActions; j++){
+                builder.append(qTable[i][j]+"");
+                if(j < numActions - 1)
+                    builder.append(",");
             }
-            builder.append("\n");//append new line at the end of the row
+            builder.append("\n");
         }
         try {
             BufferedWriter writer = new BufferedWriter(new FileWriter("src/main/java/Group5/QTable.txt"));
-            writer.write(builder.toString());//save the string representation of the board
+            writer.write(builder.toString());
             writer.close();
         } catch (IOException e) {
             // TODO Auto-generated catch block
