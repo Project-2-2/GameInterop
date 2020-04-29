@@ -13,6 +13,7 @@ import Interop.Percept.Vision.VisionPrecepts;
 
 public class Intruder1 implements Intruder {
     Cell position = new Cell();
+    History history = new History();
     public Intruder1()
     {
 

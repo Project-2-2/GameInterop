@@ -8,6 +8,10 @@ public class Coordinate {
         this.x = x;
         this.y = y;
     }
+    public Coordinate()
+    {
+
+    }
     public double getX()
     {
         return x;
@@ -15,5 +19,16 @@ public class Coordinate {
 
     public double getY() {
         return y;
+    }
+    public boolean equals(Coordinate c)
+    {
+        if(x == c.getX() && y == c.getY())
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 }
