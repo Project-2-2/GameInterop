@@ -26,9 +26,40 @@ public class GuardExplorer implements Guard {
 
     public GuardAction explore(GuardPercepts percepts){
         Set<ObjectPercept> vision = percepts.getVision().getObjects().getAll();
+        ArrayList<ObjectPerceptType> visionPerceptTypes = new ArrayList<>();
 
-        if (vision.contains(ObjectPerceptType.EmptySpace)){
-            System.out.println("heia");
+        percepts.getScenarioGuardPercepts().getScenarioPercepts().getMaxRotationAngle();
+        for (ObjectPercept e : vision){
+            visionPerceptTypes.add(e.getType());
+        }
+
+        if (visionPerceptTypes.contains(ObjectPerceptType.Intruder)){
+           // System.out.println("found intruder");
+            double angleToIntruder = 0;
+            int count = 0;
+            for (ObjectPercept e : vision){
+                double distanceToIntruder = percepts.getVision().getFieldOfView().getRange().getValue()-e.getPoint().getDistanceFromOrigin().getValue();
+                if (distanceToIntruder<percepts.getScenarioGuardPercepts().getScenarioPercepts().getCaptureDistance().getValue()){
+                   // System.out.println("biem");
+                   // System.out.println(distanceToIntruder-percepts.getScenarioGuardPercepts().getScenarioPercepts().getCaptureDistance().getValue());
+                    return new NoAction();
+                }
+                if (e.getType()==ObjectPerceptType.Intruder){
+                    if (Angle.fromDegrees(0).getDistance(e.getPoint().getClockDirection()).getDegrees()>180){
+                        angleToIntruder = angleToIntruder + e.getPoint().getClockDirection().getDegrees()-360;
+                    }else{
+                        angleToIntruder = angleToIntruder + Angle.fromDegrees(0).getDistance(e.getPoint().getClockDirection()).getDegrees();
+                    }
+                    count++;
+                }
+            }
+            if(angleToIntruder/count>5){
+             //   System.out.println(angleToIntruder/count);
+                return new Rotate(Angle.fromDegrees(angleToIntruder/count));
+            }else{
+                return new Move(new Distance(1));
+            }
+
         }
         //System.out.println(vision.size());
         if (!percepts.wasLastActionExecuted()&&vision.size()>0) {
@@ -55,7 +86,7 @@ public class GuardExplorer implements Guard {
             }
             //System.out.println("biem");
             //System.out.println(angleToWallsDegrees);
-            System.out.println(angleToWallsDegrees/count);
+           // System.out.println(angleToWallsDegrees/count);
             if(angleToWallsDegrees!=0){
                 return new Rotate(Angle.fromDegrees(angleToWallsDegrees/count));
             }
@@ -65,7 +96,8 @@ public class GuardExplorer implements Guard {
 
         if (!percepts.wasLastActionExecuted()){
             System.out.println("kak");
-            return new Rotate(percepts.getScenarioGuardPercepts().getScenarioPercepts().getMaxRotationAngle());
+            Angle randomAngle = Angle.fromDegrees(percepts.getScenarioGuardPercepts().getScenarioPercepts().getMaxRotationAngle().getDegrees()*Math.random());
+            return new Rotate(randomAngle);
         }
         return new Move(new Distance(percepts.getScenarioGuardPercepts().getMaxMoveDistanceGuard().getValue() * getSpeedModifier(percepts)));
     }
