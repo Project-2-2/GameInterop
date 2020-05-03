@@ -1,5 +1,6 @@
 package Group5.Agent.Guard;
 
+import Group5.GameController.AgentController;
 import Interop.Action.GuardAction;
 import Interop.Action.Move;
 import Interop.Action.NoAction;
@@ -8,13 +9,13 @@ import Interop.Agent.Guard;
 import Interop.Geometry.Angle;
 import Interop.Geometry.Direction;
 import Interop.Geometry.Distance;
+import Interop.Geometry.Point;
 import Interop.Percept.GuardPercepts;
 import Interop.Percept.Scenario.SlowDownModifiers;
 import Interop.Percept.Vision.ObjectPercept;
 import Interop.Percept.Vision.ObjectPerceptType;
 
-import java.util.ArrayList;
-import java.util.Set;
+import java.util.*;
 
 public class GuardExplorer implements Guard {
 
@@ -88,4 +89,25 @@ public class GuardExplorer implements Guard {
 
         return 1;
     }
+
+    public double rotateTo(AgentController agent, ObjectPercept object) {
+        double angle = Math.atan2(agent.getPosition().getY() - object.getPoint().getY(), agent.getPosition().getX() - object.getPoint().getX());
+        angle = angle-Math.PI/2;
+        System.out.println(angle);
+
+        if (angle > Math.PI)
+            angle = 2*Math.PI-angle;
+
+        else if (angle < -Math.PI)
+            angle = -2*Math.PI-angle;
+
+
+        return angle;
+    }
+
+
+
+
+
+
 }
