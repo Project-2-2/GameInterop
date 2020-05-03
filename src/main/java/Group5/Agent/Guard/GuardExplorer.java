@@ -21,23 +21,20 @@ import java.util.*;
 
 public class GuardExplorer implements Guard {
 
-    private Deque<GuardAction> actionQueue;
-
-
+    private Queue<GuardAction> actionQueue = new LinkedList<>();
 
     @Override
     public GuardAction getAction(GuardPercepts percepts) {
-        if (actionQueue.isEmpty())
-            explore(percepts);
-
-        return actionQueue.removeFirst();
+        explore(percepts);
+        System.out.println(actionQueue.size());
+        return actionQueue.poll();
 
     }
 
     public void addActionToQueue(GuardAction action, GuardPercepts percepts) {
         double maxMoveRange = percepts.getScenarioGuardPercepts().getMaxMoveDistanceGuard().getValue();
         Angle maxRotationAngle = percepts.getScenarioGuardPercepts().getScenarioPercepts().getMaxRotationAngle();
-
+        /*
         if (action instanceof Rotate ) {
             double rotateValue = ((Rotate) action).getAngle().getDegrees();
             if (rotateValue > maxRotationAngle.getDegrees()) {
@@ -51,7 +48,8 @@ public class GuardExplorer implements Guard {
                     }
                 }
 
-            }
+            }else
+                actionQueue.add(action);
         }else if (action instanceof Move) {
             double distance = ((Move) action).getDistance().getValue();
             if (distance > maxMoveRange) {
@@ -66,6 +64,8 @@ public class GuardExplorer implements Guard {
                 }
             }
         }else
+
+         */
             actionQueue.add(action);
 
     }
