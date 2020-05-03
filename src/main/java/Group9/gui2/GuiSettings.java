@@ -5,8 +5,8 @@ import javafx.scene.paint.Color;
 public class GuiSettings {
     public static final double widthMenu = 40;
     public static final double widthMenuFocus = 400;
-    public static final double defaultHeight = 1000;
-    public static final double defaultWidth = 1800;
+    public static final double defaultHeight = 700;
+    public static final double defaultWidth = 1000;
     public static final double buttonHeight = 50;
     public static final double quickSettingsBarHeight = 40;
     //Colors
