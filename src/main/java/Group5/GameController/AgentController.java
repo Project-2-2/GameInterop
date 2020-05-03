@@ -65,7 +65,7 @@ public class AgentController {
         return new Point(position.getX() - p.getX(), position.getY() - p.getY());
     }
 
-    protected Angle getAngle() {
+    public Angle getAngle() {
         return this.angle;
     }
 

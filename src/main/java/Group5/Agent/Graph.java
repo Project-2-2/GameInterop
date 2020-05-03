@@ -28,7 +28,7 @@ public class Graph {
         return edges;
     }
 
-    public void addEdge(Edge e) {
+    public void createEdge(Edge e) {
         this.edges.add(e);
     }
 
@@ -40,7 +40,8 @@ public class Graph {
     }
 
     /**
-     * Every time you add a new vertex to the graph, this method checks if it's a view distance from other objects
+     * Every time you add a new vertex to the graph this method checks if it's at view distance from other objects
+     * or whether is part of another object
      * @param newVertex vertex that was added to the graph
      */
     public Boolean checkNewEdges(Vertex newVertex) {
@@ -65,7 +66,7 @@ public class Graph {
 
         if (!partOfAnotherObject) {
             for (int i = 0; i < vertexInRange.size(); i++) {
-                addEdge(new Edge(vertexInRange.get(i), newVertex, distances.get(i)));
+                createEdge(new Edge(vertexInRange.get(i), newVertex, distances.get(i)));
             }
         }
 
@@ -80,13 +81,13 @@ public class Graph {
     public void combineTwoVertex(Vertex v, Vertex toCombine, ObjectPerceptType type) {
         if (v.isAreaVertex()) {
             v.getArea().addPoint(toCombine.getObject().getPoint());
+            v.generateInsideVertex();
         }else {
             Point point1 = v.getObject().getPoint();
             Point point2 = toCombine.getObject().getPoint();
-            vertices.add(new AreaVertex(true, new Area(point1.getX(), point1.getY(), point2.getX(), point2.getY(), type)));
+            vertices.add(new AreaVertex(new Area(point1.getX(), point1.getY(), point2.getX(), point2.getY(), type)));
             removeVertex(v);
         }
-
 
     }
 
@@ -106,7 +107,6 @@ public class Graph {
         this.edges = newEdges;
         this.vertices.remove(v);
     }
-
 
 
 

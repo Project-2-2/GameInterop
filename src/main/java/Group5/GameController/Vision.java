@@ -96,7 +96,7 @@ public class Vision {
             ArrayList<Point> vector1 = new ArrayList<>(List.of(point1, point2));
 
             for (Area area : areas) {
-                positions = area.getPositions();
+                positions = area.getSides();
                 for (ArrayList<Point> arr: positions) {
                     ArrayList<Point> vector2 = new ArrayList<>(List.of(arr.get(0),arr.get(1)));
 
