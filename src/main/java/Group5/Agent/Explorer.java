@@ -3,12 +3,12 @@ package Group5.Agent;
 import Group5.GameController.AgentController;
 import Group5.GameController.Area;
 import Group5.GameController.Vision;
-import Interop.Action.Action;
-import Interop.Action.Move;
-import Interop.Action.Rotate;
+import Interop.Action.*;
+import Interop.Agent.Intruder;
 import Interop.Geometry.Angle;
 import Interop.Geometry.Distance;
 import Interop.Geometry.Point;
+import Interop.Percept.IntruderPercepts;
 import Interop.Percept.Vision.ObjectPercept;
 import Interop.Percept.Vision.ObjectPerceptType;
 import Interop.Percept.Vision.ObjectPercepts;
@@ -24,7 +24,7 @@ import static Interop.Percept.Vision.ObjectPerceptType.Wall;
  * https://www.researchgate.net/publication/2294236_A_Multi-Agent_Approach_To_Environment_Exploration
  * Additionally, navigation is handled on an explicit representation of the map.
  */
-public class Explorer {
+public class Explorer implements Intruder {
 
     private Queue<Vertex> queue;
     private Graph g;
@@ -33,6 +33,8 @@ public class Explorer {
     private Deque<Action> actionQueue;
     private Point previousRotationPoint;
 
+    //TODO: all these methods now don't work because of the new game controller, the implementation was too heavy based on our specific controller
+    //TODO: the last 3 methods in this class are used by the new controller, there is a new explore() method this one should be implemented
 
     /**
      * Use this constructor for an agent that has no information about his environment
@@ -40,12 +42,16 @@ public class Explorer {
      * @param level This is the exploration level of the agent. See paper for details.
      */
     public Explorer(int level, AgentController agent) {
+
+
         this.level = level;
         this.g = new Graph(agent);
         this.queue = new LinkedList<>();
         this.actionQueue = new LinkedList<>();
         this.previousRotationPoint = new Point(0, 0);
     }
+
+
 
     /**
      * Use this constructor for an agent that has prior information about the environment it is exploring.
@@ -65,7 +71,7 @@ public class Explorer {
     }
 
     public Graph BFSWrapper(Graph map, Vertex start) {
-        start.setVisited(true);
+        //start.setVisited(true);
         this.queue.add(start);
 
         while (!queue.isEmpty()) {
@@ -81,7 +87,7 @@ public class Explorer {
     public void BFS(Vertex v, List<Edge> adjacentEdges) {
         if (!g.getVertices().contains(v)) g.addVertex(v);
         for (Edge e : adjacentEdges) {
-            if (!g.getEdges().contains(e)) g.addEdge(e);
+            //if (!g.getEdges().contains(e)) g.addEdge(e);
             //Vertex w = e.getDestination();
             //if (!w.isVisited()) {
               //  w.setVisited(true);
@@ -99,8 +105,9 @@ public class Explorer {
      * @return True if that vertex can be reached through a known path
      */
     private boolean pathExist(Vertex startingVertex, Vertex endVertex, Graph map) {
-        map = BFSWrapper(map, startingVertex);
-        return endVertex.isVisited();
+        //map = eBFSWrapper(map, startingVertex);
+        //return endVertex.isVisited();
+        return true;
     }
 
     //TODO: Method Find shortest path
@@ -301,7 +308,40 @@ public class Explorer {
         }
 
 
+
+
+    /**
+     * new constructor used for the new game controller
+     */
+    public Explorer(){
+        this.queue = new LinkedList<>();
+        this.actionQueue = new LinkedList<>();
+        this.previousRotationPoint = new Point(0, 0);
+
     }
+
+
+    /**
+     *the new getAction method we should be using
+     * @param percepts The precepts represent the world as perceived by that agent.
+     * @return
+     */
+    @Override
+    public IntruderAction getAction(IntruderPercepts percepts) {
+        return explore(percepts);
+    }
+
+    /**
+     * This is the new explore method we should be using
+     * I didn't remove the old one since it still can be handy
+     * The problem why we cant use the old one is that we use a method called getrelative angle but we have to use something different for that
+     * @param percepts
+     * @return
+     */
+    public IntruderAction explore(IntruderPercepts percepts){
+        return new Move(new Distance(1));
+    }
+}
 
 
 
