@@ -1,10 +1,7 @@
-import Interop.Agent.Guard;
-import Interop.Agent.Intruder;
 import Interop.InteropTests;
 import SimpleUnitTest.SimpleUnitTest;
 
 import java.lang.reflect.Method;
-import java.util.List;
 
 /**
  * This tests are run by GitHub Actions.
