@@ -1,5 +1,7 @@
 package Group9.agent.deepspace;
 
+import Group9.agent.container.AgentContainer;
+import Group9.agent.container.GuardContainer;
 import Group9.math.Vector2;
 import Interop.Action.GuardAction;
 import Interop.Action.NoAction;
@@ -9,17 +11,16 @@ import Interop.Percept.Vision.ObjectPerceptType;
 import java.util.*;
 
 public class StateHandlerFindNewTarget implements StateHandler {
+
     private DeepSpace ds;
-
     private StateType nextState;
-
     private boolean active;
 
-    Queue<GuardAction> actionsQueue = new LinkedList<>();
+    private final Queue<ActionContainer<GuardAction>> actionsQueue = new LinkedList<>();
 
     @Override
-    public GuardAction execute(GuardPercepts percepts, DeepSpace deepSpace) {
-        GuardAction retAction = new NoAction();
+    public ActionContainer<GuardAction> execute(GuardPercepts percepts, DeepSpace deepSpace) {
+        ActionContainer<GuardAction> retAction = ActionContainer.of(this, new NoAction());
 
         this.ds = deepSpace;
 
@@ -77,7 +78,7 @@ public class StateHandlerFindNewTarget implements StateHandler {
         ds.getCurrentVertex().getContent().setDeadend(true);
 
         // backtrack: get a list of actions to move us to a prev node/position that didn't lead to (or wasn't) a deadend
-        Queue<GuardAction> actions = ds.backtrack(guardPercepts);
+        Queue<ActionContainer<GuardAction>> actions = ds.backtrack(guardPercepts);
         if(actions.isEmpty())
         {
             System.out.println("Count: " + Arrays.toString(ds.graph.getVertices().stream().filter(e -> !e.getContent().isDeadend()).toArray()));

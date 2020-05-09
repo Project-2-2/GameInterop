@@ -7,11 +7,11 @@ public class StateHandlerInitial implements StateHandler {
     StateType nextState;
 
     @Override
-    public GuardAction execute(GuardPercepts percepts, DeepSpace deepSpace) {
+    public ActionContainer<GuardAction> execute(GuardPercepts percepts, DeepSpace deepSpace) {
 
         nextState = StateType.EXPLORE_360;
 
-        return new Inaction();
+        return ActionContainer.of(this, new Inaction());
     }
 
     @Override

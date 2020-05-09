@@ -10,9 +10,9 @@ import java.util.Queue;
 
 public class StateHandlerExplore360 implements StateHandler {
 
-    Queue<GuardAction> actionsQueue = new LinkedList<>();
-    DeepSpace ds;
-    StateType nextState = StateType.EXPLORE_360;
+    private final Queue<ActionContainer<GuardAction>> actionsQueue = new LinkedList<>();
+    private DeepSpace ds;
+    private StateType nextState = StateType.EXPLORE_360;
 
     // 'false -> true' after first use of this state
     private boolean active = false;
@@ -21,8 +21,8 @@ public class StateHandlerExplore360 implements StateHandler {
     }
 
     @Override
-    public GuardAction execute(GuardPercepts percepts, DeepSpace ds) {
-        GuardAction retAction = new NoAction();
+    public ActionContainer<GuardAction> execute(GuardPercepts percepts, DeepSpace ds) {
+        ActionContainer<GuardAction> retAction = ActionContainer.of(this, new NoAction());
         this.ds = ds;
 
         if (!active) {

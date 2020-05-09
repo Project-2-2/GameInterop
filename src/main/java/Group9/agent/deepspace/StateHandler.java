@@ -5,7 +5,7 @@ import Interop.Percept.GuardPercepts;
 
 public interface StateHandler {
 
-    public GuardAction execute(GuardPercepts percepts, DeepSpace deepSpace);
+    public ActionContainer<GuardAction> execute(GuardPercepts percepts, DeepSpace deepSpace);
 
     public StateType getNextState();
 

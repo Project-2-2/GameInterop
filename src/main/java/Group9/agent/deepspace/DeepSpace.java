@@ -1,6 +1,7 @@
 package Group9.agent.deepspace;
 
 import Group9.PiMath;
+import Group9.agent.container.GuardContainer;
 import Group9.math.Vector2;
 import Group9.math.graph.Edge;
 import Group9.math.graph.Graph;
@@ -33,7 +34,7 @@ public class DeepSpace implements Guard {
     protected final Graph<DataContainer> graph = new Graph<>();
 
     private StateType curState;
-    private GuardAction lastAction = null;
+    private ActionContainer<GuardAction> lastAction = null;
 
     private final EnumMap<StateType, StateHandler> stateHandlers;
 
@@ -54,7 +55,7 @@ public class DeepSpace implements Guard {
     @Override
     public GuardAction getAction(GuardPercepts percepts) {
 
-        GuardAction actionToDo = new NoAction();
+        ActionContainer<GuardAction> actionToDo = ActionContainer.of(this, new NoAction());
 
         if(!percepts.wasLastActionExecuted())
         {
@@ -64,10 +65,10 @@ public class DeepSpace implements Guard {
 
         // if we moved/rotated, we update our current status
         if (percepts.wasLastActionExecuted() && lastAction != null) {
-            if (lastAction instanceof Move) {
-                move(((Move) lastAction).getDistance().getValue());
-            } else if (lastAction instanceof Rotate) {
-                rotate(((Rotate) lastAction).getAngle().getRadians());
+            if (lastAction.getAction() instanceof Move) {
+                move(((Move) lastAction.getAction()).getDistance().getValue());
+            } else if (lastAction.getAction() instanceof Rotate) {
+                rotate(((Rotate) lastAction.getAction()).getAngle().getRadians());
             }
         }
 
@@ -76,11 +77,10 @@ public class DeepSpace implements Guard {
         do {
             actionToDo = stateHandlers.get(curState).execute(percepts, this);
             curState = stateHandlers.get(curState).getNextState();
-        } while (actionToDo instanceof Inaction || actionToDo == null);
+        } while (actionToDo.getAction() instanceof Inaction || actionToDo.getAction() == null);
 
         lastAction = actionToDo;
-
-        return actionToDo;
+        return actionToDo.getAction();
     }
 
     double calculateCost(Vertex<DataContainer> currentVertex, Vertex<DataContainer> newVertex) {
@@ -94,9 +94,9 @@ public class DeepSpace implements Guard {
      *      causing it to get stuck.
      * @param guardPercepts
      */
-    public Queue<GuardAction> backtrack(GuardPercepts guardPercepts)
+    public Queue<ActionContainer<GuardAction>> backtrack(GuardPercepts guardPercepts)
     {
-        Queue<GuardAction> retActionsQueue = new LinkedList<>();
+        Queue<ActionContainer<GuardAction>> retActionsQueue = new LinkedList<>();
 
         Set<Vertex<DataContainer>> visited = new HashSet<>();
 
@@ -152,9 +152,6 @@ public class DeepSpace implements Guard {
                     }
                 }
 
-                //planning.add(new ActionHistory<State>(ActionHistory.Action.SWITCH_STATE, State.FIND_NEW_TARGET));
-
-                //return retActionsQueue;
             }
         } while (!vertices.isEmpty());
 
@@ -167,9 +164,9 @@ public class DeepSpace implements Guard {
                 .anyMatch(e -> e != own && !e.getContent().isDeadend() && e.getContent().getAsCircle().isInside(position));
     }
 
-    protected Queue<GuardAction> moveTowardsPoint(GuardPercepts percepts, Vector2 direction, Vector2 source, Vector2 target)
+    protected Queue<ActionContainer<GuardAction>> moveTowardsPoint(GuardPercepts percepts, Vector2 direction, Vector2 source, Vector2 target)
     {
-        Queue<GuardAction> retActionsQueue = new LinkedList<>();
+        Queue<ActionContainer<GuardAction>> retActionsQueue = new LinkedList<>();
 
         Vector2 desiredDirection = target.sub(source).normalise();
         double rotationDiff = PiMath.getDistanceBetweenAngles(direction.getClockDirection(), desiredDirection.getClockDirection());
@@ -188,45 +185,47 @@ public class DeepSpace implements Guard {
         final int fullMoves = (int) (distance / maxAllowedMove);
         final double remainder = distance % percepts.getScenarioGuardPercepts().getMaxMoveDistanceGuard().getValue();
 
+        ActionContainer.Input input = ActionContainer.Input.create()
+                .i("direction", direction).i("source", source).i("target", target).i("maxAllowedMove", maxAllowedMove)
+                .i("distance", distance).i("fullMoves", fullMoves).i("remainder", remainder);
         for(int i = 0; i < fullMoves; i++)
         {
-            retActionsQueue.add(new Move(new Distance(maxAllowedMove)));
+            retActionsQueue.add(
+                ActionContainer.of(this, new Move(new Distance(maxAllowedMove)), input.clone().i("#fullMoves-i", i))
+            );
         }
         if(remainder > 0)
         {
-            retActionsQueue.add(new Move(new Distance(remainder)));
+            retActionsQueue.add(
+                ActionContainer.of(this, new Move(new Distance(remainder)), input.clone().i("#remainder", remainder))
+            );
         }
 
         return retActionsQueue;
     }
 
-    protected Queue<GuardAction> planRotation(GuardPercepts percepts, double alpha)
+    protected Queue<ActionContainer<GuardAction>> planRotation(GuardPercepts percepts, double alpha)
     {
-        Queue<GuardAction> retActionsQueue = new LinkedList<>();
+        Queue<ActionContainer<GuardAction>> retActionsQueue = new LinkedList<>();
 
         double maxRotation = percepts.getScenarioGuardPercepts().getScenarioPercepts().getMaxRotationAngle().getRadians();
         int fullRotations = (int) (alpha / maxRotation);
         double restRotation = alpha % maxRotation;
 
         for (int i = 0; i < fullRotations; i++)  {
-            retActionsQueue.offer(new Rotate(Angle.fromRadians(maxRotation)));
+            retActionsQueue.offer(
+                ActionContainer.of(this, new Rotate(Angle.fromRadians(maxRotation)))
+            );
         }
 
         if (restRotation > 0) {
-            retActionsQueue.offer(new Rotate(Angle.fromRadians(restRotation)));
+            retActionsQueue.offer(
+                ActionContainer.of(this, new Rotate(Angle.fromRadians(restRotation)))
+            );
         }
 
         return retActionsQueue;
     }
-
-
-//    void explorePoint(GuardPercepts guardPercepts)
-//    {
-//        this.planning.offer(new ActionHistory<>(ActionHistory.Action.SWITCH_STATE, State.EXPLORE_360_ADD_VERTEX));
-//        this.planning.offer(new ActionHistory<>(ActionHistory.Action.SWITCH_STATE, State.EXPLORE_360));
-//        this.planRotation(guardPercepts, Math.PI * 2);
-//        planning.offer(new ActionHistory<>(ActionHistory.Action.SWITCH_STATE, State.FIND_NEW_TARGET));
-//    }
 
     private void move(double distance)
     {
@@ -237,42 +236,6 @@ public class DeepSpace implements Guard {
     {
         this.direction = direction.rotated(theta);
     }
-
-//    private enum State
-//    {
-//        INITIAL,
-//        EXPLORE_360,
-//        EXPLORE_360_ADD_VERTEX,
-//        FIND_NEW_TARGET
-//    }
-
-//    private static class ActionHistory<T> {
-//
-//        private Action action;
-//        private T value;
-//
-//        public ActionHistory(Action action, T value)
-//        {
-//            this.action = action;
-//            this.value = value;
-//        }
-//
-//        public Action getAction() {
-//            return action;
-//        }
-//
-//        public <T> T getValue() {
-//            return (T) value;
-//        }
-//
-//        public static enum Action {
-//            SWITCH_STATE,
-//
-//            MOVE,
-//            ROTATE
-//        }
-//
-//    }
 
     public Vector2 getPosition() {
         return position;
