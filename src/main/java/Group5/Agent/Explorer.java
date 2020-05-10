@@ -339,7 +339,9 @@ public class Explorer implements Intruder {
      * @return
      */
     public IntruderAction explore(IntruderPercepts percepts){
-        return new Move(new Distance(1));
+
+        //return new Move(new Distance(1));
+        return new NoAction();
     }
 }
 
