@@ -51,6 +51,11 @@ public class StateHandlerFindNewTarget implements StateHandler {
         }
     }
 
+    public void resetState()  {
+        actionsQueue.clear();
+        active = false;
+    }
+
     private void findNewTarget(GuardPercepts guardPercepts)
     {
 

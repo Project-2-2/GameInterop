@@ -18,4 +18,9 @@ public class StateHandlerInitial implements StateHandler {
     public StateType getNextState() {
         return nextState;
     }
+
+    @Override
+    public void resetState() {
+
+    }
 }

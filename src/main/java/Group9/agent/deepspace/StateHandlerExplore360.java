@@ -68,4 +68,10 @@ public class StateHandlerExplore360 implements StateHandler {
     public StateType getNextState() {
         return this.nextState;
     }
+
+    @Override
+    public void resetState() {
+        actionsQueue.clear();
+        active = false;
+    }
 }

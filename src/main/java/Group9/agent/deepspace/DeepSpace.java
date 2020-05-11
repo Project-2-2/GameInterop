@@ -62,9 +62,6 @@ public class DeepSpace implements Guard {
 
     @Override
     public GuardAction getAction(GuardPercepts percepts) {
-
-        this.handlePossibleTeleport(percepts);
-
         ActionContainer<GuardAction> actionToDo = ActionContainer.of(this, new NoAction());
 
         if(!percepts.wasLastActionExecuted())
@@ -81,6 +78,8 @@ public class DeepSpace implements Guard {
                 rotate(((Rotate) lastAction.getAction()).getAngle().getRadians());
             }
         }
+
+        this.handlePossibleTeleport(percepts);
 
         assert curState != null : "Current state is null. Not initialized?";
 
@@ -119,6 +118,8 @@ public class DeepSpace implements Guard {
             this.currentGraph = newGraph;
             this.position = new Vector2.Origin();
             this.direction = new Vector2(0, 1).normalise();
+            this.stateHandlers.get(this.curState).resetState();
+            this.curState = StateType.INITIAL;
         }
 
     }

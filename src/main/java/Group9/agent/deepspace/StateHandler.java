@@ -9,4 +9,6 @@ public interface StateHandler {
 
     public StateType getNextState();
 
+    public void resetState();
+
 }
