@@ -42,7 +42,7 @@ public class DeepSpace implements Guard {
     private final EnumMap<StateType, StateHandler> stateHandlers;
 
     private boolean insideTeleportArea = false;
-    private boolean firstActionAfterTeleport = false;
+    protected boolean firstActionAfterTeleport = false;
 
     public DeepSpace() {
         this.graphs.add(currentGraph);
@@ -103,9 +103,8 @@ public class DeepSpace implements Guard {
         {
             this.firstActionAfterTeleport = false;
         }
-        else {
-            this.insideTeleportArea = false;
-        }
+
+        this.insideTeleportArea =  percepts.getAreaPercepts().isJustTeleported();
 
         if(this.firstActionAfterTeleport)
         {
@@ -116,8 +115,8 @@ public class DeepSpace implements Guard {
             ));
             this.graphs.add(newGraph);
             this.currentGraph = newGraph;
+            this.currentVertex = null;
             this.position = new Vector2.Origin();
-            this.direction = new Vector2(0, 1).normalise();
             this.stateHandlers.get(this.curState).resetState();
             this.curState = StateType.INITIAL;
         }

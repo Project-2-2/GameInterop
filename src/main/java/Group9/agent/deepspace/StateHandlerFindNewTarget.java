@@ -16,11 +16,22 @@ public class StateHandlerFindNewTarget implements StateHandler {
 
     private final Queue<ActionContainer<GuardAction>> actionsQueue = new LinkedList<>();
 
+    private final int TELEPORT_PRIORITY_TURNS = 100;
+    private int teleportPriorityChange = -1;
+
+    private boolean initialRoundAfterTeleport = false;
+
     @Override
     public ActionContainer<GuardAction> execute(GuardPercepts percepts, DeepSpace deepSpace) {
         ActionContainer<GuardAction> retAction = ActionContainer.of(this, new NoAction());
 
         this.ds = deepSpace;
+
+        initialRoundAfterTeleport = percepts.getAreaPercepts().isJustTeleported() && !initialRoundAfterTeleport && teleportPriorityChange == -1;
+        if(initialRoundAfterTeleport )
+        {
+            this.teleportPriorityChange = TELEPORT_PRIORITY_TURNS;
+        }
 
         if (!active) {
             // add actions to queue to get to new best target
@@ -62,6 +73,17 @@ public class StateHandlerFindNewTarget implements StateHandler {
         Map<ObjectPerceptType, HashSet<Vector2>> map = ds.getCurrentVertex().getContent().getObjects();
         ObjectPerceptType[] priority = new ObjectPerceptType[] {ObjectPerceptType.SentryTower, ObjectPerceptType.Door,
                                             ObjectPerceptType.Window, ObjectPerceptType.Teleport, ObjectPerceptType.EmptySpace};
+
+        if(teleportPriorityChange >= 0)
+        {
+            teleportPriorityChange--;
+            priority = new ObjectPerceptType[] {ObjectPerceptType.SentryTower, ObjectPerceptType.Door,
+                    ObjectPerceptType.Window, ObjectPerceptType.EmptySpace, ObjectPerceptType.Teleport};
+        }
+        else
+        {
+            initialRoundAfterTeleport = false;
+        }
 
         for(ObjectPerceptType type : priority)
         {
