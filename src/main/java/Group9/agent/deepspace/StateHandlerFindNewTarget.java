@@ -1,7 +1,5 @@
 package Group9.agent.deepspace;
 
-import Group9.agent.container.AgentContainer;
-import Group9.agent.container.GuardContainer;
 import Group9.math.Vector2;
 import Interop.Action.GuardAction;
 import Interop.Action.NoAction;
@@ -81,7 +79,7 @@ public class StateHandlerFindNewTarget implements StateHandler {
         Queue<ActionContainer<GuardAction>> actions = ds.backtrack(guardPercepts);
         if(actions.isEmpty())
         {
-            System.out.println("Count: " + Arrays.toString(ds.graph.getVertices().stream().filter(e -> !e.getContent().isDeadend()).toArray()));
+            System.out.println("Count: " + Arrays.toString(ds.currentGraph.getVertices().stream().filter(e -> !e.getContent().isDeadend()).toArray()));
         }
         else
         {

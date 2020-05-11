@@ -57,9 +57,9 @@ public class StateHandlerExplore360 implements StateHandler {
 
         if(ds.getCurrentVertex() != null)
         {
-            ds.graph.add(ds.getCurrentVertex(), newVertex, ds.calculateCost(ds.getCurrentVertex(), newVertex), true);
+            ds.currentGraph.add(ds.getCurrentVertex(), newVertex, ds.calculateCost(ds.getCurrentVertex(), newVertex), true);
         }
-        ds.graph.add(ds.setCurrentVertex(newVertex));
+        ds.currentGraph.add(ds.setCurrentVertex(newVertex));
 
         actionsQueue.addAll(ds.planRotation(percepts, Math.PI * 2));
     }

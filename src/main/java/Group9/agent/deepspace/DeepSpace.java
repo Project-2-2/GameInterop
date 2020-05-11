@@ -1,7 +1,6 @@
 package Group9.agent.deepspace;
 
 import Group9.PiMath;
-import Group9.agent.container.GuardContainer;
 import Group9.math.Vector2;
 import Group9.math.graph.Edge;
 import Group9.math.graph.Graph;
@@ -10,8 +9,10 @@ import Interop.Action.*;
 import Interop.Agent.Guard;
 import Interop.Geometry.Angle;
 import Interop.Geometry.Distance;
+import Interop.Percept.AreaPercepts;
 import Interop.Percept.GuardPercepts;
 
+import javax.xml.crypto.Data;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import java.util.function.Function;
@@ -31,14 +32,21 @@ public class DeepSpace implements Guard {
 
     private Vertex<DataContainer> currentVertex;
 
-    protected final Graph<DataContainer> graph = new Graph<>();
+    private List<Graph<DataContainer>> graphs = new ArrayList<>();
+    private List<TeleportPosition> teleports = new ArrayList<>();
+    protected Graph<DataContainer> currentGraph = new Graph<>();
 
     private StateType curState;
     private ActionContainer<GuardAction> lastAction = null;
 
     private final EnumMap<StateType, StateHandler> stateHandlers;
 
+    private boolean insideTeleportArea = false;
+    private boolean firstActionAfterTeleport = false;
+
     public DeepSpace() {
+        this.graphs.add(currentGraph);
+
         curState = StateType.INITIAL;
         stateHandlers = new EnumMap<>(StateType.class);
 
@@ -54,6 +62,8 @@ public class DeepSpace implements Guard {
 
     @Override
     public GuardAction getAction(GuardPercepts percepts) {
+
+        this.handlePossibleTeleport(percepts);
 
         ActionContainer<GuardAction> actionToDo = ActionContainer.of(this, new NoAction());
 
@@ -83,6 +93,36 @@ public class DeepSpace implements Guard {
         return actionToDo.getAction();
     }
 
+    private void handlePossibleTeleport(GuardPercepts percepts)
+    {
+        if(!this.insideTeleportArea && percepts.getAreaPercepts().isJustTeleported())
+        {
+            this.insideTeleportArea = percepts.getAreaPercepts().isJustTeleported();
+            this.firstActionAfterTeleport = true;
+        }
+        else if(insideTeleportArea && percepts.getAreaPercepts().isJustTeleported())
+        {
+            this.firstActionAfterTeleport = false;
+        }
+        else {
+            this.insideTeleportArea = false;
+        }
+
+        if(this.firstActionAfterTeleport)
+        {
+            Graph<DataContainer> newGraph = new Graph<>();
+            this.teleports.add(new TeleportPosition(
+                    this.position.clone(), this.currentGraph,
+                    new Vector2.Origin(), newGraph
+            ));
+            this.graphs.add(newGraph);
+            this.currentGraph = newGraph;
+            this.position = new Vector2.Origin();
+            this.direction = new Vector2(0, 1).normalise();
+        }
+
+    }
+
     double calculateCost(Vertex<DataContainer> currentVertex, Vertex<DataContainer> newVertex) {
         //TODO it would be great if we had a more sophisticated cost function e.g. make it more expensive to not
         // go through a sentry tower, or make it more expensive to walk towards a target which we can not pass through, etc.
@@ -105,7 +145,7 @@ public class DeepSpace implements Guard {
 
             @Override
             public LinkedList<Vertex<DataContainer>> apply(Vertex<DataContainer> dataContainerVertex) {
-                LinkedList<Vertex<DataContainer>> list = graph.getNeighbours(dataContainerVertex)
+                LinkedList<Vertex<DataContainer>> list = currentGraph.getNeighbours(dataContainerVertex)
                         .stream()
                         .map(Edge::getEnd)
                         .filter(e -> !visited.contains(e))
@@ -125,7 +165,7 @@ public class DeepSpace implements Guard {
             if(!vertex.getContent().isDeadend())
             {
 
-                List<Vertex<DataContainer>> shortestPath = this.graph.shortestPath(this.currentVertex, vertex);
+                List<Vertex<DataContainer>> shortestPath = this.currentGraph.shortestPath(this.currentVertex, vertex);
                 System.out.println("|path| = " + shortestPath.size());
                 System.out.println(shortestPath.get(0).getContent().getCenter());
                 System.out.println(shortestPath.get(shortestPath.size() - 1).getContent().getCenter());
@@ -160,7 +200,7 @@ public class DeepSpace implements Guard {
 
     protected boolean isInsideOtherVertex(Vertex<?> own, Vector2 position)
     {
-        return graph.getVertices().stream()
+        return currentGraph.getVertices().stream()
                 .anyMatch(e -> e != own && !e.getContent().isDeadend() && e.getContent().getAsCircle().isInside(position));
     }
 
@@ -260,5 +300,38 @@ public class DeepSpace implements Guard {
     public Vertex<DataContainer> setCurrentVertex(Vertex<DataContainer> currentVertex) {
         this.currentVertex = currentVertex;
         return currentVertex;
+    }
+
+    private class TeleportPosition {
+
+        private final Vector2 fromPosition;
+        private final Graph<DataContainer> fromGraph;
+
+        private final Vector2 toPosition;
+        private final Graph<DataContainer> toGraph;
+
+        public TeleportPosition(Vector2 fromPosition, Graph<DataContainer> fromGraph, Vector2 toPosition, Graph<DataContainer> toGraph)
+        {
+            this.fromPosition = fromPosition;
+            this.fromGraph = fromGraph;
+            this.toPosition = toPosition;
+            this.toGraph = toGraph;
+        }
+
+        public Graph<DataContainer> fromGraph() {
+            return fromGraph;
+        }
+
+        public Graph<DataContainer> toGraph() {
+            return toGraph;
+        }
+
+        public Vector2 fromPosition() {
+            return fromPosition;
+        }
+
+        public Vector2 toPosition() {
+            return toPosition;
+        }
     }
 }
