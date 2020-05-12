@@ -247,8 +247,8 @@ public class GameMap {
             for (Vector2 point : PointContainer.intersectionPoints(mo.getContainer(), line)) {
                 Vector2 relative = point
                         .sub(agentContainer.getPosition()) // move relative to agent
-                        .rotated(agentContainer.getDirection().getClockDirection())
-                        .mul(-1, 1); //rotated back
+                        .rotated(agentContainer.getDirection().getClockDirection()) //rotated back
+                        .mul(-1, 1); //:DirtyFix
                 if(relative.length() > 0 && fov.isInView(relative.toVexing()))
                 {
                     objectPoints.put(relative, mo.getType());
@@ -262,7 +262,8 @@ public class GameMap {
             for (Vector2 point : PointContainer.intersectionPoints(intruder.getShape(), line)) {
                 Vector2 relative = point
                         .sub(agentContainer.getPosition()) // move relative to agent
-                        .rotated(agentContainer.getDirection().getClockDirection()); //rotated back
+                        .rotated(agentContainer.getDirection().getClockDirection()) //rotated back
+                        .mul(-1, 1);  //:DirtyFix
                 if(relative.length() > 0 && fov.isInView(relative.toVexing()))
                 {
                     objectPoints.put(relative, ObjectPerceptType.Intruder);
@@ -276,7 +277,8 @@ public class GameMap {
             for (Vector2 point : PointContainer.intersectionPoints(guard.getShape(), line)) {
                 Vector2 relative = point
                         .sub(agentContainer.getPosition()) // move relative to agent
-                        .rotated(agentContainer.getDirection().getClockDirection()); //rotated back
+                        .rotated(agentContainer.getDirection().getClockDirection()) //rotated bac
+                        .mul(-1, 1);  //:DirtyFix
                 if(relative.length() > 0 && fov.isInView(relative.toVexing()))
                 {
                     objectPoints.put(relative, ObjectPerceptType.Guard);
