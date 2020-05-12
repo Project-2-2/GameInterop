@@ -41,28 +41,6 @@ public class GameMap {
         this.mapObjects = mapObjects;
 
         this.rayConstant = this.calculateRayConstant();
-
-        /*this.quadTree = new QuadTree<>(width, height, 10000, MapObject::getContainer);
-        AtomicInteger index = new AtomicInteger();
-        mapObjects.forEach(a -> {
-            AtomicInteger c = new AtomicInteger();
-            mapObjects.forEach(b -> {
-                if(a != b)
-                {
-                    if(PointContainer.intersect(a.getContainer(), b.getContainer()))
-                    {
-                        c.getAndIncrement();
-                    }
-                }
-            });
-            System.out.println(index.getAndIncrement() + "." + c);
-        });
-        index.set(0);
-        mapObjects.forEach(a -> {
-            System.out.println(index.getAndIncrement());
-            //quadTree.add(a);
-        });
-        System.out.print("");*/
     }
 
     public void setGame(Game game)
@@ -242,6 +220,7 @@ public class GameMap {
                 .filter(e -> !e.getEffects().isEmpty())
                 .filter(e -> PointContainer.intersect(agent.getShape(), e.getContainer()))
                 .flatMap((Function<MapObject, Stream<EffectArea>>) object -> object.getEffects().stream())
+
                 .collect(Collectors.toUnmodifiableSet());
     }
 
@@ -259,7 +238,7 @@ public class GameMap {
      * @param line
      * @return
      */
-    public Set<ObjectPercept> getObjectPerceptsInLine(List<MapObject> filteredObjects, AgentContainer agentContainer, FieldOfView fov, PointContainer.Line line) {
+    public Set<ObjectPercept>getObjectPerceptsInLine(List<MapObject> filteredObjects, AgentContainer agentContainer, FieldOfView fov, PointContainer.Line line) {
         // --- all points where line and objects intersect sorted by proximity to start of line
         Map<Vector2, ObjectPerceptType> objectPoints = new HashMap<>();
 
@@ -268,7 +247,8 @@ public class GameMap {
             for (Vector2 point : PointContainer.intersectionPoints(mo.getContainer(), line)) {
                 Vector2 relative = point
                         .sub(agentContainer.getPosition()) // move relative to agent
-                        .rotated(agentContainer.getDirection().getClockDirection()); //rotated back
+                        .rotated(agentContainer.getDirection().getClockDirection())
+                        .mul(-1, 1); //rotated back
                 if(relative.length() > 0 && fov.isInView(relative.toVexing()))
                 {
                     objectPoints.put(relative, mo.getType());
