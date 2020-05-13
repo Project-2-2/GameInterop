@@ -12,6 +12,9 @@ import Interop.Percept.Vision.ObjectPercepts;
 import Interop.Utils.Utils;
 import com.sun.webkit.network.Util;
 
+/**
+ * @author Tomasz Darmetko
+ */
 public class DisperseAgent {
 
     public Action getDisperseAction(Percepts percepts) {

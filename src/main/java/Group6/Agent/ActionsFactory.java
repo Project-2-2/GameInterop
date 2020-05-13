@@ -10,6 +10,9 @@ import Interop.Percept.Percepts;
 import Interop.Percept.Scenario.ScenarioPercepts;
 import Interop.Percept.Scenario.SlowDownModifiers;
 
+/**
+ * @author Tomasz Darmetko
+ */
 public class ActionsFactory {
 
     public static Rotate getValidRotate(double desiredDegrees, Percepts percepts) {

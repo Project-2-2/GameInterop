@@ -4,6 +4,9 @@ import Interop.Percept.Percepts;
 import Interop.Percept.Vision.ObjectPerceptType;
 import Interop.Percept.Vision.ObjectPercepts;
 
+/**
+ * @author Tomasz Darmetko
+ */
 public class PerceptsService {
     public static ObjectPercepts getAgentPercepts(Percepts percepts) {
         return percepts
