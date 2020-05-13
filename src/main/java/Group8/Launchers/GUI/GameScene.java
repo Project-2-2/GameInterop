@@ -3,9 +3,11 @@ package Group8.Launchers.GUI;
 import Group9.agent.container.AgentContainer;
 import Group9.agent.container.GuardContainer;
 import Group9.agent.container.IntruderContainer;
+import Group9.map.GameMap;
 import Group9.map.dynamic.DynamicObject;
 import Group9.map.dynamic.Pheromone;
 import Group9.map.dynamic.Sound;
+import Group9.map.objects.MapObject;
 import Group9.math.Vector2;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
@@ -22,6 +24,7 @@ public class GameScene extends Scene {
     private final Color GUARD_COL = Color.BLANCHEDALMOND;
     private final Color INTRUDER_COL = Color.DARKSLATEGRAY;
 
+
     private Canvas background;
     private Canvas foreground;
 
@@ -29,14 +32,22 @@ public class GameScene extends Scene {
     private GraphicsContext gcForeground;
     private StackPane parent;
 
+    private double scale;
+    private GameMap map;
 
-    public GameScene(StackPane parent, int width, int height) {
+
+    public GameScene(StackPane parent, int width, int height, GameMap map) {
         super(parent);
         WIDTH = width;
         HEIGHT = height;
-        init(parent); // Initializes the needed variables
+        init(parent,map); // Initializes the needed variables
+        setScale(); // Sets scale for drawing
         constructScene(); // Necessary setup for the scene
 
+    }
+
+    private void setScale(){
+        scale = WIDTH/map.getGameSettings().getWidth()*0.9;
     }
 
     private void constructScene(){
@@ -47,12 +58,13 @@ public class GameScene extends Scene {
     }
 
 
-    private void init(StackPane parent){
+    private void init(StackPane parent, GameMap map){
         background = new Canvas(WIDTH,HEIGHT);
         foreground = new Canvas(WIDTH,HEIGHT);
         gcBackground = background.getGraphicsContext2D();
         gcForeground = foreground.getGraphicsContext2D();
         this.parent = parent;
+        this.map = map;
     }
 
     public void drawRect(){
@@ -60,10 +72,6 @@ public class GameScene extends Scene {
         gcBackground.fillRect(0,0,WIDTH,HEIGHT);
     }
 
-    public void drawMovableObject(MovableObject o){
-        gcForeground.setFill(Color.RED);
-        gcForeground.fillRect(o.getX(),o.getY(),o.getWidth(),o.getHeight());
-    }
 
     public void drawEntities(List<GuardContainer> guards, List<IntruderContainer> intruders, List<DynamicObject<?>> objects){
         for (DynamicObject<?> obj :
@@ -90,7 +98,7 @@ public class GameScene extends Scene {
 
     private void drawAgent(AgentContainer<?> agent, Color color){
         gcForeground.setFill(color);
-        Vector2 position = agent.getPosition();
+        Vector2 position = agent.getPosition().mul(scale);
         gcForeground.fillOval(position.getX(),position.getY(),AGENT_RAD,AGENT_RAD);
     }
 
