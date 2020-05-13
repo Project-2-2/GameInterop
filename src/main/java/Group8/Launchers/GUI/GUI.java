@@ -10,18 +10,17 @@ import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
-
 import java.util.ArrayList;
 import java.util.List;
 
 
 public class GUI extends Application{
-    private final int WIDTH = 800, HEIGHT = 600;
+    private final int DEFAULT_WIDTH = 800, DEFAULT_HEIGHT = 600;
 
     //If we need to pass a specific factory make sure to use -1 for ticks since that will be the fastest
     private final Game game = new Game(Parser.parseFile("./src/main/java/Group9/map/maps/test_2.map"),false);
 
-    private final GameScene scene = new GameScene(new StackPane(),WIDTH,HEIGHT,game.getGameMap());
+    private final GameScene scene = new GameScene(new StackPane(),game.getGameMap());
 
     private AnimationTimer timer;
 
@@ -36,10 +35,12 @@ public class GUI extends Application{
 
     @Override
     public void start(Stage stage) throws Exception {
-        stage.setHeight(HEIGHT);
-        stage.setWidth(WIDTH);
+        stage.setHeight(DEFAULT_HEIGHT);
+        stage.setWidth(DEFAULT_WIDTH);
         stage.setTitle("G8");
         stage.setScene(scene);
+        scene.attachWindow(stage);
+        scene.rescale();
         stage.show();
         stage.setResizable(false);
         stage.setOnCloseRequest(windowEvent -> {
@@ -60,6 +61,7 @@ public class GUI extends Application{
     }
 
     private void drawMovables(List<GuardContainer> guards, List<IntruderContainer> intruders, List<DynamicObject<?>> objects){
+        scene.clearForeground();
         scene.drawEntities(guards, intruders, objects);
     }
 }

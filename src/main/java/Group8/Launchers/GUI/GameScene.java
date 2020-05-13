@@ -8,21 +8,24 @@ import Group9.map.dynamic.DynamicObject;
 import Group9.map.dynamic.Pheromone;
 import Group9.map.dynamic.Sound;
 import Group9.map.objects.MapObject;
+import Group9.map.objects.Wall;
 import Group9.math.Vector2;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
+import javafx.stage.Stage;
 
 import java.util.List;
 
 public class GameScene extends Scene {
 
-    private final int WIDTH,HEIGHT;
+    private int width, height;
     private final int AGENT_RAD = 5;
-    private final Color GUARD_COL = Color.BLANCHEDALMOND;
-    private final Color INTRUDER_COL = Color.DARKSLATEGRAY;
+    private final Color GUARD_COL = Color.BLUE;
+    private final Color INTRUDER_COL = Color.RED;
+    private final int SCALE = 4;
 
 
     private Canvas background;
@@ -31,23 +34,22 @@ public class GameScene extends Scene {
     private GraphicsContext gcBackground;
     private GraphicsContext gcForeground;
     private StackPane parent;
+    private Stage window;
 
-    private double scale;
     private GameMap map;
+    private List<MapObject> mapObjects;
 
 
-    public GameScene(StackPane parent, int width, int height, GameMap map) {
+    public GameScene(StackPane parent, GameMap map) {
         super(parent);
-        WIDTH = width;
-        HEIGHT = height;
+        width = map.getGameSettings().getWidth();
+        height = map.getGameSettings().getHeight();
         init(parent,map); // Initializes the needed variables
-        setScale(); // Sets scale for drawing
         constructScene(); // Necessary setup for the scene
-
     }
 
-    private void setScale(){
-        scale = WIDTH/map.getGameSettings().getWidth()*0.9;
+    public void attachWindow(Stage stage){
+        this.window = stage;
     }
 
     private void constructScene(){
@@ -59,17 +61,18 @@ public class GameScene extends Scene {
 
 
     private void init(StackPane parent, GameMap map){
-        background = new Canvas(WIDTH,HEIGHT);
-        foreground = new Canvas(WIDTH,HEIGHT);
+        background = new Canvas(width, height);
+        foreground = new Canvas(width, height);
         gcBackground = background.getGraphicsContext2D();
         gcForeground = foreground.getGraphicsContext2D();
         this.parent = parent;
         this.map = map;
+        this.mapObjects = map.getObjects();
     }
 
     public void drawRect(){
         gcBackground.setFill(Color.GREY);
-        gcBackground.fillRect(0,0,WIDTH,HEIGHT);
+        gcBackground.fillRect(0,0, width, height);
     }
 
 
@@ -98,21 +101,85 @@ public class GameScene extends Scene {
 
     private void drawAgent(AgentContainer<?> agent, Color color){
         gcForeground.setFill(color);
-        Vector2 position = agent.getPosition().mul(scale);
+        Vector2 position = agent.getPosition().mul(SCALE);
         gcForeground.fillOval(position.getX(),position.getY(),AGENT_RAD,AGENT_RAD);
     }
 
     private void drawBackgroundLayer(){
         clearBackground();
         drawRect();
+
+        // Draw static components
+        for (MapObject mo :
+                mapObjects) {
+            StaticDrawable staticDrawable = getStaticDrawable(mo);
+            Vector2[] verts = mo.getArea().getAsPolygon().getPoints();
+            double[] scaledX = new double[verts.length];
+            double[] scaledY = new double[verts.length];
+
+            for (int i = 0; i < verts.length; i++) {
+                scaledX[i] = verts[i].getX() * SCALE;
+                scaledY[i] = verts[i].getY() * SCALE;
+            }
+
+            gcBackground.setFill(staticDrawable.getColor());
+            if(staticDrawable.isFill()){
+                gcBackground.fillPolygon(scaledX,scaledY,4);
+            }
+            else{
+                gcBackground.setLineWidth(3);
+                gcBackground.strokePolygon(scaledX,scaledY,4);
+            }
+
+
+
+
+        }
+    }
+
+    private StaticDrawable getStaticDrawable(MapObject mo) {
+        if(mo instanceof Wall){
+            return new StaticDrawable(Color.WHITE,true);
+        }
+        return new StaticDrawable(Color.PINK,false);
     }
 
     public void clearForeground(){
-        gcForeground.clearRect(0,0,WIDTH,HEIGHT); // Clear the canvas
-    }
-    public void clearBackground(){
-        gcBackground.clearRect(0,0,WIDTH,HEIGHT); // Clear the canvas
+        gcForeground.clearRect(0,0, width, height); // Clear the canvas
     }
 
+    public void clearBackground(){
+        gcBackground.clearRect(0,0, width, height); // Clear the canvas
+    }
+
+    public void rescale(){
+        if(window == null){
+            System.out.println("Cant rescale, window is not attached!");
+            return;
+        }
+
+        // Clear the screen
+        clearForeground();
+        clearBackground();
+
+        // Scale variables
+        width = width * SCALE;
+        height = height * SCALE;
+
+        window.setWidth(width);
+        window.setHeight(height);
+
+        parent.setPrefWidth(width);
+        parent.setPrefHeight(height);
+
+        background.setWidth(width);
+        background.setHeight(height);
+        foreground.setWidth(width);
+        foreground.setHeight(height);
+
+        // Redraw background / Static components
+        drawBackgroundLayer();
+
+    }
 
 }
