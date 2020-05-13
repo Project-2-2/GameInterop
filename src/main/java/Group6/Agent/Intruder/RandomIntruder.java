@@ -11,10 +11,6 @@ import Interop.Percept.IntruderPercepts;
  */
 public class RandomIntruder extends RandomAgent implements Intruder {
     public IntruderAction getAction(IntruderPercepts percepts) {
-        return (IntruderAction) getRandomAction(
-            percepts,
-            percepts.getScenarioIntruderPercepts().getMaxMoveDistanceIntruder(),
-            percepts.getScenarioIntruderPercepts().getScenarioPercepts().getMaxRotationAngle()
-        );
+        return (IntruderAction) getRandomAction(percepts);
     }
 }

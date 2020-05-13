@@ -1,47 +1,46 @@
 package Group6.Agent.Intruder;
 
+import Group6.Agent.ActionsFactory;
+import Group6.Agent.Behaviour.DisperseBehaviour;
+import Group6.Agent.Behaviour.ToTargetBehaviour;
+import Group6.Agent.Behaviour.ToTeleportBehaviour;
 import Group6.Geometry.Direction;
-import Group6.Utils;
-import Group9.agent.RandomIntruderAgent;
 import Interop.Action.IntruderAction;
-import Interop.Action.Move;
-import Interop.Action.Rotate;
+import Interop.Action.NoAction;
 import Interop.Agent.Intruder;
-import Interop.Geometry.Angle;
 import Interop.Percept.IntruderPercepts;
-
-import java.util.Random;
 
 /**
  * @author Tomasz Darmetko
  */
 public class StraightToTargetIntruder implements Intruder {
 
-    int continueExplorationFor = 0;
+    private final RandomIntruder randomAgent = new RandomIntruder();
+
+    private final ToTeleportBehaviour teleportBehaviour = new ToTeleportBehaviour();
+    private final DisperseBehaviour disperseBehaviour = new DisperseBehaviour();
+    private final ToTargetBehaviour toTargetBehaviour = new ToTargetBehaviour();
 
     public IntruderAction getAction(IntruderPercepts percepts) {
-        if(!percepts.wasLastActionExecuted()) continueExplorationFor = new Random().nextInt(200);
-        if(continueExplorationFor > 0) {
-            continueExplorationFor--;
-            return new RandomIntruder().getAction(percepts);
+
+        teleportBehaviour.updateState(percepts);
+        disperseBehaviour.updateState(percepts);
+        toTargetBehaviour.updateState(percepts);
+
+        if(teleportBehaviour.shouldExecute(percepts)) {
+            return (IntruderAction)teleportBehaviour.getAction(percepts);
         }
-        return getMoveToTargetAction(percepts);
+
+        if(disperseBehaviour.shouldExecute(percepts)) {
+            return (IntruderAction)disperseBehaviour.getAction(percepts);
+        }
+
+        if(toTargetBehaviour.shouldExecute(percepts)) {
+            return (IntruderAction)toTargetBehaviour.getAction(percepts);
+        }
+
+        return randomAgent.getAction(percepts);
+
     }
 
-    private IntruderAction getMoveToTargetAction(IntruderPercepts percepts) {
-        Direction targetDirection = Direction.fromInteropDirection(percepts.getTargetDirection());
-        double targetAngle = targetDirection.getDegrees() < 180 ?
-            targetDirection.getDegrees() : targetDirection.getDegrees() - 360;
-        if(Math.abs(targetAngle) > 10) {
-            double maxAngle = percepts
-                .getScenarioIntruderPercepts()
-                .getScenarioPercepts()
-                .getMaxRotationAngle()
-                .getDegrees();
-
-            double rotation = Math.signum(targetAngle) * Math.min(Math.abs(targetAngle), maxAngle);
-            return new Rotate(Angle.fromDegrees(rotation));
-        }
-        return new Move(percepts.getScenarioIntruderPercepts().getMaxMoveDistanceIntruder());
-    }
 }

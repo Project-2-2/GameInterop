@@ -11,10 +11,6 @@ import Interop.Percept.Percepts;
  */
 public class RandomGuard extends RandomAgent implements Guard {
     public GuardAction getAction(GuardPercepts percepts) {
-        return (GuardAction)getRandomAction(
-            percepts,
-            percepts.getScenarioGuardPercepts().getMaxMoveDistanceGuard(),
-            percepts.getScenarioGuardPercepts().getScenarioPercepts().getMaxRotationAngle()
-        );
+        return (GuardAction)getRandomAction(percepts);
     }
 }

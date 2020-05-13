@@ -1,9 +1,7 @@
-package Group6.Agent;
+package Group6.Agent.Behaviour;
 
+import Group6.Agent.ActionsFactory;
 import Interop.Action.Action;
-import Interop.Action.Rotate;
-import Interop.Geometry.Distance;
-import Interop.Geometry.Angle;
 import Interop.Percept.Percepts;
 
 import java.util.Random;
@@ -11,12 +9,11 @@ import java.util.Random;
 /**
  * @author Tomasz Darmetko
  */
-abstract public class RandomAgent {
+public class ExploreBehaviour implements Behaviour {
 
     private final boolean switchRotationSide = new Random().nextBoolean();
 
-    protected Action getRandomAction(Percepts percepts) {
-
+    public Action getAction(Percepts percepts) {
         if(percepts.wasLastActionExecuted()) {
 
             // go as far as possible
@@ -27,6 +24,14 @@ abstract public class RandomAgent {
             return getRandomRotate(percepts);
 
         }
+    }
+
+    public boolean shouldExecute(Percepts percepts) {
+        return true;
+    }
+
+    public void updateState(Percepts percepts) {
+        // NO OP
     }
 
     private Action getRandomRotate(Percepts percepts) {
@@ -41,4 +46,5 @@ abstract public class RandomAgent {
         );
 
     }
+
 }
