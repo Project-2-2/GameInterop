@@ -26,6 +26,7 @@ public class GUI extends Application{
     private AnimationTimer timer;
 
     private MovableObject obj = new MovableObject(0,0,50,50);
+    private MovableObject obj2 = new MovableObject(WIDTH,0,10,10);
 
     /**
      * Launches the GUI
@@ -39,9 +40,10 @@ public class GUI extends Application{
     public void start(Stage stage) throws Exception {
         stage.setHeight(HEIGHT);
         stage.setWidth(WIDTH);
-        stage.setTitle("Group 8");
+        stage.setTitle("G8");
         stage.setScene(scene);
         stage.show();
+        stage.setResizable(false);
         stage.setOnCloseRequest(windowEvent -> {
             System.out.println("GUI shutting down...");
         });
@@ -61,9 +63,12 @@ public class GUI extends Application{
 
     private void drawMovables(List<GuardContainer> guards, List<IntruderContainer> intruders, List<DynamicObject<?>> objects){
         //Implement this somehow....
-        scene.drawRect();
-        scene.drawMovableObject(obj);
-        obj.move(1,1);
+//        scene.clearForeground();
+//        scene.drawMovableObject(obj);
+//        scene.drawMovableObject(obj2);
+//        obj.move(1,1);
+//        obj2.move(-1,1);
+        scene.drawEntities(guards, intruders, objects);
 
     }
 }
@@ -91,7 +96,6 @@ class MovableObject{
     public void move(double x, double y){
         this.x += x;
         this.y += y;
-        System.out.println(String.format("New location at x: %f & y: %f",this.x,this.y));
     }
 
     public double getY() {
