@@ -238,7 +238,7 @@ public class GameMap {
      * @param line
      * @return
      */
-    public Set<ObjectPercept>getObjectPerceptsInLine(List<MapObject> filteredObjects, AgentContainer agentContainer, FieldOfView fov, PointContainer.Line line) {
+    public Set<ObjectPercept> getObjectPerceptsInLine(List<MapObject> filteredObjects, AgentContainer agentContainer, FieldOfView fov, PointContainer.Line line) {
         // --- all points where line and objects intersect sorted by proximity to start of line
         Map<Vector2, ObjectPerceptType> objectPoints = new HashMap<>();
 
@@ -300,6 +300,14 @@ public class GameMap {
             }
         }
 
+        if(retSet.isEmpty())
+        {
+            retSet.add(new ObjectPercept(ObjectPerceptType.EmptySpace, line.getEnd()
+                    .sub(agentContainer.getPosition()) // move relative to agent
+                    .rotated(agentContainer.getDirection().getClockDirection()) //rotated back
+                    .toVexing()));
+        }
+
         return retSet;
     }
 
@@ -319,9 +327,9 @@ public class GameMap {
         //System.out.println("angle-a: " + agentContainer.getDirection().getClockDirection());
         List<MapObject> filteredObjects = getFilteredObjects(agentContainer, null);
         for (Vector2[] ray : getAgentVisionCone(agentContainer, fov, viewRange)) {
+            Set<ObjectPercept> objectPercepts = getObjectPerceptsInLine(filteredObjects, agentContainer, fov, new PointContainer.Line(ray[0], ray[1], false));
             objectsInSight.addAll(
-                    getObjectPerceptsInLine(filteredObjects, agentContainer, fov, new PointContainer.Line(ray[0], ray[1]))
-                            .stream()
+                    objectPercepts.stream()
                             .filter(e -> fov.isInView(e.getPoint()))
                             .collect(Collectors.toList())
             );
