@@ -7,8 +7,7 @@ import Group9.map.GameMap;
 import Group9.map.dynamic.DynamicObject;
 import Group9.map.dynamic.Pheromone;
 import Group9.map.dynamic.Sound;
-import Group9.map.objects.MapObject;
-import Group9.map.objects.Wall;
+import Group9.map.objects.*;
 import Group9.math.Vector2;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
@@ -23,8 +22,6 @@ public class GameScene extends Scene {
 
     private int width, height;
     private final int AGENT_RAD = 5;
-    private final Color GUARD_COL = Color.BLUE;
-    private final Color INTRUDER_COL = Color.RED;
     private final int SCALE = 4;
 
 
@@ -91,11 +88,11 @@ public class GameScene extends Scene {
         }
         for (GuardContainer guard:
              guards) {
-            drawAgent(guard,GUARD_COL);
+            drawAgent(guard,Presets.GUARD_COL);
         }
         for(IntruderContainer intruder:
             intruders){
-            drawAgent(intruder,INTRUDER_COL);
+            drawAgent(intruder,Presets.INTRUDER_COL);
         }
     }
 
@@ -136,12 +133,37 @@ public class GameScene extends Scene {
 
         }
     }
-
+    // Inspired by group 9 implementation
     private StaticDrawable getStaticDrawable(MapObject mo) {
         if(mo instanceof Wall){
-            return new StaticDrawable(Color.WHITE,true);
+            return new StaticDrawable(Presets.WALL_COL,true);
         }
-        return new StaticDrawable(Color.PINK,false);
+        else if(mo instanceof TargetArea){
+            return new StaticDrawable(Presets.TARGET_COL,false);
+        }
+        else if(mo instanceof Spawn.Guard){
+            return new StaticDrawable(Presets.SPAWN_GUARD_COL,false);
+        }
+        else if(mo instanceof Spawn.Intruder){
+            return new StaticDrawable(Presets.SPAWN_INTRUDER_COL,false);
+        }
+        else if(mo instanceof ShadedArea){
+            return new StaticDrawable(Presets.SHADED_COL,true);
+        }
+        else if(mo instanceof Door){
+            return new StaticDrawable(Presets.DOOR_COL,true);
+        }
+        else if(mo instanceof Window){
+            return new StaticDrawable(Presets.WINDOW_COL,true);
+        }
+        else if(mo instanceof SentryTower){
+            return new StaticDrawable(Presets.SENTRY_COL,true);
+        }
+        else if(mo instanceof TeleportArea){
+            return new StaticDrawable(Presets.TELEPORT_COL,true);
+        }
+
+        return new StaticDrawable(Presets.UNKNOWN,true);
     }
 
     public void clearForeground(){
@@ -182,4 +204,19 @@ public class GameScene extends Scene {
 
     }
 
+}
+
+class Presets{
+    public static final Color GUARD_COL = Color.BLUE;
+    public static final Color INTRUDER_COL = Color.RED;
+    public static final Color WALL_COL = Color.WHITE;
+    public static final Color TARGET_COL = Color.BLACK;
+    public static final Color SPAWN_INTRUDER_COL = Color.RED;
+    public static final Color SPAWN_GUARD_COL = Color.BLUE;
+    public static final Color SHADED_COL = Color.DARKGRAY;
+    public static final Color DOOR_COL = Color.GREEN;
+    public static final Color WINDOW_COL = Color.LIGHTBLUE;
+    public static final Color SENTRY_COL = Color.FIREBRICK;
+    public static final Color TELEPORT_COL = Color.PURPLE;
+    public static final Color UNKNOWN = Color.LIMEGREEN;
 }
