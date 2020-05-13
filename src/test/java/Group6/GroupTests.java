@@ -13,7 +13,7 @@ import java.nio.file.Paths;
 /**
  * @author Tomasz Darmetko
  */
-public class GroupTests extends SimpleUnitTest {
+public class GroupTests extends ExtendedUnitTest {
 
     public final static String resources = Paths
         .get("")
@@ -22,12 +22,16 @@ public class GroupTests extends SimpleUnitTest {
         .concat("/src/test/java/Group6/Resources");
 
     public static void main(String[] args) {
+
         GeometryTest.main(args);
         WorldStateTest.main(args);
         AgentsTests.main(args);
         RaysTest.main(args);
         CollisionTest.main(args);
         ControllerTest.main(args);
+
+        System.out.println("\n\nAssertions: " + assertions + "\n\n");
+
     }
 
 }

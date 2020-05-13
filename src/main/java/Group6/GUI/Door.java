@@ -8,7 +8,7 @@ public class Door extends Wall {
     public Door(double[] x, double[] y) {
         super(x, y);
 
-        setFill(Color.BROWN);
+        setFill(Color.CHOCOLATE);
 
     }
 

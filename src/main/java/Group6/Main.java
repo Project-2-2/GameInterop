@@ -39,7 +39,8 @@ public class Main extends Application {
                         new SmellPreceptsBuilder(),
                         new AreaPerceptsBuilder(),
                         new ScenarioPerceptsBuilder()
-                )
+                ),
+            false
         );
 
         WorldState worldState = new WorldState(
@@ -83,6 +84,7 @@ public class Main extends Application {
                     Platform.runLater(new Runnable() {
                         @Override
                         public void run() {
+                            controller.executeTurn(worldState);
                             movingObjects.getChildren().clear();
                             worldState.getGuardStates().forEach(w -> movingObjects.getChildren().add(w.getAgentGui()));
 

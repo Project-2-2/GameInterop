@@ -4,6 +4,7 @@ import Group6.Geometry.*;
 import Group6.Geometry.Collection.Points;
 import Group6.Geometry.Collection.Quadrilaterals;
 import Group6.Geometry.Contract.Area;
+import Group6.WorldState.Collision;
 import Group6.WorldState.Contract.Object;
 import Group6.WorldState.Pheromone;
 import Group6.WorldState.Teleports;
@@ -12,6 +13,7 @@ import Interop.Action.Action;
 import Interop.Action.DropPheromone;
 import Interop.Action.Move;
 import Interop.Action.Rotate;
+import Interop.Percept.Vision.ObjectPerceptType;
 import Interop.Utils.Require;
 
 import java.util.Set;
@@ -45,11 +47,13 @@ public abstract class AgentState implements Object {
         return direction;
     }
 
+    public abstract ObjectPerceptType getType();
+
     public boolean isInside(Area area) {
         return location.isInside(area);
     }
 
-
+    public double getRADIUS(){return RADIUS;}
 
     public Circle getCircle() {
         return new Circle(location, RADIUS);
@@ -110,6 +114,9 @@ public abstract class AgentState implements Object {
 
     protected void move(WorldState worldState, Distance distance) {
 
+        boolean hasCollision = new Collision(this, distance, worldState.getScenario()).checkCollision();
+        if(hasCollision) throw new IllegalAction("move or sprint", "move or sprint resulted in collision");
+
         Vector displacement = new Vector(0, distance.getValue()).rotate(direction.getRadians());
         location = location.add(displacement).toPoint();
 
@@ -127,6 +134,9 @@ public abstract class AgentState implements Object {
     }
 
     public void rotate(WorldState worldState, Rotate action) {
+        if(Math.abs(action.getAngle().getRadians()) > worldState.getScenario().getMaxRotationAngle().getRadians()) {
+            throw new IllegalAction("move", "rotation bigger than allowed");
+        }
         requireNoCooldown(action);
         direction = direction.getChangedBy(
             Angle.fromInteropAngle(action.getAngle())
@@ -153,6 +163,19 @@ public abstract class AgentState implements Object {
 
     protected void requireNoCooldown(Action action) {
         if (hasCooldown()) throw new IllegalActionDuringCooldown(action.getClass().getName());
+    }
+
+    public String toString() {
+        return "AgentState{" + location + ", " + direction + '}';
+    }
+
+    class IllegalAction extends RuntimeException {
+        public IllegalAction(String action, String explanation) {
+            super(
+                "Following action: " + action + " is illegal!\n" +
+                "Explanation: " + explanation
+            );
+        }
     }
 
     class IllegalActionDuringCooldown extends RuntimeException {

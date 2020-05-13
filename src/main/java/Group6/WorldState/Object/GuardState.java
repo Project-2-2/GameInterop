@@ -1,10 +1,12 @@
 package Group6.WorldState.Object;
 
 import Group6.GUI.Agent;
+import Group6.Geometry.Distance;
 import Group6.Geometry.Quadrilateral;
 import Group6.WorldState.Scenario;
 import Group6.WorldState.Sound;
 import Group6.WorldState.WorldState;
+import Interop.Action.Move;
 import Interop.Action.Yell;
 import Interop.Agent.Guard;
 import Group6.Geometry.Direction;
@@ -35,7 +37,15 @@ public class GuardState extends AgentState {
         return ObjectPerceptType.Guard;
     }
 
+    public void move(WorldState worldState, Move action) {
+        if(action.getDistance().getValue() > worldState.getScenario().getMaxMoveDistanceGuard().getValue()) {
+            throw new IllegalAction("move", "move longer than allowed for guard");
+        }
+        super.move(worldState, action);
+    }
+
     public void yell(WorldState worldState, Yell action) {
+        requireNoCooldown(action);
         worldState.addSound(Sound.createYell(worldState.getScenario(), this));
         markActionAsExecuted();
     }
@@ -51,7 +61,7 @@ public class GuardState extends AgentState {
     }
     public Agent getAgentGui(){
 
-        return new Agent(1,getLocation().getX(),getLocation().getY());
+        return new Group6.GUI.Guard(1,getLocation().getX(),getLocation().getY());
 
     }
 

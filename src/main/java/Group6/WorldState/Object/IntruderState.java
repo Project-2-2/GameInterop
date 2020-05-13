@@ -5,6 +5,7 @@ import Group6.Geometry.Distance;
 import Group6.Geometry.Quadrilateral;
 import Group6.WorldState.Scenario;
 import Group6.WorldState.WorldState;
+import Interop.Action.Move;
 import Interop.Action.Sprint;
 import Interop.Agent.Intruder;
 import Group6.Geometry.Direction;
@@ -31,7 +32,17 @@ public class IntruderState extends AgentState {
         return ObjectPerceptType.Intruder;
     }
 
+    public void move(WorldState worldState, Move action) {
+        if(action.getDistance().getValue() > worldState.getScenario().getMaxMoveDistanceIntruder().getValue()) {
+            throw new IllegalAction("move", "move longer than allowed for intruder");
+        }
+        super.move(worldState, action);
+    }
+
     public void sprint(WorldState worldState, Sprint action) {
+        if(action.getDistance().getValue() > worldState.getScenario().getMaxSprintDistanceIntruder().getValue()) {
+            throw new IllegalAction("sprint", "sprint longer than allowed for intruder");
+        }
         requireNoCooldown(action);
         move(worldState, new Distance(action.getDistance()));
         addCooldown(worldState.getScenario().getSprintCooldown());
@@ -50,7 +61,7 @@ public class IntruderState extends AgentState {
 
     public Agent getAgentGui(){
 
-        return new Agent(1,getLocation().getX(),getLocation().getY());
+        return new Group6.GUI.Intruder(1,getLocation().getX(),getLocation().getY());
 
     }
 

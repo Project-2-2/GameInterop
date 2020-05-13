@@ -1,10 +1,7 @@
-import Interop.Agent.Guard;
-import Interop.Agent.Intruder;
 import Interop.InteropTests;
 import SimpleUnitTest.SimpleUnitTest;
 
 import java.lang.reflect.Method;
-import java.util.List;
 
 /**
  * This tests are run by GitHub Actions.
@@ -17,6 +14,7 @@ public class AllTests extends SimpleUnitTest {
 
     public static void main(String[] args) {
         InteropTests.main(args);
+        JavaFXTests.main(args);
         testGroups(args);
         testAgentFactories();
     }
