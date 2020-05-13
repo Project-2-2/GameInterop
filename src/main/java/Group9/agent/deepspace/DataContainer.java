@@ -14,7 +14,7 @@ public class DataContainer extends PointContainer.Circle {
     private List<GuardPercepts> percepts = new ArrayList<>();
     private Map<ObjectPerceptType, HashSet<Vector2>> objects = new HashMap<>();
 
-    private boolean deadend;
+    private boolean deadEnd;
 
     public DataContainer(DeepSpace explorerAgent, Vector2 position, double radius) {
         super(position.clone(), radius);
@@ -25,12 +25,12 @@ public class DataContainer extends PointContainer.Circle {
         return objects;
     }
 
-    public boolean isDeadend() {
-        return deadend;
+    public boolean isDeadEnd() {
+        return deadEnd;
     }
 
-    public void setDeadend(boolean deadend) {
-        this.deadend = deadend;
+    public void setDeadEnd(boolean deadEnd) {
+        this.deadEnd = deadEnd;
     }
 
     public void add(GuardPercepts percepts)

@@ -123,13 +123,15 @@ public class StateHandlerFindNewTarget implements StateHandler {
 
         Map<ObjectPerceptType, HashSet<Vector2>> map = ds.getCurrentVertex().getContent().getObjects();
         ObjectPerceptType[] priority = new ObjectPerceptType[] {ObjectPerceptType.TargetArea, ObjectPerceptType.SentryTower,
-                ObjectPerceptType.Door, ObjectPerceptType.Window, ObjectPerceptType.Teleport, ObjectPerceptType.EmptySpace};
+                ObjectPerceptType.Door, ObjectPerceptType.Window, ObjectPerceptType.Teleport, ObjectPerceptType.EmptySpace,
+                ObjectPerceptType.Wall};
 
         if(teleportPriorityChange >= 0)
         {
             teleportPriorityChange--;
             priority = new ObjectPerceptType[] {ObjectPerceptType.TargetArea, ObjectPerceptType.SentryTower,
-                    ObjectPerceptType.Door, ObjectPerceptType.Window, ObjectPerceptType.EmptySpace, ObjectPerceptType.Teleport};
+                    ObjectPerceptType.Door, ObjectPerceptType.Window, ObjectPerceptType.EmptySpace, ObjectPerceptType.Wall,
+                    ObjectPerceptType.Teleport};
         }
         else
         {
@@ -138,7 +140,7 @@ public class StateHandlerFindNewTarget implements StateHandler {
 
         for(ObjectPerceptType type : priority)
         {
-            Set<Vector2> positions = map.get(type);
+            Set<Vector2> positions = ds.currentVertex.getContent().getObjects().get(type);
             if(positions != null && !positions.isEmpty())
             {
                 Optional<Vector2> target = positions.stream().filter(e -> !ds.isInsideOtherVertex(ds.getCurrentVertex(), e, 0.5)).findAny();
@@ -151,13 +153,13 @@ public class StateHandlerFindNewTarget implements StateHandler {
             }
         }
 
-        ds.getCurrentVertex().getContent().setDeadend(true);
+        ds.getCurrentVertex().getContent().setDeadEnd(true);
 
         // backtrack: get a list of actions to move us to a prev node/position that didn't lead to (or wasn't) a deadend
         Queue<ActionContainer<GuardAction>> actions = this.backtrack(guardPercepts);
         if(actions.isEmpty())
         {
-            System.out.println("Count: " + Arrays.toString(ds.currentGraph.getVertices().stream().filter(e -> !e.getContent().isDeadend()).toArray()));
+            System.out.println("Count: " + Arrays.toString(ds.currentGraph.getVertices().stream().filter(e -> !e.getContent().isDeadEnd()).toArray()));
         }
         else
         {
@@ -199,7 +201,7 @@ public class StateHandlerFindNewTarget implements StateHandler {
             vertices.addAll(a.apply(vertex));
             visited.add(vertex);
 
-            if(!vertex.getContent().isDeadend() && vertex != ds.currentVertex)
+            if(!vertex.getContent().isDeadEnd() && vertex != ds.currentVertex)
             {
 
                 List<Vertex<DataContainer>> shortestPath = ds.currentGraph.shortestPath(ds.currentVertex, vertex);
@@ -210,7 +212,7 @@ public class StateHandlerFindNewTarget implements StateHandler {
                 //--- walk to the center of the vertex it is currently exploring
                 if(ds.getPosition().distance(ds.currentVertex.getContent().getCenter()) > 1E-8)
                 {
-                    retActionsQueue.addAll(ds.moveTowardsPoint(guardPercepts, ds.getDirection(), ds.getPosition(), vertex.getContent().getCenter()));
+                    //retActionsQueue.addAll(ds.moveTowardsPoint(guardPercepts, ds.getDirection(), ds.getPosition(), vertex.getContent().getCenter()));
                 }
 
                 //--- if the path has only length 2 then we are only walking from the current vertex to a previous vertex

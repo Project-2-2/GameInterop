@@ -2,21 +2,16 @@ package Group9.agent.deepspace;
 
 import Group9.PiMath;
 import Group9.math.Vector2;
-import Group9.math.graph.Edge;
 import Group9.math.graph.Graph;
 import Group9.math.graph.Vertex;
 import Interop.Action.*;
 import Interop.Agent.Guard;
 import Interop.Geometry.Angle;
 import Interop.Geometry.Distance;
-import Interop.Percept.AreaPercepts;
 import Interop.Percept.GuardPercepts;
 
-import javax.xml.crypto.Data;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 public class DeepSpace implements Guard {
 
@@ -132,7 +127,7 @@ public class DeepSpace implements Guard {
     protected boolean isInsideOtherVertex(Vertex<?> own, Vector2 position, double radiusModifier)
     {
         return currentGraph.getVertices().stream()
-                .anyMatch(e -> e != own && !e.getContent().isDeadend() &&
+                .anyMatch(e -> e != own && !e.getContent().isDeadEnd() &&
                         e.getContent().getCenter().distance(position) < radiusModifier * e.getContent().getRadius());
     }
 
