@@ -31,4 +31,20 @@ public class Coordinate {
             return false;
         }
     }
+    public void decrementX()
+    {
+        x--;
+    }
+    public void decrementY()
+    {
+        y--;
+    }
+    public void incrementY()
+    {
+        y++;
+    }
+    public void incrementX()
+    {
+        x++;
+    }
 }

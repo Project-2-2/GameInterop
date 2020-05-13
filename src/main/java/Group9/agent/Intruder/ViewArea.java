@@ -34,6 +34,8 @@ public class ViewArea {
     }
     public double partContained(Cell c)
     {
+        c.setProcessed(true);
+        c.addVisitedCount();
         ArrayList<Coordinate> pointsContained = pointsContained(c);
         if(pointsContained.size() == 4)
         {

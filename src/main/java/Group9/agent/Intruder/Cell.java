@@ -1,5 +1,7 @@
 package Group9.agent.Intruder;
 
+import java.util.LinkedList;
+
 public class Cell {
     //x,y are the corners of the left top corner of a cell
     private double x;
@@ -17,6 +19,7 @@ public class Cell {
     private boolean reachable;
     public static int numOfCells;
     private int visitedCount;
+    private boolean processed;
 
     private boolean wall = false;
     private boolean window = false;
@@ -25,6 +28,17 @@ public class Cell {
     private boolean sentryTower = false;
     private boolean target = false;
     private boolean teleport = false;
+    public Cell(double x, double y)
+    {
+        above = null;
+        below = null;
+        left = null;
+        right = null;
+        setMidX(x);
+        setMidY(y);
+        numOfCells++;
+        processed = false;
+    }
     public Cell()
     {
         above = null;
@@ -32,7 +46,120 @@ public class Cell {
         left = null;
         right = null;
     }
+    public LinkedList<Cell> getUnprocessed()
+    {
+        LinkedList<Cell> unprocessed = new LinkedList<>();
+        if (above == null)
+        {
+            addAbove();
+        }
+        if (below == null)
+        {
+            addBelow();
+        }
+        if(left == null)
+        {
+            addLeft();
+        }
+        if(right == null)
+        {
+            addRight();
+        }
+        if (!above.getProcessed())
+        {
+            unprocessed.add(above);
+        }
+        if (!below.getProcessed())
+        {
+            unprocessed.add(below);
+        }
+        if (!left.getProcessed())
+        {
+            unprocessed.add(below);
+        }
+        if (!right.getProcessed())
+        {
+            unprocessed.add(right);
+        }
+         return unprocessed;
+    }
+    public double getScore()
+    {
+        //calculate the score;
+        return 0.0;
+    }
 
+    /**
+     * Finds the cell closest to the given coordinates
+     * @param x the x coordinate of the cell
+     * @param y the y coordinate of the cell
+     * @return the cell closest to the given coordinates
+     */
+    public Cell find(double x, double y)
+    {
+        x = Math.floor(x);
+        y = Math.floor(y);
+        Cell result = this;
+        while(result.getMidX() != x && result.getMidY() != y)
+        {
+            //looking for the cell with the right x coordinate
+            if(x > result.getMidX())
+            {
+                if (result.getRight() != null)
+                {
+                    result = result.getRight();
+                }
+                else
+                {
+                    x = result.getX();
+                }
+            }
+            else if(x < result.getMidX())
+            {
+                if (result.getLeft() != null)
+                {
+                    result = result.getLeft();
+                }
+                else
+                {
+                    x = result.getMidX();
+                }
+            }
+
+            // looking for the cell with the right y coordinate
+            if(y > result.getMidY())
+            {
+                if (result.getBelow() != null)
+                {
+                    result = result.getBelow();
+                }
+                else
+                {
+                    y = result.getY();
+                }
+            }
+            else if(y < result.getMidY())
+            {
+                if (result.getAbove() != null)
+                {
+                    result = result.getAbove();
+                }
+                else
+                {
+                    y = result.getMidY();
+                }
+            }
+        }
+        return  result;
+    }
+    public boolean getProcessed()
+    {
+        return processed;
+    }
+    public void setProcessed(boolean b)
+    {
+        this.processed = b;
+    }
     public void setAbove(Cell above) {
         this.above = above;
     }
@@ -47,6 +174,34 @@ public class Cell {
 
     public void setRight(Cell right) {
         this.right = right;
+    }
+    public Cell addAbove()
+    {
+        Cell above = new Cell();
+        setAbove(above);
+        above.setBelow(this);
+        return above;
+    }
+    public Cell addBelow()
+    {
+        Cell below = new Cell();
+        setBelow(below);
+        below.setAbove(this);
+        return below;
+    }
+    public Cell addLeft()
+    {
+        Cell left = new Cell();
+        setLeft(left);
+        left.setRight(this);
+        return left;
+    }
+    public Cell addRight()
+    {
+        Cell right = new Cell();
+        setRight(right);
+        right.setLeft(this);
+        return right;
     }
 
     public void setMidX(double midX) {
@@ -132,5 +287,9 @@ public class Cell {
 
     public boolean hasTeleport(){
         return teleport;
+    }
+    public void addVisitedCount()
+    {
+        visitedCount++;
     }
 }
