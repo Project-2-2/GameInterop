@@ -238,7 +238,7 @@ public class GameMap {
      * @param line
      * @return
      */
-    public Set<ObjectPercept>getObjectPerceptsInLine(List<MapObject> filteredObjects, AgentContainer agentContainer, FieldOfView fov, PointContainer.Line line) {
+    public Set<ObjectPercept> getObjectPerceptsInLine(List<MapObject> filteredObjects, AgentContainer agentContainer, FieldOfView fov, PointContainer.Line line) {
         // --- all points where line and objects intersect sorted by proximity to start of line
         Map<Vector2, ObjectPerceptType> objectPoints = new HashMap<>();
 

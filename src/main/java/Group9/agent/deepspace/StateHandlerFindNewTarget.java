@@ -3,7 +3,9 @@ package Group9.agent.deepspace;
 import Group9.math.Vector2;
 import Group9.math.graph.Edge;
 import Group9.math.graph.Vertex;
+import Group9.tree.PointContainer;
 import Interop.Action.GuardAction;
+import Interop.Action.Move;
 import Interop.Action.NoAction;
 import Interop.Percept.GuardPercepts;
 import Interop.Percept.Vision.ObjectPerceptType;
@@ -34,7 +36,7 @@ public class StateHandlerFindNewTarget implements StateHandler {
         this.ds = deepSpace;
 
         initialRoundAfterTeleport = percepts.getAreaPercepts().isJustTeleported() && !initialRoundAfterTeleport && teleportPriorityChange == -1;
-        if(initialRoundAfterTeleport )
+        if(initialRoundAfterTeleport)
         {
             this.teleportPriorityChange = TELEPORT_PRIORITY_TURNS;
         }
@@ -48,6 +50,41 @@ public class StateHandlerFindNewTarget implements StateHandler {
         // if this is an ongoing state, execute queue
         if (!actionsQueue.isEmpty()) {
             retAction = actionsQueue.poll();
+
+            // --- check for collision
+            if(retAction.getAction() instanceof Move)
+            {
+                Move action = (Move) retAction.getAction();
+
+                {
+                    Vector2 position = new Vector2.Origin();
+                    Vector2 direction = new Vector2(0, 1).normalise();
+
+                    final double length = action.getDistance().getValue() + 0.5D;
+                    final Vector2 end = direction.mul(length);
+                    PointContainer.Line line = new PointContainer.Line(position, end);
+
+                    final Vector2 move = direction.mul(length);
+
+                    Vector2 pointA = position.add(line.getNormal());
+                    Vector2 pointB = pointA.add(move);
+                    Vector2 pointD = position.sub(line.getNormal());
+                    Vector2 pointC = pointD.add(move);
+
+                    PointContainer.Polygon quadrilateral = new PointContainer.Polygon(pointA, pointB, pointC, pointD);
+
+                    boolean collision = percepts.getVision().getObjects()
+                            .filter(e -> e.getType().isSolid())
+                            .getAll().stream().anyMatch(e -> quadrilateral.isPointInside(Vector2.from(e.getPoint())));
+
+                    if(collision)
+                    {
+                        retAction = ActionContainer.of(this, new NoAction(), ActionContainer.Input.create().i("collision", true));
+                        actionsQueue.clear();
+                    }
+                }
+            }
+
         }
 
         postExecute();
@@ -191,7 +228,7 @@ public class StateHandlerFindNewTarget implements StateHandler {
                         retActionsQueue.addAll(ds.moveTowardsPoint(guardPercepts, c.sub(s).normalise(), c, n));
                     }
                 }
-
+                break;
             }
         } while (!vertices.isEmpty());
 
