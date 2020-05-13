@@ -72,6 +72,24 @@ public class LineSegment {
         if(intersection == null) return false;
         return this.includes(intersection) && lineSegment.includes(intersection);
     }
+    public double angleOfPoints(Point a, Point b){
+        if(a.getY() != b.getY()) { //check if it is a horizontal line, then we do only a 90 degree shift so return 0
+            minX = Math.min(a.getX(), b.getX());
+            maxX = Math.max(a.getX(), b.getX());
+            minY = Math.min(a.getY(), b.getY());
+            maxY = Math.max(a.getY(), b.getY());
+            double deltaY = maxY - minX;
+            double deltaX = maxX - minX;
+            double result = Math.atan(deltaY / deltaX);
+            if (b.getX() < a.getX())
+                result = -1 * result;
+            return result;
+        }
+        else{
+            return 0;
+        }
+
+    }
 
     public boolean includes(Point point) {
         // must be inside bounding box
