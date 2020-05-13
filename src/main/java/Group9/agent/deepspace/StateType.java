@@ -7,7 +7,8 @@ package Group9.agent.deepspace;
 enum StateType {
     INITIAL(StateHandlerInitial.class),
     EXPLORE_360(StateHandlerExplore360.class),
-    FIND_NEW_TARGET(StateHandlerFindNewTarget.class);
+    FIND_NEW_TARGET(StateHandlerFindNewTarget.class),
+    GUARD_TARGET_AREA(StateHandlerGuarding.class);
 
     private final Class<? extends StateHandler> stateHandlerClass;
 

@@ -30,7 +30,7 @@ public class DeepSpace implements Guard {
     private Vector2 position = new Vector2(0, 0);
     private Vector2 direction = new Vector2(0, 1).normalise();
 
-    private Vertex<DataContainer> currentVertex;
+    protected Vertex<DataContainer> currentVertex;
 
     private List<Graph<DataContainer>> graphs = new ArrayList<>();
     private List<TeleportPosition> teleports = new ArrayList<>();
@@ -129,79 +129,11 @@ public class DeepSpace implements Guard {
         return currentVertex.getContent().getCenter().distance(newVertex.getContent().getCenter());
     }
 
-    /**
-     * TODO I think the current issue is within this method. It seems to generate an invalid move pattern for the agent
-     *      causing it to get stuck.
-     * @param guardPercepts
-     */
-    public Queue<ActionContainer<GuardAction>> backtrack(GuardPercepts guardPercepts)
-    {
-        Queue<ActionContainer<GuardAction>> retActionsQueue = new LinkedList<>();
-
-        Set<Vertex<DataContainer>> visited = new HashSet<>();
-
-        Function<Vertex<DataContainer>, LinkedList<Vertex<DataContainer>>> a = new Function<>() {
-
-
-            @Override
-            public LinkedList<Vertex<DataContainer>> apply(Vertex<DataContainer> dataContainerVertex) {
-                LinkedList<Vertex<DataContainer>> list = currentGraph.getNeighbours(dataContainerVertex)
-                        .stream()
-                        .map(Edge::getEnd)
-                        .filter(e -> !visited.contains(e))
-                        .collect(Collectors.toCollection(LinkedList::new));
-                return list;
-            }
-        };
-
-        Vertex<DataContainer> vertex = null;
-        Queue<Vertex<DataContainer>> vertices = new LinkedList<>();
-        vertices.add(currentVertex);
-        do {
-            vertex = vertices.poll();
-            vertices.addAll(a.apply(vertex));
-            visited.add(vertex);
-
-            if(!vertex.getContent().isDeadend())
-            {
-
-                List<Vertex<DataContainer>> shortestPath = this.currentGraph.shortestPath(this.currentVertex, vertex);
-                System.out.println("|path| = " + shortestPath.size());
-                System.out.println(shortestPath.get(0).getContent().getCenter());
-                System.out.println(shortestPath.get(shortestPath.size() - 1).getContent().getCenter());
-
-                //--- walk to the center of the vertex it is currently exploring
-                if(this.position.distance(currentVertex.getContent().getCenter()) > 1E-8)
-                {
-                    retActionsQueue.addAll(moveTowardsPoint(guardPercepts, this.direction, this.position, vertex.getContent().getCenter()));
-                }
-
-                //--- if the path has only length 2 then we are only walking from the current vertex to a previous vertex
-                if(shortestPath.size() == 2)
-                {
-                    retActionsQueue.addAll(moveTowardsPoint(guardPercepts, this.direction,
-                            this.position, shortestPath.get(1).getContent().getCenter()));
-                }
-                else
-                {
-                    for (int i = 0; i < shortestPath.size() - 2; i++) {
-                        Vector2 s = shortestPath.get(0 + i).getContent().getCenter();
-                        Vector2 c = shortestPath.get(1 + i).getContent().getCenter();
-                        Vector2 n = shortestPath.get(2 + i).getContent().getCenter();
-                        retActionsQueue.addAll(moveTowardsPoint(guardPercepts, c.sub(s).normalise(), c, n));
-                    }
-                }
-
-            }
-        } while (!vertices.isEmpty());
-
-        return retActionsQueue;
-    }
-
-    protected boolean isInsideOtherVertex(Vertex<?> own, Vector2 position)
+    protected boolean isInsideOtherVertex(Vertex<?> own, Vector2 position, double radiusModifier)
     {
         return currentGraph.getVertices().stream()
-                .anyMatch(e -> e != own && !e.getContent().isDeadend() && e.getContent().getAsCircle().isInside(position));
+                .anyMatch(e -> e != own && !e.getContent().isDeadend() &&
+                        e.getContent().getCenter().distance(position) < radiusModifier * e.getContent().getRadius());
     }
 
     protected Queue<ActionContainer<GuardAction>> moveTowardsPoint(GuardPercepts percepts, Vector2 direction, Vector2 source, Vector2 target)
