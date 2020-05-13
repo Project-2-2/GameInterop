@@ -45,7 +45,7 @@ public final class Direction extends Angle {
        return fromRadians(Utils.mod(angle.getRadians(), Utils.TAU));
     }
 
-    public static Direction fromInteropDirection(Direction direction) {
+    public static Direction fromInteropDirection(Interop.Geometry.Direction direction) {
         return fromRadians(direction.getRadians());
     }
 
