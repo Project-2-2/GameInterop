@@ -1,5 +1,8 @@
-package Group6.Agent;
+package Group6.Agent.Behaviour;
 
+import Group6.Agent.ActionsFactory;
+import Group6.Agent.PerceptsService;
+import Group6.GUI.Agent;
 import Interop.Action.Action;
 import Interop.Action.Rotate;
 import Interop.Geometry.Angle;
@@ -15,30 +18,29 @@ import com.sun.webkit.network.Util;
 /**
  * @author Tomasz Darmetko
  */
-public class DisperseAgent {
+public class DisperseBehaviour {
+
+    private int tillNextDisperse = 0;
 
     public Action getDisperseAction(Percepts percepts) {
 
+        tillNextDisperse = 5;
         ObjectPercepts agentPercepts = PerceptsService.getAgentPercepts(percepts);
-
-        double sumOfAgentAngles = agentPercepts
-            .getAll()
-            .stream()
-            .mapToDouble(percept -> percept.getPoint().getClockDirection().getDegrees())
-            .reduce(0, Double::sum);
-
-        double meanAgentsAngle = sumOfAgentAngles / agentPercepts.getAll().size();
-        double oppositeToAgents = meanAgentsAngle - 180;
-
+        double oppositeToAgents = PerceptsService.getMeanClockDirection(agentPercepts) - 180;
         return ActionsFactory.getValidRotate(oppositeToAgents, percepts);
 
     }
 
     public boolean shouldDisperse(Percepts percepts) {
+        if(tillNextDisperse > 0) return false;
         return !PerceptsService
             .getAgentPercepts(percepts)
             .getAll()
             .isEmpty();
+    }
+
+    public void updateState(Percepts percepts) {
+        if(tillNextDisperse > 0) tillNextDisperse--;
     }
 
 }

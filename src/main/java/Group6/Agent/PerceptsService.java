@@ -8,12 +8,24 @@ import Interop.Percept.Vision.ObjectPercepts;
  * @author Tomasz Darmetko
  */
 public class PerceptsService {
+
+    public static double getMeanClockDirection(ObjectPercepts objectPercepts) {
+        double sum = objectPercepts
+            .getAll()
+            .stream()
+            .mapToDouble(percept -> percept.getPoint().getClockDirection().getDegrees())
+            .reduce(0, Double::sum);
+
+        return sum / objectPercepts.getAll().size();
+    }
+
     public static ObjectPercepts getAgentPercepts(Percepts percepts) {
         return percepts
             .getVision()
             .getObjects()
             .filter(objectPercept -> objectPercept.getType().isAgent());
     }
+
     public static ObjectPercepts getWallPercepts(Percepts percepts) {
         return percepts
             .getVision()
@@ -26,4 +38,5 @@ public class PerceptsService {
             .getObjects()
             .filter(objectPercept -> objectPercept.getType() == ObjectPerceptType.Teleport);
     }
+
 }
