@@ -15,9 +15,6 @@ import Interop.Percept.IntruderPercepts;
  */
 public class StraightToTargetIntruder implements Intruder {
 
-    double disperse = 0;
-    int continueExplorationFor = 0;
-
     private final RandomIntruder randomAgent = new RandomIntruder();
 
     private final ToTeleportBehaviour teleportBehaviour = new ToTeleportBehaviour();
@@ -31,11 +28,11 @@ public class StraightToTargetIntruder implements Intruder {
         toTargetBehaviour.updateState(percepts);
 
         if(teleportBehaviour.shouldExecute(percepts)) {
-            return teleportBehaviour.getToTeleportRotate(percepts);
+            return (IntruderAction)teleportBehaviour.getAction(percepts);
         }
 
-        if(disperseBehaviour.shouldDisperse(percepts)) {
-            return (IntruderAction)disperseBehaviour.getDisperseAction(percepts);
+        if(disperseBehaviour.shouldExecute(percepts)) {
+            return (IntruderAction)disperseBehaviour.getAction(percepts);
         }
 
         if(toTargetBehaviour.shouldExecute(percepts)) {

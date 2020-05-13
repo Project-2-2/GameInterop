@@ -2,6 +2,7 @@ package Group6.Agent.Behaviour;
 
 import Group6.Agent.ActionsFactory;
 import Group6.Agent.PerceptsService;
+import Interop.Action.Action;
 import Interop.Action.Rotate;
 import Interop.Percept.Percepts;
 import Interop.Percept.Vision.ObjectPercepts;
@@ -9,12 +10,12 @@ import Interop.Percept.Vision.ObjectPercepts;
 /**
  * @author Tomasz Darmetko
  */
-public class ToTeleportBehaviour {
+public class ToTeleportBehaviour implements Behaviour {
 
     private int tillNextRotation = 0;
     private int tillNextTeleport = 0;
 
-    public Rotate getToTeleportRotate(Percepts percepts) {
+    public Action getAction(Percepts percepts) {
         ObjectPercepts teleportPercepts = PerceptsService.getTeleportPercepts(percepts);
         double towardsTeleport = PerceptsService.getMeanClockDirection(teleportPercepts) - 180;
         if(tillNextTeleport > 0) towardsTeleport = towardsTeleport * -1.0;

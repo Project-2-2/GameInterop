@@ -13,7 +13,7 @@ import java.util.Random;
 /**
  * @author Tomasz Darmetko
  */
-public class ToTargetBehaviour {
+public class ToTargetBehaviour implements Behaviour {
 
     private final int TILL_NEXT_ATTEMPT = 500;
 

@@ -18,11 +18,11 @@ import com.sun.webkit.network.Util;
 /**
  * @author Tomasz Darmetko
  */
-public class DisperseBehaviour {
+public class DisperseBehaviour implements Behaviour {
 
     private int tillNextDisperse = 0;
 
-    public Action getDisperseAction(Percepts percepts) {
+    public Action getAction(Percepts percepts) {
 
         tillNextDisperse = 5;
         ObjectPercepts agentPercepts = PerceptsService.getAgentPercepts(percepts);
@@ -31,7 +31,7 @@ public class DisperseBehaviour {
 
     }
 
-    public boolean shouldDisperse(Percepts percepts) {
+    public boolean shouldExecute(Percepts percepts) {
         if(tillNextDisperse > 0) return false;
         return !PerceptsService
             .getAgentPercepts(percepts)
