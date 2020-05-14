@@ -14,6 +14,8 @@ import Interop.Percept.GuardPercepts;
 import Interop.Percept.Scenario.SlowDownModifiers;
 import Interop.Percept.Smell.SmellPerceptType;
 
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -88,13 +90,24 @@ public class OccupancyAgent implements Guard {
      * P(z = 1|Mx,y = 0) : False occupied measurement
      * P(z = 0|Mx,y = 0) : True free measurement
      */
-    public void verify(GuardPercepts guardPercepts) {
+    public void verify(GuardPercepts guardPercepts) throws IOException {
+        //take area of inspection
+
         //Area of inspection.
         ArrayList<ArrayList<Boolean>> inspectionArea = new ArrayList<ArrayList<Boolean>>();
 
-
+        double inspectionSize = 4 * viewRange;
         //move to center
 
+        //instansiate all columns of occupancyGrid
+        for(int i = 0; i <= inspectionSize; i++) {
+            inspectionArea.add(new ArrayList<Boolean>());
+        }
+
+        //operations
+
+        //record
+        FileWriter writer = new FileWriter("verifyOutput.txt");
     }
 
     private double getSpeedModifier(GuardPercepts guardPercepts)
@@ -156,7 +169,7 @@ public class OccupancyAgent implements Guard {
 
     /**
      * a binary random variable (0,1) with Mx,y:{free, occupied} -> {0,1}https://www.youtube.com/watch?v=Ko7SWZQIawM
-     * Given some probability sapce (theta, P) a R.V. X: theta -> R is a function that maps the sample space to the reals.
+     * Given some probability space (theta, P) a R.V. X: theta -> R is a function that maps the sample space to the reals.
      */
     public void Occupancy() {
 
@@ -170,6 +183,15 @@ public class OccupancyAgent implements Guard {
      */
     public double occProbability(int occCount, int totalRay) {
         return occCount/totalRay;
+    }
+
+    /**
+     * Probability that an unknown space is occupied given the total count of occupied spaces
+     * @param occCount the count of true occupied spaces percieved by the agent.
+     * @return the probability that a grid space is occupied
+     */
+    public double occProbability(int occCount) {
+        return occCount/viewRays;
     }
 
 
