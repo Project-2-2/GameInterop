@@ -24,7 +24,7 @@ public class Score{
         if(cell.hasTarget()){scoreOfCell+= TARGET_SCORE;}
         if(cell.hasTeleport()){scoreOfCell+= TELEPORT_SCORE;}
 
-        //TODO: redefine getCout() in cell
+        //TODO: redefine getCount() in cell
         //scoreOfCell+= (-2) * cell.getCout();
         return scoreOfCell;
     }
