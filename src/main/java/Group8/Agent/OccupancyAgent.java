@@ -8,15 +8,21 @@ import Interop.Action.Rotate;
 import Interop.Agent.Guard;
 import Interop.Geometry.Angle;
 import Interop.Geometry.Distance;
+import Interop.Geometry.Point;
 import Interop.Percept.GuardPercepts;
 import Interop.Percept.Scenario.SlowDownModifiers;
 import Interop.Percept.Smell.SmellPerceptType;
+
+import java.util.Random;
 
 /**
  * @author Thomas Sijpkens
  * class OccupancyAgent uses and Occupancy grid representation of the environment.  This allows us to use ML approaches for the agent.
  */
 public class OccupancyAgent implements Guard {
+    private Point initialLocation;
+    private Random rng;
+
     private double xsize; //X size of map
     private double ysize; //Y size of map
     private double grid_size; //how thicc the wall assumption be.
@@ -43,6 +49,10 @@ public class OccupancyAgent implements Guard {
 
     public OccupancyAgent() {
         OccupancyGrid occupancyGrid = new OccupancyGrid();
+        double xPosition = occupancyGrid.occupancyGrid.size()/2;
+        double yPosition = occupancyGrid.occupancyGrid.size()/2;
+        initialLocation = new Point(xPosition,yPosition);
+        rng = new Random();
     }
 
     //as defined in https://www.youtube.com/watch?v=Ko7SWZQIawM
@@ -124,7 +134,15 @@ public class OccupancyAgent implements Guard {
     public void posteriorMap(GuardPercepts percepts){
         Distance distanceToNearestObject = percepts.getVision().getFieldOfView().getRange();
         Angle directionFacing = percepts.getVision().getFieldOfView().getViewAngle();
+
     }
+
+    public void priorMap(){
+        Distance distanceToNearestObject = percepts.getVision().getFieldOfView().getRange();
+        Angle directionFacing = percepts.getVision().getFieldOfView().getViewAngle();
+
+    }
+
 
     /**
      * a binary random variable (0,1) with Mx,y:{free, occupied} -> {0,1}https://www.youtube.com/watch?v=Ko7SWZQIawM
@@ -132,6 +150,26 @@ public class OccupancyAgent implements Guard {
      */
     public void Occupancy() {
 
+    }
+
+    /**
+     * Probability that an unknown space is occupied given the total count of occupied spaces
+     * @param occCount the count of true occupied spaces percieved by the agent.
+     * @param totalRay the total count of ray count and space we want to compute.
+     * @return the probability that a grid space is occupied
+     */
+    public double occProbability(int occCount, int totalRay) {
+        return occCount/totalRay;
+    }
+
+
+    /**
+     * Assumes that the environment is normally distributed
+     * This is the random version occProbability() which does not take into account what the agent knows.
+     * @return the probability that environment is occupied
+     */
+    public double probablilityAGauss() {
+        return rng.nextGaussian();
     }
 
     /**
