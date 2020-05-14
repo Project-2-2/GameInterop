@@ -85,6 +85,7 @@ public class Intruder1 implements Intruder {
         ViewArea view = new ViewArea(range, alpha, direction, position.getX(), position.getY());
         toBeProcessed.add(position);
         explore(view);
+        //Making a decision based on the mind-map
         double moveDistance = percepts.getScenarioIntruderPercepts().getMaxMoveDistanceIntruder().getValue();
         Coordinate p = new Coordinate(position.getX(), position.getY());
         LinkedList<Coordinate> borderPoints = getBorderPoints(p, moveDistance);

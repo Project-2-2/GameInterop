@@ -21,13 +21,13 @@ public class Cell {
     private int visitedCount;
     private boolean processed;
 
-    private boolean wall = false;
-    private boolean window = false;
-    private boolean door = false;
-    private boolean guard = false;
-    private boolean sentryTower = false;
-    private boolean target = false;
-    private boolean teleport = false;
+    private int wall = 0;
+    private int window = 0;
+    private int door = 0;
+    private int guard = 0;
+    private int sentryTower = 0;
+    private int target = 0;
+    private int teleport = 0;
     public Cell(double x, double y)
     {
         above = null;
@@ -86,7 +86,15 @@ public class Cell {
     public double getScore()
     {
         //calculate the score;
-        return 0.0;
+        double wallWeight = 1;
+        double windowWeight = 1;
+        double doorWeight = 1;
+        double guardWeight = -1;
+        double sentryWeight = 1;
+        double targetWeight = 10000;
+        double teleportWeight = 1;
+        double score = wall * wallWeight + window * windowWeight + doorWeight * door + guardWeight * guard + sentryWeight * sentryTower + targetWeight * target + teleportWeight * teleport;
+        return score;
     }
 
     /**
@@ -265,27 +273,27 @@ public class Cell {
         return visitedCount;
     }
 
-    public boolean hasWall(){
+    public int hasWall(){
         return wall;
     }
-    public boolean hasDoor(){
+    public int hasDoor(){
         return door;
     }
 
-    public boolean hasWindow(){
+    public int hasWindow(){
         return window;
     }
-    public boolean hasTower(){
+    public int hasTower(){
         return sentryTower;
     }
-    public boolean hasGuard(){
+    public int hasGuard(){
         return guard;
     }
-    public boolean hasTarget(){
+    public int hasTarget(){
         return target;
     }
 
-    public boolean hasTeleport(){
+    public int hasTeleport(){
         return teleport;
     }
     public void addVisitedCount()
