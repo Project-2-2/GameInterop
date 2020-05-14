@@ -3,6 +3,7 @@ package Group9.agent.Intruder;
 import Interop.Geometry.Angle;
 import Interop.Geometry.Direction;
 import Interop.Geometry.Distance;
+import Interop.Percept.Vision.ObjectPercepts;
 import Interop.Percept.Vision.VisionPrecepts;
 
 import java.util.ArrayList;
@@ -32,7 +33,7 @@ public class ViewArea {
         this.right = new Coordinate(rightX, rightY);
 
     }
-    public double partContained(Cell c)
+    public double partContained(Cell c, ObjectPercepts objects)
     {
         c.setProcessed(true);
         c.addVisitedCount();
@@ -194,6 +195,10 @@ public class ViewArea {
             }
         }
         return containedPoints;
+    }
+    public void setObjectsContained(Cell c, ObjectPercepts objects)
+    {
+        //objects.getAll()
     }
     private boolean checkHorizontal(Line[] lines, double x, double y)
     {

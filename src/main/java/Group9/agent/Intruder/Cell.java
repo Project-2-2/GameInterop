@@ -21,13 +21,13 @@ public class Cell {
     private int visitedCount;
     private boolean processed;
 
-    private int wall = 0;
-    private int window = 0;
-    private int door = 0;
-    private int guard = 0;
-    private int sentryTower = 0;
-    private int target = 0;
-    private int teleport = 0;
+    private boolean wall = false;
+    private boolean window = false;
+    private boolean door = false;
+    private boolean guard = false;
+    private boolean sentryTower = false;
+    private boolean target = false;
+    private boolean teleport = false;
     public Cell(double x, double y)
     {
         above = null;
@@ -86,15 +86,9 @@ public class Cell {
     public double getScore()
     {
         //calculate the score;
-        double wallWeight = 1;
-        double windowWeight = 1;
-        double doorWeight = 1;
-        double guardWeight = -1;
-        double sentryWeight = 1;
-        double targetWeight = 10000;
-        double teleportWeight = 1;
-        double score = wall * wallWeight + window * windowWeight + doorWeight * door + guardWeight * guard + sentryWeight * sentryTower + targetWeight * target + teleportWeight * teleport;
-        return score;
+        Score score = new Score();
+
+        return score.getScoreCell(this);
     }
 
     /**
@@ -273,27 +267,27 @@ public class Cell {
         return visitedCount;
     }
 
-    public int hasWall(){
+    public boolean hasWall(){
         return wall;
     }
-    public int hasDoor(){
+    public boolean hasDoor(){
         return door;
     }
 
-    public int hasWindow(){
+    public boolean hasWindow(){
         return window;
     }
-    public int hasTower(){
+    public boolean hasTower(){
         return sentryTower;
     }
-    public int hasGuard(){
+    public boolean hasGuard(){
         return guard;
     }
-    public int hasTarget(){
+    public boolean hasTarget(){
         return target;
     }
 
-    public int hasTeleport(){
+    public boolean hasTeleport(){
         return teleport;
     }
     public void addVisitedCount()

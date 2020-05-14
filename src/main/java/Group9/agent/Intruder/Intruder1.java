@@ -15,6 +15,7 @@ import Interop.Geometry.Direction;
 import Interop.Geometry.Distance;
 import Interop.Percept.IntruderPercepts;
 import Interop.Percept.Vision.FieldOfView;
+import Interop.Percept.Vision.ObjectPercepts;
 import Interop.Percept.Vision.VisionPrecepts;
 
 import java.util.LinkedList;
@@ -84,7 +85,7 @@ public class Intruder1 implements Intruder {
         Distance range = percepts.getVision().getFieldOfView().getRange();
         ViewArea view = new ViewArea(range, alpha, direction, position.getX(), position.getY());
         toBeProcessed.add(position);
-        explore(view);
+        explore(view, percepts.getVision().getObjects());
         //Making a decision based on the mind-map
         double moveDistance = percepts.getScenarioIntruderPercepts().getMaxMoveDistanceIntruder().getValue();
         Coordinate p = new Coordinate(position.getX(), position.getY());
@@ -126,12 +127,12 @@ public class Intruder1 implements Intruder {
         return target;
     }
 
-    public void explore(ViewArea view)
+    public void explore(ViewArea view, ObjectPercepts objects)
     {
         toBeProcessed.forEach(p -> p.setProcessed(false));
         while(toBeProcessed.size() > 0)
         {
-            if (view.partContained(toBeProcessed.get(0)) > 0.0)
+            if (view.partContained(toBeProcessed.get(0), objects) > 0.0)
             {
                 toBeProcessed.addAll(toBeProcessed.get(0).getUnprocessed());
             }
