@@ -1,5 +1,6 @@
 package Group8.Agent;
 
+import Group8.Controller.Utils.Scenario;
 import Group9.Game;
 import Interop.Action.DropPheromone;
 import Interop.Action.GuardAction;
@@ -23,6 +24,7 @@ import java.util.Random;
 public class OccupancyAgent implements Guard {
     private Point initialLocation;
     private Random rng;
+    private OccupancyGrid occupancyGrid;
 
     private double xsize; //X size of map
     private double ysize; //Y size of map
@@ -47,10 +49,13 @@ public class OccupancyAgent implements Guard {
     private double log_free = Math.log(0.35/0.65);
 
     private GuardPercepts percepts;
+    //why the fuck is Angle protected?  I can't use it to define viewAngle.
+    private double viewAngle = 45.0;
+    private final int viewRays = 45;
+    private final double viewRange = 6.0; //I don't know how to pull this of if they are defined
 
     public OccupancyAgent() {
-        OccupancyGrid occupancyGrid = new OccupancyGrid();
-        //This would be more efficient if we know in general where the agent could be generally start at.
+        this.occupancyGrid = new OccupancyGrid();
         double xPosition = occupancyGrid.occupancyGrid.size()/2.0;
         double yPosition = occupancyGrid.occupancyGrid.size()/2.0;
         initialLocation = new Point(xPosition,yPosition);
@@ -178,9 +183,15 @@ public class OccupancyAgent implements Guard {
     }
 
     /**
+     * This is the backup strategy of the agent should it still not be able to find the intruder.
+     * The basic idea is to have an even larger OccupancyGrid to fine-tune the calculation.
      * fine-grained grid map where an occupancy variable associated with each cell.
      * i.e. it is just an array of probability using Occupancy() Mx,y
      * Requires Bayesian filtering to maintain a occupancy grid map.
      *  Recursively update p(Mx,My) for each cell
      */
+    public void noCigar() {
+        double xSize, ysize = occupancyGrid.occupancyGrid.size() * 2;
+
+    }
 }
