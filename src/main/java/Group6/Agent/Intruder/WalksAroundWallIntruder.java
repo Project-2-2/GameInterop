@@ -2,6 +2,7 @@ package Group6.Agent.Intruder;
 
 
 
+
 import Group6.Agent.Behaviour.Behaviour;
 import Group6.Agent.Behaviour.ExploreBehaviour;
 import Group6.Agent.RandomAgent;
@@ -31,7 +32,6 @@ import java.util.List;
 
 
 /**
- * todo do some tests about the geometry
  * todo check if inbetween in the target area
  */
 

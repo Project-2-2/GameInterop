@@ -78,12 +78,17 @@ public class LineSegment {
             maxX = Math.max(a.getX(), b.getX());
             minY = Math.min(a.getY(), b.getY());
             maxY = Math.max(a.getY(), b.getY());
-            double deltaY = maxY - minX;
+            double deltaY = maxY - minY;
             double deltaX = maxX - minX;
-            double result = Math.atan(deltaY / deltaX);
+            System.out.println("delta x" + deltaX);
+            System.out.println("delta y" + deltaY);
+            double radians = deltaY / deltaX;
+            double result = Math.toDegrees(Math.atan(radians));
             if (b.getX() < a.getX())
                 result = -1 * result;
+            System.out.println("results " + result);
             return result;
+
         }
         else{
             return 0;
