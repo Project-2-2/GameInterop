@@ -1,8 +1,11 @@
-package Group8.Agent;
+package Group8.Agents;
 
 
 import java.util.ArrayList;
 
+/**
+ * @author Thomas Sijpkens
+ */
 public class OccupancyGrid {
     //the higher the value of xsize and ysize the greater the accuracy at cost of complexity.
     private final double xsize = 80; //X size of map
@@ -47,5 +50,13 @@ public class OccupancyGrid {
      */
     public void update(int indexX, int indexY) {
         occupancyGrid.get(indexX).add(indexY, true);
+    }
+}
+
+class OccupancyGridTest {
+    public static void main(String[] args) {
+        OccupancyGrid occupancyGrid = new OccupancyGrid();
+
+        System.out.println(occupancyGrid.occupancyGrid);
     }
 }

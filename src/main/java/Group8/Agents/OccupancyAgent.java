@@ -1,6 +1,5 @@
-package Group8.Agent;
+package Group8.Agents;
 
-import Group8.Controller.Utils.Scenario;
 import Group9.Game;
 import Interop.Action.DropPheromone;
 import Interop.Action.GuardAction;
