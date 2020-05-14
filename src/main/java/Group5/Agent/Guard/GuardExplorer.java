@@ -1,6 +1,7 @@
 package Group5.Agent.Guard;
 
 import Group5.GameController.AgentController;
+import Group5.GameController.Vision;
 import Interop.Action.*;
 import Interop.Agent.Guard;
 import Interop.Geometry.Angle;
@@ -11,6 +12,7 @@ import Interop.Percept.GuardPercepts;
 import Interop.Percept.Percepts;
 import Interop.Percept.Scenario.ScenarioPercepts;
 import Interop.Percept.Scenario.SlowDownModifiers;
+import Interop.Percept.Smell.SmellPerceptType;
 import Interop.Percept.Sound.SoundPercept;
 import Interop.Percept.Sound.SoundPerceptType;
 import Interop.Percept.Sound.SoundPercepts;
@@ -19,6 +21,8 @@ import Interop.Percept.Vision.ObjectPerceptType;
 import Interop.Percept.GuardPercepts;
 import Interop.Percept.Scenario.ScenarioPercepts;
 import Interop.Percept.Scenario.ScenarioGuardPercepts;
+import Interop.Percept.Vision.ObjectPercepts;
+import Interop.Percept.Vision.VisionPrecepts;
 
 import java.util.*;
 
@@ -42,7 +46,7 @@ public class GuardExplorer implements Guard {
     public void addActionToQueue(GuardAction action, GuardPercepts percepts) {
         double maxMoveRange = percepts.getScenarioGuardPercepts().getMaxMoveDistanceGuard().getValue();
         Angle maxRotationAngle = percepts.getScenarioGuardPercepts().getScenarioPercepts().getMaxRotationAngle();
-        /*
+
         if (action instanceof Rotate ) {
             double rotateValue = ((Rotate) action).getAngle().getDegrees();
             if (rotateValue > maxRotationAngle.getDegrees()) {
@@ -70,10 +74,10 @@ public class GuardExplorer implements Guard {
                         distance = 0;
                     }
                 }
-            }
-        }else
+            }else
+                actionQueue.add(action);
 
-         */
+        }else
             actionQueue.add(action);
 
     }
@@ -169,24 +173,32 @@ public class GuardExplorer implements Guard {
         }
     }
 
-    public void seeIntruder(GuardPercepts percepts, Set<ObjectPercept> vision){
+    public ObjectPercept seeIntruder(GuardPercepts percepts, Set<ObjectPercept> vision){
+        for (ObjectPercept obj: vision)
+            if (obj.getType().equals("Intruder"))
+                return obj;
+        return null;
+
+    }
+
+    public void followIntruder(GuardPercepts percepts, Set<ObjectPercept> vision) {
         // System.out.println("found intruder");
         double angleToIntruder = 0;
         int count = 0;
         double distanceToIntruder = 0;
-        for (ObjectPercept e : vision){
-            if (e.getType()==ObjectPerceptType.Intruder){
-                distanceToIntruder = distanceToIntruder+ Math.abs(percepts.getVision().getFieldOfView().getRange().getValue()-e.getPoint().getDistanceFromOrigin().getValue());
-                //System.out.println(distanceToIntruder);
+        ObjectPercept e = seeIntruder(percepts, vision);
+        if (e != null){
+            distanceToIntruder = distanceToIntruder+ Math.abs(percepts.getVision().getFieldOfView().getRange().getValue()-e.getPoint().getDistanceFromOrigin().getValue());
+            //System.out.println(distanceToIntruder);
 
-                if (Angle.fromDegrees(0).getDistance(e.getPoint().getClockDirection()).getDegrees()>180){
-                    angleToIntruder = angleToIntruder + e.getPoint().getClockDirection().getDegrees()-360;
-                }else{
-                    angleToIntruder = angleToIntruder + Angle.fromDegrees(0).getDistance(e.getPoint().getClockDirection()).getDegrees();
-                }
-                count++;
+            if (Angle.fromDegrees(0).getDistance(e.getPoint().getClockDirection()).getDegrees()>180){
+                angleToIntruder = angleToIntruder + e.getPoint().getClockDirection().getDegrees()-360;
+            }else{
+                angleToIntruder = angleToIntruder + Angle.fromDegrees(0).getDistance(e.getPoint().getClockDirection()).getDegrees();
             }
+            count++;
         }
+
             /*
             if ((distanceToIntruder/count)<percepts.getScenarioGuardPercepts().getScenarioPercepts().getCaptureDistance().getValue()){
                 // System.out.println("biem");
@@ -221,7 +233,6 @@ public class GuardExplorer implements Guard {
             //return new Move(new Distance(1));
             return;
         }
-
     }
 
     public void rotateToNoise(GuardPercepts guardPercepts){
@@ -352,12 +363,63 @@ public class GuardExplorer implements Guard {
         else if (angle < -Math.PI)
             angle = -2*Math.PI-angle;
 
-
         return angle;
     }
 
+    //TODO make the agent go away from the sentry tower
+    private void towerInViewRange(AgentController agent ,GuardPercepts percepts) {
+        ObjectPercepts visionPrecepts = percepts.getVision().getObjects();
+        for (ObjectPercept p : visionPrecepts.getAll()) {
+            if (p.getType().equals("SentryTower")) {
+                addActionToQueue(new Rotate(Angle.fromRadians(rotateTo(agent, p))), percepts);
+                addActionToQueue(new Move(new Distance(Math.abs(percepts.getVision().getFieldOfView().getRange().getValue()-p.getPoint().getDistanceFromOrigin().getValue()))), percepts);
+                lookInAllDirection(percepts);
+            }
+        }
 
+    }
 
+    /**
+     * Makes the agent look around himself
+     * When added to the queue, the 360° rotation gets divided
+     * @param percepts
+     */
+    private void lookInAllDirection(GuardPercepts percepts) {
+        addActionToQueue(new Rotate(Angle.fromDegrees(360)), percepts);
+    }
+
+    /**
+     * Drop pheromone if does no hear sound, does not smell another pheromone and does not see intruder
+     * @param p
+     */
+    private void dropPheromone(GuardPercepts p) {
+        if (!hearSound(p) && !smellPheromone(p) && seeIntruder(p, p.getVision().getObjects().getAll())==null)
+            addActionToQueue(new DropPheromone(SmellPerceptType.Pheromone1), p);
+    }
+
+    private boolean hearSound(GuardPercepts percepts) {
+        if (percepts.getSounds().getAll().isEmpty())
+            return false;
+        else
+            return true;
+    }
+
+    private boolean smellPheromone(GuardPercepts percepts) {
+        if (percepts.getSmells().getAll().isEmpty())
+            return false;
+        else
+            return true;
+    }
+
+    /**
+     * If smells a pheromone where he wanted to go, he changes directions
+     */
+    private void leaveExploredZone(GuardPercepts p) {
+        if (smellPheromone(p)) {
+
+        }else
+            return;
+    }
 
 
 
