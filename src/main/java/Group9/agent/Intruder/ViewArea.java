@@ -3,10 +3,14 @@ package Group9.agent.Intruder;
 import Interop.Geometry.Angle;
 import Interop.Geometry.Direction;
 import Interop.Geometry.Distance;
+import Interop.Geometry.Point;
+import Interop.Percept.Vision.ObjectPercept;
 import Interop.Percept.Vision.ObjectPercepts;
 import Interop.Percept.Vision.VisionPrecepts;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 public class ViewArea {
     private Distance range;
@@ -38,6 +42,7 @@ public class ViewArea {
         c.setProcessed(true);
         c.addVisitedCount();
         ArrayList<Coordinate> pointsContained = pointsContained(c);
+        setObjectsContained(c, objects);
         if(pointsContained.size() == 4)
         {
             return 1.0;
@@ -198,7 +203,16 @@ public class ViewArea {
     }
     public void setObjectsContained(Cell c, ObjectPercepts objects)
     {
-        //objects.getAll()
+        ObjectPercept[] objcts = (ObjectPercept[]) objects.getAll().toArray();
+        for(ObjectPercept object:objcts)
+        {
+            Point p = object.getPoint();
+            Coordinate[] cornerPoints = c.getPoints();
+            if (p.getX() < cornerPoints[0].getX() && p.getX() > cornerPoints[1].getX() && p.getY() < cornerPoints[0].getY() && p.getY() > cornerPoints[2].getY())
+            {
+                c.setObject(object.getType());
+            }
+        }
     }
     private boolean checkHorizontal(Line[] lines, double x, double y)
     {
