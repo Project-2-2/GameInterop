@@ -35,6 +35,16 @@ public class PerceptsService {
         return Math.toDegrees(sum / objectPercepts.getAll().size());
     }
 
+    public static double getMeanDistance(ObjectPercepts objectPercepts) {
+        double sum = objectPercepts
+            .getAll()
+            .stream()
+            .mapToDouble(percept -> percept.getPoint().getDistanceFromOrigin().getValue())
+            .reduce(0, Double::sum);
+
+        return sum / objectPercepts.getAll().size();
+    }
+
     public static ObjectPercepts getAgentPercepts(Percepts percepts) {
         return percepts
             .getVision()

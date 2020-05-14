@@ -2,45 +2,38 @@ package Group6.Agent.Behaviour;
 
 import Group6.Agent.ActionsFactory;
 import Group6.Agent.PerceptsService;
-import Group6.GUI.Agent;
 import Interop.Action.Action;
-import Interop.Action.Rotate;
-import Interop.Geometry.Angle;
-import Interop.Percept.GuardPercepts;
-import Interop.Percept.IntruderPercepts;
 import Interop.Percept.Percepts;
-import Interop.Percept.Vision.ObjectPercept;
 import Interop.Percept.Vision.ObjectPerceptType;
 import Interop.Percept.Vision.ObjectPercepts;
-import Interop.Utils.Utils;
-import com.sun.webkit.network.Util;
 
 /**
  * @author Tomasz Darmetko
  */
-public class DisperseBehaviour implements Behaviour {
-
-    private int tillNextDisperse = 0;
+public class FollowIntruderBehaviour implements Behaviour {
 
     public Action getAction(Percepts percepts) {
 
-        tillNextDisperse = 5;
-        ObjectPercepts agentPercepts = PerceptsService.getAgentPercepts(percepts);
-        double oppositeToAgents = PerceptsService.getMeanClockDirection(agentPercepts) - 180;
-        return ActionsFactory.getValidRotate(oppositeToAgents, percepts);
+        ObjectPercepts intruderPercepts = PerceptsService.getIntruderPercepts(percepts);
+        double towards = -1 * PerceptsService.getMeanDirection(intruderPercepts);
+
+        if(Math.abs(towards) < Math.random() * 8) return ActionsFactory.getValidMove(
+            PerceptsService.getMeanDistance(intruderPercepts), percepts
+        );
+
+        return ActionsFactory.getValidRotate(towards, percepts);
 
     }
 
     public boolean shouldExecute(Percepts percepts) {
-        if(tillNextDisperse > 0) return false;
-        return !PerceptsService
-            .getAgentPercepts(percepts)
+        return PerceptsService
+            .getIntruderPercepts(percepts)
             .getAll()
-            .isEmpty();
+            .size() > 0;
     }
 
     public void updateState(Percepts percepts) {
-        if(tillNextDisperse > 0) tillNextDisperse--;
+        // no op
     }
 
 }
