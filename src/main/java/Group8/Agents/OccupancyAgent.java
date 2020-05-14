@@ -134,14 +134,16 @@ public class OccupancyAgent implements Guard {
     @Override
     public GuardAction getAction(GuardPercepts percepts) {
         if(percepts.wasLastActionExecuted()) {
+            Distance range;
+            Angle direction;
             if(suroundUpdateIteration == 1) {
                 //update rotation
                 suroundUpdateIteration ++;
 
                 //get range() tells us how far to update the OccupancyGrid
-                percepts.getVision().getFieldOfView().getRange();
-                //percepts.getViewAngle() tells which direction of the grid to update on.
-                percepts.getVision().getFieldOfView().getViewAngle();
+                range = percepts.getVision().getFieldOfView().getRange();
+                //percepts.getViewAngle() tells which x,y direction we update on
+                direction = percepts.getVision().getFieldOfView().getViewAngle();
 
 
                 // This means that I would halve to calculate 45 degrees with the log update
