@@ -11,7 +11,7 @@ import java.util.Random;
  */
 public class ExploreBehaviour implements Behaviour {
 
-    private final boolean switchRotationSide = new Random().nextBoolean();
+    private boolean switchRotationSide = new Random().nextBoolean();
 
     public Action getAction(Percepts percepts) {
         if(percepts.wasLastActionExecuted()) {
@@ -31,19 +31,16 @@ public class ExploreBehaviour implements Behaviour {
     }
 
     public void updateState(Percepts percepts) {
-        // NO OP
+        if(Math.random() > 0.95) switchRotationSide = !switchRotationSide;
     }
 
     private Action getRandomRotate(Percepts percepts) {
 
-        double modifier = (1. - Math.random()); // make it random
+        double modifier = (1.5 - Math.random()); // make it random
         modifier = modifier * (switchRotationSide ? -1.0 : 1.0);
 
         // start rotating if can not move any further
-        return ActionsFactory.getValidRotate(
-            ActionsFactory.getMaxRotationDegrees(percepts) * modifier,
-            percepts
-        );
+        return ActionsFactory.getPartMaxRotate(percepts, modifier);
 
     }
 

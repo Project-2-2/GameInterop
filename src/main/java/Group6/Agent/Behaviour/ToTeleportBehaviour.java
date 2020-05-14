@@ -19,7 +19,7 @@ public class ToTeleportBehaviour implements Behaviour {
 
     public Action getAction(Percepts percepts) {
         ObjectPercepts teleportPercepts = PerceptsService.getTeleportPercepts(percepts);
-        double towardsTeleport = PerceptsService.getMeanClockDirection(teleportPercepts) - 180;
+        double towardsTeleport = -1.0 * PerceptsService.getMeanDirection(teleportPercepts);
         // turn away from a teleport if just teleported - provides time for exploration
         if(tillNextTeleport > 0) towardsTeleport = towardsTeleport * -1.0;
         if(tillNextRotation == 0) tillNextRotation = 5; // allows to avoid constant rotating
@@ -28,7 +28,9 @@ public class ToTeleportBehaviour implements Behaviour {
 
     public boolean shouldExecute(Percepts percepts) {
         if(percepts.getAreaPercepts().isJustTeleported()) return false;
-        if(PerceptsService.getTeleportPercepts(percepts).getAll().isEmpty()) return false;
+        ObjectPercepts teleportPercepts = PerceptsService.getTeleportPercepts(percepts);
+        if(teleportPercepts.getAll().isEmpty()) return false;
+        if(Math.abs(PerceptsService.getMeanDirection(teleportPercepts)) < 3) return false;
         if(tillNextTeleport > 0) return true; // allows to avoid teleports soon after teleporting
         if(tillNextRotation > 0) return false; // allows to avoid constant rotation
         return true;
