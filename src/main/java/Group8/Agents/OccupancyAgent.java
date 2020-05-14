@@ -55,6 +55,9 @@ public class OccupancyAgent implements Guard {
     private final int viewRays = 45;
     private final double viewRange = 6.0; //I don't know how to pull this of if they are defined
 
+
+    private int suroundUpdateIteration = 1;
+
     public OccupancyAgent() {
         this.occupancyGrid = new OccupancyGrid();
         double xPosition = occupancyGrid.occupancyGrid.size()/2.0;
@@ -130,18 +133,52 @@ public class OccupancyAgent implements Guard {
 
     @Override
     public GuardAction getAction(GuardPercepts percepts) {
-        if(!percepts.wasLastActionExecuted())
-        {
-            if(Math.random() < 0.1)
-            {
-                return new DropPheromone(SmellPerceptType.values()[(int) (Math.random() * SmellPerceptType.values().length)]);
+        if(percepts.wasLastActionExecuted()) {
+            if(suroundUpdateIteration == 1) {
+                //update rotation
+                suroundUpdateIteration ++;
+
+                //get range() tells us how far to update the OccupancyGrid
+                percepts.getVision().getFieldOfView().getRange();
+                //percepts.getViewAngle() tells which direction of the grid to update on.
+                percepts.getVision().getFieldOfView().getViewAngle();
+
+                // This means that I would halve to calculate 45 degrees with the log update
+                return new Rotate(Angle.fromDegrees(90));
+
+            } else if(suroundUpdateIteration == 2) {
+                //update rotation
+                suroundUpdateIteration ++;
+
+                return new Rotate(Angle.fromDegrees(90));
+            } else if(suroundUpdateIteration == 3) {
+                return new Rotate(Angle.fromDegrees(90));
+                //update rotation
+                suroundUpdateIteration ++;
+            } else if(suroundUpdateIteration == 4) {
+                return new Rotate(Angle.fromDegrees(90));
+                //update rotation
+                suroundUpdateIteration ++;
+            } else {
+
+                suroundUpdateIteration = 1;
             }
-            return new Rotate(Angle.fromRadians(percepts.getScenarioGuardPercepts().getScenarioPercepts().getMaxRotationAngle().getRadians() * Game._RANDOM.nextDouble()));
-        }
-        else
-        {
+        } else {
+            //decision rule for finding the longest path
             return new Move(new Distance(percepts.getScenarioGuardPercepts().getMaxMoveDistanceGuard().getValue() * getSpeedModifier(percepts)));
         }
+//        if(!percepts.wasLastActionExecuted())
+//        {
+//            if(Math.random() < 0.1)
+//            {
+//                return new DropPheromone(SmellPerceptType.values()[(int) (Math.random() * SmellPerceptType.values().length)]);
+//            }
+//            return new Rotate(Angle.fromRadians(percepts.getScenarioGuardPercepts().getScenarioPercepts().getMaxRotationAngle().getRadians() * Game._RANDOM.nextDouble()));
+//        }
+//        else
+//        {
+//            return new Move(new Distance(percepts.getScenarioGuardPercepts().getMaxMoveDistanceGuard().getValue() * getSpeedModifier(percepts)));
+//        }
     }
 
 
