@@ -29,14 +29,17 @@ import java.util.*;
 public class GuardExplorer implements Guard {
 
     private Queue<GuardAction> actionQueue = new LinkedList<>();
+    private int enteredSentryTower; //0 if didn't entered a sentry tower the last 15 turns
 
     @Override
     public GuardAction getAction(GuardPercepts percepts) {
         //return explore(percepts);
         //if queue is empty otherwise do actions inside queue
-        if (actionQueue.size()<=0){
+        if (actionQueue.size()<=0)
             explore(percepts);
-        }
+
+        if (enteredSentryTower != 0)
+            enteredSentryTower --;
         //System.out.println(actionQueue.size());
         //System.out.println("yes");
         return actionQueue.poll();
@@ -95,15 +98,12 @@ public class GuardExplorer implements Guard {
             visionPerceptTypes.add(e.getType());
         }
 
-
         for (SoundPercept s : sound){
             soundPerceptTypes.add((s.getType()));
         }
 
-
-
         if (visionPerceptTypes.contains(ObjectPerceptType.Intruder)) {
-            seeIntruder(percepts,vision);
+            followIntruder(percepts,vision);
             return;
         }
 
@@ -175,7 +175,7 @@ public class GuardExplorer implements Guard {
 
     public ObjectPercept seeIntruder(GuardPercepts percepts, Set<ObjectPercept> vision){
         for (ObjectPercept obj: vision)
-            if (obj.getType().equals("Intruder"))
+            if (obj.getType().toString().equals("Intruder"))
                 return obj;
         return null;
 
@@ -244,7 +244,7 @@ public class GuardExplorer implements Guard {
             soundDirectionDegrees = soundDirectionDegrees +s.getDirection().getDegrees();
             count++;
         }
-       // System.out.println(soundDirectionDegrees);
+        // System.out.println(soundDirectionDegrees);
         double soundDirectionDegreesNormalized = soundDirectionDegrees/count;
         //normalize so if rotation is 358 make it -2 since that is allowed by game controller
         if (soundDirectionDegrees/count>180){
@@ -345,7 +345,6 @@ public class GuardExplorer implements Guard {
         return 1;
     }
 
-
     /**
      * return how much an agent needs to rotate to face an object
      * @param agent
@@ -366,13 +365,15 @@ public class GuardExplorer implements Guard {
         return angle;
     }
 
-    //TODO make the agent go away from the sentry tower
     private void towerInViewRange(AgentController agent ,GuardPercepts percepts) {
-        ObjectPercepts visionPrecepts = percepts.getVision().getObjects();
-        for (ObjectPercept p : visionPrecepts.getAll()) {
-            if (p.getType().equals("SentryTower")) {
+        if (enteredSentryTower != 0)
+            return;
+
+        for (ObjectPercept p : percepts.getVision().getObjects().getAll()) {
+            if (p.getType().toString().equals("SentryTower")) {
+                enteredSentryTower = 15;
                 addActionToQueue(new Rotate(Angle.fromRadians(rotateTo(agent, p))), percepts);
-                addActionToQueue(new Move(new Distance(Math.abs(percepts.getVision().getFieldOfView().getRange().getValue()-p.getPoint().getDistanceFromOrigin().getValue()))), percepts);
+                addActionToQueue(new Move(new Distance(Math.abs(percepts.getVision().getFieldOfView().getRange().getValue() - p.getPoint().getDistanceFromOrigin().getValue()))), percepts);
                 lookInAllDirection(percepts);
             }
         }
@@ -416,11 +417,9 @@ public class GuardExplorer implements Guard {
      */
     private void leaveExploredZone(GuardPercepts p) {
         if (smellPheromone(p)) {
-
+            addActionToQueue(new Rotate(Angle.fromRadians(Math.PI/2)), p);
         }else
             return;
     }
-
-
 
 }
