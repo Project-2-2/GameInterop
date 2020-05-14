@@ -11,6 +11,9 @@ import Interop.Percept.GuardPercepts;
 import Interop.Percept.Percepts;
 import Interop.Percept.Scenario.ScenarioPercepts;
 import Interop.Percept.Scenario.SlowDownModifiers;
+import Interop.Percept.Sound.SoundPercept;
+import Interop.Percept.Sound.SoundPerceptType;
+import Interop.Percept.Sound.SoundPercepts;
 import Interop.Percept.Vision.ObjectPercept;
 import Interop.Percept.Vision.ObjectPerceptType;
 import Interop.Percept.GuardPercepts;
@@ -26,7 +29,10 @@ public class GuardExplorer implements Guard {
     @Override
     public GuardAction getAction(GuardPercepts percepts) {
         //return explore(percepts);
-        explore(percepts);
+        //if queue is empty otherwise do actions inside queue
+        if (actionQueue.size()<=0){
+            explore(percepts);
+        }
         //System.out.println(actionQueue.size());
         //System.out.println("yes");
         return actionQueue.poll();
@@ -75,17 +81,38 @@ public class GuardExplorer implements Guard {
     public void explore(GuardPercepts percepts){
         Set<ObjectPercept> vision = percepts.getVision().getObjects().getAll();
         ArrayList<ObjectPerceptType> visionPerceptTypes = new ArrayList<>();
+        Set<SoundPercept> sound = percepts.getSounds().getAll();
+
+        ArrayList<SoundPerceptType> soundPerceptTypes = new ArrayList<>();
 
         percepts.getScenarioGuardPercepts().getScenarioPercepts().getMaxRotationAngle();
+
         for (ObjectPercept e : vision){
             visionPerceptTypes.add(e.getType());
         }
 
+
+        for (SoundPercept s : sound){
+            soundPerceptTypes.add((s.getType()));
+        }
+
+
+
         if (visionPerceptTypes.contains(ObjectPerceptType.Intruder)) {
             seeIntruder(percepts,vision);
             return;
-
         }
+
+        if (soundPerceptTypes.contains(SoundPerceptType.Yell)&&Math.random()<=0.95){
+            rotateToYell(percepts);
+            return;
+        }
+        if (soundPerceptTypes.size()>0&&Math.random()<=0.2){
+            rotateToNoise(percepts);
+//            System.out.println("check");
+            return;
+        }
+
         if (!percepts.wasLastActionExecuted()){
             moveParallelToWall(percepts,vision);
             return;
@@ -94,7 +121,6 @@ public class GuardExplorer implements Guard {
         return;
         //return new Move(new Distance(percepts.getScenarioGuardPercepts().getMaxMoveDistanceGuard().getValue() * getSpeedModifier(percepts)));
     }
-
     public void moveParallelToWall(GuardPercepts percepts, Set<ObjectPercept> vision){
         //System.out.println(vision.size());
         if (!percepts.wasLastActionExecuted()&&vision.size()>0) {
@@ -170,7 +196,7 @@ public class GuardExplorer implements Guard {
                 //return new NoAction();
             }
              */
-        System.out.println(angleToIntruder/count);
+        //System.out.println(angleToIntruder/count);
         if(angleToIntruder/count>15){
             if(Math.random()<0.2){
                 System.out.println("yelled");
@@ -185,16 +211,108 @@ public class GuardExplorer implements Guard {
             return;
             //return new Rotate(Angle.fromDegrees(angleToIntruder/count));
         }else{
-            if (distanceToIntruder/count<=percepts.getScenarioGuardPercepts().getMaxMoveDistanceGuard().getValue()){
+            if (distanceToIntruder/count<=percepts.getScenarioGuardPercepts().getMaxMoveDistanceGuard().getValue()* getSpeedModifier(percepts)){
                 addActionToQueue(new Move(new Distance(distanceToIntruder/count)),percepts);
+                System.out.println("poep");
             }
             else{
-                addActionToQueue(new Move(percepts.getScenarioGuardPercepts().getMaxMoveDistanceGuard()),percepts);
+                addActionToQueue(new Move(new Distance(percepts.getScenarioGuardPercepts().getMaxMoveDistanceGuard().getValue()* getSpeedModifier(percepts))),percepts);
             }
             //return new Move(new Distance(1));
             return;
         }
 
+    }
+
+    public void rotateToNoise(GuardPercepts guardPercepts){
+        System.out.println("rotated to noise");
+        Set<SoundPercept> sound = guardPercepts.getSounds().getAll();
+        double soundDirectionDegrees = 0;
+        int count =0;
+        for (SoundPercept s : sound){
+            soundDirectionDegrees = soundDirectionDegrees +s.getDirection().getDegrees();
+            count++;
+        }
+       // System.out.println(soundDirectionDegrees);
+        double soundDirectionDegreesNormalized = soundDirectionDegrees/count;
+        //normalize so if rotation is 358 make it -2 since that is allowed by game controller
+        if (soundDirectionDegrees/count>180){
+            soundDirectionDegreesNormalized = soundDirectionDegreesNormalized - 360;
+        }
+        //System.out.println(count);
+        //System.out.println(soundDirectionDegreesNormalized);
+        //if the rotation is too much for one turn
+        if (Math.abs(soundDirectionDegreesNormalized)>guardPercepts.getScenarioGuardPercepts().getScenarioPercepts().getMaxRotationAngle().getDegrees()){
+            if (soundDirectionDegreesNormalized>0){
+                while (soundDirectionDegreesNormalized>0){
+                    if (soundDirectionDegreesNormalized>=guardPercepts.getScenarioGuardPercepts().getScenarioPercepts().getMaxRotationAngle().getDegrees()){
+                        addActionToQueue(new Rotate(guardPercepts.getScenarioGuardPercepts().getScenarioPercepts().getMaxRotationAngle()),guardPercepts);
+                        soundDirectionDegreesNormalized = soundDirectionDegreesNormalized-guardPercepts.getScenarioGuardPercepts().getScenarioPercepts().getMaxRotationAngle().getDegrees();
+                    }else{
+                        addActionToQueue(new Rotate(Angle.fromDegrees(soundDirectionDegreesNormalized)),guardPercepts);
+                        soundDirectionDegreesNormalized=0;
+                    }
+                }
+            }
+            if (soundDirectionDegreesNormalized<=0){
+                while (soundDirectionDegreesNormalized<0){
+                    if (Math.abs(soundDirectionDegreesNormalized)>=guardPercepts.getScenarioGuardPercepts().getScenarioPercepts().getMaxRotationAngle().getDegrees()){
+                        addActionToQueue(new Rotate(Angle.fromDegrees(guardPercepts.getScenarioGuardPercepts().getScenarioPercepts().getMaxRotationAngle().getDegrees()*-1)),guardPercepts);
+                        soundDirectionDegreesNormalized = soundDirectionDegreesNormalized+guardPercepts.getScenarioGuardPercepts().getScenarioPercepts().getMaxRotationAngle().getDegrees();
+                    }else{
+                        addActionToQueue(new Rotate(Angle.fromDegrees(soundDirectionDegreesNormalized)),guardPercepts);
+                        soundDirectionDegreesNormalized=0;
+                    }
+                }
+
+            }
+        }else{
+            addActionToQueue(new Rotate(Angle.fromDegrees(soundDirectionDegrees/count)),guardPercepts);
+        }
+    }
+
+    public void rotateToYell(GuardPercepts guardPercepts){
+        System.out.println("rotated to yell");
+        Set<SoundPercept> sound = guardPercepts.getSounds().getAll();
+        double soundDirectionDegrees = 0;
+        int count =0;
+        for (SoundPercept s : sound){
+            if (s.getType()== SoundPerceptType.Yell){
+                soundDirectionDegrees = soundDirectionDegrees +s.getDirection().getDegrees();
+                count++;
+            }
+        }
+
+//        System.out.println(soundDirectionDegrees);
+        double soundDirectionDegreesNormalized = soundDirectionDegrees/count;
+
+        if (Math.abs(soundDirectionDegreesNormalized)>guardPercepts.getScenarioGuardPercepts().getScenarioPercepts().getMaxRotationAngle().getDegrees()){
+            if (soundDirectionDegreesNormalized>0){
+                while (soundDirectionDegreesNormalized>0){
+                    if (soundDirectionDegreesNormalized>=guardPercepts.getScenarioGuardPercepts().getScenarioPercepts().getMaxRotationAngle().getDegrees()){
+                        addActionToQueue(new Rotate(guardPercepts.getScenarioGuardPercepts().getScenarioPercepts().getMaxRotationAngle()),guardPercepts);
+                        soundDirectionDegreesNormalized = soundDirectionDegreesNormalized-guardPercepts.getScenarioGuardPercepts().getScenarioPercepts().getMaxRotationAngle().getDegrees();
+                    }else{
+                        addActionToQueue(new Rotate(Angle.fromDegrees(soundDirectionDegreesNormalized)),guardPercepts);
+                        soundDirectionDegreesNormalized=0;
+                    }
+                }
+            }
+            if (soundDirectionDegreesNormalized<=0){
+                while (soundDirectionDegreesNormalized<0){
+                    if (Math.abs(soundDirectionDegreesNormalized)>=guardPercepts.getScenarioGuardPercepts().getScenarioPercepts().getMaxRotationAngle().getDegrees()){
+                        addActionToQueue(new Rotate(Angle.fromDegrees(guardPercepts.getScenarioGuardPercepts().getScenarioPercepts().getMaxRotationAngle().getDegrees()*-1)),guardPercepts);
+                        soundDirectionDegreesNormalized = soundDirectionDegreesNormalized+guardPercepts.getScenarioGuardPercepts().getScenarioPercepts().getMaxRotationAngle().getDegrees();
+                    }else{
+                        addActionToQueue(new Rotate(Angle.fromDegrees(soundDirectionDegreesNormalized)),guardPercepts);
+                        soundDirectionDegreesNormalized=0;
+                    }
+                }
+
+            }
+        }else{
+            addActionToQueue(new Rotate(Angle.fromDegrees(soundDirectionDegrees/count)),guardPercepts);
+        }
     }
 
     private double getSpeedModifier(GuardPercepts guardPercepts)
