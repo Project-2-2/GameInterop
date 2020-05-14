@@ -26,7 +26,7 @@ public class GuardExplorer implements Guard {
     @Override
     public GuardAction getAction(GuardPercepts percepts) {
         explore(percepts);
-        System.out.println(actionQueue.size());
+//        System.out.println(actionQueue.size());
         return actionQueue.poll();
 
     }
@@ -144,7 +144,7 @@ public class GuardExplorer implements Guard {
         }
 
         if (!percepts.wasLastActionExecuted()){
-            System.out.println("kak");
+//            System.out.println("kak");
 
             Angle randomAngle = Angle.fromDegrees(percepts.getScenarioGuardPercepts().getScenarioPercepts().getMaxRotationAngle().getDegrees()*Math.random());
             addActionToQueue(new Rotate(randomAngle), percepts);

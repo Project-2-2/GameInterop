@@ -169,27 +169,28 @@ public class GameRunner {
 
 
 
-        for (IntruderController intruder : mapInfo.intruders){
-            if (!intruder.isCaptured) {
-//                Action nextAction = intruder.explorer.getAction(intruder, visionPercepts);
-                IntruderAction nextAction = intruder.intruderAgent.getAction(intruder, visionPercepts);
-                //            System.out.println(nextAction);
-                if (nextAction instanceof Move) {
-                    intruder.move((Move) nextAction);
-//                System.out.println(((Move) nextAction).getDistance().getValue());
-                } else {
-                    Rotate r = (Rotate) nextAction;
-                    intruder.rotate(r.getAngle());
-                }
-//            rotate(new Rotate(Angle.fromDegrees(90)));
-//            System.out.println(intruder.getAngle().getDegrees());
-                if (mapViewer != null) {
-                    mapViewer.moveIntruder(intruder.position.getX(), intruder.position.getY());
-                    mapViewer.drawAgentVisionField(intruder.position.getX(), intruder.position.getY(),
-                            intruder.getAngle().getRadians(), intruder.getViewRange().getValue());
-                }
-            }
-        }
+//        for (IntruderController intruder : mapInfo.intruders){
+//            if (!intruder.isCaptured) {
+////                Action nextAction = intruder.explorer.getAction(intruder, visionPercepts);
+//                IntruderAction nextAction = intruder.intruderAgent.getAction(intruder, visionPercepts);
+//
+//                //            System.out.println(nextAction);
+//                if (nextAction instanceof Move) {
+//                    intruder.move((Move) nextAction);
+////                System.out.println(((Move) nextAction).getDistance().getValue());
+//                } else {
+//                    Rotate r = (Rotate) nextAction;
+//                    intruder.rotate(r.getAngle());
+//                }
+////            rotate(new Rotate(Angle.fromDegrees(90)));
+////            System.out.println(intruder.getAngle().getDegrees());
+//                if (mapViewer != null) {
+//                    mapViewer.moveIntruder(intruder.position.getX(), intruder.position.getY());
+//                    mapViewer.drawAgentVisionField(intruder.position.getX(), intruder.position.getY(),
+//                            intruder.getAngle().getRadians(), intruder.getViewRange().getValue());
+//                }
+//            }
+//        }
 
 
         if (mapViewer!=null) {

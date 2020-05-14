@@ -38,7 +38,7 @@ public class IntruderController extends AgentController {
         sprintCooldownTimer=false;
         sprintCoolDownCounter=0;
         explorer = new Explorer(1, this);
-        intruderAgent = new IntruderAgent(this);
+//        intruderAgent = new IntruderAgent(this);
         isCaptured=false;
     }
 

@@ -1,7 +1,10 @@
 package Group5.Agent;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Deque;
 import java.util.EnumMap;
 import java.util.HashMap;
@@ -28,8 +31,11 @@ import Interop.Percept.Vision.ObjectPerceptType;
 import Interop.Percept.Vision.ObjectPercepts;
 
 import java.io.FileWriter;
+import java.io.FileReader;
+import java.util.Arrays;
 import java.io.IOException;
 import java.io.BufferedWriter;
+import java.util.Scanner;
 
 
 public class QLearning {
@@ -74,7 +80,7 @@ public class QLearning {
     private double epsilonDecay;
     private Deque<Action> actionQueue;
     
-    /*
+    /**
      *@gamma   : The discount factor for future rewards
      *@epsilon : The probability the agent makes a random move
      *@alpha   : The learning rate for the agent
@@ -89,21 +95,23 @@ public class QLearning {
         this.numActions = numActions;
         this.numStates = numStates;
         this.qTable = new double[numStates][numActions];
-//        this.qTable = new double [][]{
-//                {0.0,0.0,0.0,0.0,0.0,0.0,0.0},
-//                {0.0,0.0,0.0,0.0,0.0,0.0,0.0},
-//                {-1.9662777989086195,-2.472447754072641,-2.4696678985330607,-2.4796416410479747,-1.9080988371698346,-1.737134594574407},
-//                {-0.6430906600515617,-0.6807711143525313,-0.6608904824194621,-0.6561722656360214,-0.6256462906671728,-0.6770173587089482},
-//                {-0.10000000149011612,0.0,0.0,0.0,0.0,0.0},
-//                {-1.8845545180957446,-1.9061786316237466,-1.8668967747145913,-1.9226932273347828,-1.717385686571351,-1.9255868290016818},
-//                {0.0,0.0,0.0,0.0,0.0,0.0,0.0},
-//                {-0.27100000362098214,-0.2967600048285723,-0.190000002682209,-0.190000002682209,-0.27100000362098214,-0.27100000362098214},
-//                {0.0,0.0,0.0,0.0,0.0,0.0,0.0},
-//                {-0.10000000149011612,0.0,0.0,-1.0222914416837978,-1.0040120377926016,0.0}
-//        };
         this.rn = new Random();
         this.epsilonDecay = 0.0001;
         this.agentController = agentController;
+        this.actionQueue = new LinkedList<>();
+    }
+    
+    public QLearning(float gamma, float epsilon, float alpha,
+            int numActions, int numStates) {
+        this.epsilon = epsilon;
+        this.gamma = gamma;
+        this.alpha = alpha;
+        this.numActions = numActions;
+        this.numStates = numStates;
+//        this.qTable = new double[numStates][numActions];
+        this.qTable = readTableFromFile();
+        this.rn = new Random();
+        this.epsilonDecay = 0.0001;
         this.actionQueue = new LinkedList<>();
     }
     
@@ -142,9 +150,6 @@ public class QLearning {
             }
         }
         
-//        ArrayList<ObjectPercept> visionObjects = new ArrayList<>();
-//        visionObjects.addAll(objectsInVision.getAll());
-//        Vision.bubbleSort(visionObjects, agentController);
         //Bellman Equation
         double update = reward + gamma * findMaxQState(this.currState.value) - qTable[this.prevState.value][this.prevAction];
         qTable[this.prevState.value][this.prevAction] = qTable[this.prevState.value][this.prevAction] + alpha * update;
@@ -165,7 +170,7 @@ public class QLearning {
         return this.qTable;
     }
     
-    public double findMaxQState(int stateIndex) {
+    private double findMaxQState(int stateIndex) {
         
         double[] qTablePart = qTable[stateIndex];
         int max = getMaxValue(qTablePart);
@@ -178,7 +183,7 @@ public class QLearning {
      *         whole qTable as input
      * @return the index of the max value of the part of the Qtable that references the current state
      */
-    public int getMaxValue(double[] qTablePart) {
+    private int getMaxValue(double[] qTablePart) {
         //float[] array = Q_part;
         int max = 0;
         double maxValue = qTablePart[0];
@@ -190,13 +195,13 @@ public class QLearning {
         return max;
     }
     
-    public void writeTableToFile(){
+    protected void writeTableToFile(){
         StringBuilder builder = new StringBuilder();
         for(int i = 0; i < numStates; i++){
             for(int j = 0; j < numActions; j++){
                 builder.append(qTable[i][j]+"");
                 if(j < numActions - 1)
-                    builder.append(",");
+                    builder.append(" ");
             }
             builder.append("\n");
         }
@@ -208,5 +213,27 @@ public class QLearning {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
+    }
+    
+    private double[][] readTableFromFile() {
+        try {
+            Scanner sc = new Scanner(new BufferedReader(new FileReader("src/main/java/Group5/QTable.txt")));
+            double [][] initialTable = new double[this.numStates][this.numActions];
+            while(sc.hasNextLine()) {
+                for (int i=0; i<initialTable.length; i++) {
+                    String[] line = sc.nextLine().trim().split(" ");
+                    for (int j=0; j<line.length; j++) {
+                        initialTable[i][j] = Double.parseDouble(line[j]);
+                    }
+                }
+            }
+//            System.out.println(Arrays.deepToString(initialTable));
+            return initialTable;
+        }
+        catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return null;
     }
 }
