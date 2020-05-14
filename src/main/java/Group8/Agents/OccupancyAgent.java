@@ -143,6 +143,7 @@ public class OccupancyAgent implements Guard {
                 //percepts.getViewAngle() tells which direction of the grid to update on.
                 percepts.getVision().getFieldOfView().getViewAngle();
 
+
                 // This means that I would halve to calculate 45 degrees with the log update
                 return new Rotate(Angle.fromDegrees(90));
 
@@ -152,18 +153,21 @@ public class OccupancyAgent implements Guard {
 
                 return new Rotate(Angle.fromDegrees(90));
             } else if(suroundUpdateIteration == 3) {
-                return new Rotate(Angle.fromDegrees(90));
                 //update rotation
                 suroundUpdateIteration ++;
-            } else if(suroundUpdateIteration == 4) {
                 return new Rotate(Angle.fromDegrees(90));
-                //update rotation
-                suroundUpdateIteration ++;
-            } else {
 
-                suroundUpdateIteration = 1;
+            } else if(suroundUpdateIteration == 4) {
+                //update rotation
+                suroundUpdateIteration ++;
+                return new Rotate(Angle.fromDegrees(90));
+
+            } else {
+                //replace rng.nextDouble() to rotating degree.
+                return new Rotate(Angle.fromDegrees(rng.nextDouble()));
             }
         } else {
+            suroundUpdateIteration = 1;
             //decision rule for finding the longest path
             return new Move(new Distance(percepts.getScenarioGuardPercepts().getMaxMoveDistanceGuard().getValue() * getSpeedModifier(percepts)));
         }
