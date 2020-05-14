@@ -20,8 +20,6 @@ public class AgentFactoryGroup5 implements IAgentFactory {
         List<Intruder> intruders = new ArrayList<>();
         for(int i = 0; i < number; i++)
         {
-//            intruders.add(new Explorer());
-            intruders.add(new IntruderAgent());
             intruders.add(new IntruderAgent());
         }
         return intruders;

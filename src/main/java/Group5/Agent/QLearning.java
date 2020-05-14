@@ -157,6 +157,7 @@ public class QLearning {
         this.prevAction = this.currAction;
         this.prevState = this.currState;
         
+        // For printing the Q-table
 //        for (int i = 0; i < numStates; i++) {
 //            for (int j = 0; j < numActions; j++) {
 //                System.out.print("" + qTable[i][j] + ",");
@@ -184,7 +185,6 @@ public class QLearning {
      * @return the index of the max value of the part of the Qtable that references the current state
      */
     private int getMaxValue(double[] qTablePart) {
-        //float[] array = Q_part;
         int max = 0;
         double maxValue = qTablePart[0];
         for (int i = 0; i < qTablePart.length; i++) {
