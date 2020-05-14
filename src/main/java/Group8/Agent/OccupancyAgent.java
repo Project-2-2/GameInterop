@@ -13,6 +13,7 @@ import Interop.Percept.GuardPercepts;
 import Interop.Percept.Scenario.SlowDownModifiers;
 import Interop.Percept.Smell.SmellPerceptType;
 
+import java.util.ArrayList;
 import java.util.Random;
 
 /**
@@ -49,15 +50,14 @@ public class OccupancyAgent implements Guard {
 
     public OccupancyAgent() {
         OccupancyGrid occupancyGrid = new OccupancyGrid();
-        double xPosition = occupancyGrid.occupancyGrid.size()/2;
-        double yPosition = occupancyGrid.occupancyGrid.size()/2;
+        //This would be more efficient if we know in general where the agent could be generally start at.
+        double xPosition = occupancyGrid.occupancyGrid.size()/2.0;
+        double yPosition = occupancyGrid.occupancyGrid.size()/2.0;
         initialLocation = new Point(xPosition,yPosition);
         rng = new Random();
     }
 
     //as defined in https://www.youtube.com/watch?v=Ko7SWZQIawM
-
-    //TODO: use Normal number genrator instead of uniform distribution.
 
     /**
      * @return an optimal estimate of the state of a acell given by a MAP decision rule
@@ -76,8 +76,19 @@ public class OccupancyAgent implements Guard {
      *
      * THIS SERVES AS DATA ANALYSIS FOR PHASE 3, TO SEE IF THERE ARE ANY POINTS OF IMPROVEMENTS!
      * !DO NOT CALL METHOD IN FINAL SUBMISSION, OR ELSE AGENT IS EVEN SLOWER!
+     *
+     * There are only 4 conditional probabilities.
+     * P(z = 1|Mx,y = 1) : True occupied measurement
+     * P(z = 0|Mx,y = 1) : False free measurement
+     * P(z = 1|Mx,y = 0) : False occupied measurement
+     * P(z = 0|Mx,y = 0) : True free measurement
      */
-    public void verify() {
+    public void verify(GuardPercepts guardPercepts) {
+        //Area of inspection.
+        ArrayList<ArrayList<Boolean>> inspectionArea = new ArrayList<ArrayList<Boolean>>();
+
+
+        //move to center
 
     }
 
@@ -116,13 +127,7 @@ public class OccupancyAgent implements Guard {
         }
     }
 
-    /**
-     * There are only 4 conditional probabilities.
-     * P(z = 1|Mx,y = 1) : True occupied measurement
-     * P(z = 0|Mx,y = 1) : False free measurement
-     * P(z = 1|Mx,y = 0) : False occupied measurement
-     * P(z = 0|Mx,y = 0) : True free measurement
-     */
+
     public void conditionalProbabilities() {
         //recall: P(A^c|B) = 1 - P(A | B)
     }
@@ -168,7 +173,7 @@ public class OccupancyAgent implements Guard {
      * This is the random version occProbability() which does not take into account what the agent knows.
      * @return the probability that environment is occupied
      */
-    public double probablilityAGauss() {
+    public double probabililityAGauss() {
         return rng.nextGaussian();
     }
 
