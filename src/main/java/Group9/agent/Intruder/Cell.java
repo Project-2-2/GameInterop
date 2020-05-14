@@ -1,5 +1,8 @@
 package Group9.agent.Intruder;
 
+import Interop.Percept.Vision.ObjectPercept;
+import Interop.Percept.Vision.ObjectPerceptType;
+
 import java.util.LinkedList;
 
 public class Cell {
@@ -266,7 +269,52 @@ public class Cell {
     public int getCount(){
         return visitedCount;
     }
-
+    public void setObject(ObjectPerceptType type)
+    {
+        switch (type)
+        {
+            case Door:
+            {
+                door = true;
+                break;
+            }
+            case Wall:
+            {
+                wall = true;
+                break;
+            }
+            case Guard:
+            {
+                guard = true;
+                break;
+            }
+            case Window:
+            {
+                window = true;
+                break;
+            }
+            case Teleport:
+            {
+                teleport = true;
+                break;
+            }
+            case TargetArea:
+            {
+                target = true;
+                break;
+            }
+            case SentryTower:
+            {
+                sentryTower = true;
+                break;
+            }
+            default:
+            {
+                //do nothing
+                break;
+            }
+        }
+    }
     public boolean hasWall(){
         return wall;
     }
