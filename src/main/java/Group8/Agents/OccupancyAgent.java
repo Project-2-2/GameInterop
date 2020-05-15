@@ -187,11 +187,6 @@ public class OccupancyAgent implements Guard {
 //        }
     }
 
-
-    public void conditionalProbabilities() {
-        //recall: P(A^c|B) = 1 - P(A | B)
-    }
-
     /**
      * Converts our Prior Map to Posterior map using Bayes formula:
      * P(Mx,y | z) = (P(z | Mx,y) * P(Mx,y)) / P(z)
