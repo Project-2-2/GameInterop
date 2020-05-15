@@ -7,16 +7,19 @@ import Interop.Action.Move;
 import Interop.Action.Rotate;
 import Interop.Agent.Guard;
 import Interop.Geometry.Angle;
+import Interop.Geometry.Direction;
 import Interop.Geometry.Distance;
 import Interop.Geometry.Point;
 import Interop.Percept.GuardPercepts;
 import Interop.Percept.Scenario.SlowDownModifiers;
 import Interop.Percept.Smell.SmellPerceptType;
+import Interop.Percept.Vision.ObjectPercept;
 
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
+import java.util.Set;
 
 /**
  * @author Thomas Sijpkens
@@ -282,6 +285,20 @@ public class OccupancyAgent implements Guard {
     }
 
     //localize global map into our arraylist.
+    /**
+     * Using the formula:
+     * [x1,occ; x2,occ] = [cos(thetha) , sin(theta); -sin(thetha) , cos(theta)] * [d ; 0] + [x1 ; x2]
+     * where d is length of ray, (x1,occ) and (x2,occ) are the x and y coordinate of the endpoint of the rays.
+     * theta is the direction the agent is facing
+     */
+    public void mapping(GuardPercepts percepts) {
+        Angle direction = percepts.getVision().getFieldOfView().getViewAngle();
+        Distance distance = percepts.getVision().getFieldOfView().getRange();
+        double[][] transformMatrix = {{Math.cos(direction.getDegrees()), Math.sin(direction.getDegrees())},
+                                        {-Math.sin(direction.getDegrees()), Math.cos(direction.getDegrees())}};
+        double[] normalizeCoefficient = {distance.getValue(), 0};
+
+    }
 
 
 }
