@@ -258,4 +258,29 @@ public class OccupancyAgent implements Guard {
         double xSize, ysize = occupancyGrid.occupancyGrid.size() * 2;
 
     }
+
+    /**
+     * Instead of keeping track of all probabilities we keep track of odd of a cell being occupied.
+     * Odd= (X happens) / (X not happen) = P(X)/P(!X)
+     * So then calculation for Baye's is:
+     * 1. Odd((Mx,y =1) given z) = P(Mx,y = 1 | z) / P(Mx,y = 1 | z)
+     * 2. P(Mx,y=0|z) = P(z|Mx,y = 0)P(Mx,y = 0)/ P(z)
+     * @param count count of occupied space value counted by the agent
+     * @return the odds of occupied over empty
+     */
+    public double odd(int count){
+        return occProbability(count)/(1-occProbability(count));
+    }
+
+    /**
+     * Makes computation even simpler if we we take Math.log(odds)
+     * log((P(Mx,y=1|z)/P(Mx,y=0|z))=log((P(Mx,y=1|z)*P(Mx,y=1)/(P(Mx,y=0|z)*P(Mx,y=0)))
+     * @param meas is P(z|Mx,y=1)|P(z|Mx,y=0) derived from the above equation
+     * @param odd is the odd of occuped over empty
+     * @return the log-update rule.
+     */
+    public double logOdds(double meas, double odd){
+        //actual update rule is log odd += log odd meas but this is close enough.
+        return Math.log(meas) + Math.log(odd);
+    }
 }
