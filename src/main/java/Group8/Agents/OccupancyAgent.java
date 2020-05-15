@@ -31,10 +31,6 @@ public class OccupancyAgent implements Guard {
     private double ysize; //Y size of map
     private double grid_size; //how thicc the wall assumption be.
 
-    //For optimality sake OccupancyGrid().update() would determine whether log likelihood is 0.5 is (<,>).
-    //I am leaving it incase we want to do some fancy data analytics.
-    //private ArrayList<ArrayList<Double>> log_prob_map; //initially set to zero
-
     //Agent has pose defined by (x,y,theta)
     private final int DEGREE_OF_FREEDOM = 3;
     //index 1 is x coordinate, 2 is y coordinate, 3 is robot's heading(theta).
@@ -91,6 +87,8 @@ public class OccupancyAgent implements Guard {
      * P(z = 0|Mx,y = 1) : False free measurement
      * P(z = 1|Mx,y = 0) : False occupied measurement
      * P(z = 0|Mx,y = 0) : True free measurement
+     *
+     * TODO: develop this into mother duck strategy.
      */
     public void verify(GuardPercepts guardPercepts) throws IOException {
         //take area of inspection
@@ -106,9 +104,6 @@ public class OccupancyAgent implements Guard {
             inspectionArea.add(new ArrayList<Boolean>());
         }
 
-        //operations
-
-        //record
         FileWriter writer = new FileWriter("verifyOutput.txt");
     }
 
@@ -131,6 +126,13 @@ public class OccupancyAgent implements Guard {
         return 1;
     }
 
+    /**
+     * Basic idea of the algorithm:
+     * 1. Calculate the occupancy grid around the map
+     * 2. Find longest straight path that can be moved by the agent.
+     * @param percepts The precepts represent the world as perceived by that agent.
+     * @return
+     */
     @Override
     public GuardAction getAction(GuardPercepts percepts) {
         if(percepts.wasLastActionExecuted()) {
@@ -278,4 +280,8 @@ public class OccupancyAgent implements Guard {
         //actual update rule is log odd += log odd meas but this is close enough.
         return Math.log(meas) + Math.log(odd);
     }
+
+    //localize global map into our arraylist.
+
+
 }
