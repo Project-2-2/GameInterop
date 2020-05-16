@@ -1,5 +1,6 @@
 package Group8.Agents;
 
+import Group8.Agents.Intruder.SimplePathfindingIntruder;
 import Group9.agent.factories.IAgentFactory;
 import Interop.Agent.Guard;
 import Interop.Agent.Intruder;
@@ -12,12 +13,10 @@ public class AgentFactoryImpl implements IAgentFactory{
     public static final AlgoI INTRUDER_ALGORITHM = AlgoI.AI1;
 
     public enum AlgoI {
-        AI1,
-        AI2;
+        AI1,SIMPLE_PATH
     }
     public enum AlgoG {
-        AI1,
-        AI2;
+        AI1,AI2
 
     }
 
@@ -30,8 +29,8 @@ public class AgentFactoryImpl implements IAgentFactory{
                 case AI1:
                     intruders.add(null);
                     break;
-                case AI2:
-                    //intruders.add(new IntruAlgo2());
+                case SIMPLE_PATH:
+                    intruders.add(new SimplePathfindingIntruder());
                     break;
             }
         }
