@@ -1,4 +1,4 @@
-package Group8.Launchers.GUI;
+package Group8.Launchers.GUIRes;
 
 import javafx.scene.paint.Color;
 

@@ -1,6 +1,7 @@
-package Group8.Launchers.GUI;
+package Group8.Launchers;
 
 
+import Group8.Launchers.GUIRes.GameScene;
 import Group9.Game;
 import Group9.agent.container.GuardContainer;
 import Group9.agent.container.IntruderContainer;
