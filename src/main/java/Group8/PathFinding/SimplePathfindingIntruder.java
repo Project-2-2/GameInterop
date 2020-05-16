@@ -1,16 +1,12 @@
 package Group8.PathFinding;
 
-import Interop.Action.GuardAction;
 import Interop.Action.IntruderAction;
 import Interop.Action.Move;
 import Interop.Action.Rotate;
-import Interop.Agent.Intruder;
 import Interop.Geometry.Angle;
 import Interop.Geometry.Distance;
 import Interop.Geometry.Point;
-import Interop.Percept.GuardPercepts;
 import Interop.Percept.IntruderPercepts;
-import Interop.Percept.Percepts;
 import Interop.Percept.Scenario.SlowDownModifiers;
 import Interop.Percept.Vision.FieldOfView;
 
