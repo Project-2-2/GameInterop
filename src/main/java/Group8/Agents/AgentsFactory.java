@@ -24,10 +24,10 @@ public class AgentsFactory {
 
         for(int i=0; i<number; i++){
             switch(whichAlgo) {
-                case (AI1):
+                case AI1:
                     //intruders.add(new IntruAlgo1());
                     break;
-                case (AI2):
+                case AI2:
                     //intruders.add(new IntruAlgo2());
                     break;
             }
@@ -41,10 +41,10 @@ public class AgentsFactory {
 
         for(int i=0; i<number; i++){
             switch(whichAlgo) {
-                case (AI1):
+                case AI1:
                     //guards.add(new GuardAlgo1());
                     break;
-                case (AI2):
+                case AI2:
                     //guards.add(new GuardAlgo2());
                     break;
             }
