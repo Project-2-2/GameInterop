@@ -1,5 +1,6 @@
 package Interop;
 
+import Interop.CommonController.ControllerTests;
 import Interop.Geometry.DirectionTest;
 import Interop.Percept.PerceptsTest;
 import Interop.Utils.UtilsTest;
@@ -12,5 +13,6 @@ public class InteropTests {
         UtilsTest.main(args);
         DirectionTest.main(args);
         PerceptsTest.main(args);
+        ControllerTests.main(args);
     }
 }
