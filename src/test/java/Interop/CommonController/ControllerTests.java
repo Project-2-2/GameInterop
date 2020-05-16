@@ -7,8 +7,11 @@ import Group9.map.parser.Parser;
 import Interop.Action.GuardAction;
 import Interop.Action.IntruderAction;
 import Interop.Action.NoAction;
+import Interop.Action.Rotate;
 import Interop.Agent.Guard;
 import Interop.Agent.Intruder;
+import Interop.Geometry.Angle;
+import Interop.Geometry.Direction;
 import Interop.Percept.GuardPercepts;
 import Interop.Percept.IntruderPercepts;
 import Interop.Percept.Vision.ObjectPerceptType;
@@ -105,13 +108,49 @@ public class ControllerTests extends SimpleUnitTest {
                     }
                 },
                 false,
-                1,
+                -1,
                 (game1) -> {
                     game1.getRunningLoop().set(false);
                 }
             );
 
             game.run();
+
+        });
+
+        xit("allows intruders to do 360 degree rotation", () -> {
+
+            var counter = new Object() {
+                int rounds = 0;
+            };
+
+            new Game(
+                Parser.parseFile("./src/test/java/Interop/CommonController/maps/simple_test.map"),
+                new IAgentFactory() {
+                    public List<Intruder> createIntruders(int amount) {
+                        List<Intruder> list = new ArrayList<>();
+                        for (int i = 0; i < amount; i++) {
+                            list.add((intruderPercepts) -> {
+                                return new Rotate(intruderPercepts.getTargetDirection());
+                            });
+                        }
+                        return list;
+                    }
+                    public List<Guard> createGuards(int amount) {
+                        List<Guard> list = new ArrayList<>();
+                        for (int i = 0; i < amount; i++) {
+                            list.add((guardPercepts) -> new NoAction());
+                        }
+                        return list;
+                    }
+                },
+                false,
+                -1,
+                (game) -> {
+                    counter.rounds++;
+                    if(counter.rounds > 1000) game.getRunningLoop().set(false);
+                }
+            ).run();
 
         });
 
