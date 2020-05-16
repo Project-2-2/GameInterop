@@ -296,7 +296,7 @@ public class OccupancyAgent implements Guard {
      * theta is the direction the agent is facing
      * Note, this method discretizes the map.
      */
-    public void mapping(GuardPercepts percepts) {
+    public void mapping(GuardPercepts percepts, ObjectPercept objectPercept) {
         Angle direction = percepts.getVision().getFieldOfView().getViewAngle();
         Distance distance = percepts.getVision().getFieldOfView().getRange();
         double[][] transformMatrix = {{Math.cos(direction.getDegrees()), Math.sin(direction.getDegrees())},
@@ -308,9 +308,32 @@ public class OccupancyAgent implements Guard {
         //Bresenham line algorithm: https://en.wikipedia.org/wiki/Bresenham%27s_line_algorithm
         //This draws the line from agent location to endpoint of RayCast. O(n)
 
-        //case 1: line draw left to right where Agent location is strictly less than vision end point
-        int y1 = ;
+        //TODO: this is for one endpoint find a way to do this for all endpoints: ObjectPercepts
+        int x1 = (int) xPosition;
+        int y1 = (int) yPosition;
+        int x2 = (int) objectPercept.getPoint().getX();
+        int y2 = (int) objectPercept.getPoint().getY();
 
+        int m_new = 2 * (y2 - y1);
+        int slope_error_new = m_new - (x2 - x1);
+
+        for (int x = x1, y = y1; x <= x2; x++)
+        {
+            System.out.print("(" +x + "," + y + ")\n");
+
+            // Add slope to increment angle formed
+            slope_error_new += m_new;
+
+            // Slope error reached limit, time to
+            // increment y and update slope error.
+            if (slope_error_new >= 0)
+            {
+                y++;
+                slope_error_new -= 2 * (x2 - x1);
+            }
+        }
+
+        //end Breshenham Line Algorithm
     }
 
 
