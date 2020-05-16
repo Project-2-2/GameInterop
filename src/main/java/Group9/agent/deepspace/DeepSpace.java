@@ -1,15 +1,21 @@
 package Group9.agent.deepspace;
 
-import Group9.PiMath;
+import Group9.Game;
 import Group9.math.Vector2;
 import Group9.math.graph.Graph;
 import Group9.math.graph.Vertex;
-import Interop.Action.*;
+import Interop.Action.GuardAction;
+import Interop.Action.Move;
+import Interop.Action.NoAction;
+import Interop.Action.Rotate;
 import Interop.Agent.Guard;
 import Interop.Geometry.Angle;
 import Interop.Geometry.Distance;
 import Interop.Percept.GuardPercepts;
-
+import Interop.Percept.Vision.ObjectPercept;
+import Interop.Percept.Vision.ObjectPerceptType;
+import Interop.Percept.Vision.VisionPrecepts;
+import Interop.Geometry.Point;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
@@ -35,7 +41,10 @@ public class DeepSpace implements Guard {
     private ActionContainer<GuardAction> lastAction = null;
 
     private final EnumMap<StateType, StateHandler> stateHandlers;
-
+    private Point location;//Position of guard
+    private Angle rotation; //0 rotation -> positive Y, neutral X
+    private boolean foundTargetArea = false;
+    private boolean set = false;
     private boolean insideTeleportArea = false;
     protected boolean firstActionAfterTeleport = false;
 
@@ -58,7 +67,19 @@ public class DeepSpace implements Guard {
     @Override
     public GuardAction getAction(GuardPercepts percepts) {
         ActionContainer<GuardAction> actionToDo = ActionContainer.of(this, new NoAction());
-
+        VisionPrecepts vision = percepts.getVision();
+        Set<ObjectPercept> objectPercepts = vision.getObjects().getAll();
+        if (foundTargetArea) {
+            return doTargetAreaAction(percepts);
+        }
+        else {
+            for (ObjectPercept object : objectPercepts) {
+                if (object.getType().equals(ObjectPerceptType.TargetArea)) {
+                    foundTargetArea = true;
+                    break;
+                }
+            }
+        }
         if(!percepts.wasLastActionExecuted())
         {
             System.out.println("well");
@@ -169,6 +190,31 @@ public class DeepSpace implements Guard {
         }
 
         return retActionsQueue;
+    }
+    protected GuardAction doTargetAreaAction(GuardPercepts percepts) {
+        if(!set) {
+            Set<ObjectPercept> objects = percepts.getVision().getObjects().getAll();
+            for (ObjectPercept object :
+                    objects) {
+                if (object.getType().equals(ObjectPerceptType.TargetArea)) {
+                    Move move = new Move(new Distance(object.getPoint(), new Point(0, 0)));
+                    if (move.getDistance().getValue() >= percepts.getScenarioGuardPercepts().getMaxMoveDistanceGuard().getValue()) {
+                        move = new Move(percepts.getScenarioGuardPercepts().getMaxMoveDistanceGuard());
+                    }
+                    return move;
+                }
+
+            }
+            set = true;
+        }
+        Angle newRotation = Angle.fromRadians(percepts.getScenarioGuardPercepts().getScenarioPercepts().getMaxRotationAngle().getRadians() * Game._RANDOM.nextDouble());
+        // rotation = Angle.fromRadians(rotation.getRadians()+newRotation.getRadians());
+        if(newRotation.getDegrees() > 360){
+            newRotation = Angle.fromDegrees(rotation.getDegrees() - 360);
+        } else if(newRotation.getDegrees() < 0){
+            rotation = Angle.fromDegrees(rotation.getDegrees() + 360);
+        }
+        return new Rotate(newRotation);
     }
 
     protected Queue<ActionContainer<GuardAction>> planRotation(GuardPercepts percepts, double alpha)
