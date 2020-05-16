@@ -23,7 +23,7 @@ public class ControllerTests extends SimpleUnitTest {
 
         System.out.println("\n\nController Tests\n");
 
-        xit("agents can't see trough wall", () -> {
+        it("agents can't see trough wall", () -> {
 
             Game game = new Game(
                 Parser.parseFile("./src/test/java/Interop/CommonController/maps/vision_test.map"),
