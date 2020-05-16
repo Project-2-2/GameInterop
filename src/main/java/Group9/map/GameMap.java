@@ -24,6 +24,7 @@ import java.util.stream.Stream;
 public class GameMap {
 
     private final static boolean _OPTIMISE_RAYS = true;
+    private final static boolean _OPTIMISED_FILTERED_OBJECTS = true;
 
     private final GameSettings gameSettings;
 
@@ -130,7 +131,7 @@ public class GameMap {
     {
 
         // --- If the field of view is greater than 180° (-> Pi) then this method does not work.
-        if(gameSettings.getViewAngle().getRadians() >= Math.PI) {
+        if(gameSettings.getViewAngle().getRadians() >= Math.PI || !_OPTIMISED_FILTERED_OBJECTS) {
             if(filter == null)
             {
                 return this.mapObjects;
@@ -286,7 +287,7 @@ public class GameMap {
         // --- sort by distance
         List<Map.Entry<Vector2, ObjectPerceptType>> entries = objectPoints.entrySet()
                 .stream()
-                .sorted(Comparator.comparingDouble(e -> line.getStart().distance(e.getKey())))
+                .sorted(Comparator.comparingDouble(e -> e.getKey().length()))
                 .filter(e -> e.getKey().distance(agentContainer.getPosition()) > 0)
                 .collect(Collectors.toList());
 
