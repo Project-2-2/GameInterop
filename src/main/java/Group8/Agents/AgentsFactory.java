@@ -15,10 +15,11 @@ import java.util.List;
  * Agents must not hold ANY references to common objects or references to each other.
  */
 public class AgentsFactory {
+    private static IAgentFactory iAgentFactory = new ExampleAgentFactory();
     static public List<Intruder> createIntruders(int number) {
-        return Collections.emptyList();
+        return iAgentFactory.createIntruders(number);
     }
     static public List<Guard> createGuards(int number) {
-        return Collections.emptyList();
+        return iAgentFactory.createGuards(number);
     }
 }
