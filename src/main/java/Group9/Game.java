@@ -46,7 +46,7 @@ import java.util.stream.Collectors;
 public class Game implements Runnable {
 
     public final static Random _RANDOM;
-    public final static long _RANDOM_SEED = 141058839991900L;// System.nanoTime();
+    public final static long _RANDOM_SEED = 382420758442500L; //System.nanoTime();
     static {
         System.out.println("seed: " + _RANDOM_SEED);
         _RANDOM = new Random(_RANDOM_SEED);

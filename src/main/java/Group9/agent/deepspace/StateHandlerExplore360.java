@@ -6,6 +6,7 @@ import Interop.Action.NoAction;
 import Interop.Percept.GuardPercepts;
 
 import java.util.LinkedList;
+import java.util.Optional;
 import java.util.Queue;
 
 public class StateHandlerExplore360 implements StateHandler {
@@ -52,8 +53,19 @@ public class StateHandlerExplore360 implements StateHandler {
 
     // inits the graph (or adds a new vertex)  &  schedules rotations
     private void init(GuardPercepts percepts) {
+
+        Optional<Vertex<DataContainer>> closeVertex = ds.currentGraph.getVertices().stream()
+                .filter(e -> e.getContent().getCenter().distance(ds.getPosition()) < 0.01)
+                .findAny();
+        if(closeVertex.isPresent())
+        {
+            ds.setCurrentVertex(closeVertex.get());
+            return;
+        }
+
         Vertex<DataContainer> newVertex = new Vertex<>(new DataContainer(this.ds, this.ds.getPosition().clone(),
                 percepts.getVision().getFieldOfView().getRange().getValue()));
+
 
         if(ds.getCurrentVertex() != null)
         {

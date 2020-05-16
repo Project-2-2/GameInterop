@@ -124,7 +124,7 @@ public class DeepSpace implements Guard {
         return currentVertex.getContent().getCenter().distance(newVertex.getContent().getCenter());
     }
 
-    protected boolean isInsideOtherVertex(Vertex<?> own, Vector2 position, double radiusModifier)
+    protected boolean isInsideOtherVertex(Vertex<?> own, Vector2 position, final double radiusModifier)
     {
         return currentGraph.getVertices().stream()
                 .anyMatch(e -> e != own && !e.getContent().isDeadEnd() &&
@@ -136,7 +136,7 @@ public class DeepSpace implements Guard {
         Queue<ActionContainer<GuardAction>> retActionsQueue = new LinkedList<>();
 
         Vector2 desiredDirection = target.sub(source).normalise();
-        double rotationDiff = PiMath.getDistanceBetweenAngles(direction.getClockDirection(), desiredDirection.getClockDirection());
+        double rotationDiff = desiredDirection.getClockDirection() - direction.getClockDirection();
 
         if(rotationDiff < 0)
         {

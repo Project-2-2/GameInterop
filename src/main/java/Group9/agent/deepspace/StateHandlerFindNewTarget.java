@@ -21,6 +21,7 @@ public class StateHandlerFindNewTarget implements StateHandler {
     private boolean active;
 
     private boolean backtrackedToKnownState = false;
+    private boolean movingIntoTargetArea = false;
 
     private final Queue<ActionContainer<GuardAction>> actionsQueue = new LinkedList<>();
 
@@ -28,6 +29,8 @@ public class StateHandlerFindNewTarget implements StateHandler {
     private int teleportPriorityChange = -1;
 
     private boolean initialRoundAfterTeleport = false;
+
+    private boolean testSquare = false;
 
     @Override
     public ActionContainer<GuardAction> execute(GuardPercepts percepts, DeepSpace deepSpace) {
@@ -43,8 +46,18 @@ public class StateHandlerFindNewTarget implements StateHandler {
 
         if (!active) {
             // add actions to queue to get to new best target
-            findNewTarget(percepts);
-            active = true;
+            if(testSquare)
+            {
+                Vector2 target = ds.getPosition().add(ds.getDirection().rotated(Math.PI / 2).mul(4));
+                actionsQueue.addAll(
+                        ds.moveTowardsPoint(percepts, ds.getDirection(), ds.getPosition(), target)
+                );
+            }
+            else
+            {
+                findNewTarget(percepts);
+                active = true;
+            }
         }
 
         // if this is an ongoing state, execute queue
@@ -97,25 +110,36 @@ public class StateHandlerFindNewTarget implements StateHandler {
     }
 
     private void postExecute() {
+        if(testSquare) {
+            nextState = StateType.FIND_NEW_TARGET;
+            return;
+        }
         if (actionsQueue.isEmpty()) {
             if(this.backtrackedToKnownState)
             {
                 nextState = StateType.FIND_NEW_TARGET;
             }
+            else if(this.movingIntoTargetArea)
+            {
+                nextState = StateType.GUARD_TARGET_AREA;
+            }
             else
             {
                 nextState = StateType.EXPLORE_360;
             }
-            backtrackedToKnownState = false;
             active = false;
+            this.movingIntoTargetArea = false;
+            this.backtrackedToKnownState = false;
         } else {
             nextState = StateType.FIND_NEW_TARGET;
         }
     }
 
     public void resetState()  {
-        actionsQueue.clear();
-        active = false;
+        this.actionsQueue.clear();
+        this.active = false;
+        this.movingIntoTargetArea = false;
+        this.backtrackedToKnownState = false;
     }
 
     private void findNewTarget(GuardPercepts guardPercepts)
@@ -126,6 +150,7 @@ public class StateHandlerFindNewTarget implements StateHandler {
                 ObjectPerceptType.Door, ObjectPerceptType.Window, ObjectPerceptType.Teleport, ObjectPerceptType.EmptySpace,
                 ObjectPerceptType.Wall};
 
+        // TODO Luis -> Dynamic priority list so that we no longer get stuck somewhere :)
         if(teleportPriorityChange >= 0)
         {
             teleportPriorityChange--;
@@ -143,10 +168,21 @@ public class StateHandlerFindNewTarget implements StateHandler {
             Set<Vector2> positions = ds.currentVertex.getContent().getObjects().get(type);
             if(positions != null && !positions.isEmpty())
             {
-                Optional<Vector2> target = positions.stream().filter(e -> !ds.isInsideOtherVertex(ds.getCurrentVertex(), e, 0.5)).findAny();
+                Optional<Vector2> target = positions.stream().filter(e -> !ds.isInsideOtherVertex(ds.getCurrentVertex(), e, 0.8)).findAny();
                 if(target.isPresent())
                 {
-                    actionsQueue.addAll(ds.moveTowardsPoint(guardPercepts, ds.getPosition(), ds.getDirection(), target.get()));
+                    Vector2 targetPosition = target.get();
+                    //--- if we move into a target area then we want to transition into the guarding state
+                    if(type == ObjectPerceptType.TargetArea)
+                    {
+                        this.movingIntoTargetArea = true;
+                    }
+                    else if(type.isSolid())
+                    {
+                        targetPosition = targetPosition.sub(ds.getPosition().sub(targetPosition).normalise().mul(0.5));
+                    }
+
+                    actionsQueue.addAll(ds.moveTowardsPoint(guardPercepts, ds.getDirection(), ds.getPosition(), targetPosition));
                     // todo: Maybe Hoare might have a point this time
                     return;
                 }
@@ -212,7 +248,7 @@ public class StateHandlerFindNewTarget implements StateHandler {
                 //--- walk to the center of the vertex it is currently exploring
                 if(ds.getPosition().distance(ds.currentVertex.getContent().getCenter()) > 1E-8)
                 {
-                    //retActionsQueue.addAll(ds.moveTowardsPoint(guardPercepts, ds.getDirection(), ds.getPosition(), vertex.getContent().getCenter()));
+                    retActionsQueue.addAll(ds.moveTowardsPoint(guardPercepts, ds.getDirection(), ds.getPosition(), vertex.getContent().getCenter()));
                 }
 
                 //--- if the path has only length 2 then we are only walking from the current vertex to a previous vertex
