@@ -14,6 +14,7 @@ import Interop.Percept.GuardPercepts;
 import Interop.Percept.Scenario.SlowDownModifiers;
 import Interop.Percept.Smell.SmellPerceptType;
 import Interop.Percept.Vision.ObjectPercept;
+import Interop.Percept.Vision.ObjectPercepts;
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -54,13 +55,16 @@ public class OccupancyAgent implements Guard {
     private final int viewRays = 45;
     private final double viewRange = 6.0; //I don't know how to pull this of if they are defined
 
+    double xPosition, yPosition
 
     private int suroundUpdateIteration = 1;
+    private ObjectPercept objectPercept;
+    private ObjectPercepts objectPercepts;
 
     public OccupancyAgent() {
         this.occupancyGrid = new OccupancyGrid();
-        double xPosition = occupancyGrid.occupancyGrid.size()/2.0;
-        double yPosition = occupancyGrid.occupancyGrid.size()/2.0;
+        xPosition = occupancyGrid.occupancyGrid.size()/2.0;
+        yPosition = occupancyGrid.occupancyGrid.size()/2.0;
         initialLocation = new Point(xPosition,yPosition);
         rng = new Random();
     }
@@ -138,7 +142,7 @@ public class OccupancyAgent implements Guard {
      */
     @Override
     public GuardAction getAction(GuardPercepts percepts) {
-        if(percepts.wasLastActionExecuted()) {
+        if(!percepts.wasLastActionExecuted()) {
             Distance range;
             Angle direction;
             if(suroundUpdateIteration == 1) {
@@ -290,6 +294,7 @@ public class OccupancyAgent implements Guard {
      * [x1,occ; x2,occ] = [cos(thetha) , sin(theta); -sin(thetha) , cos(theta)] * [d ; 0] + [x1 ; x2]
      * where d is length of ray, (x1,occ) and (x2,occ) are the x and y coordinate of the endpoint of the rays.
      * theta is the direction the agent is facing
+     * Note, this method discretizes the map.
      */
     public void mapping(GuardPercepts percepts) {
         Angle direction = percepts.getVision().getFieldOfView().getViewAngle();
@@ -297,6 +302,14 @@ public class OccupancyAgent implements Guard {
         double[][] transformMatrix = {{Math.cos(direction.getDegrees()), Math.sin(direction.getDegrees())},
                                         {-Math.sin(direction.getDegrees()), Math.cos(direction.getDegrees())}};
         double[] normalizeCoefficient = {distance.getValue(), 0};
+
+        //check the walls.  Is there no faster way of doing this?
+
+        //Bresenham line algorithm: https://en.wikipedia.org/wiki/Bresenham%27s_line_algorithm
+        //This draws the line from agent location to endpoint of RayCast. O(n)
+
+        //case 1: line draw left to right where Agent location is strictly less than vision end point
+        int y1 = ;
 
     }
 
