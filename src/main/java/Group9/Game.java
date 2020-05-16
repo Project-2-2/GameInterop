@@ -612,7 +612,7 @@ public class Game implements Runnable {
     {
 
         final double angle = intruder.getDirection().angle(
-            this.gameMap.getObjects(TargetArea.class).get(0).getContainer().getCenter()
+            this.gameMap.getObjects(TargetArea.class).get(0).getContainer().getCenter().sub(intruder.getPosition())
         );
 
         return new IntruderPercepts(
