@@ -55,7 +55,7 @@ public class OccupancyAgent implements Guard {
     private final int viewRays = 45;
     private final double viewRange = 6.0; //I don't know how to pull this of if they are defined
 
-    double xPosition, yPosition
+    double xPosition, yPosition;
 
     private int suroundUpdateIteration = 1;
     private ObjectPercept objectPercept;
@@ -332,8 +332,6 @@ public class OccupancyAgent implements Guard {
                 slope_error_new -= 2 * (x2 - x1);
             }
         }
-
-        //end Breshenham Line Algorithm
     }
 
 
