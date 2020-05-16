@@ -1,4 +1,4 @@
-package Group8.Launchers.GUI;
+package Group8.Launchers.GUIRes;
 
 import Group9.agent.container.AgentContainer;
 import Group9.agent.container.GuardContainer;

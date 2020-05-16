@@ -1,10 +1,12 @@
-package Group8.Launchers.GUI;
+package Group8.Launchers;
 
 
+import Group8.Launchers.GUIRes.GameScene;
 import Group9.Game;
 import Group9.agent.container.GuardContainer;
 import Group9.agent.container.IntruderContainer;
 import Group9.agent.factories.DefaultAgentFactory;
+import Group9.gui2.Gui;
 import Group9.map.dynamic.DynamicObject;
 import Group9.map.parser.Parser;
 import javafx.animation.AnimationTimer;
@@ -16,6 +18,9 @@ import java.util.List;
 
 
 public class GUI extends Application{
+
+    public static final boolean USE_OWN_GUI = false;
+
     private final int DEFAULT_WIDTH = 800, DEFAULT_HEIGHT = 600;
 
     // If we need to pass a specific factory make sure to use -1 for ticks since that will be the fastest
@@ -27,12 +32,19 @@ public class GUI extends Application{
     private AnimationTimer timer;
 
 
+
+
     /**
      * Launches the GUI
      * @param args
      */
     public static void main(String[] args) {
-        launch(args);
+        if(USE_OWN_GUI) {
+            launch(args);
+        }
+        else{
+            Gui.Gui(args);
+        }
     }
 
     @Override
