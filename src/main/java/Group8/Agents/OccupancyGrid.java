@@ -13,26 +13,30 @@ public class OccupancyGrid {
     private double grid_size;
 
     //OccupancyGrid to be updated by the agent.
-    public ArrayList<ArrayList<Boolean>> occupancyGrid = new ArrayList<ArrayList<Boolean>>();
-    public ArrayList<ArrayList<Double>> logMap = new ArrayList<ArrayList<Double>>();
+    //public ArrayList<ArrayList<Boolean>> occupancyGrid = new ArrayList<ArrayList<Boolean>>();
+    //public ArrayList<ArrayList<Double>> logMap = new ArrayList<ArrayList<Double>>();
 
+    //This automatically sets all values to false but now we can't go further
+    public boolean[][] occupancyGrid = new boolean[(int)xsize][(int)ysize];
+    public double[][] logMap = new double[(int)xsize][(int)ysize];
     public OccupancyGrid() {
         //instansiate all columns of occupancyGrid
-        for(int i = 0; i <= ysize; i++) {
-            occupancyGrid.add(new ArrayList<Boolean>());
-            logMap.add(new ArrayList<Double>());
-        }
 
-        //By setting occupancyGrid all to false we assume entire world is empty at instansiation of agent.
-        //pre-allocation is faster in the long run
-        //TODO: O(n^2) find better way of implementing.
-        for(int i = 0; i <= xsize; i++) {
-            for(int j = 0; j <= ysize; j++){
-                occupancyGrid.get(i).add(i, false);
-                //Equal change of being empty and occupied
-                logMap.get(i).add(i, 0.5);
-            }
-        }
+//        for(int i = 0; i <= ysize; i++) {
+//            occupancyGrid.add(new ArrayList<Boolean>());
+//            logMap.add(new ArrayList<Double>());
+//        }
+//
+//        //By setting occupancyGrid all to false we assume entire world is empty at instansiation of agent.
+//        //pre-allocation is faster in the long run
+//        //TODO: O(n^2) find better way of implementing.
+//        for(int i = 0; i <= xsize; i++) {
+//            for(int j = 0; j <= ysize; j++){
+//                occupancyGrid.get(i).add(i, false);
+//                //Equal change of being empty and occupied
+//                logMap.get(i).add(i, 0.5);
+//            }
+//        }
     }
 
     /**

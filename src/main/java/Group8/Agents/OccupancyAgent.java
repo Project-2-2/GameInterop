@@ -317,9 +317,11 @@ public class OccupancyAgent implements Guard {
         int m_new = 2 * (y2 - y1);
         int slope_error_new = m_new - (x2 - x1);
 
+
+
         for (int x = x1, y = y1; x <= x2; x++)
         {
-            System.out.print("(" +x + "," + y + ")\n");
+            occupancyGrid.occupancyGrid.add().
 
             // Add slope to increment angle formed
             slope_error_new += m_new;
