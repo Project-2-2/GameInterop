@@ -9,6 +9,9 @@ import Interop.Percept.Vision.ObjectPercept;
 import Interop.Percept.Vision.ObjectPerceptType;
 import Interop.Percept.Vision.ObjectPercepts;
 
+/**
+ * @author Tomasz Darmetko
+ */
 public class DropPheromoneBehaviour implements Behaviour {
 
     private int cooldown = 0;
