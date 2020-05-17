@@ -9,6 +9,7 @@ import SimpleUnitTest.SimpleUnitTest;
 public class AgentsTests extends ExtendedUnitTest {
 
     public static void main(String[] args) {
+        PerceptsServiceTest.main(args);
         GuardsTest.main(args);
         IntrudersTest.main(args);
     }

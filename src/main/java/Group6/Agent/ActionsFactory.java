@@ -1,5 +1,6 @@
 package Group6.Agent;
 
+import Interop.Action.Action;
 import Interop.Action.Move;
 import Interop.Action.Rotate;
 import Interop.Geometry.Angle;
@@ -14,6 +15,17 @@ import Interop.Percept.Scenario.SlowDownModifiers;
  * @author Tomasz Darmetko
  */
 public class ActionsFactory {
+
+    public static Rotate getRandomRotate(Percepts percepts) {
+        return getPartMaxRotate(percepts, 1. - 2. * Math.random());
+    }
+
+    public static Rotate getPartMaxRotate(Percepts percepts, double modifier) {
+        return ActionsFactory.getValidRotate(
+            ActionsFactory.getMaxRotationDegrees(percepts) * modifier,
+            percepts
+        );
+    }
 
     public static Rotate getValidRotate(double desiredDegrees, Percepts percepts) {
 

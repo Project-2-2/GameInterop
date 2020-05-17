@@ -13,7 +13,9 @@ import Interop.Percept.Vision.ObjectPercept;
 import Interop.Percept.Vision.ObjectPerceptType;
 import Interop.Percept.Vision.ObjectPercepts;
 import Interop.Utils.Utils;
-import com.sun.webkit.network.Util;
+
+
+import java.util.Random;
 
 /**
  * @author Tomasz Darmetko
@@ -24,10 +26,8 @@ public class DisperseBehaviour implements Behaviour {
 
     public Action getAction(Percepts percepts) {
 
-        tillNextDisperse = 5;
-        ObjectPercepts agentPercepts = PerceptsService.getAgentPercepts(percepts);
-        double oppositeToAgents = PerceptsService.getMeanClockDirection(agentPercepts) - 180;
-        return ActionsFactory.getValidRotate(oppositeToAgents, percepts);
+        if(new Random().nextBoolean()) tillNextDisperse = 5;
+        return ActionsFactory.getRandomRotate(percepts);
 
     }
 
