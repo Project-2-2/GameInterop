@@ -266,7 +266,7 @@ public class StateHandlerFindNewTarget implements StateHandler {
                         retActionsQueue.addAll(ds.moveTowardsPoint(guardPercepts, c.sub(s).normalise(), c, n));
                     }
                 }
-                break;
+//                break;
             }
         } while (!vertices.isEmpty());
 
