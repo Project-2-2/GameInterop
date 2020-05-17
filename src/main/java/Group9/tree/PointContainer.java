@@ -339,29 +339,42 @@ public abstract class PointContainer {
 
         public Line(Vector2 start, Vector2 end)
         {
+            this(start, end, true);
+        }
+
+        public Line(Vector2 start, Vector2 end, boolean swap)
+        {
             super();
-            if(start.getX() <= end.getX())
+            if(swap)
             {
-                this.start = start;
-                this.end = end;
-            }
-            else if(start.getX() == end.getX())
-            {
-                if(start.getY() <= end.getY())
+                if(start.getX() <= end.getX())
                 {
                     this.start = start;
                     this.end = end;
                 }
+                else if(start.getX() == end.getX())
+                {
+                    if(start.getY() <= end.getY())
+                    {
+                        this.start = start;
+                        this.end = end;
+                    }
+                    else
+                    {
+                        this.start = end;
+                        this.end = end;
+                    }
+                }
                 else
                 {
                     this.start = end;
-                    this.end = end;
+                    this.end = start;
                 }
             }
             else
             {
-                this.start = end;
-                this.end = start;
+                this.start = start;
+                this.end = end;
             }
 
         }
