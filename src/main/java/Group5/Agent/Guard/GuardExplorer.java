@@ -31,32 +31,63 @@ public class GuardExplorer implements Guard {
     private Queue<GuardAction> actionQueue = new LinkedList<>();
     private int enteredSentryTower; //0 if didn't entered a sentry tower the last 15 turns
 
+    private Direction lastDirectionIntruder;
+    private Distance lastDistanceToIntruder;
+    private boolean rotateToIntruder;
+    //now this is set to 15 turns so it will remember 15 turns it saw an intruder
+    private int lastTimeSawIntruder;
+
     @Override
     public GuardAction getAction(GuardPercepts percepts) {
         //return explore(percepts);
         //if queue is empty otherwise do actions inside queue
+        if (!percepts.wasLastActionExecuted()){
+            actionQueue.clear();
+        }
         if (actionQueue.size()<=0)
             explore(percepts);
 
         if (enteredSentryTower != 0)
             enteredSentryTower --;
+        if (lastTimeSawIntruder>0){
+            lastTimeSawIntruder--;
+        }else{
+            rotateToIntruder = false;
+        }
+
         //System.out.println(actionQueue.size());
         //System.out.println("yes");
+        if (actionQueue.size()<=0){
+            return new Move(new Distance(1));
+        }
         return actionQueue.poll();
 
     }
 
     public void addActionToQueue(GuardAction action, GuardPercepts percepts) {
-        double maxMoveRange = percepts.getScenarioGuardPercepts().getMaxMoveDistanceGuard().getValue();
+        double maxMoveRange = percepts.getScenarioGuardPercepts().getMaxMoveDistanceGuard().getValue()*getSpeedModifier(percepts);
         Angle maxRotationAngle = percepts.getScenarioGuardPercepts().getScenarioPercepts().getMaxRotationAngle();
 
         if (action instanceof Rotate ) {
             double rotateValue = ((Rotate) action).getAngle().getDegrees();
             if (rotateValue > maxRotationAngle.getDegrees()) {
+                if (rotateValue>180){
+                    rotateValue = rotateValue-360;
+                }
                 while (rotateValue > 0) {
                     if (rotateValue > maxRotationAngle.getDegrees()) {
                         actionQueue.add(new Rotate(maxRotationAngle));
                         rotateValue -= maxRotationAngle.getDegrees();
+                    }else {
+                        actionQueue.add(new Rotate(Angle.fromDegrees(rotateValue)));
+                        rotateValue = 0;
+                    }
+                }
+                while (rotateValue < 0) {
+                    if (Math.abs(rotateValue) > maxRotationAngle.getDegrees()) {
+                        actionQueue.add(new Rotate(Angle.fromRadians(maxRotationAngle.getRadians()*-1)));
+
+                        rotateValue += maxRotationAngle.getDegrees();
                     }else {
                         actionQueue.add(new Rotate(Angle.fromDegrees(rotateValue)));
                         rotateValue = 0;
@@ -89,7 +120,6 @@ public class GuardExplorer implements Guard {
         Set<ObjectPercept> vision = percepts.getVision().getObjects().getAll();
         ArrayList<ObjectPerceptType> visionPerceptTypes = new ArrayList<>();
         Set<SoundPercept> sound = percepts.getSounds().getAll();
-
         ArrayList<SoundPerceptType> soundPerceptTypes = new ArrayList<>();
 
         percepts.getScenarioGuardPercepts().getScenarioPercepts().getMaxRotationAngle();
@@ -106,31 +136,53 @@ public class GuardExplorer implements Guard {
             followIntruder(percepts,vision);
             return;
         }
-        if (visionPerceptTypes.contains(ObjectPerceptType.Teleport)) {
-            goToTeleport(percepts,vision);
-            return;
-        }
-        if (visionPerceptTypes.contains(ObjectPerceptType.Door)) {
-            goToDoor(percepts,vision);
-            return;
-        }
-        if (visionPerceptTypes.contains(ObjectPerceptType.Window)) {
-            goToWindow(percepts,vision);
-            return;
-        }
-
         if (soundPerceptTypes.contains(SoundPerceptType.Yell)&&Math.random()<=0.95){
             rotateToYell(percepts);
             return;
         }
-        if (soundPerceptTypes.size()>0&&Math.random()<=0.2){
+        //higher probability to check sound when it saw an intruder recently
+        if ((soundPerceptTypes.size()>0&&Math.random()<=0.2)||(soundPerceptTypes.size()>0&&lastTimeSawIntruder>0&&Math.random()<=0.5)){
             rotateToNoise(percepts);
 //            System.out.println("check");
             return;
         }
+        /*
+        if (visionPerceptTypes.contains(ObjectPerceptType.Teleport)) {
+            goToTeleport(percepts,vision);
+            return;
+        }
+
+         */
+        /*
+        if (visionPerceptTypes.contains(ObjectPerceptType.Door)) {
+            goToDoor(percepts,vision);
+            return;
+        }
+
+         */
+
+        /*
+        if (visionPerceptTypes.contains(ObjectPerceptType.Window)) {
+            goToWindow(percepts,vision);
+            return;
+        }
+        
+         */
 
         if (!percepts.wasLastActionExecuted()){
             moveParallelToWall(percepts,vision);
+            return;
+        }
+        if (lastTimeSawIntruder>0){
+            //System.out.println("remembered intruder");
+            //System.out.println(lastDirectionIntruder.getDegrees());
+            percepts.getVision().getFieldOfView();
+            if (!rotateToIntruder){
+                addActionToQueue(new Rotate(lastDirectionIntruder),percepts);
+                rotateToIntruder = true;
+                return;
+            }
+            addActionToQueue(new Move(new Distance(percepts.getScenarioGuardPercepts().getMaxMoveDistanceGuard().getValue()*getSpeedModifier(percepts))),percepts);
             return;
         }
         addActionToQueue(new Move(new Distance(percepts.getScenarioGuardPercepts().getMaxMoveDistanceGuard().getValue() * getSpeedModifier(percepts))), percepts);
@@ -158,9 +210,9 @@ public class GuardExplorer implements Guard {
                 //this is necessary otherwise it gets stuck in a door, however sometimes it gets stuck by this if it sees only a corner of door
                 if(e.getType()==ObjectPerceptType.Door){
                     //System.out.println("door found");
-                    addActionToQueue(new Move(new Distance(percepts.getScenarioGuardPercepts().getMaxMoveDistanceGuard().getValue() * getSpeedModifier(percepts))), percepts);
+                    //addActionToQueue(new Move(new Distance(percepts.getScenarioGuardPercepts().getMaxMoveDistanceGuard().getValue() * getSpeedModifier(percepts))), percepts);
                     //return new Move(new Distance(percepts.getScenarioGuardPercepts().getMaxMoveDistanceGuard().getValue() * getSpeedModifier(percepts)));
-                    return;
+                    //return;
                 }
             }
             //System.out.println("biem");
@@ -176,7 +228,7 @@ public class GuardExplorer implements Guard {
         }
 
         if (!percepts.wasLastActionExecuted()){
-            System.out.println("kak");
+//            System.out.println("kak");
 
             Angle randomAngle = Angle.fromDegrees(percepts.getScenarioGuardPercepts().getScenarioPercepts().getMaxRotationAngle().getDegrees()*Math.random());
             addActionToQueue(new Rotate(randomAngle), percepts);
@@ -235,11 +287,14 @@ public class GuardExplorer implements Guard {
 
     }
 
-    public ObjectPercept seeIntruder(GuardPercepts percepts, Set<ObjectPercept> vision){
-        for (ObjectPercept obj: vision)
-            if (obj.getType().toString().equals("Intruder"))
-                return obj;
-        return null;
+    public ArrayList<ObjectPercept> seeIntruder(GuardPercepts percepts, Set<ObjectPercept> vision){
+        ArrayList<ObjectPercept> intruders = new ArrayList<>();
+        for (ObjectPercept obj: vision) {
+            if (obj.getType().toString().equals("Intruder")) {
+                intruders.add(obj);
+            }
+        }
+        return intruders;
 
     }
 
@@ -248,17 +303,41 @@ public class GuardExplorer implements Guard {
         double angleToIntruder = 0;
         int count = 0;
         double distanceToIntruder = 0;
-        ObjectPercept e = seeIntruder(percepts, vision);
-        if (e != null){
-            distanceToIntruder = distanceToIntruder+ Math.abs(percepts.getVision().getFieldOfView().getRange().getValue()-e.getPoint().getDistanceFromOrigin().getValue());
-            //System.out.println(distanceToIntruder);
+        ArrayList<ObjectPercept> intruderPercept = seeIntruder(percepts, vision);
+        Direction intruderMovement=null;
 
-            if (Angle.fromDegrees(0).getDistance(e.getPoint().getClockDirection()).getDegrees()>180){
-                angleToIntruder = angleToIntruder + e.getPoint().getClockDirection().getDegrees()-360;
-            }else{
-                angleToIntruder = angleToIntruder + Angle.fromDegrees(0).getDistance(e.getPoint().getClockDirection()).getDegrees();
+        for (int i =0; i<intruderPercept.size();i++) {
+            ObjectPercept e = intruderPercept.get(i);
+            if (e != null) {
+                distanceToIntruder = distanceToIntruder + Math.abs(percepts.getVision().getFieldOfView().getRange().getValue() - e.getPoint().getDistanceFromOrigin().getValue());
+                if (intruderMovement==null){
+                    intruderMovement = Direction.fromClockAngle(e.getPoint());
+                }else{
+                    Direction newDirection = Direction.fromClockAngle(e.getPoint());
+                    double movement = newDirection.getDegrees()-intruderMovement.getDegrees();
+                    while (movement<0){
+                        movement = movement+360;
+
+                    }
+                    while (movement>360){
+                        movement = movement-360;
+                    }
+                    if (movement!=360){
+                        intruderMovement = Direction.fromDegrees(movement);
+                    }else{
+                        intruderMovement = Direction.fromDegrees(0);
+                    }
+
+                }
+                //System.out.println(distanceToIntruder);
+
+                if (Angle.fromDegrees(0).getDistance(e.getPoint().getClockDirection()).getDegrees() > 180) {
+                    angleToIntruder = angleToIntruder + e.getPoint().getClockDirection().getDegrees() - 360;
+                } else {
+                    angleToIntruder = angleToIntruder + Angle.fromDegrees(0).getDistance(e.getPoint().getClockDirection()).getDegrees();
+                }
+                count++;
             }
-            count++;
         }
 
             /*
@@ -271,9 +350,16 @@ public class GuardExplorer implements Guard {
             }
              */
         //System.out.println(angleToIntruder/count);
+        lastDirectionIntruder = Direction.fromDegrees(angleToIntruder/count);
+        lastDirectionIntruder = intruderMovement;
+        //System.out.println(intruderMovement.getDegrees());
+        lastDistanceToIntruder = new Distance(distanceToIntruder);
+
+        lastTimeSawIntruder = 20;
+
         if(angleToIntruder/count>15){
             if(Math.random()<0.2){
-                System.out.println("yelled");
+//                System.out.println("yelled");
                 addActionToQueue(new Yell(),percepts);
                 return;
             }
@@ -287,7 +373,7 @@ public class GuardExplorer implements Guard {
         }else{
             if (distanceToIntruder/count<=percepts.getScenarioGuardPercepts().getMaxMoveDistanceGuard().getValue()* getSpeedModifier(percepts)){
                 addActionToQueue(new Move(new Distance(distanceToIntruder/count)),percepts);
-                System.out.println("poep");
+//                System.out.println("poep");
             }
             else{
                 addActionToQueue(new Move(new Distance(percepts.getScenarioGuardPercepts().getMaxMoveDistanceGuard().getValue()* getSpeedModifier(percepts))),percepts);
@@ -298,7 +384,7 @@ public class GuardExplorer implements Guard {
     }
 
     public void rotateToNoise(GuardPercepts guardPercepts){
-        System.out.println("rotated to noise");
+//        System.out.println("rotated to noise");
         Set<SoundPercept> sound = guardPercepts.getSounds().getAll();
         double soundDirectionDegrees = 0;
         int count =0;
@@ -345,7 +431,7 @@ public class GuardExplorer implements Guard {
     }
 
     public void rotateToYell(GuardPercepts guardPercepts){
-        System.out.println("rotated to yell");
+//        System.out.println("rotated to yell");
         Set<SoundPercept> sound = guardPercepts.getSounds().getAll();
         double soundDirectionDegrees = 0;
         int count =0;
