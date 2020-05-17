@@ -1,5 +1,6 @@
 package Group8.Agents.Intruder;
 
+import Group8.PathFinding.SimplePathfinding;
 import Interop.Action.IntruderAction;
 import Interop.Agent.Intruder;
 import Interop.Percept.IntruderPercepts;
@@ -10,11 +11,14 @@ import Interop.Percept.IntruderPercepts;
  */
 public class SimplePathfindingIntruder implements Intruder {
 
-    private static Group8.PathFinding.SimplePathfindingIntruder pathfinding = new Group8.PathFinding.SimplePathfindingIntruder();
+    private static SimplePathfinding pathfinding;
 
 
     @Override
     public IntruderAction getAction(IntruderPercepts percepts) {
+        if(pathfinding == null){
+            pathfinding = new SimplePathfinding(percepts);
+        }
         return pathfinding.getMoveIntruder(percepts);
     }
 }
