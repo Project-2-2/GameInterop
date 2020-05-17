@@ -44,10 +44,9 @@ public class DeepSpace implements Guard {
     private ActionContainer<GuardAction> lastAction = null;
 
     private final EnumMap<StateType, StateHandler> stateHandlers;
-    private Point location;//Position of guard
     private Angle rotation; //0 rotation -> positive Y, neutral X
     private boolean foundTargetArea = false;
-      private boolean insideTeleportArea = false;
+    private boolean insideTeleportArea = false;
     protected boolean firstActionAfterTeleport = false;
 
     public DeepSpace() {
@@ -232,9 +231,9 @@ public class DeepSpace implements Guard {
 
     protected Queue<ActionContainer<GuardAction>> planRotation(GuardPercepts percepts, double alpha)
     {
-        // TODO kinda cheating; fix we need to support negative angles at this point
-        final double sign = Math.signum(alpha);
-        alpha = Math.abs(alpha);
+        // TODO kinda cheating; fix
+        //final double sign = Math.signum(alpha);
+        //alpha = Math.abs(alpha);
 
         Queue<ActionContainer<GuardAction>> retActionsQueue = new LinkedList<>();
 
@@ -244,13 +243,13 @@ public class DeepSpace implements Guard {
 
         for (int i = 0; i < fullRotations; i++)  {
             retActionsQueue.offer(
-                ActionContainer.of(this, new Rotate(Angle.fromRadians(sign*maxRotation)))
+                ActionContainer.of(this, new Rotate(Angle.fromRadians(maxRotation)))
             );
         }
 
         if (restRotation > 0) {
             retActionsQueue.offer(
-                ActionContainer.of(this, new Rotate(Angle.fromRadians(sign*restRotation)))
+                ActionContainer.of(this, new Rotate(Angle.fromRadians(restRotation)))
             );
         }
 

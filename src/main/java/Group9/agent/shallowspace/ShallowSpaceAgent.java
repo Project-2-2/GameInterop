@@ -73,7 +73,7 @@ public class ShallowSpaceAgent implements Guard {
         if(!percepts.wasLastActionExecuted())
         {
             Angle newRotation = Angle.fromRadians(
-                    (Game._RANDOM.nextBoolean() ? 1 : -1) * percepts.getScenarioGuardPercepts().getScenarioPercepts().getMaxRotationAngle().getRadians() * Game._RANDOM.nextDouble()
+                    percepts.getScenarioGuardPercepts().getScenarioPercepts().getMaxRotationAngle().getRadians() * Game._RANDOM.nextDouble()
             );
             return new Rotate(newRotation);
         }
@@ -87,7 +87,7 @@ public class ShallowSpaceAgent implements Guard {
 
     private double getSpeedModifier(GuardPercepts guardPercepts)
     {
-        SlowDownModifiers slowDownModifiers =  guardPercepts.getScenarioGuardPercepts().getScenarioPercepts().getSlowDownModifiers();
+        SlowDownModifiers slowDownModifiers = guardPercepts.getScenarioGuardPercepts().getScenarioPercepts().getSlowDownModifiers();
         if(guardPercepts.getAreaPercepts().isInWindow())
         {
             return slowDownModifiers.getInWindow();
@@ -174,16 +174,6 @@ public class ShallowSpaceAgent implements Guard {
             {
                 max = tmp;
             }
-            /*if (Vector2.from(object.getPoint()).length() >= 0.1) {
-                Move move = new Move(new Distance(object.getPoint(), new Point(0, 0)));
-                if (move.getDistance().getValue() >= percepts.getScenarioGuardPercepts().getMaxMoveDistanceGuard().getValue()) {
-                    move = new Move(percepts.getScenarioGuardPercepts().getMaxMoveDistanceGuard());
-                }
-                double newY = position.getY() + Math.sin(rotation.getRadians())*move.getDistance().getValue();
-                double newX = position.getX() + Math.cos(rotation.getRadians())*move.getDistance().getValue();
-                position = new Point(newX, newY);
-                return move;
-            }*/
         }
         if(max != null && max.length() >= 0.1)
         {

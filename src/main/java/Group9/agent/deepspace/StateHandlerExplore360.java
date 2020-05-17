@@ -23,7 +23,7 @@ public class StateHandlerExplore360 implements StateHandler {
 
     @Override
     public ActionContainer<GuardAction> execute(GuardPercepts percepts, DeepSpace ds) {
-        ActionContainer<GuardAction> retAction = ActionContainer.of(this, new NoAction());
+        ActionContainer<GuardAction> retAction = ActionContainer.of(this, new Inaction());
         this.ds = ds;
 
         if (!active) {

@@ -7,7 +7,7 @@ import Interop.Percept.GuardPercepts;
 public class StateHandlerGuarding implements StateHandler {
     @Override
     public ActionContainer<GuardAction> execute(GuardPercepts percepts, DeepSpace deepSpace) {
-        return ActionContainer.of(this, new NoAction());
+        return ActionContainer.of(this, new NoAction(), ActionContainer.Input.create().i("guarding", true));
     }
 
     @Override

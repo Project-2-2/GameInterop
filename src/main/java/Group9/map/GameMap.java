@@ -29,7 +29,6 @@ public class GameMap {
     private final GameSettings gameSettings;
 
     private final double rayConstant;
-    private QuadTree<MapObject> quadTree;
     private List<MapObject> mapObjects;
 
     private List<DynamicObject<?>> dynamicObjects = new ArrayList<>();
