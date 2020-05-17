@@ -46,8 +46,7 @@ public class DeepSpace implements Guard {
     private Point location;//Position of guard
     private Angle rotation; //0 rotation -> positive Y, neutral X
     private boolean foundTargetArea = false;
-    private boolean set = false;
-    private boolean insideTeleportArea = false;
+      private boolean insideTeleportArea = false;
     protected boolean firstActionAfterTeleport = false;
 
     public DeepSpace() {
@@ -195,10 +194,8 @@ public class DeepSpace implements Guard {
         return retActionsQueue;
     }
     protected GuardAction doTargetAreaAction(GuardPercepts percepts) {
-        if(!set) {
             Set<ObjectPercept> objects = percepts.getVision().getObjects().getAll();
-            for (ObjectPercept object :
-                    objects) {
+            for (ObjectPercept object :objects) {
                 if (object.getType().equals(ObjectPerceptType.TargetArea)) {
                     Move move = new Move(new Distance(object.getPoint(), new Point(0, 0)));
                     if (move.getDistance().getValue() >= percepts.getScenarioGuardPercepts().getMaxMoveDistanceGuard().getValue()) {
@@ -206,13 +203,9 @@ public class DeepSpace implements Guard {
                     }
                     return move;
                 }
-
             }
-            set = true;
-        }
         Angle newRotation = Angle.fromRadians(percepts.getScenarioGuardPercepts().getScenarioPercepts().getMaxRotationAngle().getRadians() * Game._RANDOM.nextDouble());
-        // rotation = Angle.fromRadians(rotation.getRadians()+newRotation.getRadians());
-        if(newRotation.getDegrees() > 360){
+               if(newRotation.getDegrees() > 360){
             newRotation = Angle.fromDegrees(rotation.getDegrees() - 360);
         } else if(newRotation.getDegrees() < 0){
             rotation = Angle.fromDegrees(rotation.getDegrees() + 360);
