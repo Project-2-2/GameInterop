@@ -321,17 +321,22 @@ public class OccupancyAgent implements Guard {
 
         for (int x = x1, y = y1; x <= x2; x++)
         {
-            occupancyGrid.update(x,y,false);
+            if(x == x1 && y == y1) {
+                //set only last value to true
+                occupancyGrid.update(x,y);
+                break;
+            } else {
+                occupancyGrid.update(x, y, false);
 
-            // Add slope to increment angle formed
-            slope_error_new += m_new;
+                // Add slope to increment angle formed
+                slope_error_new += m_new;
 
-            // Slope error reached limit, time to
-            // increment y and update slope error.
-            if (slope_error_new >= 0)
-            {
-                y++;
-                slope_error_new -= 2 * (x2 - x1);
+                // Slope error reached limit, time to
+                // increment y and update slope error.
+                if (slope_error_new >= 0) {
+                    y++;
+                    slope_error_new -= 2 * (x2 - x1);
+                }
             }
         }
     }
