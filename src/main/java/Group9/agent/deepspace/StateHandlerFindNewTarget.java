@@ -8,6 +8,7 @@ import Interop.Action.GuardAction;
 import Interop.Action.Move;
 import Interop.Action.NoAction;
 import Interop.Percept.GuardPercepts;
+import Interop.Percept.Vision.ObjectPercept;
 import Interop.Percept.Vision.ObjectPerceptType;
 
 import java.util.*;
@@ -20,6 +21,8 @@ public class StateHandlerFindNewTarget implements StateHandler {
     private StateType nextState;
     private boolean active;
 
+    private boolean debug = true;
+
     private boolean backtrackedToKnownState = false;
     private boolean movingIntoTargetArea = false;
 
@@ -31,6 +34,25 @@ public class StateHandlerFindNewTarget implements StateHandler {
     private boolean initialRoundAfterTeleport = false;
 
     private boolean testSquare = false;
+
+    Map<ObjectPerceptType, Integer> targetTimeout;
+    Map<ObjectPerceptType, Integer> originalPriority;
+
+    private final int DEFAULT_TARGET_TIMEOUT = 25;
+
+    List<ObjectPerceptType> targetsPriority = new ArrayList<>(Arrays.asList(
+                    ObjectPerceptType.TargetArea,
+                    ObjectPerceptType.SentryTower,
+                    ObjectPerceptType.Door,
+                    ObjectPerceptType.Window,
+                    ObjectPerceptType.Teleport,
+                    ObjectPerceptType.EmptySpace
+        ));
+
+    public StateHandlerFindNewTarget() {
+        targetTimeout = targetsPriority.stream().collect(Collectors.toMap(Function.identity(), t -> 0));
+        originalPriority = targetsPriority.stream().collect(Collectors.toMap(Function.identity(), t -> targetsPriority.indexOf(t)));
+    }
 
     @Override
     public ActionContainer<GuardAction> execute(GuardPercepts percepts, DeepSpace deepSpace) {
@@ -145,30 +167,35 @@ public class StateHandlerFindNewTarget implements StateHandler {
     private void findNewTarget(GuardPercepts guardPercepts)
     {
 
+        tickDowngradeTimeout();
+
+        if (guardPercepts.getAreaPercepts().isInDoor())  downgradeTarget(ObjectPerceptType.Door);
+        if (guardPercepts.getAreaPercepts().isInSentryTower())  downgradeTarget(ObjectPerceptType.SentryTower);
+        if (guardPercepts.getAreaPercepts().isInWindow())  downgradeTarget(ObjectPerceptType.Window);
+        if (guardPercepts.getAreaPercepts().isJustTeleported())  downgradeTarget(ObjectPerceptType.Teleport);
+
         Map<ObjectPerceptType, HashSet<Vector2>> map = ds.getCurrentVertex().getContent().getObjects();
-        ObjectPerceptType[] priority = new ObjectPerceptType[] {ObjectPerceptType.TargetArea, ObjectPerceptType.SentryTower,
-                ObjectPerceptType.Door, ObjectPerceptType.Window, ObjectPerceptType.Teleport, ObjectPerceptType.EmptySpace,
-                ObjectPerceptType.Wall};
-
+//        ObjectPerceptType[] priority = new ObjectPerceptType[] {ObjectPerceptType.TargetArea, ObjectPerceptType.SentryTower,
+//                ObjectPerceptType.Door, ObjectPerceptType.Window, ObjectPerceptType.Teleport, ObjectPerceptType.EmptySpace,
+//                ObjectPerceptType.Wall};
+//
         // TODO Luis -> Dynamic priority list so that we no longer get stuck somewhere :)
-        if(teleportPriorityChange >= 0)
-        {
-            teleportPriorityChange--;
-            priority = new ObjectPerceptType[] {ObjectPerceptType.TargetArea, ObjectPerceptType.SentryTower,
-                    ObjectPerceptType.Door, ObjectPerceptType.Window, ObjectPerceptType.EmptySpace, ObjectPerceptType.Wall,
-                    ObjectPerceptType.Teleport};
-        }
-        else
-        {
-            initialRoundAfterTeleport = false;
-        }
+//        if(teleportPriorityChange >= 0)
+//        {
+//            teleportPriorityChange--;
+//            downgradeTarget(ObjectPerceptType.Teleport);
+//        }
+//        else
+//        {
+//            initialRoundAfterTeleport = false;
+//        }
 
-        for(ObjectPerceptType type : priority)
+        for(ObjectPerceptType type : targetsPriority)
         {
             Set<Vector2> positions = ds.currentVertex.getContent().getObjects().get(type);
             if(positions != null && !positions.isEmpty())
             {
-                Optional<Vector2> target = positions.stream().filter(e -> !ds.isInsideOtherVertex(ds.getCurrentVertex(), e, 0.8)).findAny();
+                Optional<Vector2> target = positions.stream().filter(e -> !ds.isInsideOtherVertex(ds.getCurrentVertex(), e, 0.1)).findAny();
                 if(target.isPresent())
                 {
                     Vector2 targetPosition = target.get();
@@ -241,9 +268,10 @@ public class StateHandlerFindNewTarget implements StateHandler {
             {
 
                 List<Vertex<DataContainer>> shortestPath = ds.currentGraph.shortestPath(ds.currentVertex, vertex);
-                System.out.println("|path| = " + shortestPath.size());
-                System.out.println(shortestPath.get(0).getContent().getCenter());
-                System.out.println(shortestPath.get(shortestPath.size() - 1).getContent().getCenter());
+                if (debug)
+                    System.out.println("|path| = " + shortestPath.size());
+                    System.out.println(shortestPath.get(0).getContent().getCenter());
+                    System.out.println(shortestPath.get(shortestPath.size() - 1).getContent().getCenter());
 
                 //--- walk to the center of the vertex it is currently exploring
                 if(ds.getPosition().distance(ds.currentVertex.getContent().getCenter()) > 1E-8)
@@ -271,5 +299,29 @@ public class StateHandlerFindNewTarget implements StateHandler {
         } while (!vertices.isEmpty());
 
         return retActionsQueue;
+    }
+
+    /**
+     * Moves 'target' to the bottom of the target priority list
+     * @param target
+     */
+    private void downgradeTarget(ObjectPerceptType target) {
+        targetTimeout.put(target, DEFAULT_TARGET_TIMEOUT);
+        targetsPriority.remove(target);
+        targetsPriority.add(target);
+    }
+
+    private void tickDowngradeTimeout() {
+        for (ObjectPerceptType objectType : targetTimeout.keySet()) {
+            int curTimeout = targetTimeout.get(objectType);
+            if (curTimeout == 1) {
+                // return it to its original priority
+                targetsPriority.remove(objectType);
+                targetsPriority.add(originalPriority.get(objectType), objectType);
+            }
+            if (curTimeout > 0) {
+                targetTimeout.put(objectType, curTimeout - 1);
+            }
+        }
     }
 }

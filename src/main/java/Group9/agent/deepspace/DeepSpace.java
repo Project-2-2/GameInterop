@@ -31,6 +31,8 @@ public class DeepSpace implements Guard {
     private Vector2 position = new Vector2(0, 0);
     private Vector2 direction = new Vector2(0, 1).normalise();
 
+    private boolean debug = true;
+
     protected Vertex<DataContainer> currentVertex;
 
     private List<Graph<DataContainer>> graphs = new ArrayList<>();
@@ -80,7 +82,7 @@ public class DeepSpace implements Guard {
                 }
             }
         }
-        if(!percepts.wasLastActionExecuted())
+        if(!percepts.wasLastActionExecuted() && debug)
         {
             System.out.println("well");
         }
@@ -151,6 +153,7 @@ public class DeepSpace implements Guard {
                 .anyMatch(e -> e != own && !e.getContent().isDeadEnd() &&
                         e.getContent().getCenter().distance(position) < radiusModifier * e.getContent().getRadius());
     }
+
 
     protected Queue<ActionContainer<GuardAction>> moveTowardsPoint(GuardPercepts percepts, Vector2 direction, Vector2 source, Vector2 target)
     {
