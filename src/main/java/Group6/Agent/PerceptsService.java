@@ -1,6 +1,9 @@
 package Group6.Agent;
 
 import Interop.Percept.Percepts;
+import Interop.Percept.Sound.SoundPercept;
+import Interop.Percept.Sound.SoundPerceptType;
+import Interop.Percept.Sound.SoundPercepts;
 import Interop.Percept.Vision.ObjectPercept;
 import Interop.Percept.Vision.ObjectPerceptType;
 import Interop.Percept.Vision.ObjectPercepts;
@@ -33,6 +36,16 @@ public class PerceptsService {
             .reduce(0, Double::sum);
 
         return Math.toDegrees(sum / objectPercepts.getAll().size());
+    }
+
+    public static double getMeanDirection(SoundPercepts objectPercepts) {
+        double sum = objectPercepts
+            .getAll()
+            .stream()
+            .mapToDouble(percept -> percept.getDirection().getDegrees())
+            .reduce(0, Double::sum);
+
+        return sum / objectPercepts.getAll().size();
     }
 
     public static double getMeanDistance(ObjectPercepts objectPercepts) {
@@ -88,6 +101,12 @@ public class PerceptsService {
             .getVision()
             .getObjects()
             .filter(objectPercept -> objectPercept.getType() == ObjectPerceptType.Teleport);
+    }
+
+    public static SoundPercepts getYellPercepts(Percepts percepts) {
+        return percepts
+            .getSounds()
+            .filter(soundPercept -> soundPercept.getType() == SoundPerceptType.Yell);
     }
 
     public static ObjectPercepts getTargetPercepts(Percepts percepts) {

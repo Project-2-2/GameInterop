@@ -1,8 +1,10 @@
 package Group6.Agent.Behaviour;
 
 import Group6.Agent.ActionsFactory;
+import Group6.Agent.PerceptsService;
 import Interop.Action.Action;
 import Interop.Percept.Percepts;
+import Interop.Percept.Vision.ObjectPercepts;
 
 import java.util.Random;
 
@@ -12,12 +14,17 @@ import java.util.Random;
 public class ExploreBehaviour implements Behaviour {
 
     private boolean switchRotationSide = new Random().nextBoolean();
+    private boolean isNextToWall = false;
+    private double wallDistance = Double.POSITIVE_INFINITY;
 
     public Action getAction(Percepts percepts) {
-        if(percepts.wasLastActionExecuted()) {
+        if(percepts.wasLastActionExecuted() && !isNextToWall) {
 
             // go as far as possible
-            return ActionsFactory.getMaxMove(percepts);
+            return ActionsFactory.getValidMove(
+                Math.min(ActionsFactory.getMaxMoveDistance(percepts), wallDistance - 1.5),
+                percepts
+            );
 
         } else {
 
@@ -31,7 +38,19 @@ public class ExploreBehaviour implements Behaviour {
     }
 
     public void updateState(Percepts percepts) {
-        if(Math.random() > 0.95) switchRotationSide = !switchRotationSide;
+
+        ObjectPercepts wallPercepts = PerceptsService.getWallPercepts(percepts);
+
+        if(wallPercepts.getAll().size() > 0) {
+            wallDistance = PerceptsService.getMeanDistance(wallPercepts);
+        } else {
+            wallDistance = Double.POSITIVE_INFINITY;
+        }
+
+        isNextToWall = wallDistance < 2;
+
+        if(wallDistance > 4 && Math.random() > 0.95) switchRotationSide = !switchRotationSide;
+
     }
 
     private Action getRandomRotate(Percepts percepts) {

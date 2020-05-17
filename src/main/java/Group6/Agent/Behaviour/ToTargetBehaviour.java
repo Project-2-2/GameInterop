@@ -18,7 +18,7 @@ public class ToTargetBehaviour implements Behaviour {
     private final int TILL_NEXT_ATTEMPT = 500;
 
     private boolean isExecuting = false;
-    private int tillNextAttempt = 50;
+    private int tillNextAttempt = new Random().nextInt(70);
 
     public Action getAction(Percepts percepts) {
 
