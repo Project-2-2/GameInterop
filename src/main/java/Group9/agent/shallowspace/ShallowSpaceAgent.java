@@ -41,7 +41,7 @@ public class ShallowSpaceAgent implements Guard {
 
         if(intruderPosition != null || !followIntruder.isEmpty())
         {
-            if(intruderPosition != null)
+            if(intruderPosition != null && !followIntruder.isEmpty())
             {
                 followIntruder.clear();
                 followIntruder.addAll(
@@ -100,12 +100,8 @@ public class ShallowSpaceAgent implements Guard {
         Queue<ActionContainer<GuardAction>> retActionsQueue = new LinkedList<>();
 
         Vector2 desiredDirection = target.sub(source).normalise();
-        double rotationDiff = desiredDirection.getClockDirection() - direction.getClockDirection();
+        double rotationDiff = desiredDirection.angle(direction);
 
-        if(rotationDiff < 0)
-        {
-            rotationDiff += Math.PI * 2;
-        }
         if(Math.abs(rotationDiff) > 1E-10)
         {
             retActionsQueue.addAll(this.planRotation(percepts, rotationDiff));
