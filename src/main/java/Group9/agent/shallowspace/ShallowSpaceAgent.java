@@ -5,14 +5,10 @@ import Group9.math.Vector2;
 import Interop.Action.*;
 import Interop.Agent.Guard;
 import Interop.Geometry.Angle;
-import Interop.Geometry.Direction;
 import Interop.Geometry.Distance;
 import Interop.Geometry.Point;
-import Interop.Percept.AreaPercepts;
 import Interop.Percept.GuardPercepts;
 import Interop.Percept.Scenario.SlowDownModifiers;
-import Interop.Percept.Smell.SmellPercept;
-import Interop.Percept.Smell.SmellPerceptType;
 import Interop.Percept.Vision.ObjectPercept;
 import Interop.Percept.Vision.ObjectPerceptType;
 import Interop.Percept.Vision.VisionPrecepts;
@@ -29,6 +25,7 @@ public class ShallowSpaceAgent implements Guard {
     private boolean IntruderCapture = false;
 
     private Queue<ActionContainer<GuardAction>> followIntruder = new LinkedList<>();
+    private Queue<ActionContainer<GuardAction>> targetAreaGuarding = new LinkedList<>();
 
 
     public ShallowSpaceAgent() {
@@ -45,6 +42,7 @@ public class ShallowSpaceAgent implements Guard {
         {
             if(intruderPosition != null)
             {
+                targetAreaGuarding.clear();
                 followIntruder.clear();
                 followIntruder.addAll(
                         moveTowardsPoint(percepts, new Vector2(0, 1 ), new Vector2.Origin(), intruderPosition)
@@ -61,25 +59,22 @@ public class ShallowSpaceAgent implements Guard {
             VisionPrecepts vision = percepts.getVision();
             Set<ObjectPercept> objectPercepts = vision.getObjects().getAll();
 
-            if(foundTargetArea){
-                return doTargetAreaAction(percepts);
-            } else {
+            if(!foundTargetArea)
+            {
                 for(ObjectPercept object : objectPercepts){
                     if (object.getType().equals(ObjectPerceptType.TargetArea)){
                         foundTargetArea = true;
                         break;
                     }
                 }
-                if(foundIntruder){
-                    return doIntruderAction(percepts);
-                }else{
-                    for(ObjectPercept object : objectPercepts) {
-                        if (object.getType().equals(ObjectPerceptType.Intruder)) {
-                            foundIntruder = true;
-                            break;
-                        }
-                    }
+            }
+            if(foundTargetArea){
+                if(targetAreaGuarding.isEmpty())
+                {
+                    targetAreaGuarding.addAll(doTargetAreaAction(percepts));
                 }
+
+                return targetAreaGuarding.poll().getAction();
             }
         }
 
@@ -172,30 +167,22 @@ public class ShallowSpaceAgent implements Guard {
         return null;
     }
 
-    private GuardAction doIntruderAction(GuardPercepts percepts){
-        Set<ObjectPercept> guardView = percepts.getVision().getObjects().getAll();
-        Angle theta = percepts.getVision().getFieldOfView().getViewAngle();
-        Distance range = percepts.getVision().getFieldOfView().getRange();
-        Point intruder_Pos;
-     /*  for (ObjectPercept object : guardView) {
-            if (object.getType().equals(ObjectPerceptType.Intruder)) {
-                foundIntruder = true;
-                intruder_Pos = object.getPoint();
-                Move move = new Move(new Distance(position,intruder_Pos));
-                return move;
-              }
-        }
-        if(!foundIntruder){
-            return new Rotate(Angle.fromRadians(percepts.getScenarioGuardPercepts().getScenarioPercepts().getMaxRotationAngle().getRadians() * Game._RANDOM.nextDouble()));
-        }*/
-        return null;
-    }
+    private Queue<ActionContainer<GuardAction>> doTargetAreaAction(GuardPercepts percepts) {
 
-    private GuardAction doTargetAreaAction(GuardPercepts percepts) {
+        Set<ObjectPercept> guardView = percepts.getVision()
+                .getObjects()
+                .filter(e -> e.getType() == ObjectPerceptType.TargetArea)
+                .getAll();
 
-        Set<ObjectPercept> guardView = percepts.getVision().getObjects().getAll();
+        Vector2 max = null;
+        final Vector2 viewingDirection = new Vector2(0, 1);
         for (ObjectPercept object : guardView) {
-            if (object.getType().equals(ObjectPerceptType.TargetArea)) {
+            Vector2 tmp = Vector2.from(object.getPoint());
+            if(max == null || max.length() < tmp.length() && viewingDirection.angle(max) > viewingDirection.angle(tmp))
+            {
+                max = tmp;
+            }
+            /*if (Vector2.from(object.getPoint()).length() >= 0.1) {
                 Move move = new Move(new Distance(object.getPoint(), new Point(0, 0)));
                 if (move.getDistance().getValue() >= percepts.getScenarioGuardPercepts().getMaxMoveDistanceGuard().getValue()) {
                     move = new Move(percepts.getScenarioGuardPercepts().getMaxMoveDistanceGuard());
@@ -204,7 +191,11 @@ public class ShallowSpaceAgent implements Guard {
                 double newX = position.getX() + Math.cos(rotation.getRadians())*move.getDistance().getValue();
                 position = new Point(newX, newY);
                 return move;
-            }
+            }*/
+        }
+        if(max != null && max.length() >= 0.1)
+        {
+            return moveTowardsPoint(percepts, new Vector2(0 ,1), new Vector2.Origin(), max);
         }
 
         Angle newRotation = Angle.fromRadians(percepts.getScenarioGuardPercepts().getScenarioPercepts().getMaxRotationAngle().getRadians() * Game._RANDOM.nextDouble());
@@ -214,12 +205,12 @@ public class ShallowSpaceAgent implements Guard {
         } else if(rotation.getDegrees() < 0){
             rotation = Angle.fromDegrees(rotation.getDegrees() + 360);
         }
-        return new Rotate(newRotation);
+        Queue<ActionContainer<GuardAction>> actions = new LinkedList<>();
+        actions.add(ActionContainer.of(this, new Rotate(newRotation)));
+        return actions;
     }
 
-
-
-    private boolean checkGuardWin(GuardPercepts percepts){
+    /*private boolean checkGuardWin(GuardPercepts percepts){
         Set<ObjectPercept> guardView = percepts.getVision().getObjects().getAll();
         Distance captureDistance = percepts.getScenarioGuardPercepts().getScenarioPercepts().getCaptureDistance();
                 for(ObjectPercept object : guardView){
@@ -236,6 +227,6 @@ public class ShallowSpaceAgent implements Guard {
             return true;
         }
         return false;
-    }
+    }*/
 
 }
