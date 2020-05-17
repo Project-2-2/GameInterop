@@ -64,7 +64,7 @@ public class OccupancyAgent implements Guard {
     public OccupancyAgent() {
         this.occupancyGrid = new OccupancyGrid();
         xPosition = occupancyGrid.occupancyGrid.length/2.0;
-        yPosition = occupancyGrid.occupancyGrid.length/2.0;
+        yPosition = occupancyGrid.occupancyGrid[0].length/2.0;
         initialLocation = new Point(xPosition,yPosition);
         rng = new Random();
     }

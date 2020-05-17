@@ -2,6 +2,7 @@ package Group8.Agents;
 
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * @author Thomas Sijpkens
@@ -67,6 +68,8 @@ class OccupancyGridTest {
     public static void main(String[] args) {
         OccupancyGrid occupancyGrid = new OccupancyGrid();
 
-        System.out.println(occupancyGrid.occupancyGrid);
+        System.out.println(Arrays.deepToString(occupancyGrid.occupancyGrid));
+        System.out.println(Arrays.deepToString(occupancyGrid.logMap));
+
     }
 }
