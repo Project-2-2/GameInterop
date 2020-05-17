@@ -43,8 +43,9 @@ public class ShallowSpaceAgent implements Guard {
 
         if(intruderPosition != null || !followIntruder.isEmpty())
         {
-            if(intruderPosition != null && followIntruder.isEmpty())
+            if(intruderPosition != null)
             {
+                followIntruder.clear();
                 followIntruder.addAll(
                         moveTowardsPoint(percepts, new Vector2(0, 1 ), new Vector2.Origin(), intruderPosition)
                 );
@@ -121,18 +122,11 @@ public class ShallowSpaceAgent implements Guard {
     {
         Queue<ActionContainer<GuardAction>> retActionsQueue = new LinkedList<>();
 
-        Vector2 desiredDirection = target.sub(source).normalise();
-        double rotationDiff = desiredDirection.angle(direction);
-
-        if(rotationDiff >= Math.PI)
-        {
-            rotationDiff = -(rotationDiff - Math.PI);
-        }
-
-
+        Vector2 desiredDirection = target.sub(source);
+        double rotationDiff = direction.angledSigned(desiredDirection);
         if(Math.abs(rotationDiff) > 1E-1)
         {
-            retActionsQueue.addAll(this.planRotation(percepts, rotationDiff));
+            retActionsQueue.add(ActionContainer.of(this, new Rotate(Angle.fromRadians(rotationDiff))));
         }
 
         final double maxAllowedMove = percepts.getScenarioGuardPercepts().getMaxMoveDistanceGuard().getValue() * getSpeedModifier(percepts);
@@ -159,29 +153,6 @@ public class ShallowSpaceAgent implements Guard {
         return retActionsQueue;
     }
 
-    protected Queue<ActionContainer<GuardAction>> planRotation(GuardPercepts percepts, double alpha)
-    {
-        Queue<ActionContainer<GuardAction>> retActionsQueue = new LinkedList<>();
-
-        double maxRotation = percepts.getScenarioGuardPercepts().getScenarioPercepts().getMaxRotationAngle().getRadians();
-        int fullRotations = (int) (alpha / maxRotation);
-        double restRotation = alpha % maxRotation;
-
-        for (int i = 0; i < fullRotations; i++)  {
-            retActionsQueue.offer(
-                    ActionContainer.of(this, new Rotate(Angle.fromRadians(maxRotation)))
-            );
-        }
-
-        if (restRotation > 0) {
-            retActionsQueue.offer(
-                    ActionContainer.of(this, new Rotate(Angle.fromRadians(restRotation)))
-            );
-        }
-
-        return retActionsQueue;
-    }
-
     public Vector2 canSeeIntruder(GuardPercepts percepts)
     {
         Set<ObjectPercept> intruders = percepts.getVision().getObjects()
@@ -190,7 +161,12 @@ public class ShallowSpaceAgent implements Guard {
 
         if(!intruders.isEmpty())
         {
-            return Vector2.from(((ObjectPercept) intruders.toArray()[0]).getPoint());
+            Vector2 centre = new Vector2.Origin();
+            for(ObjectPercept e : intruders)
+            {
+                centre = centre.add(Vector2.from(e.getPoint()));
+            }
+            return centre.mul(1D/intruders.size());
         }
 
         return null;

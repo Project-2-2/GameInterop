@@ -12,6 +12,7 @@ import Interop.Agent.Guard;
 import Interop.Geometry.Angle;
 import Interop.Geometry.Distance;
 import Interop.Percept.GuardPercepts;
+import Interop.Percept.Scenario.SlowDownModifiers;
 import Interop.Percept.Vision.ObjectPercept;
 import Interop.Percept.Vision.ObjectPerceptType;
 import Interop.Percept.Vision.VisionPrecepts;
@@ -154,23 +155,19 @@ public class DeepSpace implements Guard {
     }
 
 
-    protected Queue<ActionContainer<GuardAction>> moveTowardsPoint(GuardPercepts percepts, Vector2 direction, Vector2 source, Vector2 target)
+    protected Queue<ActionContainer<GuardAction>> moveTowardsPoint(GuardPercepts percepts, Vector2 direction, Vector2 source,
+                                                                   Vector2 target)
     {
         Queue<ActionContainer<GuardAction>> retActionsQueue = new LinkedList<>();
 
-        Vector2 desiredDirection = target.sub(source).normalise();
-        double rotationDiff = desiredDirection.getClockDirection() - direction.getClockDirection();
-
-        if(rotationDiff < 0)
+        Vector2 desiredDirection = target.sub(source);
+        double rotationDiff = direction.angledSigned(desiredDirection);
+        if(Math.abs(rotationDiff) > 1E-1)
         {
-            rotationDiff += Math.PI * 2;
-        }
-        if(Math.abs(rotationDiff) > 1E-10)
-        {
-            retActionsQueue.addAll(this.planRotation(percepts, rotationDiff));
+            retActionsQueue.addAll(planRotation(percepts, rotationDiff));
         }
 
-        final double maxAllowedMove = percepts.getScenarioGuardPercepts().getMaxMoveDistanceGuard().getValue();
+        final double maxAllowedMove = percepts.getScenarioGuardPercepts().getMaxMoveDistanceGuard().getValue() * getSpeedModifier(percepts);
         final double distance = target.distance(source);
         final int fullMoves = (int) (distance / maxAllowedMove);
         final double remainder = distance % percepts.getScenarioGuardPercepts().getMaxMoveDistanceGuard().getValue();
@@ -181,18 +178,38 @@ public class DeepSpace implements Guard {
         for(int i = 0; i < fullMoves; i++)
         {
             retActionsQueue.add(
-                ActionContainer.of(this, new Move(new Distance(maxAllowedMove)), input.clone().i("#fullMoves-i", i))
+                    ActionContainer.of(this, new Move(new Distance(maxAllowedMove)), input.clone().i("#fullMoves-i", i))
             );
         }
         if(remainder > 0)
         {
             retActionsQueue.add(
-                ActionContainer.of(this, new Move(new Distance(remainder)), input.clone().i("#remainder", remainder))
+                    ActionContainer.of(this, new Move(new Distance(remainder)), input.clone().i("#remainder", remainder))
             );
         }
 
         return retActionsQueue;
     }
+
+    private double getSpeedModifier(GuardPercepts guardPercepts)
+    {
+        SlowDownModifiers slowDownModifiers =  guardPercepts.getScenarioGuardPercepts().getScenarioPercepts().getSlowDownModifiers();
+        if(guardPercepts.getAreaPercepts().isInWindow())
+        {
+            return slowDownModifiers.getInWindow();
+        }
+        else if(guardPercepts.getAreaPercepts().isInSentryTower())
+        {
+            return slowDownModifiers.getInSentryTower();
+        }
+        else if(guardPercepts.getAreaPercepts().isInDoor())
+        {
+            return slowDownModifiers.getInDoor();
+        }
+
+        return 1;
+    }
+
     protected GuardAction doTargetAreaAction(GuardPercepts percepts) {
             Set<ObjectPercept> objects = percepts.getVision().getObjects().getAll();
             for (ObjectPercept object :objects) {
@@ -215,6 +232,10 @@ public class DeepSpace implements Guard {
 
     protected Queue<ActionContainer<GuardAction>> planRotation(GuardPercepts percepts, double alpha)
     {
+        // TODO kinda cheating; fix we need to support negative angles at this point
+        final double sign = Math.signum(alpha);
+        alpha = Math.abs(alpha);
+
         Queue<ActionContainer<GuardAction>> retActionsQueue = new LinkedList<>();
 
         double maxRotation = percepts.getScenarioGuardPercepts().getScenarioPercepts().getMaxRotationAngle().getRadians();
@@ -223,13 +244,13 @@ public class DeepSpace implements Guard {
 
         for (int i = 0; i < fullRotations; i++)  {
             retActionsQueue.offer(
-                ActionContainer.of(this, new Rotate(Angle.fromRadians(maxRotation)))
+                ActionContainer.of(this, new Rotate(Angle.fromRadians(sign*maxRotation)))
             );
         }
 
         if (restRotation > 0) {
             retActionsQueue.offer(
-                ActionContainer.of(this, new Rotate(Angle.fromRadians(restRotation)))
+                ActionContainer.of(this, new Rotate(Angle.fromRadians(sign*restRotation)))
             );
         }
 

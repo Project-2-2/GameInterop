@@ -44,6 +44,5 @@ public class Cell2 {
     public boolean hasTeleport(){
         return teleport;
     }
-}
 
 }
