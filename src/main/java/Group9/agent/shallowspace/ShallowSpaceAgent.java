@@ -17,21 +17,13 @@ import java.util.*;
 
 public class ShallowSpaceAgent implements Guard {
 
-
-    private Point position;//location of guard
-    private Angle rotation; //0 rotation -> positive Y, neutral X
-    private boolean foundIntruder = false;
+    private Angle rotation = Angle.fromRadians(0); //0 rotation -> positive Y, neutral X
     private boolean foundTargetArea = false;
-    private boolean IntruderCapture = false;
 
     private Queue<ActionContainer<GuardAction>> followIntruder = new LinkedList<>();
     private Queue<ActionContainer<GuardAction>> targetAreaGuarding = new LinkedList<>();
 
-
-    public ShallowSpaceAgent() {
-        position = new Point(0,0);
-        rotation = Angle.fromRadians(0);
-    }
+    public ShallowSpaceAgent() { }
 
     @Override
     public GuardAction getAction(GuardPercepts percepts) {
