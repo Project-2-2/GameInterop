@@ -457,7 +457,7 @@ public class MainScene extends Scene {
 
             for (int i = 0; i < points.length; i++) {
                 Vector2 point = points[i];
-                xPoints[i] = point.getX();
+                xPoints[i] = (map.getGameSettings().getWidth() - point.getX());
                 yPoints[i] = point.getY();
             }
 
@@ -809,19 +809,19 @@ public class MainScene extends Scene {
     private void drawPheromone(GraphicsContext g, Pheromone pheromone){
         Vector2 z = pheromone.getCenter();
         double radius = mapScale * pheromone.getRadius();
-        double x = z.getX()*mapScale;
+        double x = (map.getGameSettings().getWidth()-z.getX())*mapScale;
         double y = z.getY()*mapScale;
-        g.fillOval(x-radius/2,y-radius/2,radius,radius);
+        g.fillOval((x-radius/2),y-radius/2,radius,radius);
     }
     private void drawAgent(GraphicsContext g, AgentContainer<?> agent) {
 
-        Vector2 center = agent.getPosition().mul(mapScale);
+        Vector2 center = agent.getPosition();
+        double x = (map.getGameSettings().getWidth()-center.getX())*mapScale;
+        double y = center.getY()*mapScale;
 
         {
             double radius = mapScale*settings.agentScale * AgentContainer._RADIUS;
-            double x = center.getX();
-            double y = center.getY();
-            g.fillOval(x-radius/2,y-radius/2,radius,radius);
+            g.fillOval((x-radius/2),y-radius/2,radius,radius);
         }
 
         {
@@ -831,10 +831,13 @@ public class MainScene extends Scene {
             final double r = fov.getRange().getValue() * mapScale;
             final double alpha = fov.getViewAngle().getRadians();
 
-            final double angle = agent.getDirection().rotated(alpha / 2).getClockDirection() - Math.PI / 2;
+            final double angle = agent.getDirection()
+                    .mul(-1, 1)
+                    .rotated(alpha / 2D)
+                    .getClockDirection() - Math.PI/2;
             g.setStroke(g.getFill());
 
-            g.strokeArc(center.getX() - r, center.getY() - r, r*2, r*2,
+            g.strokeArc(x - r, y - r, r*2, r*2,
                     (angle / (2 * Math.PI)) * 360,
                     fov.getViewAngle().getDegrees(), ArcType.ROUND);
 
