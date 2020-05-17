@@ -47,7 +47,7 @@ public class OccupancyGrid {
      * @param occValue index set true if grid is occupied, else false.
      */
     public void update(int indexX, int indexY, Boolean occValue) {
-        occupancyGrid.get(indexX).add(indexY, occValue);
+        occupancyGrid[indexX][indexY] = occValue;
     }
 
     /**
@@ -57,7 +57,7 @@ public class OccupancyGrid {
      * @param indexY the y index where the agent make an update to
      */
     public void update(int indexX, int indexY) {
-        occupancyGrid.get(indexX).add(indexY, true);
+        occupancyGrid[indexX][indexY] = true;
     }
 
 

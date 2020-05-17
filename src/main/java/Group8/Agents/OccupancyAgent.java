@@ -63,8 +63,8 @@ public class OccupancyAgent implements Guard {
 
     public OccupancyAgent() {
         this.occupancyGrid = new OccupancyGrid();
-        xPosition = occupancyGrid.occupancyGrid.size()/2.0;
-        yPosition = occupancyGrid.occupancyGrid.size()/2.0;
+        xPosition = occupancyGrid.occupancyGrid.length/2.0;
+        yPosition = occupancyGrid.occupancyGrid.length/2.0;
         initialLocation = new Point(xPosition,yPosition);
         rng = new Random();
     }
@@ -259,7 +259,7 @@ public class OccupancyAgent implements Guard {
      *  Recursively update p(Mx,My) for each cell
      */
     public void noCigar() {
-        double xSize, ysize = occupancyGrid.occupancyGrid.size() * 2;
+        double xSize, ysize = occupancyGrid.occupancyGrid.length * 2;
 
     }
 
@@ -321,7 +321,7 @@ public class OccupancyAgent implements Guard {
 
         for (int x = x1, y = y1; x <= x2; x++)
         {
-            occupancyGrid.occupancyGrid.add().
+            occupancyGrid.update(x,y,false);
 
             // Add slope to increment angle formed
             slope_error_new += m_new;
