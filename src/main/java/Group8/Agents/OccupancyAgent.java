@@ -304,7 +304,9 @@ public class OccupancyAgent implements Guard {
      * theta is the direction the agent is facing
      * Note, this method discretizes the map.
      */
-    public void mapping(GuardPercepts percepts, ObjectPercept objectPercept) {
+    public void mapping(GuardPercepts percepts, ObjectPercept objectPercept, ObjectPercepts objectPercepts) {
+        //objectPercepts.getAll();
+        //TODO: not the way to get angle
         Angle direction = percepts.getVision().getFieldOfView().getViewAngle();
         Distance distance = percepts.getVision().getFieldOfView().getRange();
         double[][] transformMatrix = {{Math.cos(direction.getDegrees()), Math.sin(direction.getDegrees())},
@@ -327,9 +329,9 @@ public class OccupancyAgent implements Guard {
 
 
         //Now do this with all the sets
-        for (int x = x1, y = y1; x <= x2; x++)
-        {
-            if(x == x1 && y == y1) {
+        for (int x = x1, y = y1; x <= x2; x++) {
+            if(x == x2 && y == y2) {
+
                 //set only last value to true
                 occupancyGrid.update(x,y);
                 break;
@@ -347,6 +349,7 @@ public class OccupancyAgent implements Guard {
                 }
             }
         }
+
     }
 
 

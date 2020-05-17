@@ -61,7 +61,7 @@ public class OccupancyGrid {
         occupancyGrid[indexX][indexY] = true;
     }
 
-
+    public void logUpdate(int x, int y, double value) { logMap[x][y] = value; }
 }
 
 class OccupancyGridTest {
