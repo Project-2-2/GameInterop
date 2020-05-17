@@ -8,6 +8,7 @@ import Group5.GameController.AgentController;
 import Group5.GameController.MapInfo;
 import Group5.GameController.Vision;
 import Interop.Action.Action;
+import Interop.Action.DropPheromone;
 import Interop.Action.IntruderAction;
 import Interop.Action.Move;
 import Interop.Action.NoAction;
@@ -17,7 +18,12 @@ import Interop.Action.Yell;
 import Interop.Geometry.Angle;
 import Interop.Geometry.Distance;
 import Interop.Geometry.Point;
+import Interop.Percept.GuardPercepts;
 import Interop.Percept.IntruderPercepts;
+import Interop.Percept.Smell.SmellPercept;
+import Interop.Percept.Smell.SmellPerceptType;
+import Interop.Percept.Sound.SoundPercept;
+import Interop.Percept.Sound.SoundPerceptType;
 import Interop.Percept.Vision.ObjectPercept;
 import Interop.Percept.Vision.ObjectPerceptType;
 import Interop.Percept.Vision.ObjectPercepts;
@@ -30,9 +36,14 @@ import java.util.*;
 
 public class IntruderAgent implements Interop.Agent.Intruder {
     private Deque<IntruderAction> actionQueue;
-    private ObjectPercept state;
+    private ObjectPercept visionState;
+    private SmellPercept smellState;
+    private List<Point> seenObjects;
+    private SoundPercept soundState;
     private QLearning intruderQL;
     private static final int NUMBER_OF_POSSIBLE_ACTIONS = 7;
+    private static final int NUMBER_OF_POSSIBLE_SINGLE_STATES = 12;
+    
     float gamma = 0.92f;
     float epsilon = 0.2f;
     float alpha = 0.1f;
@@ -40,7 +51,7 @@ public class IntruderAgent implements Interop.Agent.Intruder {
     public IntruderAgent(){
         this.actionQueue = new LinkedList<>();
         intruderQL = new QLearning(gamma, epsilon, alpha,
-                NUMBER_OF_POSSIBLE_ACTIONS, ObjectPerceptType.class.getEnumConstants().length);
+                NUMBER_OF_POSSIBLE_ACTIONS, NUMBER_OF_POSSIBLE_SINGLE_STATES);
     }
     
     public enum Actions {
@@ -80,6 +91,11 @@ public class IntruderAgent implements Interop.Agent.Intruder {
         return new Move(new Distance(1));
     }
     
+    protected Move moveStraight(IntruderPercepts intruderPercepts){
+        return new Move(intruderPercepts.getScenarioIntruderPercepts().getMaxMoveDistanceIntruder());
+    }
+    
+    
     protected Sprint sprintTowards(IntruderPercepts intruderPercepts){
         return new Sprint(intruderPercepts.getScenarioIntruderPercepts().getMaxSprintDistanceIntruder());
     }
@@ -88,78 +104,153 @@ public class IntruderAgent implements Interop.Agent.Intruder {
         return new Rotate(Angle.fromRadians(point.getClockDirection().getRadians()));
     }
     
+    protected Rotate rotateTowards(double radians) {
+        return new Rotate(Angle.fromRadians(radians));
+    }
+    
     protected Move walkTowards(Point point) {
         return new Move(new Distance(point.getDistanceFromOrigin().getValue()));
     }
     
-    protected ObjectPercept getVisionState(Set<ObjectPercept> objectsInVision, IntruderPercepts intruderPercepts){
-        List<ObjectPercept> visionObjects = new ArrayList<>(objectsInVision);
-    
-        int n = visionObjects.size();
-        for (int i = 0; i < n - 1; i++) {
-            for (int j = 0; j < n - i - 1; j++) {
-                double tempDistance1 = intruderPercepts.getVision().getFieldOfView().getRange().getValue()-visionObjects.get(j).getPoint().getDistanceFromOrigin().getValue();
-                double tempDistance2 = intruderPercepts.getVision().getFieldOfView().getRange().getValue()-visionObjects.get(j+1).getPoint().getDistanceFromOrigin().getValue();
-                if (tempDistance1 > tempDistance2) {
-                    ObjectPercept temp = visionObjects.get(j);
-                    visionObjects.set(j, visionObjects.get(j + 1));
-                    visionObjects.set(j + 1, temp);
-                }
-            
-            }
-        }
-        return visionObjects.get(0);
+    protected DropPheromone dropPheromone(IntruderPercepts p) {
+        return new DropPheromone(SmellPerceptType.Pheromone1);
     }
     
-    public void explore(IntruderPercepts intruderPercepts) {
+    private boolean hearSound(IntruderPercepts percepts) {
+        if (percepts.getSounds().getAll().isEmpty())
+            return false;
+        else
+            return true;
+    }
     
+    private boolean smellPheromone(IntruderPercepts percepts) {
+        if (percepts.getSmells().getAll().isEmpty())
+            return false;
+        else
+            return true;
+    }
+    
+    protected ObjectPercept getVisionState(IntruderPercepts intruderPercepts){
         Set<ObjectPercept> vision = intruderPercepts.getVision().getObjects().getAll();
         ArrayList<ObjectPerceptType> visionPerceptTypes = new ArrayList<>();
-    
-        intruderPercepts.getScenarioIntruderPercepts().getScenarioPercepts().getMaxRotationAngle();
+        List<ObjectPercept> visionObjectsSorted = new ArrayList<>(vision);
         for (ObjectPercept e : vision) {
             visionPerceptTypes.add(e.getType());
         }
     
-        if (!visionPerceptTypes.isEmpty() && intruderPercepts.wasLastActionExecuted()) {
-            state = this.getVisionState(vision, intruderPercepts);
-            int maxValueAction = intruderQL.getMaxValueAction(state.getType());
+        if (visionPerceptTypes.contains(ObjectPerceptType.Guard)) {
+            for (ObjectPercept s : vision) {
+                if (s.getType() == ObjectPerceptType.Guard) {
+                    return s;
+                }
+            }
+        }
+        else {
+            int n = visionObjectsSorted.size();
+            for (int i = 0; i < n - 1; i++) {
+                for (int j = 0; j < n - i - 1; j++) {
+                    double tempDistance1 =
+                            intruderPercepts.getVision().getFieldOfView().getRange().getValue() - visionObjectsSorted.get(j).getPoint().getDistanceFromOrigin().getValue();
+                    double tempDistance2 =
+                            intruderPercepts.getVision().getFieldOfView().getRange().getValue() - visionObjectsSorted
+                                    .get(j + 1).getPoint().getDistanceFromOrigin().getValue();
+                    if (tempDistance1 > tempDistance2) {
+                        ObjectPercept temp = visionObjectsSorted.get(j);
+                        visionObjectsSorted.set(j, visionObjectsSorted.get(j + 1));
+                        visionObjectsSorted.set(j + 1, temp);
+                    }
+                }
+            }
+            if (!visionObjectsSorted.isEmpty())
+                return visionObjectsSorted.get(0);
+        }
+        return null;
+    }
+    
+    protected SoundPercept getSoundState(IntruderPercepts intruderPercepts){
+        Set<SoundPercept> sounds = intruderPercepts.getSounds().getAll();
+        ArrayList<SoundPerceptType> soundPerceptTypes = new ArrayList<>();
+        for (SoundPercept s : sounds) {
+            soundPerceptTypes.add((s.getType()));
+        }
+        
+        if (soundPerceptTypes.contains(SoundPerceptType.Yell) &&
+                (soundPerceptTypes.contains(SoundPerceptType.Noise) || !soundPerceptTypes.contains(SoundPerceptType.Noise))) {
+            for (SoundPercept s : sounds) {
+                if (s.getType() == SoundPerceptType.Yell) {
+                    return s;
+                }
+            }
+        }
+        else if (sounds.size() > 0){
+            for(SoundPercept sound: sounds) {
+                return sound;
+            }
+        }
+        return null;
+    }
+    
+    protected SmellPercept getSmellState(IntruderPercepts intruderPercepts){
+        List<SmellPercept> smells = new ArrayList<SmellPercept> (intruderPercepts.getSmells().getAll());
+        
+        if (!smells.isEmpty())
+            return smells.get(0);
+        
+        return null;
+    }
+    
+    public void explore(IntruderPercepts intruderPercepts) {
+        
+        this.soundState = this.getSoundState(intruderPercepts);
+        this.visionState = this.getVisionState(intruderPercepts);
+        this.smellState = this.getSmellState(intruderPercepts);
+        this.seenObjects = new ArrayList<>();
+    
+        if (this.visionState != null && intruderPercepts.wasLastActionExecuted() && this.soundState == null) {
             for (IntruderAgent.Actions currAction : IntruderAgent.Actions.class.getEnumConstants()) {
+                int maxValueAction = intruderQL.getMaxValueAction(this.visionState.getType());
                 if (currAction.value == maxValueAction) {
                     if (currAction.value == 0) {
-                        actionQueue.add(rotateTowards(state.getPoint()));
-                        float reward = getReward(state);
-                        intruderQL.updateQTable(state.getType(), currAction.value, reward);
-//                        System.out.println(currAction);
+                        this.seenObjects.add(this.visionState.getPoint());
+                        actionQueue.add(rotateTowards(this.visionState.getPoint()));
+                        float reward = getReward(this.visionState);
+                        intruderQL.updateQTable(this.visionState.getType(), currAction.value, reward);
+                        //                        System.out.println(currAction);
                     } else if (currAction.value == 1) {
-                        actionQueue.add(walkTowards(state.getPoint()));
-                        float reward = getReward(state);
-                        intruderQL.updateQTable(state.getType(), currAction.value, reward);
-//                        System.out.println(currAction);
+                        this.seenObjects.add(this.visionState.getPoint());
+                        actionQueue.add(walkTowards(this.visionState.getPoint()));
+                        float reward = getReward(this.visionState);
+                        intruderQL.updateQTable(this.visionState.getType(), currAction.value, reward);
+                        //                        System.out.println(currAction);
                     } else if (currAction.value == 2) {
+                        this.seenObjects.add(this.visionState.getPoint());
                         actionQueue.add(doNothing());
-                        float reward = getReward(state);
-                        intruderQL.updateQTable(state.getType(), currAction.value, reward);
-//                        System.out.println(currAction);
+                        float reward = getReward(this.visionState);
+                        intruderQL.updateQTable(this.visionState.getType(), currAction.value, reward);
+                        //                        System.out.println(currAction);
                     } else if (currAction.value == 3) {
+                        this.seenObjects.add(this.visionState.getPoint());
                         actionQueue.add(moveStraight());
-                        float reward = getReward(state);
-                        intruderQL.updateQTable(state.getType(), currAction.value, reward);
-//                        System.out.println(currAction);
+                        float reward = getReward(this.visionState);
+                        intruderQL.updateQTable(this.visionState.getType(), currAction.value, reward);
+                        //                        System.out.println(currAction);
                     } else if (currAction.value == 4) {
+                        this.seenObjects.add(this.visionState.getPoint());
                         actionQueue.add(randomRotate());
-                        float reward = getReward(state);
-                        intruderQL.updateQTable(state.getType(), currAction.value, reward);
-//                        System.out.println(currAction);
+                        float reward = getReward(this.visionState);
+                        intruderQL.updateQTable(this.visionState.getType(), currAction.value, reward);
+                        //                        System.out.println(currAction);
                     } else if (currAction.value == 5) {
+                        this.seenObjects.add(this.visionState.getPoint());
                         actionQueue.add(randomWalk());
-                        float reward = getReward(state);
-                        intruderQL.updateQTable(state.getType(), currAction.value, reward);
-//                        System.out.println(currAction);
+                        float reward = getReward(this.visionState);
+                        intruderQL.updateQTable(this.visionState.getType(), currAction.value, reward);
+                        //                        System.out.println(currAction);
                     } else if (currAction.value == 6) {
+                        this.seenObjects.add(this.visionState.getPoint());
                         actionQueue.add(sprintTowards(intruderPercepts));
-                        float reward = getReward(state);
-                        intruderQL.updateQTable(state.getType(), currAction.value, reward);
+                        float reward = getReward(this.visionState);
+                        intruderQL.updateQTable(this.visionState.getType(), currAction.value, reward);
                         //                        System.out.println(currAction);
                     }
                 }
@@ -167,10 +258,95 @@ public class IntruderAgent implements Interop.Agent.Intruder {
             intruderQL.writeTableToFile();
         }
     
-        else if (!visionPerceptTypes.isEmpty() && !intruderPercepts.wasLastActionExecuted()) {
+        else if (this.visionState != null && !intruderPercepts.wasLastActionExecuted() && this.soundState == null) {
             actionQueue.add(randomRotate());
             float reward = -2f;
-            intruderQL.updateQTable(state.getType(), 4, reward);
+            intruderQL.updateQTable(this.visionState.getType(), 4, reward);
+        }
+    
+        if (intruderPercepts.wasLastActionExecuted() && this.soundState != null) {
+            int maxValueAction = intruderQL.getMaxValueAction(this.soundState.getType());
+            for (IntruderAgent.Actions currAction : IntruderAgent.Actions.class.getEnumConstants()) {
+                if (currAction.value == maxValueAction) {
+                    if (currAction.value == 0) {
+                        actionQueue.add(rotateTowards(this.soundState.getDirection().getRadians()));
+                        float reward = getReward(this.soundState);
+                        intruderQL.updateQTable(this.soundState.getType(), currAction.value, reward);
+                        //                        System.out.println(currAction);
+                    } else if (currAction.value == 1) {
+                        actionQueue.add(moveStraight(intruderPercepts));
+                        float reward = getReward(this.soundState);
+                        intruderQL.updateQTable(this.soundState.getType(), currAction.value, reward);
+                        //                        System.out.println(currAction);
+                    } else if (currAction.value == 2) {
+                        actionQueue.add(doNothing());
+                        float reward = getReward(this.soundState);
+                        intruderQL.updateQTable(this.soundState.getType(), currAction.value, reward);
+                        //                        System.out.println(currAction);
+                    } else if (currAction.value == 3) {
+                        actionQueue.add(moveStraight());
+                        float reward = getReward(this.soundState);
+                        intruderQL.updateQTable(this.soundState.getType(), currAction.value, reward);
+                        //                        System.out.println(currAction);
+                    } else if (currAction.value == 4) {
+                        actionQueue.add(randomRotate());
+                        float reward = getReward(this.soundState);
+                        intruderQL.updateQTable(this.soundState.getType(), currAction.value, reward);
+                        //                        System.out.println(currAction);
+                    } else if (currAction.value == 5) {
+                        actionQueue.add(randomWalk());
+                        float reward = getReward(this.soundState);
+                        intruderQL.updateQTable(this.soundState.getType(), currAction.value, reward);
+                        //                        System.out.println(currAction);
+                    } else if (currAction.value == 6) {
+                        actionQueue.add(sprintTowards(intruderPercepts));
+                        float reward = getReward(this.soundState);
+                        intruderQL.updateQTable(this.soundState.getType(), currAction.value, reward);
+                        //                        System.out.println(currAction);
+                    }
+                }
+            }
+            intruderQL.writeTableToFile();
+        }
+    
+        if (intruderPercepts.wasLastActionExecuted() && this.smellState != null) {
+            int maxValueAction = intruderQL.getMaxValueAction(this.smellState.getType());
+            for (IntruderAgent.Actions currAction : IntruderAgent.Actions.class.getEnumConstants()) {
+                if (currAction.value == maxValueAction) {
+                    if (currAction.value == 1) {
+                        actionQueue.add(moveStraight(intruderPercepts));
+                        float reward = getReward(this.smellState);
+                        intruderQL.updateQTable(this.smellState.getType(), currAction.value, reward);
+                        //                        System.out.println(currAction);
+                    } else if (currAction.value == 2) {
+                        actionQueue.add(doNothing());
+                        float reward = getReward(this.smellState);
+                        intruderQL.updateQTable(this.smellState.getType(), currAction.value, reward);
+                        //                        System.out.println(currAction);
+                    } else if (currAction.value == 3) {
+                        actionQueue.add(moveStraight());
+                        float reward = getReward(this.smellState);
+                        intruderQL.updateQTable(this.smellState.getType(), currAction.value, reward);
+                        //                        System.out.println(currAction);
+                    } else if (currAction.value == 4) {
+                        actionQueue.add(randomRotate());
+                        float reward = getReward(this.smellState);
+                        intruderQL.updateQTable(this.smellState.getType(), currAction.value, reward);
+                        //                        System.out.println(currAction);
+                    } else if (currAction.value == 5) {
+                        actionQueue.add(randomWalk());
+                        float reward = getReward(this.smellState);
+                        intruderQL.updateQTable(this.smellState.getType(), currAction.value, reward);
+                        //                        System.out.println(currAction);
+                    } else if (currAction.value == 6) {
+                        actionQueue.add(sprintTowards(intruderPercepts));
+                        float reward = getReward(this.smellState);
+                        intruderQL.updateQTable(this.smellState.getType(), currAction.value, reward);
+                        //                        System.out.println(currAction);
+                    }
+                }
+            }
+            intruderQL.writeTableToFile();
         }
         
         else {
@@ -197,7 +373,12 @@ public class IntruderAgent implements Interop.Agent.Intruder {
 
     // Assign some basic reward for now, need to fix this later
         if (state.getType() == ObjectPerceptType.TargetArea) {
-            reward = 0f;
+            if (!this.seenObjects.contains(state.getPoint())){
+                reward = 0f;
+            }
+            else{
+                reward = -0.2f;
+            }
             return reward;
         }
         else if (state.getType() == ObjectPerceptType.Guard) {
@@ -205,36 +386,118 @@ public class IntruderAgent implements Interop.Agent.Intruder {
             return reward;
         }
         else if (state.getType() == ObjectPerceptType.Intruder) {
-            reward = -0.8f;
+            if (!this.seenObjects.contains(state.getPoint())) {
+                reward = -0.6f;
+            }
+            else {
+                reward = -0.8f;
+            }
             return reward;
         }
         else if (state.getType() == ObjectPerceptType.Door) {
-            reward = -1f;
+            if (!this.seenObjects.contains(state.getPoint())) {
+                reward = -1f;
+            }
+            else{
+                reward = -2f;
+            }
             return reward;
         }
         else if (state.getType() == ObjectPerceptType.Window) {
-            reward = -1f;
+            if (!this.seenObjects.contains(state.getPoint())) {
+                reward = -1f;
+            }
+            else{
+                reward = -2f;
+            }
             return reward;
         }
         else if (state.getType() == ObjectPerceptType.Teleport){
-            reward = -1f;
+            if (!this.seenObjects.contains(state.getPoint())) {
+                reward = -1f;
+            }
+            else{
+                reward = -2f;
+            }
             return reward;
         }
         else if (state.getType() == ObjectPerceptType.SentryTower){
-            reward = -1f;
+            if (!this.seenObjects.contains(state.getPoint())) {
+                reward = -1f;
+            }
+            else{
+                reward = -2f;
+            }
             return reward;
         }
         else if (state.getType() == ObjectPerceptType.ShadedArea){
-            reward = -1f;
+            if (!this.seenObjects.contains(state.getPoint())) {
+                reward = -1f;
+            }
+            else{
+                reward = -2f;
+            }
             return reward;
         }
         else if (state.getType() == ObjectPerceptType.EmptySpace){
+            if (!this.seenObjects.contains(state.getPoint())) {
+                reward = -1f;
+            }
+            else{
+                reward = -2f;
+            }
+            return reward;
+        }
+        else if (state.getType() == ObjectPerceptType.Wall){
+            if (!this.seenObjects.contains(state.getPoint())) {
+                reward = -1f;
+            }
+            else{
+                reward = -2f;
+            }
+            return reward;
+        }
+        return reward;
+    }
+    
+    protected float getReward(SoundPercept state){
+        float reward = -1f;
+        
+        // Assign some basic reward for now, need to fix this later
+        if (state.getType() == SoundPerceptType.Noise) {
             reward = -1f;
             return reward;
         }
         else{
-            reward = -1f;
+            reward = -3f;
             return reward;
         }
+    }
+    
+    protected float getReward(SmellPercept state){
+        float reward = -0.5f;
+        
+        // Assign some basic reward for now, need to fix this later
+        if (state.getType() == SmellPerceptType.Pheromone1) {
+            reward = -0.5f;
+            return reward;
+        }
+        else if (state.getType() ==  SmellPerceptType.Pheromone2){
+            reward = -0.5f;
+            return reward;
+        }
+        else if (state.getType() ==  SmellPerceptType.Pheromone3){
+            reward = -0.5f;
+            return reward;
+        }
+        else if (state.getType() ==  SmellPerceptType.Pheromone4){
+            reward = -0.5f;
+            return reward;
+        }
+        else if (state.getType() ==  SmellPerceptType.Pheromone5){
+            reward = -0.5f;
+            return reward;
+        }
+        return reward;
     }
 }

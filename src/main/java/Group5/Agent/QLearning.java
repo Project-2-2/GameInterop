@@ -26,6 +26,9 @@ import Interop.Agent.Intruder;
 import Interop.Geometry.Angle;
 import Interop.Geometry.Distance;
 import Interop.Geometry.Point;
+import Interop.Percept.Smell.SmellPercept;
+import Interop.Percept.Smell.SmellPerceptType;
+import Interop.Percept.Sound.SoundPerceptType;
 import Interop.Percept.Vision.ObjectPercept;
 import Interop.Percept.Vision.ObjectPerceptType;
 import Interop.Percept.Vision.ObjectPercepts;
@@ -51,7 +54,9 @@ public class QLearning {
         SentryTower(6),
         ShadedArea(7),
         TargetArea(8),
-        EmptySpace(9);
+        EmptySpace(9),
+        Noise(10),
+        Yell(11);
         
         private int value;
         
@@ -129,10 +134,114 @@ public class QLearning {
         Random rand = new Random();
         
         if (chance < epsilon) {
+            return rand.nextInt(7);
+        } else {
+            return maxIndex;
+        }
+    }
+    
+    public int getMaxValueAction(SmellPerceptType state) {
+        State[] allStates = State.class.getEnumConstants();
+        int stateIndex = 0;
+        for (State tempState : allStates) {
+            if (state.name().equals(tempState.name())) {
+                stateIndex = tempState.value;
+            }
+        }
+        double[] qTablePart = qTable[stateIndex];
+        int maxIndex = getMaxValue(qTablePart);
+        double chance = Math.random();
+        Random rand = new Random();
+        
+        if (chance < epsilon) {
+            return rand.nextInt(7);
+        } else {
+            return maxIndex;
+        }
+    }
+    
+    public int getMaxValueAction(SoundPerceptType state) {
+        State[] allStates = State.class.getEnumConstants();
+        int stateIndex = 0;
+        for (State tempState : allStates) {
+            if (state.name().equals(tempState.name())) {
+                stateIndex = tempState.value;
+            }
+        }
+        double[] qTablePart = qTable[stateIndex];
+        int maxIndex = getMaxValue(qTablePart);
+        double chance = Math.random();
+        Random rand = new Random();
+        
+        if (chance < epsilon) {
             return rand.nextInt(6);
         } else {
             return maxIndex;
         }
+    }
+    
+    protected void updateQTable(SmellPerceptType state, int currentAction, float reward) {
+        State[] allStates = State.class.getEnumConstants();
+        if (this.prevState == null) {
+            this.prevState = State.EmptySpace;
+        }
+        
+        this.currAction = currentAction;
+        
+        for (State cState : allStates) {
+            if (state.name().equals(cState.name())) {
+                this.currState = cState;
+                break;
+            }
+        }
+        
+        //Bellman Equation
+        double update = reward + gamma * findMaxQState(this.currState.value) - qTable[this.prevState.value][this.prevAction];
+        qTable[this.prevState.value][this.prevAction] = qTable[this.prevState.value][this.prevAction] + alpha * update;
+        
+        this.prevAction = this.currAction;
+        this.prevState = this.currState;
+        
+        // For printing the Q-table
+        //        for (int i = 0; i < numStates; i++) {
+        //            for (int j = 0; j < numActions; j++) {
+        //                System.out.print("" + qTable[i][j] + ",");
+        //            }
+        //            System.out.println();
+        //        }
+        //        System.out.println();
+    }
+    
+    protected void updateQTable(SoundPerceptType state, int currentAction, float reward) {
+        State[] allStates = State.class.getEnumConstants();
+        if (this.prevState == null) {
+            this.prevState = State.EmptySpace;
+        }
+        
+        this.currAction = currentAction;
+        
+        for (State cState : allStates) {
+            if (state.name().equals(cState.name())) {
+                this.currState = cState;
+                break;
+            }
+        }
+        
+        //Bellman Equation
+        double update = reward + gamma * findMaxQState(this.currState.value) - qTable[this.prevState.value][this.prevAction];
+        qTable[this.prevState.value][this.prevAction] = qTable[this.prevState.value][this.prevAction] + alpha * update;
+        
+        this.prevAction = this.currAction;
+        this.prevState = this.currState;
+        
+        // For printing the Q-table
+        //        for (int i = 0; i < numStates; i++) {
+        //            for (int j = 0; j < numActions; j++) {
+        //                System.out.print("" + qTable[i][j] + ",");
+        //            }
+        //            System.out.println();
+        //        }
+        //        System.out.println();
     }
     
     protected void updateQTable(ObjectPerceptType state, int currentAction, float reward) {
