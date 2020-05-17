@@ -8,7 +8,9 @@ import Interop.Geometry.Angle;
 import Interop.Geometry.Direction;
 import Interop.Geometry.Distance;
 import Interop.Geometry.Point;
+import Interop.Percept.AreaPercepts;
 import Interop.Percept.GuardPercepts;
+import Interop.Percept.Scenario.SlowDownModifiers;
 import Interop.Percept.Smell.SmellPercept;
 import Interop.Percept.Smell.SmellPerceptType;
 import Interop.Percept.Vision.ObjectPercept;
@@ -41,9 +43,8 @@ public class ShallowSpaceAgent implements Guard {
 
         if(intruderPosition != null || !followIntruder.isEmpty())
         {
-            if(intruderPosition != null && !followIntruder.isEmpty())
+            if(intruderPosition != null && followIntruder.isEmpty())
             {
-                followIntruder.clear();
                 followIntruder.addAll(
                         moveTowardsPoint(percepts, new Vector2(0, 1 ), new Vector2.Origin(), intruderPosition)
                 );
@@ -83,15 +84,36 @@ public class ShallowSpaceAgent implements Guard {
 
         if(!percepts.wasLastActionExecuted())
         {
-            Angle newRotation = Angle.fromRadians(percepts.getScenarioGuardPercepts().getScenarioPercepts().getMaxRotationAngle().getRadians() * Game._RANDOM.nextDouble());
+            Angle newRotation = Angle.fromRadians(
+                    (Game._RANDOM.nextBoolean() ? 1 : -1) * percepts.getScenarioGuardPercepts().getScenarioPercepts().getMaxRotationAngle().getRadians() * Game._RANDOM.nextDouble()
+            );
             return new Rotate(newRotation);
         }
         else
         {
-            Distance movingDistance = new Distance(percepts.getScenarioGuardPercepts().getMaxMoveDistanceGuard().getValue() * 0.5);
+            Distance movingDistance = new Distance(percepts.getScenarioGuardPercepts().getMaxMoveDistanceGuard().getValue() * getSpeedModifier(percepts));
 
             return new Move(movingDistance);
         }
+    }
+
+    private double getSpeedModifier(GuardPercepts guardPercepts)
+    {
+        SlowDownModifiers slowDownModifiers =  guardPercepts.getScenarioGuardPercepts().getScenarioPercepts().getSlowDownModifiers();
+        if(guardPercepts.getAreaPercepts().isInWindow())
+        {
+            return slowDownModifiers.getInWindow();
+        }
+        else if(guardPercepts.getAreaPercepts().isInSentryTower())
+        {
+            return slowDownModifiers.getInSentryTower();
+        }
+        else if(guardPercepts.getAreaPercepts().isInDoor())
+        {
+            return slowDownModifiers.getInDoor();
+        }
+
+        return 1;
     }
 
     protected Queue<ActionContainer<GuardAction>> moveTowardsPoint(GuardPercepts percepts, Vector2 direction, Vector2 source,
@@ -102,12 +124,18 @@ public class ShallowSpaceAgent implements Guard {
         Vector2 desiredDirection = target.sub(source).normalise();
         double rotationDiff = desiredDirection.angle(direction);
 
-        if(Math.abs(rotationDiff) > 1E-10)
+        if(rotationDiff >= Math.PI)
+        {
+            rotationDiff = -(rotationDiff - Math.PI);
+        }
+
+
+        if(Math.abs(rotationDiff) > 1E-1)
         {
             retActionsQueue.addAll(this.planRotation(percepts, rotationDiff));
         }
 
-        final double maxAllowedMove = percepts.getScenarioGuardPercepts().getMaxMoveDistanceGuard().getValue();
+        final double maxAllowedMove = percepts.getScenarioGuardPercepts().getMaxMoveDistanceGuard().getValue() * getSpeedModifier(percepts);
         final double distance = target.distance(source);
         final int fullMoves = (int) (distance / maxAllowedMove);
         final double remainder = distance % percepts.getScenarioGuardPercepts().getMaxMoveDistanceGuard().getValue();
