@@ -259,8 +259,16 @@ public class OccupancyAgent implements Guard {
      *  Recursively update p(Mx,My) for each cell
      */
     public void noCigar() {
-        double xSize, ysize = occupancyGrid.occupancyGrid.length * 2;
+        int newXsize = occupancyGrid.occupancyGrid.length * 2;
+        int newYsize = occupancyGrid.occupancyGrid[0].length * 2;
 
+        boolean[][] newOccGrid = new boolean[newXsize][newYsize];
+        double[][] newLogMap = new double[newXsize][newYsize];
+
+        xPosition = Math.round(newOccGrid.length / 2);
+        yPosition = Math.round(newOccGrid[0].length / 2);
+
+        //reinitialize calculate as old
     }
 
     /**
@@ -318,7 +326,7 @@ public class OccupancyAgent implements Guard {
         int slope_error_new = m_new - (x2 - x1);
 
 
-
+        //Now do this with all the sets
         for (int x = x1, y = y1; x <= x2; x++)
         {
             if(x == x1 && y == y1) {
