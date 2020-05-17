@@ -100,7 +100,12 @@ public class Vector2 {
 
     public double angle(Vector2 other)
     {
-        return Math.atan2(other.getY(), other.getX()) - Math.atan2(this.getY(), this.getX());
+        double angle = Math.atan2(other.getY(), other.getX()) - Math.atan2(this.getY(), this.getX());
+        if(angle < 0)
+        {
+            angle += 2 * Math.PI;
+        }
+        return angle;
     }
 
     public double distance(Vector2 other)
