@@ -224,11 +224,11 @@ public class OccupancyAgent implements Guard {
     /**
      * Probability that an unknown space is occupied given the total count of occupied spaces
      * @param occCount the count of true occupied spaces percieved by the agent.
-     * @param totalRay the total count of ray count and space we want to compute.
+     * @param size of exploration space
      * @return the probability that a grid space is occupied
      */
-    public double occProbability(int occCount, int totalRay) {
-        return occCount/totalRay;
+    public double occProbability(int occCount, int size) {
+        return occCount/size;
     }
 
     /**
@@ -236,6 +236,7 @@ public class OccupancyAgent implements Guard {
      * @param occCount the count of true occupied spaces percieved by the agent.
      * @return the probability that a grid space is occupied
      */
+    //This is if we can use the real input size but I can't work it out yet.
     public double occProbability(int occCount) {
         return occCount/viewRays;
     }
@@ -280,8 +281,8 @@ public class OccupancyAgent implements Guard {
      * @param count count of occupied space value counted by the agent
      * @return the odds of occupied over empty
      */
-    public double odd(int count){
-        return occProbability(count)/(1-occProbability(count));
+    public double odd(int count, int size){
+        return occProbability(count, size)/(1-occProbability(count, size));
     }
 
     /**
@@ -310,7 +311,7 @@ public class OccupancyAgent implements Guard {
         Angle direction = percepts.getVision().getFieldOfView().getViewAngle();
         Distance distance = percepts.getVision().getFieldOfView().getRange();
         double[][] transformMatrix = {{Math.cos(direction.getDegrees()), Math.sin(direction.getDegrees())},
-                                        {-Math.sin(direction.getDegrees()), Math.cos(direction.getDegrees())}};
+                {-Math.sin(direction.getDegrees()), Math.cos(direction.getDegrees())}};
         double[] normalizeCoefficient = {distance.getValue(), 0};
 
         //check the walls.  Is there no faster way of doing this?
@@ -330,10 +331,10 @@ public class OccupancyAgent implements Guard {
 
         // Boolean occupancy.
         for (int x = x1, y = y1; x <= x2; x++) {
-            if(x == x2 && y == y2) {
+            if (x == x2 && y == y2) {
 
                 //set only last value to true
-                occupancyGrid.update(x,y);
+                occupancyGrid.update(x, y);
                 break;
             } else {
                 occupancyGrid.update(x, y, false);
@@ -354,46 +355,74 @@ public class OccupancyAgent implements Guard {
         y1 = (int) yPosition;
 
         // log update: the belief that something is indeed unoccupied should increase even further.
-        for(int x = x1, y = y1; x <= x2; x++) {
+        for (int x = x1, y = y1; x <= x2; x++) {
             //check if value is true or false.
-            if(occupancyGrid.occupancyGrid[x][y]) {
-                occupancyGrid.logUpdate(x,y, log_occ + occupancyGrid.getLogValue(x,y));
+            if (occupancyGrid.occupancyGrid[x][y]) {
+                occupancyGrid.logUpdate(x, y, log_occ + occupancyGrid.getLogValue(x, y));
             } else {
                 occupancyGrid.logUpdate(x, y, log_free + occupancyGrid.getLogValue(x, y));
             }
         }
 
-        int explorationSize = (int) (distance.getValue()*distance.getValue());
+        int explorationSize = (int) (distance.getValue());
 
         //define the exploration zone.
 
 
-        //this assumes that walls only go horizontally and vertically.
         // NW case
-        if(x2 > x1 && y2 > y1) {
+        int[] rowCount = new int[explorationSize];
+        int[] colCount = new int[explorationSize];
+        if (x2 > x1 && y2 > y1) {
 
-        }
-        // SW case
-        else if(x2 > x1 && y2 < y1) {
-
-        }
-        // SE case
-        else if(x2 < x1 && y2 < y1) {
-
-        }
-        // NE case
-        else if(x2 < x1 && y2 > y1) {
-
-        }
-        //Agent is facing the endpoint
-        else {
-
+            //value for logOdds(,odds)
+            int countTrue = 0;
+            //this counts everything
+            for (int i = y1 - explorationSize; i < y1; i++) {
+                for (int j = x1; j < x1 + explorationSize; j++) {
+                    if (occupancyGrid.occupancyGrid[j][i]) {
+                        countTrue++;
+                    }
+                }
+            }
         }
 
-    }
 
-    public void predictionSpace(int explorationSize) {
-
+//            //this assumes that walls only horizontally - decouples independence maybe be more accurate
+//            int rowCountIndex = 0;
+//            //row count
+//            for(int i  = y1-explorationSize; i < y1; i++) {
+//                int countTrueRow =0;
+//                for(int j = x1; j < x1 + explorationSize; j++) {
+//                    //check if value is true.
+//                    if(occupancyGrid.occupancyGrid[j][i]) {
+//                        countTrueRow++;
+//                    }
+//
+//                    if(j == x1 + explorationSize - 1) {
+//                        //record the count true values in row
+//                        rowCount[rowCountIndex] = countTrueRow;
+//                        rowCountIndex++;
+//                    }
+//                }
+//            }
+//
+//        }
+//        // SW case
+//        else if(x2 > x1 && y2 < y1) {
+//
+//        }
+//        // SE case
+//        else if(x2 < x1 && y2 < y1) {
+//
+//        }
+//        // NE case
+//        else if(x2 < x1 && y2 > y1) {
+//
+//        }
+//        //Agent is facing the endpoint
+//        else {
+//
+//        }
     }
 
 
