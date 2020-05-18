@@ -52,13 +52,6 @@ public class SimplePathfinding {
 
     }
 
-    private double deviation(){
-        if(Game._RANDOM.nextBoolean()) {
-            return Game._RANDOM.nextDouble() * EPS;
-        }else{
-            return -Game._RANDOM.nextDouble() * EPS;
-        }
-    }
 
     private double getSpeedModifier(IntruderPercepts intruderPercepts)
     {
@@ -80,31 +73,31 @@ public class SimplePathfinding {
     }
 
     private void generateRotationSequence(Angle rot){
-      double degreesLeft = rot.getDegrees();
-      if(degreesLeft > 0) {
-          while (degreesLeft != 0) {
-              if (degreesLeft > MAX_ROTATION.getDegrees()) {
+      double radiansLeft = rot.getRadians();
+      if(radiansLeft > 0) {
+          while (radiansLeft != 0) {
+              if (radiansLeft > MAX_ROTATION.getRadians()) {
                   actionQueue.add(new Rotate(MAX_ROTATION));
-                  degreesLeft -= MAX_ROTATION.getDegrees();
+                  radiansLeft -= MAX_ROTATION.getRadians();
               } else {
-                  actionQueue.add(new Rotate(Angle.fromDegrees(degreesLeft + deviation())));
-                  degreesLeft = 0;
+                  actionQueue.add(new Rotate(Angle.fromRadians(radiansLeft - EPS)));
+                  radiansLeft = 0;
               }
           }
       }
-      else if(degreesLeft < 0){
-          while (degreesLeft != 0) {
-              if (Math.abs(degreesLeft) > MAX_ROTATION.getDegrees()) {
-                  actionQueue.add(new Rotate(Angle.fromDegrees(-MAX_ROTATION.getDegrees())));
-                  degreesLeft += MAX_ROTATION.getDegrees();
+      else if(radiansLeft < 0){
+          while (radiansLeft != 0) {
+              if (Math.abs(radiansLeft) > MAX_ROTATION.getRadians()) {
+                  actionQueue.add(new Rotate(Angle.fromRadians(-MAX_ROTATION.getRadians())));
+                  radiansLeft += MAX_ROTATION.getRadians();
               } else {
-                  actionQueue.add(new Rotate(Angle.fromDegrees(-degreesLeft - deviation())));
-                  degreesLeft = 0;
+                  actionQueue.add(new Rotate(Angle.fromRadians(-radiansLeft + EPS)));
+                  radiansLeft = 0;
               }
           }
       }
       else{
-          // Rotating 0 degrees?
+          // Rotating 0 radians?
           return;
       }
   }
