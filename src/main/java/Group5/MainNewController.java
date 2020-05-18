@@ -18,7 +18,7 @@ public class MainNewController {
 //        new Thread(() -> Application.launch(Gui.class)).start();
 //    }
     public static void main(String[] args) {
-        for (int i=0; i<10000; i++){
+        for (int i=0; i<100; i++){
             Game game = new Game(Parser.parseFile("./src/main/java/Group9/map/maps/test_2.map"), new AgentFactoryGroup5(), false);
             game.run();
             System.out.printf("The winner is: %s\n", game.getWinner());

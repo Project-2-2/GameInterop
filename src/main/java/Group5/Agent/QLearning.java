@@ -56,12 +56,14 @@ public class QLearning {
         TargetArea(8),
         EmptySpace(9),
         Noise(10),
-        Yell(11),
-        Pheromone1(12),
-        Pheromone2(13),
-        Pheromone3(14),
-        Pheromone4(15),
-        Pheromone5(16);
+        Yell(11);
+    
+        // Smell is used only when intruders are more than 1 - if so, uncomment block of code below
+//        Pheromone1(12),
+//        Pheromone2(13),
+//        Pheromone3(14),
+//        Pheromone4(15),
+//        Pheromone5(16);
     
         private int value;
         State(int value) {
@@ -76,7 +78,6 @@ public class QLearning {
     private static float epsilon;
     private float gamma;
     private float alpha;
-    private List<Double> legalActions;
     private int numActions;
     private int numStates;
     private double[][] qTable;
@@ -94,7 +95,6 @@ public class QLearning {
      *@alpha   : The learning rate for the agent
      *@board   : A reference to a game object for the agent to interact with
      */
-    
     public QLearning(float gamma, float epsilon, float alpha,
             int numActions, int numStates) {
         this.epsilon = epsilon;
@@ -102,8 +102,8 @@ public class QLearning {
         this.alpha = alpha;
         this.numActions = numActions;
         this.numStates = numStates;
-//        this.qTable = new double[numStates][numActions];
-        this.qTable = readTableFromFile();
+        this.qTable = new double[numStates][numActions];
+//        this.qTable = readTableFromFile();
         this.rn = new Random();
         this.actionQueue = new LinkedList<>();
     }
@@ -129,7 +129,7 @@ public class QLearning {
         // Perform random action if chance is smaller than epsilon value
         // Otherwise return maxValue action index from Q-table
         if (chance < epsilon) {
-            return rand.nextInt(12);
+            return rand.nextInt(this.numActions);
         } else {
             return maxIndex;
         }
@@ -156,7 +156,7 @@ public class QLearning {
         // Perform random action if chance is smaller than epsilon value
         // Otherwise return maxValue action index from Q-table
         if (chance < epsilon) {
-            return rand.nextInt(12);
+            return rand.nextInt(this.numActions);
         } else {
             return maxIndex;
         }
@@ -183,7 +183,7 @@ public class QLearning {
         // Perform random action if chance is smaller than epsilon value
         // Otherwise return maxValue action index from Q-table
         if (chance < epsilon) {
-            return rand.nextInt(12);
+            return rand.nextInt(this.numActions);
         } else {
             return maxIndex;
         }
@@ -210,7 +210,7 @@ public class QLearning {
             }
         }
         
-        //Bellman Equation
+        //Bellman Equation to update Q-table
         double update = reward + gamma * findMaxQState(this.currState.value) - qTable[this.prevState.value][this.prevAction];
         qTable[this.prevState.value][this.prevAction] = qTable[this.prevState.value][this.prevAction] + alpha * update;
         
@@ -238,8 +238,8 @@ public class QLearning {
                 break;
             }
         }
-        
-        //Bellman Equation
+    
+        //Bellman Equation to update Q-table
         double update = reward + gamma * findMaxQState(this.currState.value) - qTable[this.prevState.value][this.prevAction];
         qTable[this.prevState.value][this.prevAction] = qTable[this.prevState.value][this.prevAction] + alpha * update;
         
@@ -267,8 +267,8 @@ public class QLearning {
                 break;
             }
         }
-        
-        //Bellman Equation
+    
+        //Bellman Equation to update Q-table
         double update = reward + gamma * findMaxQState(this.currState.value) - qTable[this.prevState.value][this.prevAction];
         qTable[this.prevState.value][this.prevAction] = qTable[this.prevState.value][this.prevAction] + alpha * update;
         
@@ -313,6 +313,9 @@ public class QLearning {
         return max;
     }
     
+    /**
+     * Writing the Q-Table to a file locally
+     */
     protected void writeTableToFile(){
         StringBuilder builder = new StringBuilder();
         for(int i = 0; i < numStates; i++){
@@ -333,6 +336,9 @@ public class QLearning {
         }
     }
     
+    /**
+     * Reading the Q-table from a file locally
+     */
     private double[][] readTableFromFile() {
         try {
             Scanner sc = new Scanner(new BufferedReader(new FileReader("src/main/java/Group5/QTable.txt")));
@@ -345,7 +351,6 @@ public class QLearning {
                     }
                 }
             }
-//            System.out.println(Arrays.deepToString(initialTable));
             return initialTable;
         }
         catch (IOException e) {
