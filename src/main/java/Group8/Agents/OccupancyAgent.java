@@ -423,12 +423,12 @@ public class OccupancyAgent implements Guard {
             //Agent is facing the endpoint
             else {
                 //TODO: rotate the other direction.
+                System.out.println("Agent is staring at a corner.  You need to add a case if agent is staring at a endpoint.");
             }
 
             //countTrue not updating?
             double odds = odd(countTrue, explorationSize * explorationSize);
 
-            //TODO: remaining map. N, E, W, S
             //update log map
             // NW
             if (x2 > x1 && y2 < y1) {
@@ -806,7 +806,7 @@ public class OccupancyAgent implements Guard {
                     }
                 }
             } else {
-                System.out.println("you need to get a N,S,E,W case.");
+                System.out.println("you need to get a N,S,E,W case for log map updating.");
             }
         }
 
@@ -851,6 +851,5 @@ public class OccupancyAgent implements Guard {
 //
 //        }
     }
-
 
 }
