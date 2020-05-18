@@ -5,8 +5,13 @@ import Interop.Action.Move;
 import Interop.Action.Rotate;
 import Interop.Geometry.Angle;
 import Interop.Geometry.Distance;
+import Interop.Geometry.Point;
 import Interop.Percept.IntruderPercepts;
 import Interop.Percept.Scenario.SlowDownModifiers;
+import Interop.Percept.Vision.ObjectPercept;
+import Interop.Percept.Vision.ObjectPerceptType;
+import Interop.Percept.Vision.ObjectPercepts;
+import Interop.Percept.Vision.VisionPrecepts;
 import Interop.Utils.Utils;
 
 import static java.lang.Double.NaN;
@@ -21,22 +26,54 @@ public class SimplePathfinding {
         System.out.println(MAX_ROTATION.getDegrees());
     }
 
+    boolean moveForward = false; boolean firstTime = true; boolean startIncr = false;
+    int counter = 1;
     public IntruderAction getMoveIntruder(IntruderPercepts percepts) {
-        System.out.println(percepts.getTargetDirection().getRadians());
-        if((Math.abs(percepts.getTargetDirection().getRadians())) <= 0.001){
-            return new Move(new Distance(0.3));
 
+        //This means that it hit a wall or smtg
+        //if(!percepts.wasLastActionExecuted() && !flag){
+        //    flag = true;
+         //   return new Rotate(Angle.fromDegrees(MAX_ROTATION.getDegrees()));
+       // }
+
+       // if(counter % 1000 ==0){
+       //     System.out.println("true");
+       // }
+        System.out.println(counter);
+        if(counter % 25 == 0){
+            counter++;
+            if(percepts.getTargetDirection().getRadians() >= MAX_ROTATION.getRadians()){
+                System.out.println("rot");
+                return new Rotate(Angle.fromRadians(-MAX_ROTATION.getRadians()));
+            }
+            else {
+                return new Rotate(Angle.fromRadians(percepts.getTargetDirection().getRadians()+0.0001));
+            }
         }
-        if(percepts.getTargetDirection().getRadians() >= MAX_ROTATION.getRadians()){
-            //System.out.println("io");
+        for(ObjectPercept obj : percepts.getVision().getObjects().getAll()) {
+            if(obj.getType()== ObjectPerceptType.Wall && !firstTime){
+                moveForward = true;   startIncr = true;
+                return new Rotate(Angle.fromRadians(MAX_ROTATION.getRadians()));
+            }
+        }
+
+        if(((Math.abs(percepts.getTargetDirection().getRadians())) <= 0.001) || moveForward){
+            if(startIncr){
+                counter++;
+            }
+            firstTime = false;
+            System.out.println("vat");
+            return new Move(new Distance(0.25));
+        }
+        else if(percepts.getTargetDirection().getRadians() >= MAX_ROTATION.getRadians()){
+            System.out.println("blabla");
             return new Rotate(Angle.fromRadians(MAX_ROTATION.getRadians()));
-        }else{
-            //System.out.println(Utils.isRealNumber(percepts.getTargetDirection().getRadians()));
-            //System.out.println(String.format("Angle is real: %b, number: %f (in rad)",Utils.isRealNumber(percepts.getTargetDirection().getRadians()),percepts.getTargetDirection().getRadians()));
+        }
+        else{
+            System.out.println("skuu");
             return new Rotate(Angle.fromRadians(percepts.getTargetDirection().getRadians()+0.0001));
         }
     }
-
     private double getSpeedModifier(IntruderPercepts intruderPercepts)
     {
         SlowDownModifiers slowDownModifiers = intruderPercepts.getScenarioIntruderPercepts().getScenarioPercepts().getSlowDownModifiers();
