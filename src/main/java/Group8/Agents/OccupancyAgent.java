@@ -472,23 +472,48 @@ public class OccupancyAgent implements Guard {
                         }
                         //at top but not corner
                         else if(i == 0) {
-
+                            double adjValues = occupancyGrid.logMap[j][i+1] + occupancyGrid.logMap[j+1][i] + occupancyGrid.logMap[j-1][i];
+                            if(adjValues == 0) {
+                                occupancyGrid.logUpdate(j,i,log_free);
+                            } else {
+                                occupancyGrid.logUpdate(j,i, logOdds(adjValues, odds));
+                            }
                         }
                         //at bottom but not corner
                         else if(i == occupancyGrid.logMap[0].length) {
-
+                            double adjValues = occupancyGrid.logMap[j][i-1] + occupancyGrid.logMap[j-1][i] + occupancyGrid.logMap[j+1][i];
+                            if(adjValues == 0) {
+                                occupancyGrid.logUpdate(j,i,log_free);
+                            } else {
+                                occupancyGrid.logUpdate(j,i, logOdds(adjValues, odds));
+                            }
                         }
                         //at left but not corner
                         else if(j == 0) {
-
+                            double adjValues = occupancyGrid.logMap[j][i-1] + occupancyGrid.logMap[j+1][i] + occupancyGrid.logMap[j][i+1];
+                            if(adjValues == 0) {
+                                occupancyGrid.logUpdate(j,i,log_free);
+                            } else {
+                                occupancyGrid.logUpdate(j,i, logOdds(adjValues, odds));
+                            }
                         }
                         //at right but not corner
                         else if(j == occupancyGrid.logMap.length -1) {
-
+                            double adjValues = occupancyGrid.logMap[j][i-1] + occupancyGrid.logMap[j-1][i] + occupancyGrid.logMap[j][i+1];
+                            if(adjValues == 0) {
+                                occupancyGrid.logUpdate(j,i,log_free);
+                            } else {
+                                occupancyGrid.logUpdate(j,i, logOdds(adjValues, odds));
+                            }
                         }
                         //if not at corner
                         else {
-
+                            double adjValues = occupancyGrid.logMap[j][i-1] + occupancyGrid.logMap[j-1][i] + occupancyGrid.logMap[j][i+1] + occupancyGrid.logMap[j+1][i];
+                            if(adjValues == 0) {
+                                occupancyGrid.logUpdate(j,i,log_free);
+                            } else {
+                                occupancyGrid.logUpdate(j,i, logOdds(adjValues, odds));
+                            }
                         }
                     } else {
                         double logValue = logOdds(occupancyGrid.logMap[j][i], odds);
