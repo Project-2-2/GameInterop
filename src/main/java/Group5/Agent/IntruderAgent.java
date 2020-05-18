@@ -323,7 +323,7 @@ public class IntruderAgent implements Interop.Agent.Intruder {
                                 if (Math.abs(visionState.getPoint().getClockDirection().getDegrees()) < 10) {
                                     actionQueue.add(walkTowards(visionState.getPoint()));
                                 } else {
-                                    rotateTowards(visionState.getPoint());
+                                    actionQueue.add(rotateTowards(visionState.getPoint()));
                                 }
                             } else{
                                 actionQueue.add(doNothing());
