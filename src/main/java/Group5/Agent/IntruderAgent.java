@@ -60,6 +60,8 @@ public class IntruderAgent implements Interop.Agent.Intruder {
     float epsilon = 0.1f;
     float alpha = 0.1f;
     
+    Random rand = new Random();
+    
     public IntruderAgent() {
         this.actionQueue = new LinkedList<>();
         this.seenObjects = new HashSet<>();
@@ -221,21 +223,23 @@ public class IntruderAgent implements Interop.Agent.Intruder {
         return null;
     }
     
-    protected SmellPercept getSmellState(IntruderPercepts intruderPercepts) {
-        List<SmellPercept> smells = new ArrayList<SmellPercept>(intruderPercepts.getSmells().getAll());
-        
-        // Return just the first element from the smells List (for simplicity)
-        if (!smells.isEmpty()) {
-            return smells.get(0);
-        }
-        
-        return null;
-    }
+    // Smell is used only when intruders are more than 1 - if so, uncomment block of code below
+//    protected SmellPercept getSmellState(IntruderPercepts intruderPercepts) {
+//        List<SmellPercept> smells = new ArrayList<SmellPercept>(intruderPercepts.getSmells().getAll());
+//
+//        // Return just the first element from the smells List (for simplicity)
+//        if (!smells.isEmpty()) {
+//            return smells.get(0);
+//        }
+//
+//        return null;
+//    }
     
     public void explore(IntruderPercepts intruderPercepts) {
         
         this.visionState = this.getVisionState(intruderPercepts);
         this.soundState = this.getSoundState(intruderPercepts);
+//        this.smellState = this.getSmellState(intruderPercepts);
         
         if (this.visionState != null) {
             int maxValueAction = intruderQL.getMaxValueAction(this.visionState.getType());
@@ -332,9 +336,23 @@ public class IntruderAgent implements Interop.Agent.Intruder {
             }
             intruderQL.writeTableToFile();
         }
-    
+        
+        // For some reason the Game Controller returns an empty list of objects in vision range,
+        // when the Intruder is in a Sentry Tower. This handles such a situation and returns a random action,
+        // which is not registered as a Q-action for the Q-table.
         else {
-            actionQueue.add(doNothing());
+            int randomAction = rand.nextInt(NUMBER_OF_POSSIBLE_ACTIONS - 2);
+            if (randomAction == 0) {
+                actionQueue.add(doNothing());
+            } else if (randomAction == 1) {
+                actionQueue.add(moveStraight(intruderPercepts));
+            } else if (randomAction == 2) {
+                actionQueue.add(randomRotate());
+            } else if (randomAction == 3) {
+                actionQueue.add(randomWalk(intruderPercepts));
+            } else {
+                actionQueue.add(sprintTowards(intruderPercepts));
+            }
         }
     
         if (intruderPercepts.wasLastActionExecuted() && this.soundState != null) {
