@@ -34,7 +34,7 @@ public class GuardExplorer implements Guard {
     private Queue<GuardAction> actionQueue = new LinkedList<>();
     private int enteredSentryTower; //0 if didn't entered a sentry tower the last 30 turns
 
-    private Direction lastDirectionIntruder;
+    private Angle lastDirectionIntruder;
     private Distance lastDistanceToIntruder;
     private boolean rotateToIntruder;
     private int lastTimeSawIntruder;
@@ -380,40 +380,51 @@ public class GuardExplorer implements Guard {
         int count = 0;
         double distanceToIntruder = 0;
         ArrayList<ObjectPercept> intruderPercept = seeIntruder(percepts, vision);
-        Direction intruderMovement=null;
+        Direction intruderMovement = null;
 
-        for (int i =0; i<intruderPercept.size();i++) {
+        for (int i = 0; i < intruderPercept.size(); i++) {
             ObjectPercept e = intruderPercept.get(i);
-            if (e != null) {
-                distanceToIntruder = distanceToIntruder + Math.abs(percepts.getVision().getFieldOfView().getRange().getValue() - e.getPoint().getDistanceFromOrigin().getValue());
-                if (intruderMovement==null){
-                    intruderMovement = Direction.fromClockAngle(e.getPoint());
-                }else{
-                    Direction newDirection = Direction.fromClockAngle(e.getPoint());
-                    double movement = newDirection.getDegrees()-intruderMovement.getDegrees();
-                    while (movement<0){
-                        movement = movement+360;
-
-                    }
-                    while (movement>360){
-                        movement = movement-360;
-                    }
-                    if (movement!=360){
-                        intruderMovement = Direction.fromDegrees(movement);
-                    }else{
-                        intruderMovement = Direction.fromDegrees(0);
-                    }
-
-                }
-
-                if (Angle.fromDegrees(0).getDistance(e.getPoint().getClockDirection()).getDegrees() > 180) {
-                    angleToIntruder = angleToIntruder + e.getPoint().getClockDirection().getDegrees() - 360;
-                } else {
-                    angleToIntruder = angleToIntruder + Angle.fromDegrees(0).getDistance(e.getPoint().getClockDirection()).getDegrees();
-                }
-                count++;
+            distanceToIntruder += Math.sqrt(e.getPoint().getX() * e.getPoint().getX() + e.getPoint().getY() * e.getPoint().getY());
+            if (e.getPoint().getClockDirection().getDegrees() > 180) {
+                System.out.println("Angle: " + (e.getPoint().getClockDirection().getDegrees() - 360));
+                angleToIntruder += e.getPoint().getClockDirection().getDegrees() - 360;
+            } else {
+                System.out.println("Angle: " + e.getPoint().getClockDirection().getDegrees());
+                angleToIntruder += e.getPoint().getClockDirection().getDegrees();
             }
+            count++;
         }
+
+//            if (e != null) {
+//                distanceToIntruder = distanceToIntruder + Math.abs(percepts.getVision().getFieldOfView().getRange().getValue() - e.getPoint().getDistanceFromOrigin().getValue());
+//                if (intruderMovement==null){
+//                    intruderMovement = Direction.fromClockAngle(e.getPoint());
+//                }else{
+//                    Direction newDirection = Direction.fromClockAngle(e.getPoint());
+//                    double movement = newDirection.getDegrees()-intruderMovement.getDegrees();
+//                    while (movement<0){
+//                        movement = movement+360;
+//
+//                    }
+//                    while (movement>360){
+//                        movement = movement-360;
+//                    }
+//                    if (movement!=360){
+//                        intruderMovement = Direction.fromDegrees(movement);
+//                    }else{
+//                        intruderMovement = Direction.fromDegrees(0);
+//                    }
+//
+//                }
+//
+//                if (Angle.fromDegrees(0).getDistance(e.getPoint().getClockDirection()).getDegrees() > 180) {
+//                    angleToIntruder = angleToIntruder + e.getPoint().getClockDirection().getDegrees() - 360;
+//                } else {
+//                    angleToIntruder = angleToIntruder + Angle.fromDegrees(0).getDistance(e.getPoint().getClockDirection()).getDegrees();
+//                }
+//                count++;
+//            }
+
 
             /*
             if ((distanceToIntruder/count)<percepts.getScenarioGuardPercepts().getScenarioPercepts().getCaptureDistance().getValue()){
@@ -425,37 +436,30 @@ public class GuardExplorer implements Guard {
             }
              */
         //System.out.println(angleToIntruder/count);
-        lastDirectionIntruder = Direction.fromDegrees(angleToIntruder/count);
-        lastDirectionIntruder = intruderMovement;
+        lastDirectionIntruder = Angle.fromDegrees(-angleToIntruder / count);
+        //lastDirectionIntruder = intruderMovement;
         //System.out.println(intruderMovement.getDegrees());
         lastDistanceToIntruder = new Distance(distanceToIntruder);
 
-        lastTimeSawIntruder = 20;
+        lastTimeSawIntruder = 60;
 
-        if(angleToIntruder/count>15){
-            if(Math.random()<0.2){
+        if (Math.abs(angleToIntruder / count) > 15) {
+            if (Math.random() < 0.2) {
 //                System.out.println("yelled");
-                addActionToQueue(new Yell(),percepts);
+                addActionToQueue(new Yell(), percepts);
                 return;
             }
-            if (angleToIntruder/count<=percepts.getScenarioGuardPercepts().getScenarioPercepts().getMaxRotationAngle().getDegrees()){
-                addActionToQueue(new Rotate(Angle.fromDegrees(angleToIntruder/count)),percepts);
-            }else{
-                addActionToQueue(new Rotate(percepts.getScenarioGuardPercepts().getScenarioPercepts().getMaxRotationAngle()),percepts);
-            }
+            addActionToQueue(new Rotate(Angle.fromDegrees(-angleToIntruder / count)), percepts);
             return;
             //return new Rotate(Angle.fromDegrees(angleToIntruder/count));
-        }else{
-            if (distanceToIntruder/count<=percepts.getScenarioGuardPercepts().getMaxMoveDistanceGuard().getValue()* getSpeedModifier(percepts)){
-                addActionToQueue(new Move(new Distance(distanceToIntruder/count)),percepts);
-//                System.out.println("poep");
-            }
-            else{
-                addActionToQueue(new Move(new Distance(percepts.getScenarioGuardPercepts().getMaxMoveDistanceGuard().getValue()* getSpeedModifier(percepts))),percepts);
-            }
-            //return new Move(new Distance(1));
+        } else {
+            System.out.println("distance");
+            System.out.println(distanceToIntruder);
+            addActionToQueue(new Move(new Distance(distanceToIntruder / count)), percepts);
             return;
+//                System.out.println("poep");
         }
+        //return new Move(new Distance(1));
     }
 
     public void rotateToNoise(GuardPercepts guardPercepts){
