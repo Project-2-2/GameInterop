@@ -525,12 +525,7 @@ public class IntruderAgent implements Interop.Agent.Intruder {
         
         // Assign some basic reward for now, need to fix this later
         if (state.getType() == ObjectPerceptType.TargetArea) {
-            if (!this.seenObjects
-                    .contains(Arrays.asList(round(state.getPoint().getX(), 2), round(state.getPoint().getY(), 2)))) {
-                reward = 0f;
-            } else {
-                reward = 0f;
-            }
+            reward = 1f;
             return reward;
         } else if (state.getType() == ObjectPerceptType.Guard) {
             reward = -3f;
@@ -554,12 +549,20 @@ public class IntruderAgent implements Interop.Agent.Intruder {
                 reward = -1f;
             }
             return reward;
-        } else if (state.getType() == ObjectPerceptType.Teleport) {
+        }
+        // The Map used for testing has the other end of a TeleportArea to be
+        // the actual TargetArea. Because of this, the Agent can never "see" the
+        // TargetArea, because it is instantly teleported there and wins the game.
+        // This means that the agent is not rewarded properly for the current map.
+        // Change the reward values for seeing a TeleportArea so that the agent is
+        // rewarded as if this is the TargetArea.
+        // NEEDS TO BE CHANGED IF THE MAP IS CHANGED!!!
+        else if (state.getType() == ObjectPerceptType.Teleport) {
             if (!this.seenObjects
                     .contains(Arrays.asList(round(state.getPoint().getX(), 2), round(state.getPoint().getY(), 2)))) {
-                reward = -0.8f;
+                reward = 1f;
             } else {
-                reward = -1f;
+                reward = 0.8f;
             }
             return reward;
         } else if (state.getType() == ObjectPerceptType.SentryTower) {
@@ -600,7 +603,7 @@ public class IntruderAgent implements Interop.Agent.Intruder {
     
     protected float getReward(SoundPercept state) {
         
-        float reward = -1f;
+        float reward;
         
         // Assign some basic reward for now, need to fix this later
         if (state.getType() == SoundPerceptType.Noise) {
