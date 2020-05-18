@@ -18,6 +18,7 @@ public class Angle {
      * @see #fromDegrees
      */
     protected Angle(double radians) {
+        System.out.println(radians);
         if(!Utils.isRealNumber(radians)) {
             throw new RuntimeException("Wrong angle! Angle needs to be a real number, but given: " + radians);
         }

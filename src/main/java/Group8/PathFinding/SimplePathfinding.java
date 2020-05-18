@@ -22,15 +22,18 @@ public class SimplePathfinding {
     }
 
     public IntruderAction getMoveIntruder(IntruderPercepts percepts) {
-        if(Math.abs(percepts.getTargetDirection().getRadians()) < 0.00000001){
-            return new Move(new Distance(percepts.getScenarioIntruderPercepts().getMaxMoveDistanceIntruder().getValue() * getSpeedModifier(percepts)));
+        System.out.println(percepts.getTargetDirection().getRadians());
+        if((Math.abs(percepts.getTargetDirection().getRadians())) <= 0.001){
+            return new Move(new Distance(0.3));
+
         }
         if(percepts.getTargetDirection().getRadians() >= MAX_ROTATION.getRadians()){
+            //System.out.println("io");
             return new Rotate(Angle.fromRadians(MAX_ROTATION.getRadians()));
         }else{
-            System.out.println(Utils.isRealNumber(percepts.getTargetDirection().getRadians()));
-            System.out.println(String.format("Angle is real: %b, number: %f (in rad)",Utils.isRealNumber(percepts.getTargetDirection().getRadians()),percepts.getTargetDirection().getRadians()));
-            return new Rotate(Angle.fromRadians(percepts.getTargetDirection().getRadians()));
+            //System.out.println(Utils.isRealNumber(percepts.getTargetDirection().getRadians()));
+            //System.out.println(String.format("Angle is real: %b, number: %f (in rad)",Utils.isRealNumber(percepts.getTargetDirection().getRadians()),percepts.getTargetDirection().getRadians()));
+            return new Rotate(Angle.fromRadians(percepts.getTargetDirection().getRadians()+0.0001));
         }
     }
 
