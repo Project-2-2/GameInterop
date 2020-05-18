@@ -24,7 +24,7 @@ public class SimplePathfinding {
     public IntruderAction getMoveIntruder(IntruderPercepts percepts) {
         System.out.println(percepts.getTargetDirection().getRadians());
         if((Math.abs(percepts.getTargetDirection().getRadians())) <= 0.001){
-            return new Move(new Distance(0.3));
+            return new Move(new Distance(percepts.getScenarioIntruderPercepts().getMaxMoveDistanceIntruder().getValue() * getSpeedModifier(percepts)));
 
         }
         if(percepts.getTargetDirection().getRadians() >= MAX_ROTATION.getRadians()){
