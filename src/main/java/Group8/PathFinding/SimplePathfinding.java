@@ -43,7 +43,6 @@ public class SimplePathfinding {
         if(counter % 25 == 0){
             counter++;
             if(percepts.getTargetDirection().getRadians() >= MAX_ROTATION.getRadians()){
-                System.out.println("rot");
                 return new Rotate(Angle.fromRadians(-MAX_ROTATION.getRadians()));
             }
             else {
@@ -62,15 +61,12 @@ public class SimplePathfinding {
                 counter++;
             }
             firstTime = false;
-            System.out.println("vat");
             return new Move(new Distance(0.25));
         }
         else if(percepts.getTargetDirection().getRadians() >= MAX_ROTATION.getRadians()){
-            System.out.println("blabla");
             return new Rotate(Angle.fromRadians(MAX_ROTATION.getRadians()));
         }
         else{
-            System.out.println("skuu");
             return new Rotate(Angle.fromRadians(percepts.getTargetDirection().getRadians()+0.0001));
         }
     }
