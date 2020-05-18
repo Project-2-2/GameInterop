@@ -436,7 +436,42 @@ public class OccupancyAgent implements Guard {
             for (int i = y1 - explorationSize; i < y1; i++) {
                 for (int j = x1; j < x1 + explorationSize; j++) {
                     if (occupancyGrid.logMap[j][i] == 0) {
-                        //check surrounding area and whether surround is out of bounds
+                        //at top left
+                        if(i == 0 && j == 0) {
+
+                        }
+                        //at top right
+                        else if(i == 0 && j == occupancyGrid.logMap.length - 1) {
+
+                        }
+                        //at bottom left
+                        else if(i == occupancyGrid.logMap[0].length && j == 0) {
+
+                        }
+                        //at bottom right
+                        else if(i == occupancyGrid.logMap[0].length && j == occupancyGrid.logMap.length - 1) {
+
+                        }
+                        //at top but not corner
+                        else if(i == 0) {
+
+                        }
+                        //at bottom but not corner
+                        else if(i == occupancyGrid.logMap[0].length) {
+
+                        }
+                        //at left but not corner
+                        else if(j == 0) {
+
+                        }
+                        //at right but not corner
+                        else if(j == occupancyGrid.logMap.length -1) {
+
+                        }
+                        //if not at corner
+                        else {
+
+                        }
                     } else {
                         double logValue = logOdds(occupancyGrid.logMap[j][i], odds);
                         occupancyGrid.logUpdate(j,i, logValue);
