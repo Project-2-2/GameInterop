@@ -14,14 +14,15 @@ public class MainNewController {
      * The agents only walk in one certain direction, actually for inspiration look at the randomAgent class from group 9 it is actually already a decent implementation
      * @param args
      */
-    public static void main(String[] args) {
-        new Thread(() -> Application.launch(Gui.class)).start();
-    }
 //    public static void main(String[] args) {
-//        for (int i=0; i<100; i++){
-//            Game game = new Game(Parser.parseFile("./src/main/java/Group9/map/maps/test_2.map"), new AgentFactoryGroup5(), false);
-//            game.run();
-//            System.out.printf("The winner is: %s\n", game.getWinner());
-//        }
+//        new Thread(() -> Application.launch(Gui.class)).start();
 //    }
+
+    public static void main(String[] args) {
+        for (int i=0; i<100; i++){
+            Game game = new Game(Parser.parseFile("./src/main/java/Group9/map/maps/test_2.map"), new AgentFactoryGroup5(), false);
+            game.run();
+            System.out.printf("The winner is: %s\n", game.getWinner());
+        }
+    }
 }
