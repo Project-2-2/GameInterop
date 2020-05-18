@@ -33,7 +33,7 @@ public class FollowIntruder implements Guard {
                     new Move(smellPercept.getDistance());
                     }
             }
-            return(GuardAction)new ExploreBehaviour(G.getAction(percepts);
+            return(GuardAction)new ExploreBehaviour().getAction(percepts);
         }
 
         //The guard hears an intruder
