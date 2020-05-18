@@ -198,7 +198,7 @@ public class GuardExplorer implements Guard {
 
         if (Math.random() <= 0.05) {
             System.out.println("drop pheromone type 1");
-            dropPheromone(percepts);
+            dropPheromone(percepts, SmellPerceptType.Pheromone1);
             return;
         }
 /*
@@ -575,9 +575,9 @@ public class GuardExplorer implements Guard {
      * Drop pheromone if does no hear sound, does not smell another pheromone and does not see intruder
      * @param p
      */
-    private void dropPheromone(GuardPercepts p) {
+    private void dropPheromone(GuardPercepts p, SmellPerceptType type) {
         //if (!hearSound(p) && smellPheromone(p) != null && seeIntruder(p, p.getVision().getObjects().getAll())==null)
-            addActionToQueue(new DropPheromone(SmellPerceptType.Pheromone1), p);
+            addActionToQueue(new DropPheromone(type), p);
     }
 
     private boolean hearSound(GuardPercepts percepts) {
