@@ -39,6 +39,7 @@ public class GuardExplorer implements Guard {
     private boolean rotateToIntruder;
     //now this is set to 15 turns so it will remember 15 turns it saw an intruder
     private int lastTimeSawIntruder;
+    private int droppedPheromone;
 
     @Override
     public GuardAction getAction(GuardPercepts percepts) {
@@ -53,8 +54,8 @@ public class GuardExplorer implements Guard {
 
         if (this.enteredSentryTower != 0)
             this.enteredSentryTower --;
-        if (enteredSentryTower != 0)
-            enteredSentryTower --;
+        if (droppedPheromone != 0)
+            droppedPheromone --;
         if (lastTimeSawIntruder>0){
             lastTimeSawIntruder--;
         }else{
@@ -172,7 +173,7 @@ public class GuardExplorer implements Guard {
 
          */
 
-        if (visionPerceptTypes.contains(ObjectPerceptType.SentryTower)) {
+        if (visionPerceptTypes.contains(ObjectPerceptType.SentryTower) && enteredSentryTower==0) {
             System.out.println("go to sentry tower");
             towerInViewRange(percepts);
             this.enteredSentryTower = 30;
@@ -193,6 +194,30 @@ public class GuardExplorer implements Guard {
                 return;
             }
             addActionToQueue(new Move(new Distance(percepts.getScenarioGuardPercepts().getMaxMoveDistanceGuard().getValue()*getSpeedModifier(percepts))),percepts);
+            return;
+        }
+
+        if(percepts.getAreaPercepts().isInDoor() && droppedPheromone == 0)
+        {
+            System.out.println("door: drop pheromone type 2");
+            dropPheromone(percepts,SmellPerceptType.Pheromone2);
+            this.droppedPheromone=30;
+            return;
+        }
+
+        if(percepts.getAreaPercepts().isInWindow() && droppedPheromone == 0)
+        {
+            System.out.println("window: drop pheromone type 2");
+            dropPheromone(percepts,SmellPerceptType.Pheromone2);
+            this.droppedPheromone=30;
+            return;
+        }
+
+        if(percepts.getAreaPercepts().isJustTeleported() && droppedPheromone == 0)
+        {
+            System.out.println("teleported: drop pheromone type 2");
+            dropPheromone(percepts,SmellPerceptType.Pheromone2);
+            this.droppedPheromone=30;
             return;
         }
 
