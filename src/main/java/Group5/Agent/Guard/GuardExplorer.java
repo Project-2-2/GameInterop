@@ -37,7 +37,6 @@ public class GuardExplorer implements Guard {
     private Direction lastDirectionIntruder;
     private Distance lastDistanceToIntruder;
     private boolean rotateToIntruder;
-    //now this is set to 15 turns so it will remember 15 turns it saw an intruder
     private int lastTimeSawIntruder;
     private int droppedPheromone;
 
@@ -45,28 +44,32 @@ public class GuardExplorer implements Guard {
     public GuardAction getAction(GuardPercepts percepts) {
         //return explore(percepts);
         //if queue is empty otherwise do actions inside queue
-        if (this.actionQueue.size()<=0)
         if (!percepts.wasLastActionExecuted()){
             actionQueue.clear();
         }
+
         if (actionQueue.size()<=0)
             explore(percepts);
 
         if (this.enteredSentryTower != 0)
             this.enteredSentryTower --;
+
         if (droppedPheromone != 0)
             droppedPheromone --;
+
         if (lastTimeSawIntruder>0){
             lastTimeSawIntruder--;
+
         }else{
             rotateToIntruder = false;
         }
 
         //System.out.println(actionQueue.size());
         //System.out.println("yes");
-        if (actionQueue.size()<=0){
+        if (actionQueue.size() == 0){
             return new Move(new Distance(1));
         }
+
         return actionQueue.poll();
 
     }
@@ -105,7 +108,7 @@ public class GuardExplorer implements Guard {
                 actionQueue.add(action);
         }else if (action instanceof Move) {
             double distance = ((Move) action).getDistance().getValue();
-            if (distance > maxMoveRange) {
+            if (Math.abs(distance) > maxMoveRange) {
                 while (distance > 0) {
                     if (distance > maxMoveRange) {
                         actionQueue.add(new Move(new Distance(maxMoveRange)));
@@ -148,6 +151,13 @@ public class GuardExplorer implements Guard {
             rotateToYell(percepts);
             return;
         }
+
+        if (visionPerceptTypes.contains(ObjectPerceptType.SentryTower)) {
+            towerInViewRange(percepts);
+            this.enteredSentryTower = 500;
+            return;
+        }
+
         //higher probability to check sound when it saw an intruder recently
         if ((soundPerceptTypes.size()>0&&Math.random()<=0.2)||(soundPerceptTypes.size()>0&&lastTimeSawIntruder>0&&Math.random()<=0.5)){
             rotateToNoise(percepts);
@@ -161,24 +171,18 @@ public class GuardExplorer implements Guard {
         }
 
          */
-        /*
+
         if (visionPerceptTypes.contains(ObjectPerceptType.Door)) {
             goToDoor(percepts,vision);
             return;
         }
+        /*
         if (visionPerceptTypes.contains(ObjectPerceptType.Window)) {
             goToWindow(percepts,vision);
             return;
         }
 
          */
-
-        if (visionPerceptTypes.contains(ObjectPerceptType.SentryTower) && enteredSentryTower==0) {
-            System.out.println("go to sentry tower");
-            towerInViewRange(percepts);
-            this.enteredSentryTower = 30;
-            return;
-        }
 
         if (!percepts.wasLastActionExecuted()){
             moveParallelToWall(percepts,vision);
@@ -197,33 +201,30 @@ public class GuardExplorer implements Guard {
             return;
         }
 
-        if(percepts.getAreaPercepts().isInDoor() && droppedPheromone == 0)
-        {
+        if(percepts.getAreaPercepts().isInDoor() && droppedPheromone == 0) {
             System.out.println("door: drop pheromone type 2");
             dropPheromone(percepts,SmellPerceptType.Pheromone2);
-            this.droppedPheromone=30;
+            this.droppedPheromone=500;
             return;
         }
 
-        if(percepts.getAreaPercepts().isInWindow() && droppedPheromone == 0)
-        {
+        if(percepts.getAreaPercepts().isInWindow() && droppedPheromone == 0) {
             System.out.println("window: drop pheromone type 2");
             dropPheromone(percepts,SmellPerceptType.Pheromone2);
-            this.droppedPheromone=30;
+            this.droppedPheromone=500;
             return;
         }
 
-        if(percepts.getAreaPercepts().isJustTeleported() && droppedPheromone == 0)
-        {
+        if(percepts.getAreaPercepts().isJustTeleported() && droppedPheromone == 0) {
             System.out.println("teleported: drop pheromone type 2");
             dropPheromone(percepts,SmellPerceptType.Pheromone2);
-            this.droppedPheromone=30;
+            this.droppedPheromone=500;
             return;
         }
 
-        if (Math.random() <= 0.05) {
-            System.out.println("drop pheromone type 1");
+        if (Math.random() <= 0.1 && droppedPheromone == 0) {
             dropPheromone(percepts, SmellPerceptType.Pheromone1);
+            this.droppedPheromone = 500;
             return;
         }
 /*
@@ -328,7 +329,7 @@ public class GuardExplorer implements Guard {
             System.out.println("ROTATING TO FACE DOOR");
         }
         else {
-            System.out.println("can't enter door, try later");
+            //System.out.println("can't enter door, try later");
             Angle randomAngle = Angle.fromDegrees(percepts.getScenarioGuardPercepts().getScenarioPercepts().getMaxRotationAngle().getDegrees() * Math.random());
             addActionToQueue(new Rotate(randomAngle), percepts);
         }
@@ -383,7 +384,6 @@ public class GuardExplorer implements Guard {
                     }
 
                 }
-                //System.out.println(distanceToIntruder);
 
                 if (Angle.fromDegrees(0).getDistance(e.getPoint().getClockDirection()).getDegrees() > 180) {
                     angleToIntruder = angleToIntruder + e.getPoint().getClockDirection().getDegrees() - 360;
@@ -528,8 +528,7 @@ public class GuardExplorer implements Guard {
         }
     }
 
-    private double getSpeedModifier(GuardPercepts guardPercepts)
-    {
+    private double getSpeedModifier(GuardPercepts guardPercepts) {
         SlowDownModifiers slowDownModifiers =  guardPercepts.getScenarioGuardPercepts().getScenarioPercepts().getSlowDownModifiers();
         if(guardPercepts.getAreaPercepts().isInWindow())
         {
@@ -556,7 +555,6 @@ public class GuardExplorer implements Guard {
     public double getDirection(AgentController agent, ObjectPercept object) {
         double angle = Math.atan2(agent.getPosition().getY() - object.getPoint().getY(), agent.getPosition().getX() - object.getPoint().getX());
         angle = angle-Math.PI/2;
-        System.out.println(angle);
 
         if (angle > Math.PI)
             angle = 2*Math.PI-angle;
@@ -573,27 +571,31 @@ public class GuardExplorer implements Guard {
      */
     private void towerInViewRange(GuardPercepts p) {
         ObjectPercept sentryTower = null;
-        for (ObjectPercept obj: p.getVision().getObjects().getAll())
-            if (obj.getType() == ObjectPerceptType.Intruder)
+        for (ObjectPercept obj: p.getVision().getObjects().getAll()) {
+            if (obj.getType() == ObjectPerceptType.SentryTower) {
                 sentryTower = obj;
+            }
+        }
 
         if (Angle.fromDegrees(0).getDistance(sentryTower.getPoint().getClockDirection()).getDegrees() > 180)
-            addActionToQueue(new Rotate(Angle.fromRadians(sentryTower.getPoint().getClockDirection().getDegrees() - 360)), p);
+            addActionToQueue(new Rotate(Angle.fromDegrees(Angle.fromDegrees(0).getDistance(sentryTower.getPoint().getClockDirection()).getDegrees() - 360)), p);
 
         else
-            addActionToQueue(new Rotate(Angle.fromRadians(sentryTower.getPoint().getClockDirection().getDegrees())), p);
+            addActionToQueue(new Rotate(Angle.fromDegrees(Angle.fromDegrees(0).getDistance(sentryTower.getPoint().getClockDirection()).getDegrees())), p);
 
-        addActionToQueue(new Move(new Distance(Math.abs(p.getVision().getFieldOfView().getRange().getValue() - sentryTower.getPoint().getDistanceFromOrigin().getValue()))), p);
+
+        Distance dist = new Distance(p.getVision().getFieldOfView().getRange().getValue());
+        addActionToQueue(new Move(dist), p);
         lookInAllDirection(p);
     }
 
     /**
      * Makes the agent look around himself
-     * When added to the queue, the 360° rotation gets divided
      * @param percepts
      */
     private void lookInAllDirection(GuardPercepts percepts) {
-        addActionToQueue(new Rotate(Angle.fromDegrees(360)), percepts);
+        for (int i = 0; i < 4; i++)
+            addActionToQueue(new Rotate(Angle.fromDegrees(45)), percepts);
     }
 
     /**
