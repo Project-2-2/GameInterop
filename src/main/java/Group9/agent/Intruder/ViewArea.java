@@ -9,17 +9,18 @@ import Interop.Percept.Vision.ObjectPercepts;
 import Interop.Percept.Vision.VisionPrecepts;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
 public class ViewArea {
     private Distance range;
     private Angle alpha;
-    private Direction direction;
+    private double direction;
     private Coordinate origin;
     private Coordinate left;
     private Coordinate right;
-    public ViewArea(Distance range, Angle alpha, Direction direction, double originX, double originY)
+    public ViewArea(Distance range, Angle alpha, double direction, double originX, double originY)
     {
         this.range = range;
         this.alpha = alpha;
@@ -29,11 +30,11 @@ public class ViewArea {
     }
     private void constructArea()
     {
-        double leftX = Math.cos(direction.getRadians() - 0.5 * alpha.getRadians()) * range.getValue();
-        double leftY = Math.sin(direction.getRadians() - 0.5 * alpha.getRadians()) * range.getValue();
+        double leftX = Math.cos(direction - 0.5 * alpha.getRadians()) * range.getValue();
+        double leftY = Math.sin(direction - 0.5 * alpha.getRadians()) * range.getValue();
         this.left = new Coordinate(leftX, leftY);
-        double rightX = Math.cos(direction.getRadians() + 0.5 * alpha.getRadians()) * range.getValue();
-        double rightY = Math.sin(direction.getRadians() + 0.5 * alpha.getRadians()) * range.getValue();
+        double rightX = Math.cos(direction + 0.5 * alpha.getRadians()) * range.getValue();
+        double rightY = Math.sin(direction + 0.5 * alpha.getRadians()) * range.getValue();
         this.right = new Coordinate(rightX, rightY);
 
     }
@@ -49,26 +50,67 @@ public class ViewArea {
         }
         else if (pointsContained.size() == 0)
         {
-            return 0.0;
+
+
+            if(isIn(origin, c))
+            {
+                Line[] lines = {new Line(origin, left), new Line(left, right), new Line(right, origin)};
+                return solveNone(lines, c.getPoints());
+            }
+            else
+            {
+                return 0.0;
+            }
         }
         else if (pointsContained.size() == 1)
         {
             Line[] lines = {new Line(origin, left), new Line(left, right), new Line(right, origin)};
-            return solveSingle(pointsContained.get(0), lines, c.getPoints());
+            double area = solveSingle(pointsContained.get(0), lines, c.getPoints());
+            return area;
         }
         else if (pointsContained.size() == 2)
         {
             Line[] lines = {new Line(origin, left), new Line(left, right), new Line(right, origin)};
-            return solveDouble(pointsContained, lines, c.getPoints());
+            double area = solveDouble(pointsContained, lines, c.getPoints());
+
+            return area;
         }
         else if (pointsContained.size() == 3)
         {
             Line[] lines = {new Line(origin, left), new Line(left, right), new Line(right, origin)};
-            return solveTriple(pointsContained, lines);
+            double area = solveTriple(pointsContained, lines);
+            if(area > 1.0)
+            {
+                //System.out.println("wrong: 3");
+            }
+            return area;
         }
         else
         {
             return 0.0;
+        }
+    }
+    private boolean isIn(Coordinate p, Cell c)
+    {
+        Coordinate[] points = c.getPoints();
+        return (p.getX() < points[0].getX() && p.getX() > points[1].getX() && p.getY() >  points[2].getY() && p.getY() < points[0].getY());
+    }
+    private double solveNone(Line[] lines, Coordinate[] allPoints)
+    {
+        Coordinate p1 = origin;
+        Coordinate p2 = Line.getIntersectionPoint(lines[0], allPoints);
+        Coordinate p3 = Line.getIntersectionPoint(lines[2], allPoints);
+        if (p2 == null || p3 == null)
+        {
+            return 0.0;
+        }
+        if (p2.getX() == p3.getX())
+        {
+            return 0.5 * Math.abs(p2.getY() - p3.getY()) * Math.abs(p1.getX() - p2.getX());
+        }
+        else
+        {
+            return 0.5 * Math.abs(p2.getX() - p3.getX()) * Math.abs(p1.getY() - p2.getY());
         }
     }
     private double solveSingle(Coordinate point, Line[] lines, Coordinate[] allPoints)
@@ -109,7 +151,7 @@ public class ViewArea {
             Line line2 = new Line(points.get(1), new Coordinate(remainingPoints.get(0).getX(), points.get(1).getY()));
             Coordinate point1 = Line.getIntersectionPoint(line1, lines);
             Coordinate point2 = Line.getIntersectionPoint(line2, lines);
-            area = Math.min(point1.getX(), point2.getX()) * 1 + 0.5 * Math.abs(point1.getX() - point2.getX());
+            area = Math.min(Math.abs(point1.getX() - points.get(0).getX()), Math.abs(point2.getX() - points.get(0).getX())) * 1 + 0.5 * Math.abs(point1.getX() - point2.getX());
         }
         else
         {
@@ -117,7 +159,7 @@ public class ViewArea {
             Line line2 = new Line(points.get(1), new Coordinate(points.get(1).getX(), remainingPoints.get(0).getY()));
             Coordinate point1 = Line.getIntersectionPoint(line1, lines);
             Coordinate point2 = Line.getIntersectionPoint(line2, lines);
-            area = Math.min(point1.getY(), point2.getY()) * 1 + 0.5 * Math.abs(point1.getY() - point2.getY());
+            area = Math.min(Math.abs(point1.getY()-points.get(0).getY()), Math.abs(point2.getY() - points.get(0).getY())) * 1 + 0.5 * Math.abs(point1.getY() - point2.getY());
         }
         return area;
     }
@@ -132,6 +174,11 @@ public class ViewArea {
                 Coordinate[] triangle2 = {points.get(1), Line.getIntersectionPoint(points.get(2), "h", (points.get(2).getX() - points.get(1).getX()), lines), Line.getIntersectionPoint(points.get(1), "v", (points.get(1).getY()-points.get(2).getY()), lines)};
                 area += getTriangleArea(triangle1);
                 area += getTriangleArea(triangle2);
+                if(area > 1.0)
+                {
+                    //System.out.println("1");
+                }
+
                 return area;
             }
             else if (points.get(0).getY() == points.get(2).getY())
@@ -140,6 +187,8 @@ public class ViewArea {
                 Coordinate[] triangle2 = {points.get(1), Line.getIntersectionPoint(points.get(2), "v", (points.get(2).getY() - points.get(1).getY()), lines), Line.getIntersectionPoint(points.get(1), "h", (points.get(1).getX()-points.get(2).getX()), lines)};
                 area += getTriangleArea(triangle1);
                 area += getTriangleArea(triangle2);
+                if(area > 1.0)
+                    System.out.println("2");
                 return area;
             }
             else if (points.get(1).getX() == points.get(2).getX())
@@ -148,6 +197,10 @@ public class ViewArea {
                 Coordinate[] triangle2 = {points.get(0), Line.getIntersectionPoint(points.get(2), "v", (points.get(2).getY() - points.get(0).getY()), lines), Line.getIntersectionPoint(points.get(0), "h", (points.get(0).getX()-points.get(2).getX()), lines)};
                 area += getTriangleArea(triangle1);
                 area += getTriangleArea(triangle2);
+                if(area > 1.0)
+                {
+                    // System.out.println("3");
+                }
                 return area;
             }
             else
@@ -156,6 +209,11 @@ public class ViewArea {
                 Coordinate[] triangle2 = {points.get(0), Line.getIntersectionPoint(points.get(2), "h", (points.get(2).getX() - points.get(0).getX()), lines), Line.getIntersectionPoint(points.get(0), "v", (points.get(0).getY()-points.get(2).getY()), lines)};
                 area += getTriangleArea(triangle1);
                 area += getTriangleArea(triangle2);
+                if(area > 1.0)
+                {
+                    // System.out.println("4");
+                }
+
                 return area;
             }
         }
@@ -194,7 +252,7 @@ public class ViewArea {
         for(int i=0; i<points.length; i++)
         {
             containedPoints.add(points[i]);
-            if(!checkHorizontal(lines, points[i].getX(), points[i].getY()) || checkVertical(lines, points[i].getX(), points[i].getY()))
+            if(!checkHorizontal(lines, points[i].getX(), points[i].getY()) || !checkVertical(lines, points[i].getX(), points[i].getY()))
             {
                 containedPoints.remove(containedPoints.size()-1);
             }
@@ -203,7 +261,7 @@ public class ViewArea {
     }
     public void setObjectsContained(Cell c, ObjectPercepts objects)
     {
-        ObjectPercept[] objcts = (ObjectPercept[]) objects.getAll().toArray();
+        ObjectPercept[] objcts = (ObjectPercept[]) objects.getAll().toArray(new ObjectPercept[objects.getAll().size()]);
         for(ObjectPercept object:objcts)
         {
             Point p = object.getPoint();
@@ -267,6 +325,11 @@ public class ViewArea {
         {
             return false;
         }
+    }
+    @Override
+    public String toString()
+    {
+        return "ViewArea: " + origin + " " + left + " " + right;
     }
 
 

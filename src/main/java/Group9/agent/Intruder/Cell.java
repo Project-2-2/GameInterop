@@ -23,6 +23,7 @@ public class Cell {
     public static int numOfCells;
     private int visitedCount;
     private boolean processed;
+    private boolean printed;
 
     private boolean wall = false;
     private boolean window = false;
@@ -48,6 +49,7 @@ public class Cell {
         below = null;
         left = null;
         right = null;
+        processed = false;
     }
     public LinkedList<Cell> getUnprocessed()
     {
@@ -157,6 +159,18 @@ public class Cell {
         }
         return  result;
     }
+    public Cell findNullable(double x, double y)
+    {
+        Cell result = find(x,y);
+        if (result.getMidX() != x || result.getMidY() != y)
+        {
+            return null;
+        }
+        else
+        {
+            return  result;
+        }
+    }
     public boolean getProcessed()
     {
         return processed;
@@ -164,6 +178,71 @@ public class Cell {
     public void setProcessed(boolean b)
     {
         this.processed = b;
+    }
+    public void setUnprocessed()
+    {
+        processed = false;
+        if (above != null && above.getProcessed())
+        {
+            above.setUnprocessed();
+        }
+        if (below != null && below.getProcessed())
+        {
+            below.setUnprocessed();
+        }
+        if (left != null && left.getProcessed())
+        {
+            left.setUnprocessed();
+        }
+        if (right != null && right.getProcessed())
+        {
+            right.setUnprocessed();
+        }
+    }
+    public void setAllNotPrinted()
+    {
+        printed = false;
+        if (above != null && above.getPrinted())
+        {
+            above.setAllNotPrinted();
+        }
+        if (below != null && below.getPrinted())
+        {
+            below.setAllNotPrinted();
+        }
+        if (left != null && left.getPrinted())
+        {
+            left.setAllNotPrinted();
+        }
+        if (right != null && right.getPrinted())
+        {
+            right.setAllNotPrinted();
+        }
+    }
+    public void printall(int x, int y)
+    {
+        printed = true;
+        System.out.println(this.toString() + "should be(x,y): " + x + ", " + y);
+        if (above != null && !above.getPrinted())
+        {
+            above.printall(x, y+1);
+        }
+        if (below != null && !below.getPrinted())
+        {
+            below.printall(x, y-1);
+        }
+        if (left != null && !left.getPrinted())
+        {
+            left.printall(x -1, y);
+        }
+        if (right != null && !right.getPrinted())
+        {
+            right.printall(x + 1, y);
+        }
+    }
+    public boolean getPrinted()
+    {
+        return printed;
     }
     public void setAbove(Cell above) {
         this.above = above;
@@ -182,31 +261,55 @@ public class Cell {
     }
     public Cell addAbove()
     {
-        Cell above = new Cell();
-        setAbove(above);
-        above.setBelow(this);
-        return above;
+        if (findNullable(getMidX(), getMidY() + size) == null)
+        {
+            Cell above = new Cell(this.getMidX(), this.getMidY() + size);
+            setAbove(above);
+            above.setBelow(this);
+            above.setAbove(findNullable(getMidX(), getMidY() + 2 * size));
+            above.setLeft(findNullable(getMidX() - size, getMidY()+ size));
+            above.setRight(findNullable(getMidX() + size, getMidY()+size));
+        }
+        return this.getAbove();
     }
     public Cell addBelow()
     {
-        Cell below = new Cell();
-        setBelow(below);
-        below.setAbove(this);
-        return below;
+        if(this.getBelow() == null)
+        {
+            Cell below = new Cell(this.getMidX(), this.getMidY() - size);
+            setBelow(below);
+            below.setAbove(this);
+            below.setBelow(findNullable(getMidX(), getMidY() - 2 * size));
+            below.setRight(findNullable(getMidX() + size, getMidY() - size));
+            below.setLeft(findNullable(getMidX() - size, getMidY() - size));
+        }
+        return this.getBelow();
     }
     public Cell addLeft()
     {
-        Cell left = new Cell();
-        setLeft(left);
-        left.setRight(this);
-        return left;
+        if (this.getLeft() == null)
+        {
+            Cell left = new Cell(this.getMidX() - size, this.getMidY());
+            setLeft(left);
+            left.setRight(this);
+            left.setLeft(findNullable(getMidX() - 2 * size, getMidY()));
+            left.setAbove(findNullable(getMidX() - size, getMidY() + size));
+            left.setBelow(findNullable(getMidX() - size, getMidY() - size));
+        }
+        return this.getLeft();
     }
     public Cell addRight()
     {
-        Cell right = new Cell();
-        setRight(right);
-        right.setLeft(this);
-        return right;
+        if(this.getRight() == null)
+        {
+            Cell right = new Cell(this.getMidX() + size, this.getMidY());
+            setRight(right);
+            right.setLeft(this);
+            right.setRight(findNullable(getMidX() + 2 * size, getMidY()));
+            right.setAbove(findNullable(getMidX() + size, getMidY() + size));
+            right.setBelow(findNullable(getMidX() + size, getMidY() - size));
+        }
+        return this.getRight();
     }
 
     public void setMidX(double midX) {
@@ -263,8 +366,7 @@ public class Cell {
     }
     public Coordinate[] getPoints()
     {
-        Coordinate[] points = {new Coordinate(midX + 0.5 * size, midY + 0.5 * size), new Coordinate(midX - 0.5 * size, midY + 0.5 * size), new Coordinate(midX - 0.5 * size, midY - 0.5 * size), new Coordinate(midX + 0.5 * size, midY - 0.5 * size)};
-        return points;
+        return new Coordinate[]{new Coordinate(midX + 0.5 * size, midY + 0.5 * size), new Coordinate(midX - 0.5 * size, midY + 0.5 * size), new Coordinate(midX - 0.5 * size, midY - 0.5 * size), new Coordinate(midX + 0.5 * size, midY - 0.5 * size)};
     }
     public int getCount(){
         return visitedCount;
@@ -341,5 +443,10 @@ public class Cell {
     public void addVisitedCount()
     {
         visitedCount++;
+    }
+    @Override
+    public String toString()
+    {
+        return "Cell(x,y) " + getMidX() + ", " + getMidY() + " id: "+ super.toString();
     }
 }

@@ -67,9 +67,40 @@ public class Line {
             return true;
         }
     }
+    public static Coordinate getIntersectionPoint(Line line, Coordinate[] square)
+    {
+        for(Coordinate point: square)
+        {
+            if (point.getX() == line.getX(point.getY()))
+            {
+                return new Coordinate(point.getX(), line.getY(point.getX()));
+            }
+            else if (point.getY() == line.getY(point.getX()))
+            {
+                return new Coordinate(line.getX(point.getY()), point.getY());
+            }
+        }
+        return null;
+    }
     public static Coordinate getIntersectionPoint(Line line, Line[] lines)
     {
         Coordinate intersectionPoint = new Coordinate();
+        if(line.getA() > 1000 || line.getA() < -1000)
+        {
+            for(Line l: lines)
+            {
+                if(l.getY(line.getStart().getX()) < line.getStart().getY() && l.getY(line.getStart().getX()) > line.getEnd().getY())
+                {
+                    intersectionPoint = new Coordinate(line.getStart().getX(), l.getY(line.getStart().getX()));
+                    return intersectionPoint;
+                }
+                else if (l.getY(line.getStart().getX()) > line.getStart().getY() && l.getY(line.getStart().getX()) < line.getEnd().getY())
+                {
+                    intersectionPoint = new Coordinate(line.getStart().getX(), l.getY(line.getStart().getX()));
+                    return intersectionPoint;
+                }
+            }
+        }
         for(int i=0; i<lines.length; i++)
         {
             double x = (line.getB() - lines[i].getB()) / (lines[i].getA() - line.getA());
@@ -124,6 +155,19 @@ public class Line {
     public double getLength()
     {
         return Math.sqrt(Math.pow(start.getX() - end.getX(), 2) + Math.pow(start.getY() - end.getY(), 2));
+    }
+    @Override
+    public String toString()
+    {
+        return "Line(start, end): " + start + ", " + end;
+    }
+    public Coordinate getStart()
+    {
+        return start;
+    }
+    public Coordinate getEnd()
+    {
+        return end;
     }
 
 }
