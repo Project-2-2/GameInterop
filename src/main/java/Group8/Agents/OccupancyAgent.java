@@ -57,6 +57,7 @@ public class OccupancyAgent implements Guard {
     private final double viewRange = 6.0; //I don't know how to pull this of if they are defined
 
     double xPosition, yPosition;
+    Distance rangeDistance = percepts.getVision().getFieldOfView().getRange();
 
     private int suroundUpdateIteration = 1;
     private ObjectPercept objectPercept;
@@ -310,13 +311,12 @@ public class OccupancyAgent implements Guard {
         Set<ObjectPercept> objectPercepts =  percepts.getVision().getObjects().getAll();
         Iterator<ObjectPercept> objectPerceptIterator = objectPercepts.iterator();
         //TODO: not the way to get angle
-        Angle direction = percepts.getVision().getFieldOfView().getViewAngle();
-        Distance distance = percepts.getVision().getFieldOfView().getRange();
+
 
         //I don't understand how I am supposed to use this formula in Java.  This is something Matlab can do.
-        double[][] transformMatrix = {{Math.cos(direction.getDegrees()), Math.sin(direction.getDegrees())},
-                {-Math.sin(direction.getDegrees()), Math.cos(direction.getDegrees())}};
-        double[] normalizeCoefficient = {distance.getValue(), 0};
+//        double[][] transformMatrix = {{Math.cos(direction.getDegrees()), Math.sin(direction.getDegrees())},
+//                {-Math.sin(direction.getDegrees()), Math.cos(direction.getDegrees())}};
+//        double[] normalizeCoefficient = {distance.getValue(), 0};
 
         while (objectPerceptIterator.hasNext()) {
             ObjectPercept objectPercept = objectPerceptIterator.next();
@@ -366,7 +366,7 @@ public class OccupancyAgent implements Guard {
                 }
             }
 
-            int explorationSize = (int) (distance.getValue());
+            int explorationSize = (int) (rangeDistance.getValue());
 
             //define the exploration zone.
 
