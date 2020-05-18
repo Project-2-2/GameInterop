@@ -1,6 +1,7 @@
 package Group5.Agent.Guard;
 
 import Group5.GameController.AgentController;
+import Group5.GameController.Smell;
 import Group5.GameController.Vision;
 import Interop.Action.*;
 import Interop.Agent.Guard;
@@ -12,6 +13,7 @@ import Interop.Percept.GuardPercepts;
 import Interop.Percept.Percepts;
 import Interop.Percept.Scenario.ScenarioPercepts;
 import Interop.Percept.Scenario.SlowDownModifiers;
+import Interop.Percept.Smell.SmellPercept;
 import Interop.Percept.Smell.SmellPerceptType;
 import Interop.Percept.Sound.SoundPercept;
 import Interop.Percept.Sound.SoundPerceptType;
@@ -25,30 +27,35 @@ import Interop.Percept.Vision.ObjectPercepts;
 import Interop.Percept.Vision.VisionPrecepts;
 
 import java.util.*;
+import java.util.concurrent.Callable;
 
 public class GuardExplorer implements Guard {
 
     private Queue<GuardAction> actionQueue = new LinkedList<>();
-    private int enteredSentryTower; //0 if didn't entered a sentry tower the last 15 turns
+    private int enteredSentryTower; //0 if didn't entered a sentry tower the last 30 turns
 
     private Direction lastDirectionIntruder;
     private Distance lastDistanceToIntruder;
     private boolean rotateToIntruder;
     //now this is set to 15 turns so it will remember 15 turns it saw an intruder
     private int lastTimeSawIntruder;
+    private int droppedPheromone;
 
     @Override
     public GuardAction getAction(GuardPercepts percepts) {
         //return explore(percepts);
         //if queue is empty otherwise do actions inside queue
+        if (this.actionQueue.size()<=0)
         if (!percepts.wasLastActionExecuted()){
             actionQueue.clear();
         }
         if (actionQueue.size()<=0)
             explore(percepts);
 
-        if (enteredSentryTower != 0)
-            enteredSentryTower --;
+        if (this.enteredSentryTower != 0)
+            this.enteredSentryTower --;
+        if (droppedPheromone != 0)
+            droppedPheromone --;
         if (lastTimeSawIntruder>0){
             lastTimeSawIntruder--;
         }else{
@@ -133,6 +140,7 @@ public class GuardExplorer implements Guard {
         }
 
         if (visionPerceptTypes.contains(ObjectPerceptType.Intruder)) {
+            actionQueue.clear();
             followIntruder(percepts,vision);
             return;
         }
@@ -158,16 +166,19 @@ public class GuardExplorer implements Guard {
             goToDoor(percepts,vision);
             return;
         }
-
-         */
-
-        /*
         if (visionPerceptTypes.contains(ObjectPerceptType.Window)) {
             goToWindow(percepts,vision);
             return;
         }
-        
+
          */
+
+        if (visionPerceptTypes.contains(ObjectPerceptType.SentryTower) && enteredSentryTower==0) {
+            System.out.println("go to sentry tower");
+            towerInViewRange(percepts);
+            this.enteredSentryTower = 30;
+            return;
+        }
 
         if (!percepts.wasLastActionExecuted()){
             moveParallelToWall(percepts,vision);
@@ -185,6 +196,49 @@ public class GuardExplorer implements Guard {
             addActionToQueue(new Move(new Distance(percepts.getScenarioGuardPercepts().getMaxMoveDistanceGuard().getValue()*getSpeedModifier(percepts))),percepts);
             return;
         }
+
+        if(percepts.getAreaPercepts().isInDoor() && droppedPheromone == 0)
+        {
+            System.out.println("door: drop pheromone type 2");
+            dropPheromone(percepts,SmellPerceptType.Pheromone2);
+            this.droppedPheromone=30;
+            return;
+        }
+
+        if(percepts.getAreaPercepts().isInWindow() && droppedPheromone == 0)
+        {
+            System.out.println("window: drop pheromone type 2");
+            dropPheromone(percepts,SmellPerceptType.Pheromone2);
+            this.droppedPheromone=30;
+            return;
+        }
+
+        if(percepts.getAreaPercepts().isJustTeleported() && droppedPheromone == 0)
+        {
+            System.out.println("teleported: drop pheromone type 2");
+            dropPheromone(percepts,SmellPerceptType.Pheromone2);
+            this.droppedPheromone=30;
+            return;
+        }
+
+        if (Math.random() <= 0.05) {
+            System.out.println("drop pheromone type 1");
+            dropPheromone(percepts, SmellPerceptType.Pheromone1);
+            return;
+        }
+/*
+        Set<SmellPercept> pheromone1 =  smellPheromone(percepts, SmellPerceptType.Pheromone1);
+        if (!pheromone1.isEmpty()) {
+            System.out.println("leave epxlored zone ");
+            GuardAction action = leaveExploredZone(percepts);
+            if (action != null) {
+                addActionToQueue(action, percepts);
+                return;
+            }
+        }
+
+ */
+
         addActionToQueue(new Move(new Distance(percepts.getScenarioGuardPercepts().getMaxMoveDistanceGuard().getValue() * getSpeedModifier(percepts))), percepts);
         return;
         //return new Move(new Distance(percepts.getScenarioGuardPercepts().getMaxMoveDistanceGuard().getValue() * getSpeedModifier(percepts)));
@@ -499,7 +553,7 @@ public class GuardExplorer implements Guard {
      * @param object
      * @return
      */
-    public double rotateTo(AgentController agent, ObjectPercept object) {
+    public double getDirection(AgentController agent, ObjectPercept object) {
         double angle = Math.atan2(agent.getPosition().getY() - object.getPoint().getY(), agent.getPosition().getX() - object.getPoint().getX());
         angle = angle-Math.PI/2;
         System.out.println(angle);
@@ -513,19 +567,24 @@ public class GuardExplorer implements Guard {
         return angle;
     }
 
-    private void towerInViewRange(AgentController agent ,GuardPercepts percepts) {
-        if (enteredSentryTower != 0)
-            return;
+    /**
+     * if sees a sentryTower, he goes on it and look around
+     * @param p
+     */
+    private void towerInViewRange(GuardPercepts p) {
+        ObjectPercept sentryTower = null;
+        for (ObjectPercept obj: p.getVision().getObjects().getAll())
+            if (obj.getType() == ObjectPerceptType.Intruder)
+                sentryTower = obj;
 
-        for (ObjectPercept p : percepts.getVision().getObjects().getAll()) {
-            if (p.getType().toString().equals("SentryTower")) {
-                enteredSentryTower = 15;
-                addActionToQueue(new Rotate(Angle.fromRadians(rotateTo(agent, p))), percepts);
-                addActionToQueue(new Move(new Distance(Math.abs(percepts.getVision().getFieldOfView().getRange().getValue() - p.getPoint().getDistanceFromOrigin().getValue()))), percepts);
-                lookInAllDirection(percepts);
-            }
-        }
+        if (Angle.fromDegrees(0).getDistance(sentryTower.getPoint().getClockDirection()).getDegrees() > 180)
+            addActionToQueue(new Rotate(Angle.fromRadians(sentryTower.getPoint().getClockDirection().getDegrees() - 360)), p);
 
+        else
+            addActionToQueue(new Rotate(Angle.fromRadians(sentryTower.getPoint().getClockDirection().getDegrees())), p);
+
+        addActionToQueue(new Move(new Distance(Math.abs(p.getVision().getFieldOfView().getRange().getValue() - sentryTower.getPoint().getDistanceFromOrigin().getValue()))), p);
+        lookInAllDirection(p);
     }
 
     /**
@@ -541,9 +600,9 @@ public class GuardExplorer implements Guard {
      * Drop pheromone if does no hear sound, does not smell another pheromone and does not see intruder
      * @param p
      */
-    private void dropPheromone(GuardPercepts p) {
-        if (!hearSound(p) && !smellPheromone(p) && seeIntruder(p, p.getVision().getObjects().getAll())==null)
-            addActionToQueue(new DropPheromone(SmellPerceptType.Pheromone1), p);
+    private void dropPheromone(GuardPercepts p, SmellPerceptType type) {
+        //if (!hearSound(p) && smellPheromone(p) != null && seeIntruder(p, p.getVision().getObjects().getAll())==null)
+            addActionToQueue(new DropPheromone(type), p);
     }
 
     private boolean hearSound(GuardPercepts percepts) {
@@ -553,21 +612,42 @@ public class GuardExplorer implements Guard {
             return true;
     }
 
-    private boolean smellPheromone(GuardPercepts percepts) {
+    private Set<SmellPercept> smellPheromone(GuardPercepts percepts) {
         if (percepts.getSmells().getAll().isEmpty())
-            return false;
+            return null;
         else
-            return true;
+            return percepts.getSmells().getAll();
     }
+
+    /**
+     * @param percepts
+     * @param type
+     * @return Set of pheromone of Type type
+     */
+    private Set<SmellPercept> smellPheromone(GuardPercepts percepts, SmellPerceptType type) {
+        Set<SmellPercept> toReturn = new HashSet<>();
+        for (SmellPercept s: percepts.getSmells().getAll()) {
+            if (s.getType() == type) {
+                toReturn.add(s);
+            }
+        }
+        return toReturn;
+    }
+
 
     /**
      * If smells a pheromone where he wanted to go, he changes directions
      */
-    private void leaveExploredZone(GuardPercepts p) {
-        if (smellPheromone(p)) {
-            addActionToQueue(new Rotate(Angle.fromRadians(Math.PI/2)), p);
-        }else
-            return;
+    private GuardAction leaveExploredZone(GuardPercepts p) {
+        Set<SmellPercept> smell = smellPheromone(p);
+        if (smell != null) {
+            for (SmellPercept sp : smell)
+                if (sp.getType().toString().equals("Pheromone1"))
+                    return new Rotate(Angle.fromRadians(Math.PI / 2));
+        }
+
+        return null;
     }
+
 
 }
