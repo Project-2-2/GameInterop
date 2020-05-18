@@ -16,7 +16,6 @@ public class FollowIntruderBehaviour implements Behaviour {
 
         ObjectPercepts intruderPercepts = PerceptsService.getIntruderPercepts(percepts);
         double towards = -1 * PerceptsService.getMeanDirection(intruderPercepts);
-
         if(Math.abs(towards) < Math.random() * 2) return ActionsFactory.getValidMove(
             PerceptsService.getMeanDistance(intruderPercepts), percepts
         );

@@ -1,5 +1,7 @@
 package Group6.Agent;
 
+import Group6.Agent.Guard.FollowIntruder;
+import Group6.Agent.Guard.FollowIntruderTest;
 import Group6.Agent.Guard.RandomGuardTest;
 import Group6.ExtendedUnitTest;
 import Group6.GroupTests;
@@ -16,7 +18,7 @@ public class GuardsTest extends ExtendedUnitTest {
         System.out.println("\n\nGuards Test\n");
 
         RandomGuardTest.main(args);
-
+        FollowIntruderTest.main(args);
     }
 
 }
