@@ -377,7 +377,9 @@ public class OccupancyAgent implements Guard {
             //this counts everything
             for (int i = y1 - explorationSize; i < y1; i++) {
                 for (int j = x1; j < x1 + explorationSize; j++) {
-                    if (occupancyGrid.occupancyGrid[j][i]) {
+                    if (!occupancyGrid.occupancyGrid[j][i]) {
+                        continue;
+                    } else {
                         countTrue++;
                     }
                 }
@@ -387,7 +389,9 @@ public class OccupancyAgent implements Guard {
         else if(x2 > x1 && y2 > y1) {
             for (int i = y1; i < y1 + explorationSize; i++) {
                 for (int j = x1; j < x1 + explorationSize; j++) {
-                    if (occupancyGrid.occupancyGrid[j][i]) {
+                    if (!occupancyGrid.occupancyGrid[j][i]) {
+                        continue;
+                    } else {
                         countTrue++;
                     }
                 }
@@ -397,7 +401,9 @@ public class OccupancyAgent implements Guard {
         else if(x2 < x1 && y2 > y1) {
             for (int i = y1; i < y1 + explorationSize; i++) {
                 for (int j = x1 - explorationSize; j < x1; j++) {
-                    if (occupancyGrid.occupancyGrid[j][i]) {
+                    if (!occupancyGrid.occupancyGrid[j][i]) {
+                        continue;
+                    } else {
                         countTrue++;
                     }
                 }
@@ -407,7 +413,9 @@ public class OccupancyAgent implements Guard {
         else if(x2 < x1 && y2 < y1) {
             for (int i = y1 - explorationSize; i < y1; i++) {
                 for (int j = x1 - explorationSize; j < x1; j++) {
-                    if (occupancyGrid.occupancyGrid[j][i]) {
+                    if (!occupancyGrid.occupancyGrid[j][i]) {
+                        continue;
+                    } else {
                         countTrue++;
                     }
                 }
@@ -421,9 +429,27 @@ public class OccupancyAgent implements Guard {
         //countTrue not updating?
         double odds = odd(countTrue, explorationSize*explorationSize);
 
+        //update log map
+        // NW
+        if (x2 > x1 && y2 < y1) {
+            //this counts everything
+            for (int i = y1 - explorationSize; i < y1; i++) {
+                for (int j = x1; j < x1 + explorationSize; j++) {
+                    if (occupancyGrid.logMap[j][i] == 0) {
+                        //check surrounding area and whether surround is out of bounds
+                    } else {
+                        double logValue = logOdds(occupancyGrid.logMap[j][i], odds);
+                        occupancyGrid.logUpdate(j,i, logValue);
+                    }
+                }
+            }
+        }
 
 
-//            //this assumes that walls only horizontally - decouples independence maybe be more accurate
+
+        //TODO: test decoupling indepence of true value to row and column.
+
+//      //this assumes that walls only horizontally - decouples independence maybe be more accurate
 //      if (x2 > x1 && y2 > y1) {
 //            int rowCountIndex = 0;
 //            //row count
