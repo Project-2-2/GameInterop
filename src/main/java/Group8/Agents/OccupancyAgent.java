@@ -372,10 +372,8 @@ public class OccupancyAgent implements Guard {
         // NW case
         int[] rowCount = new int[explorationSize];
         int[] colCount = new int[explorationSize];
-        if (x2 > x1 && y2 > y1) {
-
-            //value for logOdds(,odds)
-            int countTrue = 0;
+        int countTrue = 0;
+        if (x2 > x1 && y2 < y1) {
             //this counts everything
             for (int i = y1 - explorationSize; i < y1; i++) {
                 for (int j = x1; j < x1 + explorationSize; j++) {
@@ -385,9 +383,48 @@ public class OccupancyAgent implements Guard {
                 }
             }
         }
+        // SW case
+        else if(x2 > x1 && y2 > y1) {
+            for (int i = y1; i < y1 + explorationSize; i++) {
+                for (int j = x1; j < x1 + explorationSize; j++) {
+                    if (occupancyGrid.occupancyGrid[j][i]) {
+                        countTrue++;
+                    }
+                }
+            }
+        }
+        // SE case
+        else if(x2 < x1 && y2 > y1) {
+            for (int i = y1; i < y1 + explorationSize; i++) {
+                for (int j = x1 - explorationSize; j < x1; j++) {
+                    if (occupancyGrid.occupancyGrid[j][i]) {
+                        countTrue++;
+                    }
+                }
+            }
+        }
+        // NE case
+        else if(x2 < x1 && y2 < y1) {
+            for (int i = y1 - explorationSize; i < y1; i++) {
+                for (int j = x1 - explorationSize; j < x1; j++) {
+                    if (occupancyGrid.occupancyGrid[j][i]) {
+                        countTrue++;
+                    }
+                }
+            }
+        }
+        //Agent is facing the endpoint
+        else {
+
+        }
+
+        //countTrue not updating?
+        double odds = odd(countTrue, explorationSize*explorationSize);
+
 
 
 //            //this assumes that walls only horizontally - decouples independence maybe be more accurate
+//      if (x2 > x1 && y2 > y1) {
 //            int rowCountIndex = 0;
 //            //row count
 //            for(int i  = y1-explorationSize; i < y1; i++) {
