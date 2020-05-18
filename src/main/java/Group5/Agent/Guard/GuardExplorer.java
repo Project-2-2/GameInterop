@@ -210,21 +210,21 @@ public class GuardExplorer implements Guard {
         }
 
         if(percepts.getAreaPercepts().isInDoor() && droppedPheromone == 0) {
-            System.out.println("door: drop pheromone type 2");
+//            System.out.println("door: drop pheromone type 2");
             dropPheromone(percepts,SmellPerceptType.Pheromone2);
             this.droppedPheromone=500;
             return;
         }
 
         if(percepts.getAreaPercepts().isInWindow() && droppedPheromone == 0) {
-            System.out.println("window: drop pheromone type 2");
+//            System.out.println("window: drop pheromone type 2");
             dropPheromone(percepts,SmellPerceptType.Pheromone2);
             this.droppedPheromone=500;
             return;
         }
 
         if(percepts.getAreaPercepts().isJustTeleported() && droppedPheromone == 0) {
-            System.out.println("teleported: drop pheromone type 2");
+//            System.out.println("teleported: drop pheromone type 2");
             dropPheromone(percepts,SmellPerceptType.Pheromone2);
             this.droppedPheromone=500;
             return;
@@ -311,12 +311,12 @@ public class GuardExplorer implements Guard {
             if (e.getType() == objPType) {
                 distance+=Math.sqrt(e.getPoint().getX()*e.getPoint().getX() + e.getPoint().getY()*e.getPoint().getY());
              if (e.getPoint().getClockDirection().getDegrees() > 180) {
-                 System.out.println("Angle: " + (e.getPoint().getClockDirection().getDegrees() - 360));
+//                 System.out.println("Angle: " + (e.getPoint().getClockDirection().getDegrees() - 360));
                  angleToDoorsDegrees += e.getPoint().getClockDirection().getDegrees() - 360;
                  atNegativeAngle++;
              }
                 else {
-                 System.out.println("Angle: " + e.getPoint().getClockDirection().getDegrees());
+//                 System.out.println("Angle: " + e.getPoint().getClockDirection().getDegrees());
                  angleToDoorsDegrees += e.getPoint().getClockDirection().getDegrees();
              }
                 count++;
@@ -329,28 +329,28 @@ public class GuardExplorer implements Guard {
         }
         else if(Math.abs(angleToDoorsDegrees/count)<5 && (distance/count)<8) {
             this.movedSomewhere++;
-            System.out.println("Average distance: " + distance/count);
-            System.out.println("Number of percepts: " + vision.size());
-            System.out.println("Number of door percepts: " + count);
-            System.out.println("Angle towards door: " + angleToDoorsDegrees);
-            System.out.println("Average Angle: " + angleToDoorsDegrees/count);
+//            System.out.println("Average distance: " + distance/count);
+//            System.out.println("Number of percepts: " + vision.size());
+//            System.out.println("Number of door percepts: " + count);
+//            System.out.println("Angle towards door: " + angleToDoorsDegrees);
+//            System.out.println("Average Angle: " + angleToDoorsDegrees/count);
             addActionToQueue(new Move(new Distance(percepts.getScenarioGuardPercepts().getMaxMoveDistanceGuard().getValue() * getSpeedModifier(percepts))), percepts);
-            System.out.println("MOVING TO REACH DOOR");
+//            System.out.println("MOVING TO REACH DOOR");
         }
         else if(angleToDoorsDegrees/count>5 && distance/count<8){
             this.movedSomewhere++;
-            System.out.println("Average distance: " + distance/count);
-            System.out.println("Number of percepts: " + vision.size());
-            System.out.println("Number of door percepts: " + count);
-            System.out.println("Angle towards door: " + angleToDoorsDegrees);
-            System.out.println("Average Angle: " + angleToDoorsDegrees/count);
+//            System.out.println("Average distance: " + distance/count);
+//            System.out.println("Number of percepts: " + vision.size());
+//            System.out.println("Number of door percepts: " + count);
+//            System.out.println("Angle towards door: " + angleToDoorsDegrees);
+//            System.out.println("Average Angle: " + angleToDoorsDegrees/count);
             addActionToQueue(new Move(new Distance(1)), percepts);
             addActionToQueue(new Rotate(Angle.fromDegrees(-angleToDoorsDegrees / count)), percepts);
 
-            System.out.println("ROTATING TO FACE DOOR");
+//            System.out.println("ROTATING TO FACE DOOR");
         }
         else {
-            System.out.println("can't enter door, try later");
+//            System.out.println("can't enter door, try later");
             Angle randomAngle = Angle.fromDegrees(percepts.getScenarioGuardPercepts().getScenarioPercepts().getMaxRotationAngle().getDegrees() * Math.random());
             addActionToQueue(new Rotate(randomAngle), percepts);
         }
@@ -386,10 +386,10 @@ public class GuardExplorer implements Guard {
             ObjectPercept e = intruderPercept.get(i);
             distanceToIntruder += Math.sqrt(e.getPoint().getX() * e.getPoint().getX() + e.getPoint().getY() * e.getPoint().getY());
             if (e.getPoint().getClockDirection().getDegrees() > 180) {
-                System.out.println("Angle: " + (e.getPoint().getClockDirection().getDegrees() - 360));
+//                System.out.println("Angle: " + (e.getPoint().getClockDirection().getDegrees() - 360));
                 angleToIntruder += e.getPoint().getClockDirection().getDegrees() - 360;
             } else {
-                System.out.println("Angle: " + e.getPoint().getClockDirection().getDegrees());
+//                System.out.println("Angle: " + e.getPoint().getClockDirection().getDegrees());
                 angleToIntruder += e.getPoint().getClockDirection().getDegrees();
             }
             count++;
@@ -453,8 +453,8 @@ public class GuardExplorer implements Guard {
             return;
             //return new Rotate(Angle.fromDegrees(angleToIntruder/count));
         } else {
-            System.out.println("distance");
-            System.out.println(distanceToIntruder);
+//            System.out.println("distance");
+//            System.out.println(distanceToIntruder);
             addActionToQueue(new Move(new Distance(distanceToIntruder / count)), percepts);
             return;
 //                System.out.println("poep");
