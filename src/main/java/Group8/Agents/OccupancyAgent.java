@@ -314,8 +314,6 @@ public class OccupancyAgent implements Guard {
                 {-Math.sin(direction.getDegrees()), Math.cos(direction.getDegrees())}};
         double[] normalizeCoefficient = {distance.getValue(), 0};
 
-        //check the walls.  Is there no faster way of doing this?
-
         //Bresenham line algorithm: https://en.wikipedia.org/wiki/Bresenham%27s_line_algorithm
         //This draws the line from agent location to endpoint of RayCast. O(n)
 
@@ -438,19 +436,39 @@ public class OccupancyAgent implements Guard {
                     if (occupancyGrid.logMap[j][i] == 0) {
                         //at top left
                         if(i == 0 && j == 0) {
-
+                            double adjValues = occupancyGrid.logMap[j][i+1] + occupancyGrid.logMap[j+1][i];
+                            if(adjValues == 0) {
+                                occupancyGrid.logUpdate(j,i,log_free);
+                            } else {
+                                occupancyGrid.logUpdate(j,i, logOdds(adjValues, odds));
+                            }
                         }
                         //at top right
                         else if(i == 0 && j == occupancyGrid.logMap.length - 1) {
-
+                            double adjValues = occupancyGrid.logMap[j-1][i] + occupancyGrid.logMap[j][i+1];
+                            if(adjValues == 0) {
+                                occupancyGrid.logUpdate(j,i,log_free);
+                            } else {
+                                occupancyGrid.logUpdate(j,i, logOdds(adjValues, odds));
+                            }
                         }
                         //at bottom left
                         else if(i == occupancyGrid.logMap[0].length && j == 0) {
-
+                            double adjValues = occupancyGrid.logMap[j][i-1] + occupancyGrid.logMap[j+1][i];
+                            if(adjValues == 0) {
+                                occupancyGrid.logUpdate(j,i,log_free);
+                            } else {
+                                occupancyGrid.logUpdate(j,i, logOdds(adjValues, odds));
+                            }
                         }
                         //at bottom right
                         else if(i == occupancyGrid.logMap[0].length && j == occupancyGrid.logMap.length - 1) {
-
+                            double adjValues = occupancyGrid.logMap[j][i-1] + occupancyGrid.logMap[j-1][i];
+                            if(adjValues == 0) {
+                                occupancyGrid.logUpdate(j,i,log_free);
+                            } else {
+                                occupancyGrid.logUpdate(j,i, logOdds(adjValues, odds));
+                            }
                         }
                         //at top but not corner
                         else if(i == 0) {
