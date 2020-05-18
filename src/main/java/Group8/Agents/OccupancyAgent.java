@@ -328,7 +328,7 @@ public class OccupancyAgent implements Guard {
         int slope_error_new = m_new - (x2 - x1);
 
 
-        //Now do this with all the sets
+        // Boolean occupancy.
         for (int x = x1, y = y1; x <= x2; x++) {
             if(x == x2 && y == y2) {
 
@@ -347,6 +347,19 @@ public class OccupancyAgent implements Guard {
                     y++;
                     slope_error_new -= 2 * (x2 - x1);
                 }
+            }
+        }
+
+        x1 = (int) xPosition;
+        y1 = (int) yPosition;
+
+        // log update
+        for(int x = x1, y = y1; x <= x2; x++) {
+            //check if value is true or false.
+            if(occupancyGrid.occupancyGrid[x][y]) {
+                occupancyGrid.logUpdate(x,y, log_occ + occupancyGrid.getLogValue(x,y));
+            } else {
+                occupancyGrid.logUpdate(x, y, log_free + occupancyGrid.getLogValue(x, y));
             }
         }
 
