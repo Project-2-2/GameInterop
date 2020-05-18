@@ -1,6 +1,7 @@
 package Group5.factories;
 
 import Group5.Agent.Explorer;
+import Group5.Agent.IntruderAgent;
 import Group5.Agent.Guard.GuardExplorer;
 import Group9.agent.RandomAgent;
 import Group9.agent.RandomIntruderAgent;
@@ -19,8 +20,7 @@ public class AgentFactoryGroup5 implements IAgentFactory {
         List<Intruder> intruders = new ArrayList<>();
         for(int i = 0; i < number; i++)
         {
-            //intruders.add(new Explorer());
-            intruders.add(new RandomIntruderAgent());
+            intruders.add(new IntruderAgent());
         }
         return intruders;
     }

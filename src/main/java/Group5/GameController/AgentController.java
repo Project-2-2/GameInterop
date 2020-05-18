@@ -76,7 +76,7 @@ public class AgentController {
      * @return The relative rotation of the agent with respect to that line.
      */
     public Angle getRelativeAngle(Point p, Point q){
-        System.out.println("Agent angle: " + this.angle.getDegrees());
+//        System.out.println("Agent angle: " + this.angle.getDegrees());
         Point pOrigin = new Point(Math.abs(p.getX() - q.getX()), Math.abs(p.getY() - q.getY()));
         return Angle.fromRadians(pOrigin.getClockDirection().getRadians() - this.angle.getRadians());
     }

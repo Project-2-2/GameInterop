@@ -1,7 +1,10 @@
 package Group5;
 
+import Group5.factories.AgentFactoryGroup5;
 import Group9.gui2.Gui;
+import Group9.Game;
 import javafx.application.Application;
+import Group9.map.parser.Parser;
 
 public class MainNewController {
 
@@ -14,4 +17,11 @@ public class MainNewController {
     public static void main(String[] args) {
         new Thread(() -> Application.launch(Gui.class)).start();
     }
+//    public static void main(String[] args) {
+//        for (int i=0; i<100; i++){
+//            Game game = new Game(Parser.parseFile("./src/main/java/Group9/map/maps/test_2.map"), new AgentFactoryGroup5(), false);
+//            game.run();
+//            System.out.printf("The winner is: %s\n", game.getWinner());
+//        }
+//    }
 }

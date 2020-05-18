@@ -88,7 +88,7 @@ public class GameRunner {
         //mapInfo.readMap(file.getPath());
 
         File file = DrawableDialogueBox.getFile();
-        String src = "src/main/java/Group5/Maps/testmap";
+        String src = "src/main/java/Group5/Maps/testmap2";
         //mapInfo.readMap(src);
         //tries to open the map without gui, otherwise open without gui
         try{
@@ -148,7 +148,7 @@ public class GameRunner {
                 });
             }
         };
-        long frameTimeInMilliseconds = (long) (1000.0 / FRAMES_PER_SECOND);
+        long frameTimeInMilliseconds = (long) (100.0 / FRAMES_PER_SECOND);
         this.timer.schedule(timerTask, 100, frameTimeInMilliseconds);
     }
 
@@ -169,26 +169,28 @@ public class GameRunner {
 
 
 
-        for (IntruderController intruder : mapInfo.intruders){
-            if (!intruder.isCaptured) {
-                Action nextAction = intruder.explorer.getAction(intruder, visionPercepts);
-//            System.out.println(nextAction);
-                if (nextAction instanceof Move) {
-                    intruder.move((Move) nextAction);
-//                System.out.println(((Move) nextAction).getDistance().getValue());
-                } else {
-                    Rotate r = (Rotate) nextAction;
-                    intruder.rotate(r.getAngle());
-                }
-//            rotate(new Rotate(Angle.fromDegrees(90)));
-//            System.out.println(intruder.getAngle().getDegrees());
-                if (mapViewer != null) {
-                    mapViewer.moveIntruder(intruder.position.getX(), intruder.position.getY());
-                    mapViewer.drawAgentVisionField(intruder.position.getX(), intruder.position.getY(),
-                            intruder.getAngle().getRadians(), intruder.getViewRange().getValue());
-                }
-            }
-        }
+//        for (IntruderController intruder : mapInfo.intruders){
+//            if (!intruder.isCaptured) {
+////                Action nextAction = intruder.explorer.getAction(intruder, visionPercepts);
+//                IntruderAction nextAction = intruder.intruderAgent.getAction(intruder, visionPercepts);
+//
+//                //            System.out.println(nextAction);
+//                if (nextAction instanceof Move) {
+//                    intruder.move((Move) nextAction);
+////                System.out.println(((Move) nextAction).getDistance().getValue());
+//                } else {
+//                    Rotate r = (Rotate) nextAction;
+//                    intruder.rotate(r.getAngle());
+//                }
+////            rotate(new Rotate(Angle.fromDegrees(90)));
+////            System.out.println(intruder.getAngle().getDegrees());
+//                if (mapViewer != null) {
+//                    mapViewer.moveIntruder(intruder.position.getX(), intruder.position.getY());
+//                    mapViewer.drawAgentVisionField(intruder.position.getX(), intruder.position.getY(),
+//                            intruder.getAngle().getRadians(), intruder.getViewRange().getValue());
+//                }
+//            }
+//        }
 
 
         if (mapViewer!=null) {
