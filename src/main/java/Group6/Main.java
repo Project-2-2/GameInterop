@@ -47,7 +47,7 @@ public class Main extends Application {
                 test,
                 new AgentsFactories(),
                 "random",
-                "random"
+                "guard"
         );
 
 

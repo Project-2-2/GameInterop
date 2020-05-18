@@ -17,6 +17,7 @@ public class AgentsFactories {
 
     static {
         factories.put("random", new RandomAgentFactory());
+        factories.put("guard", new GuardAgentFactory());
     }
 
     public List<Intruder> createIntruders(String type, int number) {
