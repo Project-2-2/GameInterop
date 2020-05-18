@@ -31,10 +31,6 @@ import java.util.Iterator;
 import java.util.List;
 
 
-/**
- * todo check if inbetween in the target area
- */
-
 
 public class WalksAroundWallIntruder implements Intruder {
 
@@ -70,15 +66,13 @@ public class WalksAroundWallIntruder implements Intruder {
     private IntruderAction getMoveWalkAroundWall(IntruderPercepts percepts, Angle shiftAngle) {
 
         double turnAngle = 90.0;
-        int count =0;
         //turn to get aligned to the wall
         new Rotate(shiftAngle);
-        while(count <= 4) {
+        for(int i =0; i<4 ;i++) {
             if (getWallPercepts(percepts).getAll().isEmpty()) {
-                new Rotate(Angle.fromDegrees(turnAngle));
-                count += 1;
+                return new Rotate(Angle.fromDegrees(turnAngle));
             }
-            new Move(percepts.getScenarioIntruderPercepts().getMaxMoveDistanceIntruder());
+            return new Move(percepts.getScenarioIntruderPercepts().getMaxMoveDistanceIntruder());
         }
 
         return (IntruderAction)new ExploreBehaviour().getAction(percepts);

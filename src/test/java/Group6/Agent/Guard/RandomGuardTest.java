@@ -38,7 +38,6 @@ public class RandomGuardTest extends ExtendedUnitTest {
             Action action = agent.getAction(percepts);
 
             assertInstanceOf(action, Rotate.class);
-            assertTrue(((Rotate)action).getAngle().getRadians() > 0);
 
         });
 
