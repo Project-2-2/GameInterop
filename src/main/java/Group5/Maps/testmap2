@@ -1,0 +1,49 @@
+gameMode = 0
+height = 80
+width = 120
+numGuards = 0
+numIntruders = 1
+
+
+wall = 0 0 750 0 750 10 0 10
+wall = 0 650 750 650 750 640 0 640
+wall = 0 640 0 10 10 10 10 640
+wall = 750 0 750 650 740 650 740 0
+
+
+wall = 500 140 540 140 540 145 500 145
+wall = 540 140 545 140 545 540 540 540
+
+
+spawnAreaIntruders = 630 20 660 20 660 50 630 50
+spawnAreaGuards = 230 500 260 500 260 530 230 530
+teleport = 680 580 710 580 710 610 680 610 300 300
+shaded = 300 300 350 300 350 380 300 380
+targetArea = 400 400 450 400 450 480 400 480
+
+
+maxMoveDistanceIntruder = 12
+maxSprintDistanceIntruder = 4.0
+maxMoveDistanceGuard = 1.4
+sprintCooldown = 2
+pheromoneCooldown = 3
+
+
+radiusPheromone = 5.0
+slowDownModifierWindow = 0.5
+slowDownModifierDoor = 0.5
+slowDownModifierSentryTower = 0.1
+viewAngle = 45.0
+viewRays = 45
+viewRangeIntruderNormal = 22.0
+viewRangeIntruderShaded = 12.0
+viewRangeGuardNormal = 18.0
+viewRangeGuardShaded = 11.5
+viewRangeSentry = 2.0 20.0
+yellSoundRadius = 30.0
+maxMoveSoundRadius = 10.0
+windowSoundRadius = 10.0
+doorSoundRadius = 5.0
+captureDistance = 0.5
+winConditionIntruderRounds = 3
+
