@@ -12,13 +12,15 @@ import Interop.Percept.IntruderPercepts;
  */
 public class SimplePathfindingIntruder implements Intruder {
 
-    private static SimplePathfinding pathfinding;
+    private SimplePathfinding pathfinding;
+    private static int intruderCount = 0;
 
 
     @Override
     public IntruderAction getAction(IntruderPercepts percepts){
         if(pathfinding == null){
             pathfinding = new SimplePathfinding(percepts);
+            intruderCount++;
         }
         return pathfinding.getMoveIntruder(percepts);
     }

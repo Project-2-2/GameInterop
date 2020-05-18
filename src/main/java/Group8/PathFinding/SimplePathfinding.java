@@ -3,6 +3,7 @@ package Group8.PathFinding;
 import Group9.Game;
 import Interop.Action.IntruderAction;
 import Interop.Action.Move;
+import Interop.Action.NoAction;
 import Interop.Action.Rotate;
 import Interop.Geometry.Angle;
 import Interop.Geometry.Distance;
@@ -10,12 +11,15 @@ import Interop.Percept.IntruderPercepts;
 import Interop.Percept.Scenario.SlowDownModifiers;
 import Interop.Utils.Utils;
 
+import java.util.LinkedList;
+
 import static java.lang.Double.NaN;
 import static java.lang.Double.isNaN;
 
 
 public class SimplePathfinding {
 
+    private LinkedList<IntruderAction> actionQueue;
     private final Angle MAX_ROTATION;
     private final double EPS = 1e-6;
 
@@ -25,21 +29,27 @@ public class SimplePathfinding {
     */
     public SimplePathfinding(IntruderPercepts percepts) {
         MAX_ROTATION = percepts.getScenarioIntruderPercepts().getScenarioPercepts().getMaxRotationAngle();
+        actionQueue = new LinkedList<>();
     }
 
     public IntruderAction getMoveIntruder(IntruderPercepts percepts) {
-        if((Math.abs(percepts.getTargetDirection().getRadians())) <= EPS){
-            return new Move(new Distance(percepts.getScenarioIntruderPercepts().getMaxMoveDistanceIntruder().getValue() * getSpeedModifier(percepts)));
+        if(!actionQueue.isEmpty()){
+            return actionQueue.poll();
+        }
+        else{
+            if((Math.abs(percepts.getTargetDirection().getRadians())) <= EPS){
+                return new Move(new Distance(percepts.getScenarioIntruderPercepts().getMaxMoveDistanceIntruder().getValue() * getSpeedModifier(percepts)));
+            }
+            else {
+                generateRotationSequence(percepts.getTargetDirection());
+                if (actionQueue.peek() == null) {
+                    return new NoAction();
+                } else {
+                    return actionQueue.poll();
+                }
+            }
+        }
 
-        }
-        if(percepts.getTargetDirection().getRadians() > MAX_ROTATION.getRadians()){
-            //System.out.println("io");
-            return new Rotate(Angle.fromRadians(MAX_ROTATION.getRadians()));
-        }else{
-            //System.out.println(Utils.isRealNumber(percepts.getTargetDirection().getRadians()));
-            //System.out.println(String.format("Angle is real: %b, number: %f (in rad)",Utils.isRealNumber(percepts.getTargetDirection().getRadians()),percepts.getTargetDirection().getRadians()));
-            return new Rotate(Angle.fromRadians(percepts.getTargetDirection().getRadians() + deviation()));
-        }
     }
 
     private double deviation(){
@@ -68,13 +78,43 @@ public class SimplePathfinding {
 
         return 1;
     }
+
+    private void generateRotationSequence(Angle rot){
+      double degreesLeft = rot.getDegrees();
+      if(degreesLeft > 0) {
+          while (degreesLeft != 0) {
+              if (degreesLeft > MAX_ROTATION.getDegrees()) {
+                  actionQueue.add(new Rotate(MAX_ROTATION));
+                  degreesLeft -= MAX_ROTATION.getDegrees();
+              } else {
+                  actionQueue.add(new Rotate(Angle.fromDegrees(degreesLeft + deviation())));
+                  degreesLeft = 0;
+              }
+          }
+      }
+      else if(degreesLeft < 0){
+          while (degreesLeft != 0) {
+              if (Math.abs(degreesLeft) > MAX_ROTATION.getDegrees()) {
+                  actionQueue.add(new Rotate(Angle.fromDegrees(-MAX_ROTATION.getDegrees())));
+                  degreesLeft += MAX_ROTATION.getDegrees();
+              } else {
+                  actionQueue.add(new Rotate(Angle.fromDegrees(-degreesLeft - deviation())));
+                  degreesLeft = 0;
+              }
+          }
+      }
+      else{
+          // Rotating 0 degrees?
+          return;
+      }
+  }
 }
     //private final LinkedList<IntruderAction> actionQueue;
-//    private final Angle MAX_ROT;
+//    private final Angle MAX_ROTATION;
 //
 //
 //    public SimplePathfinding(IntruderPercepts percepts) {
-//        MAX_ROT = percepts.getScenarioIntruderPercepts().getScenarioPercepts().getMaxRotationAngle();
+//        MAX_ROTATION = percepts.getScenarioIntruderPercepts().getScenarioPercepts().getMaxRotationAngle();
 //        actionQueue = new LinkedList<>();
 //    }
 //
@@ -112,9 +152,9 @@ public class SimplePathfinding {
 //        double degreesLeft = rot.getDegrees();
 //        if(degreesLeft > 0) {
 //            while (degreesLeft != 0) {
-//                if (degreesLeft >= MAX_ROT.getDegrees()) {
-//                    actionQueue.add(new Rotate(MAX_ROT));
-//                    degreesLeft -= MAX_ROT.getDegrees();
+//                if (degreesLeft >= MAX_ROTATION.getDegrees()) {
+//                    actionQueue.add(new Rotate(MAX_ROTATION));
+//                    degreesLeft -= MAX_ROTATION.getDegrees();
 //                } else {
 //                    actionQueue.add(new Rotate(Angle.fromDegrees(degreesLeft)));
 //                    degreesLeft = 0;
@@ -123,9 +163,9 @@ public class SimplePathfinding {
 //        }
 //        else if(degreesLeft < 0){
 //            while (degreesLeft != 0) {
-//                if (Math.abs(degreesLeft) >= MAX_ROT.getDegrees()) {
-//                    actionQueue.add(new Rotate(Angle.fromDegrees(-MAX_ROT.getDegrees())));
-//                    degreesLeft += MAX_ROT.getDegrees();
+//                if (Math.abs(degreesLeft) >= MAX_ROTATION.getDegrees()) {
+//                    actionQueue.add(new Rotate(Angle.fromDegrees(-MAX_ROTATION.getDegrees())));
+//                    degreesLeft += MAX_ROTATION.getDegrees();
 //                } else {
 //                    actionQueue.add(new Rotate(Angle.fromDegrees(-degreesLeft)));
 //                    degreesLeft = 0;
