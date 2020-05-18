@@ -46,7 +46,7 @@ public class ToPassageBehaviour implements Behaviour {
         if(percepts.getAreaPercepts().isJustTeleported()) tillNextPassage = 0;
     }
 
-    private boolean seesPassages(ObjectPercepts passagePercepts) { ;
+    private boolean seesPassages(ObjectPercepts passagePercepts) {
         return passagePercepts.getAll().size() > 0;
     }
 

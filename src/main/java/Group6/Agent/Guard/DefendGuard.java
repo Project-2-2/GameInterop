@@ -7,6 +7,7 @@ import Interop.Percept.GuardPercepts;
 import Interop.Percept.Percepts;
 import Interop.Percept.Sound.SoundPercept;
 import Interop.Percept.Sound.SoundPerceptType;
+import Interop.Percept.Vision.ObjectPercept;
 import Interop.Percept.Vision.ObjectPerceptType;
 import Interop.Percept.Vision.ObjectPercepts;
 
@@ -26,9 +27,11 @@ public class DefendGuard implements Guard {
         if(getSoundYell(percepts).size() > 0){
             return (GuardAction)new FollowYellBehaviour().getAction(percepts);
         }
-
         if(!getTarget(percepts).getAll().isEmpty()){
             return (GuardAction)new YellBehaviour().getAction(percepts);
+        }
+        if(!getDoor(percepts).getAll().isEmpty() || !getWindow(percepts).getAll().isEmpty()){
+            return (GuardAction)new ToPassageBehaviour().getAction(percepts);
         }
         else{
             return (GuardAction)new ToTargetBehaviour().getAction(percepts);
@@ -45,6 +48,10 @@ public class DefendGuard implements Guard {
     public static Set<SoundPercept> getSoundYell(Percepts percept) {
         return percept.getSounds().filter(soundPercept -> soundPercept.getType() == SoundPerceptType.Yell).getAll();
     }
-
-
+    public static ObjectPercepts getDoor(Percepts percepts){
+        return percepts.getVision().getObjects().filter(objectPercept -> objectPercept.getType() == ObjectPerceptType.Door);
+    }
+    public static ObjectPercepts getWindow(Percepts percepts){
+        return percepts.getVision().getObjects().filter(objectPercept -> objectPercept.getType() == ObjectPerceptType.Window);
+    }
 }
