@@ -25,7 +25,7 @@ public class Score{
         if(cell.hasTeleport()){scoreOfCell+= TELEPORT_SCORE;}
 
         //TODO: redefine getCount() in cell
-        scoreOfCell+= (-2) * cell.getCount();
+        scoreOfCell+= (-200) * cell.getCount();
         return scoreOfCell;
     }
 

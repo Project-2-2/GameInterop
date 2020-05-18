@@ -105,21 +105,13 @@ public class Intruder1 implements Intruder {
         double targetDirection = getDirection(target, anchor);
         if (targetDirection != lookingDirection)
         {
-            System.out.println("current angle: " + lookingDirection);
-            System.out.println("desired angle: " + targetDirection);
             double turn = targetDirection - lookingDirection;
             double maxTurn = percepts.getScenarioIntruderPercepts().getScenarioPercepts().getMaxRotationAngle().getRadians();
-            System.out.println("turn: " + turn);
-            System.out.println("maxturn: " + maxTurn);
-
             if (turn > maxTurn)
             {
                 turn = maxTurn;
             }
-            System.out.println("actual turn: " + turn);
             changeLookingDirection(turn);
-            System.out.println("changed angle: " + lookingDirection);
-
             return new Rotate(Angle.fromRadians(turn));
         }
         else
@@ -128,6 +120,8 @@ public class Intruder1 implements Intruder {
             //update position
             position.add(Math.cos(lookingDirection) * distance, Math.sin(lookingDirection) * distance);
             anchor = anchor.find(position.getX(), position.getY());
+            System.out.println("new Position: " + anchor);
+            System.out.println("amount of cells: " + anchor.getNumOfCells());
             return new Move(new Distance(distance));
         }
     }
@@ -142,13 +136,10 @@ public class Intruder1 implements Intruder {
     {
         double highest = Double.NEGATIVE_INFINITY;
         Cell target = new Cell();
-        System.out.println("finding a new target...");
         for (Coordinate point: borderPoints)
         {
             Cell possibleTarget = position.find(point.getX(), point.getY());
             double score = possibleTarget.getScore();
-            System.out.println("Considering: " + possibleTarget);
-            System.out.println("Score: " + score);
             if (score > highest)
             {
                 highest = score;
@@ -165,7 +156,9 @@ public class Intruder1 implements Intruder {
             double contained = view.partContained(toBeProcessed.get(0), objects);
             if (contained > 0.0)
             {
-                toBeProcessed.addAll(toBeProcessed.get(0).getUnprocessed());
+                LinkedList<Cell> unprocessed = toBeProcessed.get(0).getUnprocessed();
+                history.addAll(unprocessed);
+                toBeProcessed.addAll(unprocessed);
             }
             toBeProcessed.remove(0);
         }

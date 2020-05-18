@@ -3,6 +3,7 @@ package Group9.agent.Intruder;
 import Interop.Percept.Vision.ObjectPercept;
 import Interop.Percept.Vision.ObjectPerceptType;
 
+import java.util.HashMap;
 import java.util.LinkedList;
 
 public class Cell {
@@ -20,7 +21,7 @@ public class Cell {
     private final static double size = 1;
     private double exploredPercentage;
     private boolean reachable;
-    public static int numOfCells;
+    public static int numOfCells = 0;
     private int visitedCount;
     private boolean processed;
     private boolean printed;
@@ -51,22 +52,27 @@ public class Cell {
         right = null;
         processed = false;
     }
-    public LinkedList<Cell> getUnprocessed()
+    public LinkedList<Cell> getUnprocessed(History history)
     {
         LinkedList<Cell> unprocessed = new LinkedList<>();
-        if (above == null)
+        Cell above;
+        Cell below;
+        Cell left;
+        Cell right
+        if (history.getCell(new Coordinate(getMidX(), getMidY() + 1)) == null)
         {
-            addAbove();
+            above = addAbove();
+            numOfCells++;
         }
-        if (below == null)
+        if (history.getCell(new Coordinate(getMidX(), getMidY() - 1)) == null)
         {
             addBelow();
         }
-        if(left == null)
+        if(history.getCell(new Coordinate(getMidX()-1, getMidY())) == null)
         {
             addLeft();
         }
-        if(right == null)
+        if(history.getCell(new Coordinate(getMidX()+1, getMidY() + 1)) == null)
         {
             addRight();
         }
@@ -104,8 +110,9 @@ public class Cell {
      */
     public Cell find(double x, double y)
     {
-        x = Math.floor(x);
-        y = Math.floor(y);
+        System.out.println("finding...");
+        x = Math.round(x);
+        y = Math.round(y);
         Cell result = this;
         while(result.getMidX() != x && result.getMidY() != y)
         {
@@ -123,6 +130,7 @@ public class Cell {
             }
             else if(x < result.getMidX())
             {
+                System.out.println("x < result.getMidX()");
                 if (result.getLeft() != null)
                 {
                     result = result.getLeft();
@@ -261,29 +269,19 @@ public class Cell {
     }
     public Cell addAbove()
     {
-        if (findNullable(getMidX(), getMidY() + size) == null)
-        {
-            Cell above = new Cell(this.getMidX(), this.getMidY() + size);
-            setAbove(above);
-            above.setBelow(this);
-            above.setAbove(findNullable(getMidX(), getMidY() + 2 * size));
-            above.setLeft(findNullable(getMidX() - size, getMidY()+ size));
-            above.setRight(findNullable(getMidX() + size, getMidY()+size));
-        }
-        return this.getAbove();
+        Cell above = new Cell(getMidX(), getMidY() +1);
+        numOfCells++;
+        return above;
+    }
+    public int getNumOfCells()
+    {
+        return numOfCells;
     }
     public Cell addBelow()
     {
-        if(this.getBelow() == null)
-        {
-            Cell below = new Cell(this.getMidX(), this.getMidY() - size);
-            setBelow(below);
-            below.setAbove(this);
-            below.setBelow(findNullable(getMidX(), getMidY() - 2 * size));
-            below.setRight(findNullable(getMidX() + size, getMidY() - size));
-            below.setLeft(findNullable(getMidX() - size, getMidY() - size));
-        }
-        return this.getBelow();
+        Cell below = new Cell(getMidX(), getMidY() -1);
+        numOfCells++;
+        return below;
     }
     public Cell addLeft()
     {
@@ -295,6 +293,7 @@ public class Cell {
             left.setLeft(findNullable(getMidX() - 2 * size, getMidY()));
             left.setAbove(findNullable(getMidX() - size, getMidY() + size));
             left.setBelow(findNullable(getMidX() - size, getMidY() - size));
+            numOfCells++;
         }
         return this.getLeft();
     }
@@ -308,6 +307,7 @@ public class Cell {
             right.setRight(findNullable(getMidX() + 2 * size, getMidY()));
             right.setAbove(findNullable(getMidX() + size, getMidY() + size));
             right.setBelow(findNullable(getMidX() + size, getMidY() - size));
+            numOfCells++;
         }
         return this.getRight();
     }
