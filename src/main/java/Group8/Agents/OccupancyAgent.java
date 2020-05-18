@@ -353,7 +353,7 @@ public class OccupancyAgent implements Guard {
         x1 = (int) xPosition;
         y1 = (int) yPosition;
 
-        // log update
+        // log update: the belief that something is indeed unoccupied should increase even further.
         for(int x = x1, y = y1; x <= x2; x++) {
             //check if value is true or false.
             if(occupancyGrid.occupancyGrid[x][y]) {
@@ -362,6 +362,37 @@ public class OccupancyAgent implements Guard {
                 occupancyGrid.logUpdate(x, y, log_free + occupancyGrid.getLogValue(x, y));
             }
         }
+
+        int explorationSize = (int) (distance.getValue()*distance.getValue());
+
+        //define the exploration zone.
+
+
+        //this assumes that walls only go horizontally and vertically.
+        // NW case
+        if(x2 > x1 && y2 > y1) {
+
+        }
+        // SW case
+        else if(x2 > x1 && y2 < y1) {
+
+        }
+        // SE case
+        else if(x2 < x1 && y2 < y1) {
+
+        }
+        // NE case
+        else if(x2 < x1 && y2 > y1) {
+
+        }
+        //Agent is facing the endpoint
+        else {
+
+        }
+
+    }
+
+    public void predictionSpace(int explorationSize) {
 
     }
 
