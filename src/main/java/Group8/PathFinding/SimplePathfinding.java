@@ -1,27 +1,37 @@
 package Group8.PathFinding;
 
-import Group9.Game;
 import Interop.Action.IntruderAction;
 import Interop.Action.Move;
-import Interop.Action.NoAction;
 import Interop.Action.Rotate;
 import Interop.Geometry.Angle;
 import Interop.Geometry.Distance;
-import Interop.Geometry.Point;
 import Interop.Percept.IntruderPercepts;
 import Interop.Percept.Scenario.SlowDownModifiers;
-import Interop.Percept.Vision.FieldOfView;
 import Interop.Utils.Utils;
 
-import java.util.*;
+import static java.lang.Double.NaN;
+
 
 public class SimplePathfinding {
 
+    private final Angle MAX_ROTATION;
+
     public SimplePathfinding(IntruderPercepts percepts) {
+        MAX_ROTATION = percepts.getScenarioIntruderPercepts().getScenarioPercepts().getMaxRotationAngle();
+        System.out.println(MAX_ROTATION.getDegrees());
     }
 
     public IntruderAction getMoveIntruder(IntruderPercepts percepts) {
-        return new NoAction();
+        if(Math.abs(percepts.getTargetDirection().getRadians()) < 0.00000001){
+            return new Move(new Distance(percepts.getScenarioIntruderPercepts().getMaxMoveDistanceIntruder().getValue() * getSpeedModifier(percepts)));
+        }
+        if(percepts.getTargetDirection().getRadians() >= MAX_ROTATION.getRadians()){
+            return new Rotate(Angle.fromRadians(MAX_ROTATION.getRadians()));
+        }else{
+            System.out.println(Utils.isRealNumber(percepts.getTargetDirection().getRadians()));
+            System.out.println(String.format("Angle is real: %b, number: %f (in rad)",Utils.isRealNumber(percepts.getTargetDirection().getRadians()),percepts.getTargetDirection().getRadians()));
+            return new Rotate(Angle.fromRadians(percepts.getTargetDirection().getRadians()));
+        }
     }
 
     private double getSpeedModifier(IntruderPercepts intruderPercepts)
