@@ -42,6 +42,8 @@ public class Explorer implements Intruder {
      * @param level This is the exploration level of the agent. See paper for details.
      */
     public Explorer(int level, AgentController agent) {
+
+
         this.level = level;
         this.g = new Graph(agent);
         this.queue = new LinkedList<>();
@@ -69,7 +71,7 @@ public class Explorer implements Intruder {
     }
 
     public Graph BFSWrapper(Graph map, Vertex start) {
-        start.setVisited(true);
+        //start.setVisited(true);
         this.queue.add(start);
 
         while (!queue.isEmpty()) {
@@ -85,7 +87,7 @@ public class Explorer implements Intruder {
     public void BFS(Vertex v, List<Edge> adjacentEdges) {
         if (!g.getVertices().contains(v)) g.addVertex(v);
         for (Edge e : adjacentEdges) {
-            if (!g.getEdges().contains(e)) g.addEdge(e);
+            //if (!g.getEdges().contains(e)) g.addEdge(e);
             //Vertex w = e.getDestination();
             //if (!w.isVisited()) {
               //  w.setVisited(true);
@@ -103,8 +105,9 @@ public class Explorer implements Intruder {
      * @return True if that vertex can be reached through a known path
      */
     private boolean pathExist(Vertex startingVertex, Vertex endVertex, Graph map) {
-        map = BFSWrapper(map, startingVertex);
-        return endVertex.isVisited();
+        //map = eBFSWrapper(map, startingVertex);
+        //return endVertex.isVisited();
+        return true;
     }
 
     //TODO: Method Find shortest path
@@ -337,20 +340,9 @@ public class Explorer implements Intruder {
      */
     public IntruderAction explore(IntruderPercepts percepts){
 
-//        Rotate wallRotate = wallTurn(percepts.getVision().getObjects());
-        return new Move(new Distance(1));
+        //return new Move(new Distance(1));
+        return new NoAction();
     }
-
-//    private Rotate wallTurn(ObjectPercepts percepts) {
-//
-//        ArrayList<ObjectPercept> visionObjects = new ArrayList<>();
-//        ArrayList<ObjectPercept> walls = new ArrayList<>();
-//        visionObjects.addAll(percepts.getAll());
-//        for (ObjectPercept p : visionObjects) {
-//            if(p.getType()== Wall)
-//
-//        }
-//    }
 }
 
 

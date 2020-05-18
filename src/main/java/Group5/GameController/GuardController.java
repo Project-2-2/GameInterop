@@ -28,7 +28,6 @@ public class GuardController extends AgentController {
         explorer = new Explorer(1, this);
     }
 
-
     public void move(Distance distance){
         super.move(distance,normalMoveDistance);
     }

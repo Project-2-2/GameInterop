@@ -161,26 +161,36 @@ public class Area {
     }
 
     /**
-     * @return a list of Points that represents the corners of an area
+     * @return a list of Points that represents the sides of an area
      */
-    public ArrayList<ArrayList<Point>> getPositions() {
-        ArrayList<ArrayList<Point>> positions = new ArrayList<>();
-        positions.add(new ArrayList<>());
-        positions.add(new ArrayList<>());
-        positions.add(new ArrayList<>());
-        positions.add(new ArrayList<>());
+    public ArrayList<ArrayList<Point>> getSides() {
+        ArrayList<ArrayList<Point>> sides = new ArrayList<>();
+        sides.add(new ArrayList<>());
+        sides.add(new ArrayList<>());
+        sides.add(new ArrayList<>());
+        sides.add(new ArrayList<>());
 
-        positions.get(0).add(new Point(this.x1,this.y1));
-        positions.get(0).add(new Point(this.x2,this.y2));
+        sides.get(0).add(new Point(this.x1,this.y1));
+        sides.get(0).add(new Point(this.x2,this.y2));
 
-        positions.get(1).add(new Point(this.x2,this.y2));
-        positions.get(1).add(new Point(this.x3,this.y3));
+        sides.get(1).add(new Point(this.x2,this.y2));
+        sides.get(1).add(new Point(this.x3,this.y3));
 
-        positions.get(2).add(new Point(this.x3,this.y3));
-        positions.get(2).add(new Point(this.x4,this.y4));
+        sides.get(2).add(new Point(this.x3,this.y3));
+        sides.get(2).add(new Point(this.x4,this.y4));
 
-        positions.get(3).add(new Point(this.x4,this.y4));
-        positions.get(3).add(new Point(this.x1,this.y1));
+        sides.get(3).add(new Point(this.x4,this.y4));
+        sides.get(3).add(new Point(this.x1,this.y1));
+        return sides;
+    }
+
+    public ArrayList<Point> getPositions() {
+        ArrayList<Point> positions = new ArrayList<>();
+        positions.add(new Point(this.x1,this.y1));
+        positions.add(new Point(this.x2,this.y2));
+        positions.add(new Point(this.x3,this.y3));
+        positions.add(new Point(this.x4,this.y4));
+
         return positions;
     }
 

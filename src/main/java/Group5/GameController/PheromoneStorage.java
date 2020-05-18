@@ -37,8 +37,7 @@ public class PheromoneStorage {
         }
     }
 
-    public void addPheromone( Pheromone pheromone, boolean isGuard) {
-
+    public void addPheromone (Pheromone pheromone, boolean isGuard) {
         if (isGuard) {
             guardPheromones.add(pheromone);
         }
