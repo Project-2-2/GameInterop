@@ -97,11 +97,9 @@ public class OccupancyAgent implements Guard {
      * P(z = 1|Mx,y = 0) : False occupied measurement
      * P(z = 0|Mx,y = 0) : True free measurement
      *
-     * TODO: develop this into mother duck strategy.
+     * TODO: develop this into mother duck strategy/communication.
      */
     public void verify(GuardPercepts guardPercepts) throws IOException {
-
-
         //Area of inspection.
         ArrayList<ArrayList<Boolean>> inspectionArea = new ArrayList<ArrayList<Boolean>>();
 
@@ -159,18 +157,6 @@ public class OccupancyAgent implements Guard {
             Distance distance = new Distance(percepts.getScenarioGuardPercepts().getMaxMoveDistanceGuard().getValue() * getSpeedModifier(percepts));
             return new Move(distance);
         }
-//        if(!percepts.wasLastActionExecuted())
-//        {
-//            if(Math.random() < 0.1)
-//            {
-//                return new DropPheromone(SmellPerceptType.values()[(int) (Math.random() * SmellPerceptType.values().length)]);
-//            }
-//            return new Rotate(Angle.fromRadians(percepts.getScenarioGuardPercepts().getScenarioPercepts().getMaxRotationAngle().getRadians() * Game._RANDOM.nextDouble()));
-//        }
-//        else
-//        {
-//            return new Move(new Distance(percepts.getScenarioGuardPercepts().getMaxMoveDistanceGuard().getValue() * getSpeedModifier(percepts)));
-//        }
     }
 
     /**
@@ -178,24 +164,13 @@ public class OccupancyAgent implements Guard {
      * P(Mx,y | z) = (P(z | Mx,y) * P(Mx,y)) / P(z)
      */
     public void posteriorMap(GuardPercepts percepts){
-        Distance distanceToNearestObject = percepts.getVision().getFieldOfView().getRange();
-        Angle directionFacing = percepts.getVision().getFieldOfView().getViewAngle();
-
+        //So calculating this is considered bad with research I found
+        //Apparently,  The method below using log odds is better.
+        //Further the method below is better since Baye's can switch belief whereas log update can't
     }
 
     public void priorMap(){
-        Distance distanceToNearestObject = percepts.getVision().getFieldOfView().getRange();
-        Angle directionFacing = percepts.getVision().getFieldOfView().getViewAngle();
-
-    }
-
-
-    /**
-     * a binary random variable (0,1) with Mx,y:{free, occupied} -> {0,1}https://www.youtube.com/watch?v=Ko7SWZQIawM
-     * Given some probability space (theta, P) a R.V. X: theta -> R is a function that maps the sample space to the reals.
-     */
-    public void Occupancy() {
-
+        //see comments in posteriiorMap().
     }
 
     /**
@@ -274,8 +249,9 @@ public class OccupancyAgent implements Guard {
         return Math.log(meas) + Math.log(odd);
     }
 
-    //localize global map into our arraylist.
     /**
+     * a binary random variable (0,1) with Mx,y:{free, occupied} -> {0,1} as taken from: https://www.youtube.com/watch?v=Ko7SWZQIawM
+     * Given some probability space (theta, P) a R.V. X: theta -> R is a function that maps the sample space to the reals.
      * Using the formula:
      * [x1,occ; x2,occ] = [cos(thetha) , sin(theta); -sin(thetha) , cos(theta)] * [d ; 0] + [x1 ; x2]
      * where d is length of ray, (x1,occ) and (x2,occ) are the x and y coordinate of the endpoint of the rays.
