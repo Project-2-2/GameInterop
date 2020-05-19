@@ -70,7 +70,8 @@ public class SimplePathfinding {
             if(this.phase == Phase.CircumNav){
 
 
-                // TODO : FIX THIS!!!
+                // TODO : FIX THIS!!!-
+                
 
 
                 // Col is the closest collider

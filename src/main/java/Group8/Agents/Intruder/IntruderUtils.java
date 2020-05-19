@@ -62,6 +62,7 @@ public abstract class IntruderUtils {
     }
 
     public static final boolean predictCollision(IntruderPercepts percepts){
+        //System.out.println("Check");
         List<ObjectPercept> objectPercepts = (List<ObjectPercept>) setToList(percepts.getVision().getObjects().getAll());
         List<ObjectPercept> colliders = new ArrayList<>();
         for (ObjectPercept obj:
@@ -74,7 +75,7 @@ public abstract class IntruderUtils {
             for (ObjectPercept o :
                     colliders) {
                 Distance d = new Distance(new Point(0, 0), o.getPoint());
-                System.out.println(String.format("Distance to object: %f",d.getValue()));
+                System.out.println(String.format("Distance to object: %f of type: %s",d.getValue(),o.getType()));
                 if (d.getValue() <= THRESHOLD) {
                     return true;
                 }
