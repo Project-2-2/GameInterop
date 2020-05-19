@@ -22,7 +22,7 @@ public abstract class IntruderUtils {
 
 
     public static final double EPS = 1e-6;
-    public static final double THRESHOLD = 2;
+    public static final double THRESHOLD = 1;
 
 
     /**
