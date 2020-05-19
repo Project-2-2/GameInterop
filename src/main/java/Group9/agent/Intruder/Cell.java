@@ -55,26 +55,28 @@ public class Cell {
     public LinkedList<Cell> getUnprocessed(History history)
     {
         LinkedList<Cell> unprocessed = new LinkedList<>();
-        Cell above;
-        Cell below;
-        Cell left;
-        Cell right
-        if (history.getCell(new Coordinate(getMidX(), getMidY() + 1)) == null)
+        Cell above = history.getCell(new Coordinate(getMidX(), getMidY() + 1));
+        Cell below =history.getCell(new Coordinate(getMidX(), getMidY() - 1));
+        Cell left = history.getCell(new Coordinate(getMidX()-1, getMidY()));
+        Cell right = history.getCell(new Coordinate(getMidX()+1, getMidY()));
+        if (above == null)
         {
-            above = addAbove();
-            numOfCells++;
+            above = new Cell(getMidX(), getMidY() + 1);
         }
-        if (history.getCell(new Coordinate(getMidX(), getMidY() - 1)) == null)
+        if (below == null)
         {
-            addBelow();
+            below = new Cell(getMidX(), getMidY() -1);
+            System.out.println("added: " + below);
         }
-        if(history.getCell(new Coordinate(getMidX()-1, getMidY())) == null)
+        if(left == null)
         {
-            addLeft();
+            left = new Cell(getMidX() -1, getMidY());
+            System.out.println("added: " + left);
         }
-        if(history.getCell(new Coordinate(getMidX()+1, getMidY() + 1)) == null)
+        if(right == null)
         {
-            addRight();
+            right = new Cell(getMidX() +1, getMidY());
+            System.out.println("added: " + right);
         }
         if (!above.getProcessed())
         {
@@ -110,7 +112,6 @@ public class Cell {
      */
     public Cell find(double x, double y)
     {
-        System.out.println("finding...");
         x = Math.round(x);
         y = Math.round(y);
         Cell result = this;
@@ -130,7 +131,6 @@ public class Cell {
             }
             else if(x < result.getMidX())
             {
-                System.out.println("x < result.getMidX()");
                 if (result.getLeft() != null)
                 {
                     result = result.getLeft();
@@ -178,6 +178,10 @@ public class Cell {
         {
             return  result;
         }
+    }
+    public void deProcess()
+    {
+        processed = false;
     }
     public boolean getProcessed()
     {
@@ -230,7 +234,6 @@ public class Cell {
     public void printall(int x, int y)
     {
         printed = true;
-        System.out.println(this.toString() + "should be(x,y): " + x + ", " + y);
         if (above != null && !above.getPrinted())
         {
             above.printall(x, y+1);

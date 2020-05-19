@@ -7,7 +7,6 @@ package Group9.agent.Intruder;
 import Group9.math.Vector2;
 import Interop.Action.IntruderAction;
 import Interop.Action.Move;
-import Interop.Action.NoAction;
 import Interop.Action.Rotate;
 import Interop.Agent.Intruder;
 import Interop.Geometry.Angle;
@@ -18,7 +17,7 @@ import Interop.Percept.Vision.ObjectPercepts;
 
 import java.util.LinkedList;
 public class Intruder1 implements Intruder {
-    private Cell anchor;
+    private Cell start;
     private History history = new History();
     private LinkedList<Cell> toBeProcessed = new LinkedList<>();
     private Cell target;
@@ -28,23 +27,19 @@ public class Intruder1 implements Intruder {
 
     public Intruder1()
     {
-        anchor = new Cell(0, 0);
+        start = new Cell(0, 0);
         position = new Coordinate(0,0);
         firstTime = true;
         lookingDirection = 0;
-        Cell above = anchor.addAbove();
-        Cell below = anchor.addBelow();
-        Cell left = anchor.addLeft();
-        Cell right = anchor.addRight();
     }
     /*
     //Attribute
-    Cell anchor;
+    Cell start;
 
     //Constructor
     public Intruder1(Cell startPosition)
     {
-        this.anchor = startPosition;
+        this.start = startPosition;
     }
     */
 
@@ -70,8 +65,8 @@ public class Intruder1 implements Intruder {
         double target_x = target_coords.getX();
         double target_y = target_coords.getY();
 
-        double my_x = this.anchor.getX();
-        double my_y = this.anchor.getY();
+        double my_x = this.start.getX();
+        double my_y = this.start.getY();
 
         double distance_x = Math.abs(target_x - my_x);
         double distance_y = Math.abs(target_y - my_y);
@@ -88,9 +83,9 @@ public class Intruder1 implements Intruder {
         Direction direction = percepts.getTargetDirection();
         Angle alpha = percepts.getVision().getFieldOfView().getViewAngle();
         Distance range = percepts.getVision().getFieldOfView().getRange();
-        ViewArea view = new ViewArea(range, alpha, lookingDirection, anchor.getMidX(), anchor.getMidY());
-        toBeProcessed.add(anchor);
-        anchor.setUnprocessed();
+        ViewArea view = new ViewArea(range, alpha, lookingDirection, position.getX(), position.getY());
+        toBeProcessed.add(start);
+        history.setUnProcessed();
         explore(view, percepts.getVision().getObjects());
         //Making a decision based on the mind-map
         if(firstTime || closeEnough(position.getX(), target.getMidX()) && closeEnough(position.getY(), target.getMidY()))
@@ -99,10 +94,9 @@ public class Intruder1 implements Intruder {
             //determine a new target
             double moveDistance = percepts.getScenarioIntruderPercepts().getMaxMoveDistanceIntruder().getValue();
             LinkedList<Coordinate> borderPoints = getBorderPoints(position, moveDistance);
-            this.target = findTarget(anchor, borderPoints);
+            this.target = findTarget(borderPoints);
         }
-        //System.out.println("target: " + target.toString());
-        double targetDirection = getDirection(target, anchor);
+        double targetDirection = getDirection(target, start);
         if (targetDirection != lookingDirection)
         {
             double turn = targetDirection - lookingDirection;
@@ -119,9 +113,6 @@ public class Intruder1 implements Intruder {
             double distance = getDistance(new Coordinate(target.getMidX(), target.getMidY()), new Coordinate(position.getX(), position.getY()));
             //update position
             position.add(Math.cos(lookingDirection) * distance, Math.sin(lookingDirection) * distance);
-            anchor = anchor.find(position.getX(), position.getY());
-            System.out.println("new Position: " + anchor);
-            System.out.println("amount of cells: " + anchor.getNumOfCells());
             return new Move(new Distance(distance));
         }
     }
@@ -129,21 +120,23 @@ public class Intruder1 implements Intruder {
     {
         Vector2 v = new Vector2(target.getMidX() - position.getX(), target.getMidY() - position.getMidY());
         v = v.normalise();
-        double angle = v.getAngle();
-        return angle;
+        return v.getAngle();
     }
-    public Cell findTarget(Cell position, LinkedList<Coordinate> borderPoints)
+    public Cell findTarget(LinkedList<Coordinate> borderPoints)
     {
         double highest = Double.NEGATIVE_INFINITY;
         Cell target = new Cell();
         for (Coordinate point: borderPoints)
         {
-            Cell possibleTarget = position.find(point.getX(), point.getY());
-            double score = possibleTarget.getScore();
-            if (score > highest)
+            Cell possibleTarget = history.getCell(new Coordinate(point.getX(), point.getY()));
+            if(possibleTarget != null)
             {
-                highest = score;
-                target = possibleTarget;
+                double score = possibleTarget.getScore();
+                if (score > highest)
+                {
+                    highest = score;
+                    target = possibleTarget;
+                }
             }
         }
         return target;
@@ -153,12 +146,16 @@ public class Intruder1 implements Intruder {
     {
         while(toBeProcessed.size() > 0)
         {
-            double contained = view.partContained(toBeProcessed.get(0), objects);
-            if (contained > 0.0)
+            if (toBeProcessed.get(0) != null)
             {
-                LinkedList<Cell> unprocessed = toBeProcessed.get(0).getUnprocessed();
-                history.addAll(unprocessed);
-                toBeProcessed.addAll(unprocessed);
+                double contained = view.partContained(toBeProcessed.get(0), objects);
+                if (contained > 0.0)
+                {
+                    LinkedList<Cell> unprocessed = toBeProcessed.get(0).getUnprocessed(history);
+                    history.addAll(unprocessed);
+                    toBeProcessed.addAll(unprocessed);
+
+                }
             }
             toBeProcessed.remove(0);
         }
@@ -202,10 +199,10 @@ public class Intruder1 implements Intruder {
 
         for (Coordinate c: inBetweenPoints)
         {
-            borderPoints.add(new Coordinate(anchor.getX() + c.getX(), anchor.getY() + c.getY()));
-            borderPoints.add(new Coordinate(anchor.getX() - c.getX(), anchor.getY() + c.getY()));
-            borderPoints.add(new Coordinate(anchor.getX() + c.getX(), anchor.getY() - c.getY()));
-            borderPoints.add(new Coordinate(anchor.getX() - c.getX(), anchor.getY() - c.getY()));
+            borderPoints.add(new Coordinate(start.getX() + c.getX(), start.getY() + c.getY()));
+            borderPoints.add(new Coordinate(start.getX() - c.getX(), start.getY() + c.getY()));
+            borderPoints.add(new Coordinate(start.getX() + c.getX(), start.getY() - c.getY()));
+            borderPoints.add(new Coordinate(start.getX() - c.getX(), start.getY() - c.getY()));
         }
 
          */
