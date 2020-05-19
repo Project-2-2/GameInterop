@@ -679,7 +679,7 @@ public abstract class PointContainer {
             double _b_y_intercept = b_start.getY() - (b_end.getY() - b_start.getY()) / (b_end.getX() - b_start.getX()) * b_start.getX();
 
             //-- check y intercept
-            if(_a_y_intercept != _b_y_intercept)
+            if(_a_y_intercept != _b_y_intercept || Double.isInfinite(_a_y_intercept) || Double.isInfinite(_b_y_intercept))
             {
                 return null;
             }
@@ -749,3 +749,5 @@ public abstract class PointContainer {
         return (x1*y2)-(x2*y1);
     }
 }
+
+
