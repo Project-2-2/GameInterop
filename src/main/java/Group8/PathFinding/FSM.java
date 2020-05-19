@@ -21,7 +21,7 @@ import static Group8.Agents.Intruder.IntruderUtils.*;
  */
 public class FSM {
 
-    private static final double COLLISION_ROT = Math.PI;
+    private double COLLISION_ROT = Math.PI;
 
     // Represents the queue containing actions with low priority
     private LinkedList<IntruderAction> actionQueue;
@@ -88,13 +88,16 @@ public class FSM {
                 }
                 if(col != null){
                     Angle angle = Angle.fromRadians(Utils.clockAngle(col.getPoint().getX(), col.getPoint().getY()));
+                    COLLISION_ROT = Math.PI/2 - angle.getRadians();
                     if(angle.getRadians() > Math.PI/4){
                         // Walk parallel to wall to right
                         prioQueue.addAll(generateRotationSequence(percepts,Angle.fromRadians(-COLLISION_ROT)));
+                        prioQueue.add(generateMaxMove(percepts));
                     }
                     else if(angle.getRadians() < Math.PI/4){
                         // Walk parallel to wall to left
                         prioQueue.addAll(generateRotationSequence(percepts,Angle.fromRadians(COLLISION_ROT)));
+                        prioQueue.add(generateMaxMove(percepts));
                     }
                     else{
                         if(angle.getRadians() == Math.PI/4){
@@ -106,6 +109,7 @@ public class FSM {
                                 // Go right
                                 prioQueue.addAll(generateRotationSequence(percepts,Angle.fromRadians(COLLISION_ROT)));
                             }
+                            prioQueue.add(generateMaxMove(percepts));
                         }
                     }
 
