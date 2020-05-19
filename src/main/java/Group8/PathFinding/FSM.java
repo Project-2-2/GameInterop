@@ -20,7 +20,7 @@ import static Group8.Agents.Intruder.IntruderUtils.*;
  * @author Luc
  * Q-based state machine thingy
  */
-public class SimplePathfinding {
+public class FSM {
 
     private static final double COLLISION_ROT = Math.PI/4;
 
@@ -48,7 +48,7 @@ public class SimplePathfinding {
     }
 
 
-    public SimplePathfinding(IntruderPercepts percepts) {
+    public FSM(IntruderPercepts percepts) {
         actionQueue = new LinkedList<>();
         prioQueue = new LinkedList<>();
         currentPercepts = percepts;
@@ -61,6 +61,7 @@ public class SimplePathfinding {
             actionQueue.clear();
         }
         if(!prioQueue.isEmpty() && percepts.wasLastActionExecuted()){
+            actionQueue.clear();
             return prioQueue.poll();
         }
         else {
@@ -232,7 +233,6 @@ class EscapeStrategy{
             actionQueue.addAll(actions);
         }
         else{
-            // TODO: Implement escaping strategy after initial rotation
             actionQueue.add(generateMaxMove(percepts));
         }
     }

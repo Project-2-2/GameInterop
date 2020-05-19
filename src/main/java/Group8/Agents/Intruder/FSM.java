@@ -1,8 +1,6 @@
 package Group8.Agents.Intruder;
 
-import Group8.PathFinding.SimplePathfinding;
 import Interop.Action.IntruderAction;
-import Interop.Action.Rotate;
 import Interop.Agent.Intruder;
 import Interop.Percept.IntruderPercepts;
 
@@ -10,9 +8,9 @@ import Interop.Percept.IntruderPercepts;
 /**
  * This agent will only focus on getting to the target and will not consider anything else
  */
-public class SimplePathfindingIntruder implements Intruder {
+public class FSM implements Intruder {
 
-    private SimplePathfinding pathfinding;
+    private Group8.PathFinding.FSM pathfinding;
     private static int intruderCount = 0;
     private static int currentIntruder = 1;
     private boolean init;
@@ -23,13 +21,13 @@ public class SimplePathfindingIntruder implements Intruder {
     public IntruderAction getAction(IntruderPercepts percepts){
         init = false;
         if(pathfinding == null){
-            pathfinding = new SimplePathfinding(percepts);
+            pathfinding = new Group8.PathFinding.FSM(percepts);
             intruderCount++;
             init = true;
         }
 
 
-        nextIntruder();
+        //nextIntruder();
         return pathfinding.getMoveIntruder(percepts);
     }
 

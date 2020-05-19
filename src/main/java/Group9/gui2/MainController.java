@@ -33,7 +33,7 @@ public class MainController implements Runnable {
     public MainController(Gui gui, File mapFile,boolean generateHistory){
         this.gui = gui;
         this.generateHistory = generateHistory;
-        game = new Game(Parser.parseFile(mapFile.getAbsolutePath()), new AgentFactoryImpl(), false, 15, new Callback<Game>() {
+        game = new Game(Parser.parseFile(mapFile.getAbsolutePath()), new AgentFactoryImpl(), false, 5, new Callback<Game>() {
             @Override
             public void call(Game game) {
                 if(generateHistory){

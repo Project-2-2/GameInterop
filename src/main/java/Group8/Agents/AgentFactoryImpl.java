@@ -1,8 +1,7 @@
 package Group8.Agents;
 
-import Group8.Agents.Intruder.SimplePathfindingIntruder;
+import Group8.Agents.Intruder.FSM;
 import Group9.agent.RandomAgent;
-import Group9.agent.RandomIntruderAgent;
 import Group9.agent.factories.IAgentFactory;
 import Interop.Agent.Guard;
 import Interop.Agent.Intruder;
@@ -32,7 +31,7 @@ public class AgentFactoryImpl implements IAgentFactory{
                     intruders.add(null);
                     break;
                 case SIMPLE_PATH:
-                    intruders.add(new SimplePathfindingIntruder());
+                    intruders.add(new FSM());
                     break;
             }
         }

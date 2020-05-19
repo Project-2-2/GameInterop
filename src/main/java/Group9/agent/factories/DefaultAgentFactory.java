@@ -1,13 +1,11 @@
 package Group9.agent.factories;
 
-import Group8.Agents.Intruder.SimplePathfindingIntruder;
 import Group9.agent.RandomAgent;
 import Group9.agent.RandomIntruderAgent;
 import Interop.Agent.Guard;
 import Interop.Agent.Intruder;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**
