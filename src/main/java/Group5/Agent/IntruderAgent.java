@@ -190,16 +190,15 @@ public class IntruderAgent implements Interop.Agent.Intruder {
             for (int i = 0; i < n - 1; i++) {
                 for (int j = 0; j < n - i - 1; j++) {
                     //Bubble Sorting for nearest element in vision
-                    double tempDistance1 =
-                            intruderPercepts.getVision().getFieldOfView().getRange().getValue() - visionObjectsSorted
-                                    .get(j).getPoint().getDistanceFromOrigin().getValue();
-                    double tempDistance2 =
-                            intruderPercepts.getVision().getFieldOfView().getRange().getValue() - visionObjectsSorted
-                                    .get(j + 1).getPoint().getDistanceFromOrigin().getValue();
-                    if (tempDistance1 > tempDistance2) {
-                        ObjectPercept temp = visionObjectsSorted.get(j);
-                        visionObjectsSorted.set(j, visionObjectsSorted.get(j + 1));
-                        visionObjectsSorted.set(j + 1, temp);
+                    if (visionObjectsSorted.get(j).getType() != ObjectPerceptType.EmptySpace
+                    || visionObjectsSorted.get(j+1).getType() != ObjectPerceptType.EmptySpace) {
+                        double tempDistance1 = intruderPercepts.getVision().getFieldOfView().getRange().getValue() - visionObjectsSorted.get(j).getPoint().getDistanceFromOrigin().getValue();
+                        double tempDistance2 = intruderPercepts.getVision().getFieldOfView().getRange().getValue() - visionObjectsSorted.get(j + 1).getPoint().getDistanceFromOrigin().getValue();
+                        if (tempDistance1 > tempDistance2 && visionObjectsSorted.get(j+1).getType() != ObjectPerceptType.EmptySpace) {
+                            ObjectPercept temp = visionObjectsSorted.get(j);
+                            visionObjectsSorted.set(j, visionObjectsSorted.get(j + 1));
+                            visionObjectsSorted.set(j + 1, temp);
+                        }
                     }
                 }
             }
