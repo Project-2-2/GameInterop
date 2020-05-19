@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class AgentFactoryImpl implements IAgentFactory{
-    public static final AlgoG GUARD_ALGORITHM= AlgoG.AI1;
+    public static final AlgoG GUARD_ALGORITHM = AlgoG.OCCUPANCY_AGENT;
     public static final AlgoI INTRUDER_ALGORITHM = AlgoI.FSM;
 
     public enum AlgoI {
