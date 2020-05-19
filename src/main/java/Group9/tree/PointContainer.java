@@ -339,29 +339,42 @@ public abstract class PointContainer {
 
         public Line(Vector2 start, Vector2 end)
         {
+            this(start, end, true);
+        }
+
+        public Line(Vector2 start, Vector2 end, boolean swap)
+        {
             super();
-            if(start.getX() <= end.getX())
+            if(swap)
             {
-                this.start = start;
-                this.end = end;
-            }
-            else if(start.getX() == end.getX())
-            {
-                if(start.getY() <= end.getY())
+                if(start.getX() <= end.getX())
                 {
                     this.start = start;
                     this.end = end;
                 }
+                else if(start.getX() == end.getX())
+                {
+                    if(start.getY() <= end.getY())
+                    {
+                        this.start = start;
+                        this.end = end;
+                    }
+                    else
+                    {
+                        this.start = end;
+                        this.end = end;
+                    }
+                }
                 else
                 {
                     this.start = end;
-                    this.end = end;
+                    this.end = start;
                 }
             }
             else
             {
-                this.start = end;
-                this.end = start;
+                this.start = start;
+                this.end = end;
             }
 
         }
@@ -666,7 +679,7 @@ public abstract class PointContainer {
             double _b_y_intercept = b_start.getY() - (b_end.getY() - b_start.getY()) / (b_end.getX() - b_start.getX()) * b_start.getX();
 
             //-- check y intercept
-            if(_a_y_intercept != _b_y_intercept)
+            if(_a_y_intercept != _b_y_intercept || Double.isInfinite(_a_y_intercept) || Double.isInfinite(_b_y_intercept))
             {
                 return null;
             }
@@ -736,3 +749,5 @@ public abstract class PointContainer {
         return (x1*y2)-(x2*y1);
     }
 }
+
+

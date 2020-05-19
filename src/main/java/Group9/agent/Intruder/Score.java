@@ -24,7 +24,7 @@ public class Score{
         if(cell.hasTarget()){scoreOfCell+= TARGET_SCORE;}
         if(cell.hasTeleport()){scoreOfCell+= TELEPORT_SCORE;}
 
-        scoreOfCell+= (-2) * cell.getCout();
+        scoreOfCell+= (-2) * cell.getCount();
         return scoreOfCell;
     }
 
@@ -32,7 +32,7 @@ public class Score{
     public Cell2 chooseBestCell(Cell2 [] cellsToCompare){
         Cell2 bestCell = cellsToCompare[0];
 
-        for (i = 1; i < cellsToCompare.length; i++){
+        for (int i = 1; i < cellsToCompare.length; i++){
             if(getScoreCell(cellsToCompare[i]) > getScoreCell(bestCell)) {
                 bestCell = cellsToCompare[i];
             }

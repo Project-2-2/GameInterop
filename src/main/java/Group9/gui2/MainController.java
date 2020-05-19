@@ -4,7 +4,9 @@ import Group9.Callback;
 import Group9.Game;
 import Group9.agent.container.GuardContainer;
 import Group9.agent.container.IntruderContainer;
+import Group9.agent.factories.DeepSpaceAgentFactory;
 import Group9.agent.factories.DefaultAgentFactory;
+import Group9.agent.factories.ShallowSpaceAgentFactory;
 import Group9.map.dynamic.DynamicObject;
 import Group9.map.parser.Parser;
 import javafx.animation.AnimationTimer;
@@ -32,7 +34,7 @@ public class MainController implements Runnable {
     public MainController(Gui gui, File mapFile,boolean generateHistory){
         this.gui = gui;
         this.generateHistory = generateHistory;
-        game = new Game(Parser.parseFile(mapFile.getAbsolutePath()), new DefaultAgentFactory(), false, 15, new Callback<Game>() {
+        game = new Game(Parser.parseFile(mapFile.getAbsolutePath()), new ShallowSpaceAgentFactory(), false, 15, new Callback<Game>() {
             @Override
             public void call(Game game) {
                 if(generateHistory){

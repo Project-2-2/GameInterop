@@ -100,6 +100,17 @@ public class Vector2 {
 
     public double angle(Vector2 other)
     {
+        double angle = Math.atan2(other.getY(), other.getX()) - Math.atan2(this.getY(), this.getX());
+        if(angle < 0)
+        {
+            angle += 2 * Math.PI;
+        }
+        angle %= (2 * Math.PI);
+        return angle;
+    }
+
+    public double angledSigned(Vector2 other)
+    {
         return Math.atan2(other.getY(), other.getX()) - Math.atan2(this.getY(), this.getX());
     }
 

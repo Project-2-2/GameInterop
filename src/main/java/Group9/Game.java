@@ -46,7 +46,7 @@ import java.util.stream.Collectors;
 public class Game implements Runnable {
 
     public final static Random _RANDOM;
-    public final static long _RANDOM_SEED = System.nanoTime();
+    public final static long _RANDOM_SEED = 201402367609800L; // System.nanoTime();
     static {
         System.out.println("seed: " + _RANDOM_SEED);
         _RANDOM = new Random(_RANDOM_SEED);
@@ -611,10 +611,9 @@ public class Game implements Runnable {
     private IntruderPercepts generateIntruderPercepts(IntruderContainer intruder)
     {
 
-        final Vector2 direction = this.gameMap.getObjects(TargetArea.class).get(0).getContainer().getCenter()
-                .sub(intruder.getPosition()).normalise();
-
-        final double angle = Math.acos(intruder.getDirection().dot(direction));
+        final double angle = intruder.getDirection().angle(
+            this.gameMap.getObjects(TargetArea.class).get(0).getContainer().getCenter().sub(intruder.getPosition())
+        );
 
         return new IntruderPercepts(
                 Direction.fromRadians(angle),
@@ -671,10 +670,16 @@ public class Game implements Runnable {
                 .filter(e -> agentContainer.getPosition().distance(e.getCenter()) <= e.getRadius())
                 .map(dynamicObject -> {
                     Sound sound = (Sound) dynamicObject;
-                    double angle = (_RANDOM.nextBoolean() ? 1 : -1) * (0.174533 * _RANDOM.nextDouble());
+                    double deviation = (_RANDOM.nextBoolean() ? 1 : -1) * (0.174533 * _RANDOM.nextDouble());
+                    double angle = (agentContainer.getDirection().angle(sound.getCenter().sub(agentContainer.getPosition())) + deviation);
+                    if(angle < 0)
+                    {
+                        angle += Math.PI * 2;
+                    }
+                    angle %= (Math.PI * 2);
                     return new SoundPercept(
                             sound.getType(),
-                            Direction.fromRadians(Utils.mod((dynamicObject.getCenter().getClockDirection() - agentContainer.getPosition().getClockDirection()) + angle, Utils.TAU))
+                            Direction.fromRadians(angle)
                     );
                 }).collect(Collectors.toUnmodifiableSet()));
     }

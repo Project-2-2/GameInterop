@@ -24,11 +24,11 @@ import java.util.stream.Stream;
 public class GameMap {
 
     private final static boolean _OPTIMISE_RAYS = true;
+    private final static boolean _OPTIMISED_FILTERED_OBJECTS = true;
 
     private final GameSettings gameSettings;
 
     private final double rayConstant;
-    private QuadTree<MapObject> quadTree;
     private List<MapObject> mapObjects;
 
     private List<DynamicObject<?>> dynamicObjects = new ArrayList<>();
@@ -41,28 +41,6 @@ public class GameMap {
         this.mapObjects = mapObjects;
 
         this.rayConstant = this.calculateRayConstant();
-
-        /*this.quadTree = new QuadTree<>(width, height, 10000, MapObject::getContainer);
-        AtomicInteger index = new AtomicInteger();
-        mapObjects.forEach(a -> {
-            AtomicInteger c = new AtomicInteger();
-            mapObjects.forEach(b -> {
-                if(a != b)
-                {
-                    if(PointContainer.intersect(a.getContainer(), b.getContainer()))
-                    {
-                        c.getAndIncrement();
-                    }
-                }
-            });
-            System.out.println(index.getAndIncrement() + "." + c);
-        });
-        index.set(0);
-        mapObjects.forEach(a -> {
-            System.out.println(index.getAndIncrement());
-            //quadTree.add(a);
-        });
-        System.out.print("");*/
     }
 
     public void setGame(Game game)
@@ -152,7 +130,7 @@ public class GameMap {
     {
 
         // --- If the field of view is greater than 180° (-> Pi) then this method does not work.
-        if(gameSettings.getViewAngle().getRadians() >= Math.PI) {
+        if(gameSettings.getViewAngle().getRadians() >= Math.PI || !_OPTIMISED_FILTERED_OBJECTS) {
             if(filter == null)
             {
                 return this.mapObjects;
@@ -242,6 +220,7 @@ public class GameMap {
                 .filter(e -> !e.getEffects().isEmpty())
                 .filter(e -> PointContainer.intersect(agent.getShape(), e.getContainer()))
                 .flatMap((Function<MapObject, Stream<EffectArea>>) object -> object.getEffects().stream())
+
                 .collect(Collectors.toUnmodifiableSet());
     }
 
@@ -296,7 +275,7 @@ public class GameMap {
             for (Vector2 point : PointContainer.intersectionPoints(guard.getShape(), line)) {
                 Vector2 relative = point
                         .sub(agentContainer.getPosition()) // move relative to agent
-                        .rotated(agentContainer.getDirection().getClockDirection()); //rotated back
+                        .rotated(agentContainer.getDirection().getClockDirection()); //rotated bac
                 if(relative.length() > 0 && fov.isInView(relative.toVexing()))
                 {
                     objectPoints.put(relative, ObjectPerceptType.Guard);
@@ -307,7 +286,7 @@ public class GameMap {
         // --- sort by distance
         List<Map.Entry<Vector2, ObjectPerceptType>> entries = objectPoints.entrySet()
                 .stream()
-                .sorted(Comparator.comparingDouble(e -> line.getStart().distance(e.getKey())))
+                .sorted(Comparator.comparingDouble(e -> e.getKey().length()))
                 .filter(e -> e.getKey().distance(agentContainer.getPosition()) > 0)
                 .collect(Collectors.toList());
 
@@ -319,6 +298,14 @@ public class GameMap {
             {
                 break;
             }
+        }
+
+        if(retSet.isEmpty())
+        {
+            retSet.add(new ObjectPercept(ObjectPerceptType.EmptySpace, line.getEnd()
+                    .sub(agentContainer.getPosition()) // move relative to agent
+                    .rotated(agentContainer.getDirection().getClockDirection()) //rotated back
+                    .toVexing()));
         }
 
         return retSet;
@@ -340,9 +327,9 @@ public class GameMap {
         //System.out.println("angle-a: " + agentContainer.getDirection().getClockDirection());
         List<MapObject> filteredObjects = getFilteredObjects(agentContainer, null);
         for (Vector2[] ray : getAgentVisionCone(agentContainer, fov, viewRange)) {
+            Set<ObjectPercept> objectPercepts = getObjectPerceptsInLine(filteredObjects, agentContainer, fov, new PointContainer.Line(ray[0], ray[1], false));
             objectsInSight.addAll(
-                    getObjectPerceptsInLine(filteredObjects, agentContainer, fov, new PointContainer.Line(ray[0], ray[1]))
-                            .stream()
+                    objectPercepts.stream()
                             .filter(e -> fov.isInView(e.getPoint()))
                             .collect(Collectors.toList())
             );
