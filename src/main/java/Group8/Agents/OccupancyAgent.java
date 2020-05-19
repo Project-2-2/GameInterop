@@ -180,8 +180,6 @@ public class OccupancyAgent implements Guard {
                 return new Rotate(Angle.fromDegrees(rng.nextDouble()));
             }
         } else {
-            suroundUpdateIteration = 1;
-            //decision rule for finding the longest path
             return new Move(new Distance(percepts.getScenarioGuardPercepts().getMaxMoveDistanceGuard().getValue() * getSpeedModifier(percepts)));
         }
 //        if(!percepts.wasLastActionExecuted())
