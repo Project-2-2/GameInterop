@@ -73,7 +73,7 @@ public class FSM {
 
 
                 // TODO : FIX THIS!!!-
-                
+
 
 
                 // Col is the closest collider
@@ -91,22 +91,26 @@ public class FSM {
                     }
 
                 }
-                if(col == null){
-                    prioQueue.addAll(generateRotationSequence(percepts,Angle.fromRadians(-COLLISION_ROT)));
-                    prioQueue.add(generateMaxMove(percepts));
-                }
-                else {
+                if(col != null){
                     Angle angle = Angle.fromRadians(Utils.clockAngle(col.getPoint().getX(), col.getPoint().getY()));
-                    if (JCN) {
-                        if (Game._RANDOM.nextBoolean()) {
-                            // Go "left"
-                            prioQueue.addAll(generateRotationSequence(percepts, Angle.fromRadians(angle.getRadians() - COLLISION_ROT)));
-                        } else {
-                            // Go "right"
-                            prioQueue.addAll(generateRotationSequence(percepts, Angle.fromRadians(Math.PI - angle.getRadians() + COLLISION_ROT)));
+                    if(angle.getRadians() > Math.PI/4){
+                        // Walk parallel to wall to right
+                    }
+                    else if(angle.getRadians() < Math.PI/4){
+                        // Walk parallel to wall to left
+                    }
+                    else{
+                        if(angle.getRadians() == Math.PI/4){
+                            if(Game._RANDOM.nextBoolean()){
+                                // Go left
+                            }
+                            else{
+                                // Go right
+                            }
                         }
                     }
                 }
+
             }
             else if (this.phase == Phase.Explore) {
                 // Exploration strategy
@@ -194,13 +198,11 @@ public class FSM {
     }
 
     private void bLine(){
-        if ((Math.abs(currentPercepts.getTargetDirection().getRadians())) <= EPS) {
-            actionQueue.add(generateMaxMove(currentPercepts));
-        } else {
-            List<IntruderAction> actions = IntruderUtils.generateRotationSequence(currentPercepts,currentPercepts.getTargetDirection());
+        if (!((Math.abs(currentPercepts.getTargetDirection().getRadians())) <= EPS)) {
+            List<IntruderAction> actions = IntruderUtils.generateRotationSequence(currentPercepts, currentPercepts.getTargetDirection());
             actionQueue.addAll(actions);
-            actionQueue.add(generateMaxMove(currentPercepts));
         }
+        actionQueue.add(generateMaxMove(currentPercepts));
     }
 
 }
