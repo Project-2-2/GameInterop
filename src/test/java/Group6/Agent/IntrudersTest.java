@@ -14,6 +14,7 @@ public class IntrudersTest extends ExtendedUnitTest {
         System.out.println("\n\nIntruders Test\n");
 
         RandomIntruderTest.main(args);
+        walkWallTest.main(args);
 
     }
 
