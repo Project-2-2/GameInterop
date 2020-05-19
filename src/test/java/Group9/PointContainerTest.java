@@ -348,6 +348,16 @@ public class PointContainerTest extends SimpleUnitTest {
 
             assertTrue(PointContainer.intersect(a, b));
         }
+
+        //--- regression
+        {
+            PointContainer.Polygon polygon = new PointContainer.Polygon(new Vector2(140, 110), new Vector2(145, 110),
+                    new Vector2(145, 112), new Vector2(140, 112));
+
+            PointContainer.Circle circle = new PointContainer.Circle(new Vector2(145, 92), 0.5);
+
+            assertTrue(!PointContainer.intersect(polygon, circle));
+        }
     }
 
     private static void test_intersect_line_line() {
