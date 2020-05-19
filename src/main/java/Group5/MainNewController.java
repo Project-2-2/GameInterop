@@ -19,10 +19,15 @@ public class MainNewController {
 //    }
 
     public static void main(String[] args) {
-        for (int i=0; i<100; i++){
+        int epochs = 1000;
+        int guardWins = 0;
+        for (int i=0; i<epochs; i++){
             Game game = new Game(Parser.parseFile("./src/main/java/Group9/map/maps/test_2.map"), new AgentFactoryGroup5(), false);
             game.run();
+            if (game.getWinner().toString().equals("GUARDS"))
+                guardWins++;
             System.out.printf("The winner is: %s\n", game.getWinner());
         }
+        System.out.println("The guards won " + (guardWins*100/epochs) + "% of " + epochs + " matches.");
     }
 }
