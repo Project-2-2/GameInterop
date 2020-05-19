@@ -68,6 +68,11 @@ public class SimplePathfinding {
                 generateRotationSequence(percepts,Angle.fromRadians(COLLISION_ROT));
             }
             if(this.phase == Phase.CircumNav){
+
+
+                // TODO : FIX THIS!!!
+
+
                 // Col is the closest collider
                 ObjectPercept col = null;
                 generateObstructions();
@@ -83,15 +88,20 @@ public class SimplePathfinding {
                     }
 
                 }
-                Angle angle = Angle.fromRadians(Utils.clockAngle(col.getPoint().getX(),col.getPoint().getY()));
-                if(JCN){
-                    if(Game._RANDOM.nextBoolean()){
-                        // Go "left"
-                        prioQueue.addAll(generateRotationSequence(percepts,Angle.fromRadians(angle.getRadians() - COLLISION_ROT)));
-                    }
-                    else{
-                        // Go "right"
-                        prioQueue.addAll(generateRotationSequence(percepts,Angle.fromRadians(Math.PI - angle.getRadians() + COLLISION_ROT)));
+                if(col == null){
+                    prioQueue.addAll(generateRotationSequence(percepts,Angle.fromRadians(-COLLISION_ROT)));
+                    prioQueue.add(generateMaxMove(percepts));
+                }
+                else {
+                    Angle angle = Angle.fromRadians(Utils.clockAngle(col.getPoint().getX(), col.getPoint().getY()));
+                    if (JCN) {
+                        if (Game._RANDOM.nextBoolean()) {
+                            // Go "left"
+                            prioQueue.addAll(generateRotationSequence(percepts, Angle.fromRadians(angle.getRadians() - COLLISION_ROT)));
+                        } else {
+                            // Go "right"
+                            prioQueue.addAll(generateRotationSequence(percepts, Angle.fromRadians(Math.PI - angle.getRadians() + COLLISION_ROT)));
+                        }
                     }
                 }
             }

@@ -48,7 +48,7 @@ public class AgentFactoryImpl implements IAgentFactory{
             switch(GUARD_ALGORITHM) {
                 case AI1:
                     // TODO: remove this class
-                    guards.add(new RandomAgent());
+                    guards.add(new IdleGuards());
                     break;
                 case AI2:
                     //guards.add(new GuardAlgo2());

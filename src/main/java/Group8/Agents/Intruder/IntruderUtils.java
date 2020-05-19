@@ -13,6 +13,7 @@ import Interop.Percept.Scenario.SlowDownModifiers;
 import Interop.Percept.Vision.ObjectPercept;
 import Interop.Percept.Vision.ObjectPerceptType;
 
+import javax.print.DocFlavor;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -21,7 +22,7 @@ public abstract class IntruderUtils {
 
 
     public static final double EPS = 1e-6;
-    public static final double THRESHOLD = 0.1;
+    public static final double THRESHOLD = 2;
 
 
     /**
@@ -69,18 +70,17 @@ public abstract class IntruderUtils {
                colliders.add(obj);
            }
         }
-        if(colliders.isEmpty()){
-            return false;
-        }
-        else{
+        if (!colliders.isEmpty()) {
             for (ObjectPercept o :
                     colliders) {
-                if(new Distance(new Point(0,0),o.getPoint()).getValue() <= THRESHOLD){
+                Distance d = new Distance(new Point(0, 0), o.getPoint());
+                System.out.println(String.format("Distance to object: %f",d.getValue()));
+                if (d.getValue() <= THRESHOLD) {
                     return true;
                 }
             }
-            return false;
         }
+        return false;
     }
 
     // Utility function stolen from g9 code
