@@ -100,7 +100,7 @@ public class OccupancyAgent implements Guard {
      * TODO: develop this into mother duck strategy.
      */
     public void verify(GuardPercepts guardPercepts) throws IOException {
-        //take area of inspection
+
 
         //Area of inspection.
         ArrayList<ArrayList<Boolean>> inspectionArea = new ArrayList<ArrayList<Boolean>>();
@@ -144,43 +144,20 @@ public class OccupancyAgent implements Guard {
      */
     @Override
     public GuardAction getAction(GuardPercepts percepts) {
-        if(!percepts.wasLastActionExecuted()) {
-            Distance range;
-            Angle direction;
-            if(suroundUpdateIteration == 1) {
-                //update rotation
-                suroundUpdateIteration ++;
+        //update the log-map and occupancy grid
+        mapping(percepts);
 
-                //get range() tells us how far to update the OccupancyGrid
-                range = percepts.getVision().getFieldOfView().getRange();
-                //percepts.getViewAngle() tells which x,y direction we update on
-                direction = percepts.getVision().getFieldOfView().getViewAngle();
-
-
-                // This means that I would halve to calculate 45 degrees with the log update
-                return new Rotate(Angle.fromDegrees(90));
-
-            } else if(suroundUpdateIteration == 2) {
-                //update rotation
-                suroundUpdateIteration ++;
-
-                return new Rotate(Angle.fromDegrees(90));
-            } else if(suroundUpdateIteration == 3) {
-                //update rotation
-                suroundUpdateIteration ++;
-                return new Rotate(Angle.fromDegrees(90));
-
-            } else if(suroundUpdateIteration == 4) {
-                //update rotation
-                suroundUpdateIteration ++;
-                return new Rotate(Angle.fromDegrees(90));
-
-            } else {
-                //replace rng.nextDouble() to rotating degree.
-                return new Rotate(Angle.fromDegrees(rng.nextDouble()));
+        if(!percepts.wasLastActionExecuted())
+        {
+            if(Math.random() < 0.1)
+            {
+                return new DropPheromone(SmellPerceptType.values()[(int) (Math.random() * SmellPerceptType.values().length)]);
             }
+            return new Rotate(Angle.fromRadians(percepts.getScenarioGuardPercepts().getScenarioPercepts().getMaxRotationAngle().getRadians() * Game._RANDOM.nextDouble()));
+
         } else {
-            return new Move(new Distance(percepts.getScenarioGuardPercepts().getMaxMoveDistanceGuard().getValue() * getSpeedModifier(percepts)));
+            Distance distance = new Distance(percepts.getScenarioGuardPercepts().getMaxMoveDistanceGuard().getValue() * getSpeedModifier(percepts));
+            return new Move(distance);
         }
 //        if(!percepts.wasLastActionExecuted())
 //        {
@@ -810,7 +787,7 @@ public class OccupancyAgent implements Guard {
 
 
 
-        //TODO: test decoupling indepence of true value to row and column.
+        //TODO: test decoupling indepence of true value to row and column.  Phase 3
 //      //this assumes that walls go only horizontally and vertically- decouples independence maybe be more accurate
 //      if (x2 > x1 && y2 > y1) {
 //            int rowCountIndex = 0;
