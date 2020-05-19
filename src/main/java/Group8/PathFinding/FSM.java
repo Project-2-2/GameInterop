@@ -71,11 +71,6 @@ public class FSM {
             }
             if(this.phase == Phase.CircumNav){
 
-
-                // TODO : FIX THIS!!!-
-
-
-
                 // Col is the closest collider
                 ObjectPercept col = null;
                 generateObstructions();
@@ -95,20 +90,28 @@ public class FSM {
                     Angle angle = Angle.fromRadians(Utils.clockAngle(col.getPoint().getX(), col.getPoint().getY()));
                     if(angle.getRadians() > Math.PI/4){
                         // Walk parallel to wall to right
+                        prioQueue.addAll(generateRotationSequence(percepts,Angle.fromRadians(COLLISION_ROT)));
                     }
                     else if(angle.getRadians() < Math.PI/4){
                         // Walk parallel to wall to left
+                        prioQueue.addAll(generateRotationSequence(percepts,Angle.fromRadians(-COLLISION_ROT)));
                     }
                     else{
                         if(angle.getRadians() == Math.PI/4){
                             if(Game._RANDOM.nextBoolean()){
                                 // Go left
+                                prioQueue.addAll(generateRotationSequence(percepts,Angle.fromRadians(-COLLISION_ROT)));
                             }
                             else{
                                 // Go right
+                                prioQueue.addAll(generateRotationSequence(percepts,Angle.fromRadians(COLLISION_ROT)));
                             }
                         }
                     }
+
+                }
+                else{
+                    switchState();
                 }
 
             }

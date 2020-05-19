@@ -22,8 +22,9 @@ public abstract class IntruderUtils {
 
 
     public static final double EPS = 1e-6;
-    public static final double THRESHOLD = 1;
+    public static double THRESHOLD;
 
+    private static boolean init = false;
 
     /**
      * Creates an ordered list of all actions required to make a rotation of the specified amount
@@ -62,6 +63,10 @@ public abstract class IntruderUtils {
     }
 
     public static final boolean predictCollision(IntruderPercepts percepts){
+        if(!init){
+            init = true;
+            THRESHOLD = percepts.getVision().getFieldOfView().getRange().getValue();
+        }
         //System.out.println("Check");
         List<ObjectPercept> objectPercepts = (List<ObjectPercept>) setToList(percepts.getVision().getObjects().getAll());
         List<ObjectPercept> colliders = new ArrayList<>();
