@@ -16,7 +16,7 @@ public class AgentFactoryImpl implements IAgentFactory{
         AI1,SIMPLE_PATH
     }
     public enum AlgoG {
-        AI1,AI2
+        AI1,OCCUPANCY_AGENT
 
     }
 
@@ -47,8 +47,8 @@ public class AgentFactoryImpl implements IAgentFactory{
                 case AI1:
                     guards.add(null);
                     break;
-                case AI2:
-                    //guards.add(new GuardAlgo2());
+                case OCCUPANCY_AGENT:
+                    guards.add(new OccupancyAgent());
                     break;
             }
         }

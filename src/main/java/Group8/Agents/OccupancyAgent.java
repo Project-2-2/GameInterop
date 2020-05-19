@@ -19,6 +19,7 @@ import Interop.Percept.Vision.ObjectPercepts;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.Random;
 import java.util.Set;
 
@@ -56,6 +57,7 @@ public class OccupancyAgent implements Guard {
     private final double viewRange = 6.0; //I don't know how to pull this of if they are defined
 
     double xPosition, yPosition;
+    Distance rangeDistance = percepts.getVision().getFieldOfView().getRange();
 
     private int suroundUpdateIteration = 1;
     private ObjectPercept objectPercept;
@@ -95,11 +97,9 @@ public class OccupancyAgent implements Guard {
      * P(z = 1|Mx,y = 0) : False occupied measurement
      * P(z = 0|Mx,y = 0) : True free measurement
      *
-     * TODO: develop this into mother duck strategy.
+     * TODO: develop this into mother duck strategy/communication.
      */
     public void verify(GuardPercepts guardPercepts) throws IOException {
-        //take area of inspection
-
         //Area of inspection.
         ArrayList<ArrayList<Boolean>> inspectionArea = new ArrayList<ArrayList<Boolean>>();
 
@@ -142,58 +142,21 @@ public class OccupancyAgent implements Guard {
      */
     @Override
     public GuardAction getAction(GuardPercepts percepts) {
-        if(!percepts.wasLastActionExecuted()) {
-            Distance range;
-            Angle direction;
-            if(suroundUpdateIteration == 1) {
-                //update rotation
-                suroundUpdateIteration ++;
+        //update the log-map and occupancy grid
+        mapping(percepts);
 
-                //get range() tells us how far to update the OccupancyGrid
-                range = percepts.getVision().getFieldOfView().getRange();
-                //percepts.getViewAngle() tells which x,y direction we update on
-                direction = percepts.getVision().getFieldOfView().getViewAngle();
-
-
-                // This means that I would halve to calculate 45 degrees with the log update
-                return new Rotate(Angle.fromDegrees(90));
-
-            } else if(suroundUpdateIteration == 2) {
-                //update rotation
-                suroundUpdateIteration ++;
-
-                return new Rotate(Angle.fromDegrees(90));
-            } else if(suroundUpdateIteration == 3) {
-                //update rotation
-                suroundUpdateIteration ++;
-                return new Rotate(Angle.fromDegrees(90));
-
-            } else if(suroundUpdateIteration == 4) {
-                //update rotation
-                suroundUpdateIteration ++;
-                return new Rotate(Angle.fromDegrees(90));
-
-            } else {
-                //replace rng.nextDouble() to rotating degree.
-                return new Rotate(Angle.fromDegrees(rng.nextDouble()));
+        if(!percepts.wasLastActionExecuted())
+        {
+            if(Math.random() < 0.1)
+            {
+                return new DropPheromone(SmellPerceptType.values()[(int) (Math.random() * SmellPerceptType.values().length)]);
             }
+            return new Rotate(Angle.fromRadians(percepts.getScenarioGuardPercepts().getScenarioPercepts().getMaxRotationAngle().getRadians() * Game._RANDOM.nextDouble()));
+
         } else {
-            suroundUpdateIteration = 1;
-            //decision rule for finding the longest path
-            return new Move(new Distance(percepts.getScenarioGuardPercepts().getMaxMoveDistanceGuard().getValue() * getSpeedModifier(percepts)));
+            Distance distance = new Distance(percepts.getScenarioGuardPercepts().getMaxMoveDistanceGuard().getValue() * getSpeedModifier(percepts));
+            return new Move(distance);
         }
-//        if(!percepts.wasLastActionExecuted())
-//        {
-//            if(Math.random() < 0.1)
-//            {
-//                return new DropPheromone(SmellPerceptType.values()[(int) (Math.random() * SmellPerceptType.values().length)]);
-//            }
-//            return new Rotate(Angle.fromRadians(percepts.getScenarioGuardPercepts().getScenarioPercepts().getMaxRotationAngle().getRadians() * Game._RANDOM.nextDouble()));
-//        }
-//        else
-//        {
-//            return new Move(new Distance(percepts.getScenarioGuardPercepts().getMaxMoveDistanceGuard().getValue() * getSpeedModifier(percepts)));
-//        }
     }
 
     /**
@@ -201,24 +164,13 @@ public class OccupancyAgent implements Guard {
      * P(Mx,y | z) = (P(z | Mx,y) * P(Mx,y)) / P(z)
      */
     public void posteriorMap(GuardPercepts percepts){
-        Distance distanceToNearestObject = percepts.getVision().getFieldOfView().getRange();
-        Angle directionFacing = percepts.getVision().getFieldOfView().getViewAngle();
-
+        //So calculating this is considered bad with research I found
+        //Apparently,  The method below using log odds is better.
+        //Further the method below is better since Baye's can switch belief whereas log update can't
     }
 
     public void priorMap(){
-        Distance distanceToNearestObject = percepts.getVision().getFieldOfView().getRange();
-        Angle directionFacing = percepts.getVision().getFieldOfView().getViewAngle();
-
-    }
-
-
-    /**
-     * a binary random variable (0,1) with Mx,y:{free, occupied} -> {0,1}https://www.youtube.com/watch?v=Ko7SWZQIawM
-     * Given some probability space (theta, P) a R.V. X: theta -> R is a function that maps the sample space to the reals.
-     */
-    public void Occupancy() {
-
+        //see comments in posteriiorMap().
     }
 
     /**
@@ -297,237 +249,522 @@ public class OccupancyAgent implements Guard {
         return Math.log(meas) + Math.log(odd);
     }
 
-    //localize global map into our arraylist.
     /**
+     * a binary random variable (0,1) with Mx,y:{free, occupied} -> {0,1} as taken from: https://www.youtube.com/watch?v=Ko7SWZQIawM
+     * Given some probability space (theta, P) a R.V. X: theta -> R is a function that maps the sample space to the reals.
      * Using the formula:
      * [x1,occ; x2,occ] = [cos(thetha) , sin(theta); -sin(thetha) , cos(theta)] * [d ; 0] + [x1 ; x2]
      * where d is length of ray, (x1,occ) and (x2,occ) are the x and y coordinate of the endpoint of the rays.
      * theta is the direction the agent is facing
      * Note, this method discretizes the map.
      */
-    public void mapping(GuardPercepts percepts, ObjectPercept objectPercept, ObjectPercepts objectPercepts) {
-        //objectPercepts.getAll();
+    public void mapping(GuardPercepts percepts) {
+        Set<ObjectPercept> objectPercepts =  percepts.getVision().getObjects().getAll();
+        Iterator<ObjectPercept> objectPerceptIterator = objectPercepts.iterator();
         //TODO: not the way to get angle
-        Angle direction = percepts.getVision().getFieldOfView().getViewAngle();
-        Distance distance = percepts.getVision().getFieldOfView().getRange();
-        double[][] transformMatrix = {{Math.cos(direction.getDegrees()), Math.sin(direction.getDegrees())},
-                {-Math.sin(direction.getDegrees()), Math.cos(direction.getDegrees())}};
-        double[] normalizeCoefficient = {distance.getValue(), 0};
-
-        //Bresenham line algorithm: https://en.wikipedia.org/wiki/Bresenham%27s_line_algorithm
-        //This draws the line from agent location to endpoint of RayCast. O(n)
-
-        //TODO: this is for one endpoint find a way to do this for all endpoints: ObjectPercepts
-        int x1 = (int) xPosition;
-        int y1 = (int) yPosition;
-        int x2 = (int) objectPercept.getPoint().getX();
-        int y2 = (int) objectPercept.getPoint().getY();
-
-        int m_new = 2 * (y2 - y1);
-        int slope_error_new = m_new - (x2 - x1);
 
 
-        // Boolean occupancy.
-        for (int x = x1, y = y1; x <= x2; x++) {
-            if (x == x2 && y == y2) {
+        //I don't understand how I am supposed to use this formula in Java.  This is something Matlab can do.
+//        double[][] transformMatrix = {{Math.cos(direction.getDegrees()), Math.sin(direction.getDegrees())},
+//                {-Math.sin(direction.getDegrees()), Math.cos(direction.getDegrees())}};
+//        double[] normalizeCoefficient = {distance.getValue(), 0};
 
-                //set only last value to true
-                occupancyGrid.update(x, y);
-                break;
+        while (objectPerceptIterator.hasNext()) {
+            ObjectPercept objectPercept = objectPerceptIterator.next();
+            //Bresenham line algorithm: https://en.wikipedia.org/wiki/Bresenham%27s_line_algorithm
+            //This draws the line from agent location to endpoint of RayCast. O(n)
+            int x1 = (int) xPosition;
+            int y1 = (int) yPosition;
+            int x2 = (int) objectPercept.getPoint().getX();
+            int y2 = (int) objectPercept.getPoint().getY();
+
+            int m_new = 2 * (y2 - y1);
+            int slope_error_new = m_new - (x2 - x1);
+
+
+            // Boolean occupancy.
+            for (int x = x1, y = y1; x <= x2; x++) {
+                if (x == x2 && y == y2) {
+
+                    //set only last value to true
+                    occupancyGrid.update(x, y);
+                    break;
+                } else {
+                    occupancyGrid.update(x, y, false);
+
+                    // Add slope to increment angle formed
+                    slope_error_new += m_new;
+
+                    // Slope error reached limit, time to
+                    // increment y and update slope error.
+                    if (slope_error_new >= 0) {
+                        y++;
+                        slope_error_new -= 2 * (x2 - x1);
+                    }
+                }
+            }
+
+            x1 = (int) xPosition;
+            y1 = (int) yPosition;
+
+            // log update: the belief that something is indeed unoccupied should increase even further.
+            for (int x = x1, y = y1; x <= x2; x++) {
+                //check if value is true or false.
+                if (occupancyGrid.occupancyGrid[x][y]) {
+                    occupancyGrid.logUpdate(x, y, log_occ + occupancyGrid.getLogValue(x, y));
+                } else {
+                    occupancyGrid.logUpdate(x, y, log_free + occupancyGrid.getLogValue(x, y));
+                }
+            }
+
+            int explorationSize = (int) (rangeDistance.getValue());
+
+            //define the exploration zone.
+
+            // NW case
+            int countTrue = 0;
+            if (x2 > x1 && y2 < y1) {
+                //this counts everything
+                for (int i = y1 - explorationSize; i < y1; i++) {
+                    for (int j = x1; j < x1 + explorationSize; j++) {
+                        if (!occupancyGrid.occupancyGrid[j][i]) {
+                            continue;
+                        } else {
+                            countTrue++;
+                        }
+                    }
+                }
+            }
+            // SW case
+            else if (x2 > x1 && y2 > y1) {
+                for (int i = y1; i < y1 + explorationSize; i++) {
+                    for (int j = x1; j < x1 + explorationSize; j++) {
+                        if (!occupancyGrid.occupancyGrid[j][i]) {
+                            continue;
+                        } else {
+                            countTrue++;
+                        }
+                    }
+                }
+            }
+            // SE case
+            else if (x2 < x1 && y2 > y1) {
+                for (int i = y1; i < y1 + explorationSize; i++) {
+                    for (int j = x1 - explorationSize; j < x1; j++) {
+                        if (!occupancyGrid.occupancyGrid[j][i]) {
+                            continue;
+                        } else {
+                            countTrue++;
+                        }
+                    }
+                }
+            }
+            // NE case
+            else if (x2 < x1 && y2 < y1) {
+                for (int i = y1 - explorationSize; i < y1; i++) {
+                    for (int j = x1 - explorationSize; j < x1; j++) {
+                        if (!occupancyGrid.occupancyGrid[j][i]) {
+                            continue;
+                        } else {
+                            countTrue++;
+                        }
+                    }
+                }
+            }
+            //Agent is facing the endpoint
+            else {
+                //TODO: rotate the other direction.
+                System.out.println("Agent is staring at a corner.  You need to add a case if agent is staring at a endpoint.");
+            }
+
+            //countTrue not updating?
+            double odds = odd(countTrue, explorationSize * explorationSize);
+
+            //update log map
+            // NW
+            if (x2 > x1 && y2 < y1) {
+                //this counts everything
+                for (int i = y1 - explorationSize; i < y1; i++) {
+                    for (int j = x1; j < x1 + explorationSize; j++) {
+                        if (occupancyGrid.logMap[j][i] == 0) {
+                            //at top left
+                            if (i == 0 && j == 0) {
+                                double adjValues = occupancyGrid.logMap[j][i + 1] + occupancyGrid.logMap[j + 1][i];
+                                if (adjValues == 0) {
+                                    occupancyGrid.logUpdate(j, i, log_free);
+                                } else {
+                                    occupancyGrid.logUpdate(j, i, logOdds(adjValues, odds));
+                                }
+                            }
+                            //at top right
+                            else if (i == 0 && j == occupancyGrid.logMap.length - 1) {
+                                double adjValues = occupancyGrid.logMap[j - 1][i] + occupancyGrid.logMap[j][i + 1];
+                                if (adjValues == 0) {
+                                    occupancyGrid.logUpdate(j, i, log_free);
+                                } else {
+                                    occupancyGrid.logUpdate(j, i, logOdds(adjValues, odds));
+                                }
+                            }
+                            //at bottom left
+                            else if (i == occupancyGrid.logMap[0].length && j == 0) {
+                                double adjValues = occupancyGrid.logMap[j][i - 1] + occupancyGrid.logMap[j + 1][i];
+                                if (adjValues == 0) {
+                                    occupancyGrid.logUpdate(j, i, log_free);
+                                } else {
+                                    occupancyGrid.logUpdate(j, i, logOdds(adjValues, odds));
+                                }
+                            }
+                            //at bottom right
+                            else if (i == occupancyGrid.logMap[0].length && j == occupancyGrid.logMap.length - 1) {
+                                double adjValues = occupancyGrid.logMap[j][i - 1] + occupancyGrid.logMap[j - 1][i];
+                                if (adjValues == 0) {
+                                    occupancyGrid.logUpdate(j, i, log_free);
+                                } else {
+                                    occupancyGrid.logUpdate(j, i, logOdds(adjValues, odds));
+                                }
+                            }
+                            //at top but not corner
+                            else if (i == 0) {
+                                double adjValues = occupancyGrid.logMap[j][i + 1] + occupancyGrid.logMap[j + 1][i] + occupancyGrid.logMap[j - 1][i];
+                                if (adjValues == 0) {
+                                    occupancyGrid.logUpdate(j, i, log_free);
+                                } else {
+                                    occupancyGrid.logUpdate(j, i, logOdds(adjValues, odds));
+                                }
+                            }
+                            //at bottom but not corner
+                            else if (i == occupancyGrid.logMap[0].length) {
+                                double adjValues = occupancyGrid.logMap[j][i - 1] + occupancyGrid.logMap[j - 1][i] + occupancyGrid.logMap[j + 1][i];
+                                if (adjValues == 0) {
+                                    occupancyGrid.logUpdate(j, i, log_free);
+                                } else {
+                                    occupancyGrid.logUpdate(j, i, logOdds(adjValues, odds));
+                                }
+                            }
+                            //at left but not corner
+                            else if (j == 0) {
+                                double adjValues = occupancyGrid.logMap[j][i - 1] + occupancyGrid.logMap[j + 1][i] + occupancyGrid.logMap[j][i + 1];
+                                if (adjValues == 0) {
+                                    occupancyGrid.logUpdate(j, i, log_free);
+                                } else {
+                                    occupancyGrid.logUpdate(j, i, logOdds(adjValues, odds));
+                                }
+                            }
+                            //at right but not corner
+                            else if (j == occupancyGrid.logMap.length - 1) {
+                                double adjValues = occupancyGrid.logMap[j][i - 1] + occupancyGrid.logMap[j - 1][i] + occupancyGrid.logMap[j][i + 1];
+                                if (adjValues == 0) {
+                                    occupancyGrid.logUpdate(j, i, log_free);
+                                } else {
+                                    occupancyGrid.logUpdate(j, i, logOdds(adjValues, odds));
+                                }
+                            }
+                            //if not at corner
+                            else {
+                                double adjValues = occupancyGrid.logMap[j][i - 1] + occupancyGrid.logMap[j - 1][i] + occupancyGrid.logMap[j][i + 1] + occupancyGrid.logMap[j + 1][i];
+                                if (adjValues == 0) {
+                                    occupancyGrid.logUpdate(j, i, log_free);
+                                } else {
+                                    occupancyGrid.logUpdate(j, i, logOdds(adjValues, odds));
+                                }
+                            }
+                        } else {
+                            double logValue = logOdds(occupancyGrid.logMap[j][i], odds);
+                            occupancyGrid.logUpdate(j, i, logValue);
+                        }
+                    }
+                }
+            }
+            // SW
+            else if (x2 > x1 && y2 > y1) {
+                //this counts everything
+                for (int i = y1; i < y1 + explorationSize; i++) {
+                    for (int j = x1; j < x1 + explorationSize; j++) {
+                        if (occupancyGrid.logMap[j][i] == 0) {
+                            //at top left
+                            if (i == 0 && j == 0) {
+                                double adjValues = occupancyGrid.logMap[j][i + 1] + occupancyGrid.logMap[j + 1][i];
+                                if (adjValues == 0) {
+                                    occupancyGrid.logUpdate(j, i, log_free);
+                                } else {
+                                    occupancyGrid.logUpdate(j, i, logOdds(adjValues, odds));
+                                }
+                            }
+                            //at top right
+                            else if (i == 0 && j == occupancyGrid.logMap.length - 1) {
+                                double adjValues = occupancyGrid.logMap[j - 1][i] + occupancyGrid.logMap[j][i + 1];
+                                if (adjValues == 0) {
+                                    occupancyGrid.logUpdate(j, i, log_free);
+                                } else {
+                                    occupancyGrid.logUpdate(j, i, logOdds(adjValues, odds));
+                                }
+                            }
+                            //at bottom left
+                            else if (i == occupancyGrid.logMap[0].length && j == 0) {
+                                double adjValues = occupancyGrid.logMap[j][i - 1] + occupancyGrid.logMap[j + 1][i];
+                                if (adjValues == 0) {
+                                    occupancyGrid.logUpdate(j, i, log_free);
+                                } else {
+                                    occupancyGrid.logUpdate(j, i, logOdds(adjValues, odds));
+                                }
+                            }
+                            //at bottom right
+                            else if (i == occupancyGrid.logMap[0].length && j == occupancyGrid.logMap.length - 1) {
+                                double adjValues = occupancyGrid.logMap[j][i - 1] + occupancyGrid.logMap[j - 1][i];
+                                if (adjValues == 0) {
+                                    occupancyGrid.logUpdate(j, i, log_free);
+                                } else {
+                                    occupancyGrid.logUpdate(j, i, logOdds(adjValues, odds));
+                                }
+                            }
+                            //at top but not corner
+                            else if (i == 0) {
+                                double adjValues = occupancyGrid.logMap[j][i + 1] + occupancyGrid.logMap[j + 1][i] + occupancyGrid.logMap[j - 1][i];
+                                if (adjValues == 0) {
+                                    occupancyGrid.logUpdate(j, i, log_free);
+                                } else {
+                                    occupancyGrid.logUpdate(j, i, logOdds(adjValues, odds));
+                                }
+                            }
+                            //at bottom but not corner
+                            else if (i == occupancyGrid.logMap[0].length) {
+                                double adjValues = occupancyGrid.logMap[j][i - 1] + occupancyGrid.logMap[j - 1][i] + occupancyGrid.logMap[j + 1][i];
+                                if (adjValues == 0) {
+                                    occupancyGrid.logUpdate(j, i, log_free);
+                                } else {
+                                    occupancyGrid.logUpdate(j, i, logOdds(adjValues, odds));
+                                }
+                            }
+                            //at left but not corner
+                            else if (j == 0) {
+                                double adjValues = occupancyGrid.logMap[j][i - 1] + occupancyGrid.logMap[j + 1][i] + occupancyGrid.logMap[j][i + 1];
+                                if (adjValues == 0) {
+                                    occupancyGrid.logUpdate(j, i, log_free);
+                                } else {
+                                    occupancyGrid.logUpdate(j, i, logOdds(adjValues, odds));
+                                }
+                            }
+                            //at right but not corner
+                            else if (j == occupancyGrid.logMap.length - 1) {
+                                double adjValues = occupancyGrid.logMap[j][i - 1] + occupancyGrid.logMap[j - 1][i] + occupancyGrid.logMap[j][i + 1];
+                                if (adjValues == 0) {
+                                    occupancyGrid.logUpdate(j, i, log_free);
+                                } else {
+                                    occupancyGrid.logUpdate(j, i, logOdds(adjValues, odds));
+                                }
+                            }
+                            //if not at corner
+                            else {
+                                double adjValues = occupancyGrid.logMap[j][i - 1] + occupancyGrid.logMap[j - 1][i] + occupancyGrid.logMap[j][i + 1] + occupancyGrid.logMap[j + 1][i];
+                                if (adjValues == 0) {
+                                    occupancyGrid.logUpdate(j, i, log_free);
+                                } else {
+                                    occupancyGrid.logUpdate(j, i, logOdds(adjValues, odds));
+                                }
+                            }
+                        } else {
+                            double logValue = logOdds(occupancyGrid.logMap[j][i], odds);
+                            occupancyGrid.logUpdate(j, i, logValue);
+                        }
+                    }
+                }
+            }
+            // SE
+            else if (x2 < x1 && y2 > y1) {
+                //this counts everything
+                for (int i = y1; i < y1 + explorationSize; i++) {
+                    for (int j = x1 - explorationSize; j < x1; j++) {
+                        if (occupancyGrid.logMap[j][i] == 0) {
+                            //at top left
+                            if (i == 0 && j == 0) {
+                                double adjValues = occupancyGrid.logMap[j][i + 1] + occupancyGrid.logMap[j + 1][i];
+                                if (adjValues == 0) {
+                                    occupancyGrid.logUpdate(j, i, log_free);
+                                } else {
+                                    occupancyGrid.logUpdate(j, i, logOdds(adjValues, odds));
+                                }
+                            }
+                            //at top right
+                            else if (i == 0 && j == occupancyGrid.logMap.length - 1) {
+                                double adjValues = occupancyGrid.logMap[j - 1][i] + occupancyGrid.logMap[j][i + 1];
+                                if (adjValues == 0) {
+                                    occupancyGrid.logUpdate(j, i, log_free);
+                                } else {
+                                    occupancyGrid.logUpdate(j, i, logOdds(adjValues, odds));
+                                }
+                            }
+                            //at bottom left
+                            else if (i == occupancyGrid.logMap[0].length && j == 0) {
+                                double adjValues = occupancyGrid.logMap[j][i - 1] + occupancyGrid.logMap[j + 1][i];
+                                if (adjValues == 0) {
+                                    occupancyGrid.logUpdate(j, i, log_free);
+                                } else {
+                                    occupancyGrid.logUpdate(j, i, logOdds(adjValues, odds));
+                                }
+                            }
+                            //at bottom right
+                            else if (i == occupancyGrid.logMap[0].length && j == occupancyGrid.logMap.length - 1) {
+                                double adjValues = occupancyGrid.logMap[j][i - 1] + occupancyGrid.logMap[j - 1][i];
+                                if (adjValues == 0) {
+                                    occupancyGrid.logUpdate(j, i, log_free);
+                                } else {
+                                    occupancyGrid.logUpdate(j, i, logOdds(adjValues, odds));
+                                }
+                            }
+                            //at top but not corner
+                            else if (i == 0) {
+                                double adjValues = occupancyGrid.logMap[j][i + 1] + occupancyGrid.logMap[j + 1][i] + occupancyGrid.logMap[j - 1][i];
+                                if (adjValues == 0) {
+                                    occupancyGrid.logUpdate(j, i, log_free);
+                                } else {
+                                    occupancyGrid.logUpdate(j, i, logOdds(adjValues, odds));
+                                }
+                            }
+                            //at bottom but not corner
+                            else if (i == occupancyGrid.logMap[0].length) {
+                                double adjValues = occupancyGrid.logMap[j][i - 1] + occupancyGrid.logMap[j - 1][i] + occupancyGrid.logMap[j + 1][i];
+                                if (adjValues == 0) {
+                                    occupancyGrid.logUpdate(j, i, log_free);
+                                } else {
+                                    occupancyGrid.logUpdate(j, i, logOdds(adjValues, odds));
+                                }
+                            }
+                            //at left but not corner
+                            else if (j == 0) {
+                                double adjValues = occupancyGrid.logMap[j][i - 1] + occupancyGrid.logMap[j + 1][i] + occupancyGrid.logMap[j][i + 1];
+                                if (adjValues == 0) {
+                                    occupancyGrid.logUpdate(j, i, log_free);
+                                } else {
+                                    occupancyGrid.logUpdate(j, i, logOdds(adjValues, odds));
+                                }
+                            }
+                            //at right but not corner
+                            else if (j == occupancyGrid.logMap.length - 1) {
+                                double adjValues = occupancyGrid.logMap[j][i - 1] + occupancyGrid.logMap[j - 1][i] + occupancyGrid.logMap[j][i + 1];
+                                if (adjValues == 0) {
+                                    occupancyGrid.logUpdate(j, i, log_free);
+                                } else {
+                                    occupancyGrid.logUpdate(j, i, logOdds(adjValues, odds));
+                                }
+                            }
+                            //if not at corner
+                            else {
+                                double adjValues = occupancyGrid.logMap[j][i - 1] + occupancyGrid.logMap[j - 1][i] + occupancyGrid.logMap[j][i + 1] + occupancyGrid.logMap[j + 1][i];
+                                if (adjValues == 0) {
+                                    occupancyGrid.logUpdate(j, i, log_free);
+                                } else {
+                                    occupancyGrid.logUpdate(j, i, logOdds(adjValues, odds));
+                                }
+                            }
+                        } else {
+                            double logValue = logOdds(occupancyGrid.logMap[j][i], odds);
+                            occupancyGrid.logUpdate(j, i, logValue);
+                        }
+                    }
+                }
+            }
+            // NE
+            else if (x2 < x1 && y2 < y1) {
+                //this counts everything
+                for (int i = y1; i < y1 + explorationSize; i++) {
+                    for (int j = x1 - explorationSize; j < x1; j++) {
+                        if (occupancyGrid.logMap[j][i] == 0) {
+                            //at top left
+                            if (i == 0 && j == 0) {
+                                double adjValues = occupancyGrid.logMap[j][i + 1] + occupancyGrid.logMap[j + 1][i];
+                                if (adjValues == 0) {
+                                    occupancyGrid.logUpdate(j, i, log_free);
+                                } else {
+                                    occupancyGrid.logUpdate(j, i, logOdds(adjValues, odds));
+                                }
+                            }
+                            //at top right
+                            else if (i == 0 && j == occupancyGrid.logMap.length - 1) {
+                                double adjValues = occupancyGrid.logMap[j - 1][i] + occupancyGrid.logMap[j][i + 1];
+                                if (adjValues == 0) {
+                                    occupancyGrid.logUpdate(j, i, log_free);
+                                } else {
+                                    occupancyGrid.logUpdate(j, i, logOdds(adjValues, odds));
+                                }
+                            }
+                            //at bottom left
+                            else if (i == occupancyGrid.logMap[0].length && j == 0) {
+                                double adjValues = occupancyGrid.logMap[j][i - 1] + occupancyGrid.logMap[j + 1][i];
+                                if (adjValues == 0) {
+                                    occupancyGrid.logUpdate(j, i, log_free);
+                                } else {
+                                    occupancyGrid.logUpdate(j, i, logOdds(adjValues, odds));
+                                }
+                            }
+                            //at bottom right
+                            else if (i == occupancyGrid.logMap[0].length && j == occupancyGrid.logMap.length - 1) {
+                                double adjValues = occupancyGrid.logMap[j][i - 1] + occupancyGrid.logMap[j - 1][i];
+                                if (adjValues == 0) {
+                                    occupancyGrid.logUpdate(j, i, log_free);
+                                } else {
+                                    occupancyGrid.logUpdate(j, i, logOdds(adjValues, odds));
+                                }
+                            }
+                            //at top but not corner
+                            else if (i == 0) {
+                                double adjValues = occupancyGrid.logMap[j][i + 1] + occupancyGrid.logMap[j + 1][i] + occupancyGrid.logMap[j - 1][i];
+                                if (adjValues == 0) {
+                                    occupancyGrid.logUpdate(j, i, log_free);
+                                } else {
+                                    occupancyGrid.logUpdate(j, i, logOdds(adjValues, odds));
+                                }
+                            }
+                            //at bottom but not corner
+                            else if (i == occupancyGrid.logMap[0].length) {
+                                double adjValues = occupancyGrid.logMap[j][i - 1] + occupancyGrid.logMap[j - 1][i] + occupancyGrid.logMap[j + 1][i];
+                                if (adjValues == 0) {
+                                    occupancyGrid.logUpdate(j, i, log_free);
+                                } else {
+                                    occupancyGrid.logUpdate(j, i, logOdds(adjValues, odds));
+                                }
+                            }
+                            //at left but not corner
+                            else if (j == 0) {
+                                double adjValues = occupancyGrid.logMap[j][i - 1] + occupancyGrid.logMap[j + 1][i] + occupancyGrid.logMap[j][i + 1];
+                                if (adjValues == 0) {
+                                    occupancyGrid.logUpdate(j, i, log_free);
+                                } else {
+                                    occupancyGrid.logUpdate(j, i, logOdds(adjValues, odds));
+                                }
+                            }
+                            //at right but not corner
+                            else if (j == occupancyGrid.logMap.length - 1) {
+                                double adjValues = occupancyGrid.logMap[j][i - 1] + occupancyGrid.logMap[j - 1][i] + occupancyGrid.logMap[j][i + 1];
+                                if (adjValues == 0) {
+                                    occupancyGrid.logUpdate(j, i, log_free);
+                                } else {
+                                    occupancyGrid.logUpdate(j, i, logOdds(adjValues, odds));
+                                }
+                            }
+                            //if not at corner
+                            else {
+                                double adjValues = occupancyGrid.logMap[j][i - 1] + occupancyGrid.logMap[j - 1][i] + occupancyGrid.logMap[j][i + 1] + occupancyGrid.logMap[j + 1][i];
+                                if (adjValues == 0) {
+                                    occupancyGrid.logUpdate(j, i, log_free);
+                                } else {
+                                    occupancyGrid.logUpdate(j, i, logOdds(adjValues, odds));
+                                }
+                            }
+                        } else {
+                            double logValue = logOdds(occupancyGrid.logMap[j][i], odds);
+                            occupancyGrid.logUpdate(j, i, logValue);
+                        }
+                    }
+                }
             } else {
-                occupancyGrid.update(x, y, false);
-
-                // Add slope to increment angle formed
-                slope_error_new += m_new;
-
-                // Slope error reached limit, time to
-                // increment y and update slope error.
-                if (slope_error_new >= 0) {
-                    y++;
-                    slope_error_new -= 2 * (x2 - x1);
-                }
-            }
-        }
-
-        x1 = (int) xPosition;
-        y1 = (int) yPosition;
-
-        // log update: the belief that something is indeed unoccupied should increase even further.
-        for (int x = x1, y = y1; x <= x2; x++) {
-            //check if value is true or false.
-            if (occupancyGrid.occupancyGrid[x][y]) {
-                occupancyGrid.logUpdate(x, y, log_occ + occupancyGrid.getLogValue(x, y));
-            } else {
-                occupancyGrid.logUpdate(x, y, log_free + occupancyGrid.getLogValue(x, y));
-            }
-        }
-
-        int explorationSize = (int) (distance.getValue());
-
-        //define the exploration zone.
-
-
-        // NW case
-        int[] rowCount = new int[explorationSize];
-        int[] colCount = new int[explorationSize];
-        int countTrue = 0;
-        if (x2 > x1 && y2 < y1) {
-            //this counts everything
-            for (int i = y1 - explorationSize; i < y1; i++) {
-                for (int j = x1; j < x1 + explorationSize; j++) {
-                    if (!occupancyGrid.occupancyGrid[j][i]) {
-                        continue;
-                    } else {
-                        countTrue++;
-                    }
-                }
-            }
-        }
-        // SW case
-        else if(x2 > x1 && y2 > y1) {
-            for (int i = y1; i < y1 + explorationSize; i++) {
-                for (int j = x1; j < x1 + explorationSize; j++) {
-                    if (!occupancyGrid.occupancyGrid[j][i]) {
-                        continue;
-                    } else {
-                        countTrue++;
-                    }
-                }
-            }
-        }
-        // SE case
-        else if(x2 < x1 && y2 > y1) {
-            for (int i = y1; i < y1 + explorationSize; i++) {
-                for (int j = x1 - explorationSize; j < x1; j++) {
-                    if (!occupancyGrid.occupancyGrid[j][i]) {
-                        continue;
-                    } else {
-                        countTrue++;
-                    }
-                }
-            }
-        }
-        // NE case
-        else if(x2 < x1 && y2 < y1) {
-            for (int i = y1 - explorationSize; i < y1; i++) {
-                for (int j = x1 - explorationSize; j < x1; j++) {
-                    if (!occupancyGrid.occupancyGrid[j][i]) {
-                        continue;
-                    } else {
-                        countTrue++;
-                    }
-                }
-            }
-        }
-        //Agent is facing the endpoint
-        else {
-
-        }
-
-        //countTrue not updating?
-        double odds = odd(countTrue, explorationSize*explorationSize);
-
-        //update log map
-        // NW
-        if (x2 > x1 && y2 < y1) {
-            //this counts everything
-            for (int i = y1 - explorationSize; i < y1; i++) {
-                for (int j = x1; j < x1 + explorationSize; j++) {
-                    if (occupancyGrid.logMap[j][i] == 0) {
-                        //at top left
-                        if(i == 0 && j == 0) {
-                            double adjValues = occupancyGrid.logMap[j][i+1] + occupancyGrid.logMap[j+1][i];
-                            if(adjValues == 0) {
-                                occupancyGrid.logUpdate(j,i,log_free);
-                            } else {
-                                occupancyGrid.logUpdate(j,i, logOdds(adjValues, odds));
-                            }
-                        }
-                        //at top right
-                        else if(i == 0 && j == occupancyGrid.logMap.length - 1) {
-                            double adjValues = occupancyGrid.logMap[j-1][i] + occupancyGrid.logMap[j][i+1];
-                            if(adjValues == 0) {
-                                occupancyGrid.logUpdate(j,i,log_free);
-                            } else {
-                                occupancyGrid.logUpdate(j,i, logOdds(adjValues, odds));
-                            }
-                        }
-                        //at bottom left
-                        else if(i == occupancyGrid.logMap[0].length && j == 0) {
-                            double adjValues = occupancyGrid.logMap[j][i-1] + occupancyGrid.logMap[j+1][i];
-                            if(adjValues == 0) {
-                                occupancyGrid.logUpdate(j,i,log_free);
-                            } else {
-                                occupancyGrid.logUpdate(j,i, logOdds(adjValues, odds));
-                            }
-                        }
-                        //at bottom right
-                        else if(i == occupancyGrid.logMap[0].length && j == occupancyGrid.logMap.length - 1) {
-                            double adjValues = occupancyGrid.logMap[j][i-1] + occupancyGrid.logMap[j-1][i];
-                            if(adjValues == 0) {
-                                occupancyGrid.logUpdate(j,i,log_free);
-                            } else {
-                                occupancyGrid.logUpdate(j,i, logOdds(adjValues, odds));
-                            }
-                        }
-                        //at top but not corner
-                        else if(i == 0) {
-                            double adjValues = occupancyGrid.logMap[j][i+1] + occupancyGrid.logMap[j+1][i] + occupancyGrid.logMap[j-1][i];
-                            if(adjValues == 0) {
-                                occupancyGrid.logUpdate(j,i,log_free);
-                            } else {
-                                occupancyGrid.logUpdate(j,i, logOdds(adjValues, odds));
-                            }
-                        }
-                        //at bottom but not corner
-                        else if(i == occupancyGrid.logMap[0].length) {
-                            double adjValues = occupancyGrid.logMap[j][i-1] + occupancyGrid.logMap[j-1][i] + occupancyGrid.logMap[j+1][i];
-                            if(adjValues == 0) {
-                                occupancyGrid.logUpdate(j,i,log_free);
-                            } else {
-                                occupancyGrid.logUpdate(j,i, logOdds(adjValues, odds));
-                            }
-                        }
-                        //at left but not corner
-                        else if(j == 0) {
-                            double adjValues = occupancyGrid.logMap[j][i-1] + occupancyGrid.logMap[j+1][i] + occupancyGrid.logMap[j][i+1];
-                            if(adjValues == 0) {
-                                occupancyGrid.logUpdate(j,i,log_free);
-                            } else {
-                                occupancyGrid.logUpdate(j,i, logOdds(adjValues, odds));
-                            }
-                        }
-                        //at right but not corner
-                        else if(j == occupancyGrid.logMap.length -1) {
-                            double adjValues = occupancyGrid.logMap[j][i-1] + occupancyGrid.logMap[j-1][i] + occupancyGrid.logMap[j][i+1];
-                            if(adjValues == 0) {
-                                occupancyGrid.logUpdate(j,i,log_free);
-                            } else {
-                                occupancyGrid.logUpdate(j,i, logOdds(adjValues, odds));
-                            }
-                        }
-                        //if not at corner
-                        else {
-                            double adjValues = occupancyGrid.logMap[j][i-1] + occupancyGrid.logMap[j-1][i] + occupancyGrid.logMap[j][i+1] + occupancyGrid.logMap[j+1][i];
-                            if(adjValues == 0) {
-                                occupancyGrid.logUpdate(j,i,log_free);
-                            } else {
-                                occupancyGrid.logUpdate(j,i, logOdds(adjValues, odds));
-                            }
-                        }
-                    } else {
-                        double logValue = logOdds(occupancyGrid.logMap[j][i], odds);
-                        occupancyGrid.logUpdate(j,i, logValue);
-                    }
-                }
+                System.out.println("you need to get a N,S,E,W case for log map updating.");
             }
         }
 
 
 
-        //TODO: test decoupling indepence of true value to row and column.
-
-//      //this assumes that walls only horizontally - decouples independence maybe be more accurate
+        //TODO: test decoupling indepence of true value to row and column.  Phase 3
+//      //this assumes that walls go only horizontally and vertically- decouples independence maybe be more accurate
 //      if (x2 > x1 && y2 > y1) {
 //            int rowCountIndex = 0;
 //            //row count
@@ -565,6 +802,5 @@ public class OccupancyAgent implements Guard {
 //
 //        }
     }
-
 
 }
