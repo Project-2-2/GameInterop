@@ -72,7 +72,7 @@ public abstract class IntruderUtils {
         List<ObjectPercept> colliders = new ArrayList<>();
         for (ObjectPercept obj:
              objectPercepts) {
-           if(obj.getType() != ObjectPerceptType.EmptySpace && !obj.getType().isAgent()){
+           if(obj.getType() != ObjectPerceptType.EmptySpace && !obj.getType().isAgent() && obj.getType() != ObjectPerceptType.TargetArea){
                colliders.add(obj);
            }
         }
