@@ -12,9 +12,7 @@ import Interop.Percept.Vision.ObjectPercept;
 import Interop.Percept.Vision.ObjectPerceptType;
 import Interop.Percept.Vision.ObjectPercepts;
 import Interop.Percept.Vision.VisionPrecepts;
-import Interop.Utils.Utils;
 
-import static java.lang.Double.NaN;
 
 
 public class SimplePathfinding {
