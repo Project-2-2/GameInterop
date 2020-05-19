@@ -20,6 +20,7 @@ import static java.lang.Double.NaN;
 public class SimplePathfinding {
 
     private final Angle MAX_ROTATION;
+    private final double TURN_CONSTANT = 20;
 
     public SimplePathfinding(IntruderPercepts percepts) {
         MAX_ROTATION = percepts.getScenarioIntruderPercepts().getScenarioPercepts().getMaxRotationAngle();
@@ -30,17 +31,10 @@ public class SimplePathfinding {
     int counter = 1;
     public IntruderAction getMoveIntruder(IntruderPercepts percepts) {
 
-        //This means that it hit a wall or smtg
-        //if(!percepts.wasLastActionExecuted() && !flag){
-        //    flag = true;
-         //   return new Rotate(Angle.fromDegrees(MAX_ROTATION.getDegrees()));
-       // }
-
-       // if(counter % 1000 ==0){
-       //     System.out.println("true");
-       // }
-        System.out.println(counter);
-        if(counter % 25 == 0){
+        /** Each n times, given by TURN_CONSTANT, the agent will rotate towards the target area,
+         *  This makes the circumnavigation works, maybe make it random.
+         */
+        if(counter % TURN_CONSTANT == 0){
             counter++;
             if(percepts.getTargetDirection().getRadians() >= MAX_ROTATION.getRadians()){
                 return new Rotate(Angle.fromRadians(-MAX_ROTATION.getRadians()));
@@ -49,13 +43,19 @@ public class SimplePathfinding {
                 return new Rotate(Angle.fromRadians(percepts.getTargetDirection().getRadians()+0.0001));
             }
         }
+        /**
+         * If the Agent has a wall in its field of view it is going to rotate given an angle. This angle could be adjusted
+         * To the angle of the wall itself
+         */
         for(ObjectPercept obj : percepts.getVision().getObjects().getAll()) {
             if(obj.getType()== ObjectPerceptType.Wall && !firstTime){
                 moveForward = true;   startIncr = true;
                 return new Rotate(Angle.fromRadians(MAX_ROTATION.getRadians()));
             }
         }
-
+        /**
+         * Calls a move forward if the agent is facing the target area OR it is circumnavigating
+         */
         if(((Math.abs(percepts.getTargetDirection().getRadians())) <= 0.001) || moveForward){
             if(startIncr){
                 counter++;
