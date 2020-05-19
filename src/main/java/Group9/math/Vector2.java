@@ -105,6 +105,7 @@ public class Vector2 {
         {
             angle += 2 * Math.PI;
         }
+        angle %= (2 * Math.PI);
         return angle;
     }
 
