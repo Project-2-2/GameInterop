@@ -49,6 +49,7 @@ public class GUI extends Application{
 
     @Override
     public void start(Stage stage) throws Exception {
+        System.out.println("OWN GUI");
         stage.setHeight(DEFAULT_HEIGHT);
         stage.setWidth(DEFAULT_WIDTH);
         stage.setTitle("G8");

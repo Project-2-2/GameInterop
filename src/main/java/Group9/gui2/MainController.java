@@ -1,5 +1,6 @@
 package Group9.gui2;
 
+import Group8.Agents.AgentFactoryImpl;
 import Group9.Callback;
 import Group9.Game;
 import Group9.agent.container.GuardContainer;
@@ -32,7 +33,7 @@ public class MainController implements Runnable {
     public MainController(Gui gui, File mapFile,boolean generateHistory){
         this.gui = gui;
         this.generateHistory = generateHistory;
-        game = new Game(Parser.parseFile(mapFile.getAbsolutePath()), new DefaultAgentFactory(), false, 15, new Callback<Game>() {
+        game = new Game(Parser.parseFile(mapFile.getAbsolutePath()), new AgentFactoryImpl(), false, 5, new Callback<Game>() {
             @Override
             public void call(Game game) {
                 if(generateHistory){

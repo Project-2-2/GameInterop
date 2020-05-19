@@ -11,7 +11,7 @@ import java.io.File;
 import java.util.List;
 
 public class Gui extends Application {
-    private File mapFile = new File("./src/main/java/Group9/map/maps/test_2.map");
+    private File mapFile = new File("./src/main/java/Group9/map/maps/TestBox.map");
     private MainController mainController = new MainController(this,mapFile,true);
     private MainScene scene = new MainScene(new StackPane(), mainController.getGame().getGameMap(),this);
     private Stage primary = new Stage();
@@ -32,7 +32,7 @@ public class Gui extends Application {
         Thread thread = new Thread(mainController);
         thread.start();
         primaryStage.setOnCloseRequest(event -> {
-            System.out.println("See Ya");
+            //System.out.println("See Ya");
             mainController.kill();
         });
     }
