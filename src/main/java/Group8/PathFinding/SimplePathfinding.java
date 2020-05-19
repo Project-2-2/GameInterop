@@ -1,13 +1,16 @@
 package Group8.PathFinding;
 
 import Group8.Agents.Intruder.IntruderUtils;
+import Group9.Game;
 import Interop.Action.*;
 import Interop.Geometry.Angle;
 import Interop.Geometry.Distance;
+import Interop.Geometry.Point;
 import Interop.Percept.IntruderPercepts;
 import Interop.Percept.Scenario.SlowDownModifiers;
 import Interop.Percept.Vision.ObjectPercept;
 import Interop.Percept.Vision.ObjectPerceptType;
+import Interop.Utils.Utils;
 
 import java.util.*;
 
@@ -31,6 +34,11 @@ public class SimplePathfinding {
     private EscapeStrategy escapeStrategy;
     private Phase phase = Phase.Explore;
 
+    private boolean JCN = true;
+
+    private List<List<ObjectPercept>> generalObstructions;
+    private List<ObjectPercept> objectPercepts;
+    private List<ObjectPercept> agentObstructions;
 
 
 
@@ -48,7 +56,10 @@ public class SimplePathfinding {
 
     public IntruderAction getMoveIntruder(IntruderPercepts percepts) {
         currentPercepts = percepts;
-        predictCollision(percepts);
+        if(predictCollision(percepts)){
+            this.phase = Phase.CircumNav;
+            actionQueue.clear();
+        }
         if(!prioQueue.isEmpty() && percepts.wasLastActionExecuted()){
             return prioQueue.poll();
         }
@@ -57,15 +68,37 @@ public class SimplePathfinding {
                 generateRotationSequence(percepts,Angle.fromRadians(COLLISION_ROT));
             }
             if(this.phase == Phase.CircumNav){
+                // Col is the closest collider
+                ObjectPercept col = null;
+                generateObstructions();
+                for (ObjectPercept o :
+                        objectPercepts) {
+                    if(col == null){
+                        col = o;
+                    }
+                    else{
+                        if(new Distance(new Point(0,0),o.getPoint()).getValue() < new Distance(new Point(0,0),col.getPoint()).getValue()){
+                            col = o;
+                        }
+                    }
 
+                }
+                Angle angle = Angle.fromRadians(Utils.clockAngle(col.getPoint().getX(),col.getPoint().getY()));
+                if(JCN){
+                    if(Game._RANDOM.nextBoolean()){
+                        // Go "left"
+                        prioQueue.addAll(generateRotationSequence(percepts,Angle.fromRadians(angle.getRadians() - COLLISION_ROT)));
+                    }
+                    else{
+                        // Go "right"
+                        prioQueue.addAll(generateRotationSequence(percepts,Angle.fromRadians(Math.PI - angle.getRadians() + COLLISION_ROT)));
+                    }
+                }
             }
             else if (this.phase == Phase.Explore) {
                 // Exploration strategy
 
-                // Obstruction management
-                List<List<ObjectPercept>> generalObstructions = checkObstructions(percepts.getVision().getObjects().getAll());
-                List<ObjectPercept> objectPercepts = generalObstructions.get(0);
-                List<ObjectPercept> agentObstructions = generalObstructions.get(1);
+                generateObstructions();
 
                 // Handle seeing other agents
                 if (!agentObstructions.isEmpty()) {
@@ -98,6 +131,13 @@ public class SimplePathfinding {
             }
             return actionQueue.poll();
         }
+    }
+
+    private void generateObstructions(){
+        // Obstruction management
+        generalObstructions = checkObstructions(currentPercepts.getVision().getObjects().getAll());
+        objectPercepts = generalObstructions.get(0);
+        agentObstructions = generalObstructions.get(1);
     }
 
     private List<List<ObjectPercept>> checkObstructions(Set<ObjectPercept> obstructions){
