@@ -7,7 +7,6 @@ import Interop.Geometry.Angle;
 import Interop.Geometry.Distance;
 import Interop.Geometry.Point;
 import Interop.Percept.IntruderPercepts;
-import Interop.Percept.Scenario.SlowDownModifiers;
 import Interop.Percept.Vision.ObjectPercept;
 import Interop.Percept.Vision.ObjectPerceptType;
 import Interop.Utils.Utils;
@@ -56,7 +55,9 @@ public class FSM {
 
     public IntruderAction getMoveIntruder(IntruderPercepts percepts) {
         currentPercepts = percepts;
-        if(predictCollision(percepts)){
+        boolean ic = predictCollision(percepts);
+        System.out.println(String.format("Collision is imminent: %b",ic));
+        if(ic){
             this.phase = Phase.CircumNav;
             actionQueue.clear();
         }
