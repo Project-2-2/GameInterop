@@ -48,7 +48,6 @@ public class GuardExplorer implements Guard {
 //        if (!percepts.wasLastActionExecuted()){
 //            actionQueue.clear();
 //        }
-
         if (actionQueue.size()<=0)
             explore(percepts);
 

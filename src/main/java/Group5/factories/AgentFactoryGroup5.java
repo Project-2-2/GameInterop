@@ -1,6 +1,7 @@
 package Group5.factories;
 
 import Group5.Agent.Explorer;
+import Group5.Agent.Guard.GraphExplorer;
 import Group5.Agent.IntruderAgent;
 import Group5.Agent.Guard.GuardExplorer;
 import Group9.agent.RandomAgent;
@@ -31,7 +32,10 @@ public class AgentFactoryGroup5 implements IAgentFactory {
         List<Guard> guards = new ArrayList<>();
         for(int i = 0; i < number; i++)
         {
-            guards.add(new GuardExplorer());
+            //Change here the type of intruder you want
+
+            //guards.add(new GuardExplorer());
+            guards.add(new GraphExplorer());
             //guards.add(new DeepSpace());
         }
         return guards;
