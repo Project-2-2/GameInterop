@@ -43,19 +43,62 @@ public class GraphExplorer implements Guard {
         for (int i = 0; i<nodes.size();i++){
             if (nodes.get(i).agentInNode(position)){
                 nodes.get(i).visitNodeAgain(percepts);
+                previousNodeVisited = nodes.get(i);
                 newNodeBoolean = false;
                 break;
             }
         }
-        //TODO now it creates a new node if it is not inside another node and the center of the node is set to the agent's
-        //TODO current position, however this is not optimal since we could get overlapping nodes.
         if (newNodeBoolean) {
-            System.out.println("created new Area");
-            distanceToNewRegion = percepts.getVision().getFieldOfView().getRange().getValue();
-            Node newNode = new Node(percepts, position);
-            previousNodeVisited = newNode;
-            nodes.add(newNode);
+            if (previousNodeVisited!=null) {
+                Point centerOldNode = previousNodeVisited.getCenter();
+//                System.out.println("created new Area");
+                distanceToNewRegion = percepts.getVision().getFieldOfView().getRange().getValue();
+//                Node newNode = new Node(percepts, computeCenterNewNode(centerOldNode, percepts.getVision().getFieldOfView().getRange().getValue()));
+                Node newNode = new Node(percepts, computeCenterNewNode(centerOldNode, 30));
+                previousNodeVisited = newNode;
+                nodes.add(newNode);
+                System.out.println(nodes.size());
+            }else{
+//                System.out.println("created new Area");
+                distanceToNewRegion = percepts.getVision().getFieldOfView().getRange().getValue();
+                Node newNode = new Node(percepts, position);
+                previousNodeVisited = newNode;
+                nodes.add(newNode);
+            }
         }
+    }
+
+
+    /**
+     * basically the guard can move in 360 degrees and there are 8 squares adjacent to one square
+     * we compute the center of each square and the shortest distance between the agent and the  center of a square is
+     * the square or node that the agent is currently in. This node will be added to the map.
+     * This way the map will be represented as a sort of grid structure where nodes cannot overlap and the complete map can be covered
+     * @param centerOldNode
+     * @return
+     */
+    public Point computeCenterNewNode(Point centerOldNode, double radius){
+        //compute the center of all possible directions the agent could go
+        Point upperLeft = new Point(centerOldNode.getX()+radius*Math.cos(0.75*Math.PI),centerOldNode.getY()+radius*Math.sin(0.75*Math.PI));
+        Point left = new Point(centerOldNode.getX()+radius*Math.cos(Math.PI),centerOldNode.getY()+radius*Math.sin(Math.PI));
+        Point downLeft = new Point(centerOldNode.getX()+radius*Math.cos(1.25*Math.PI),centerOldNode.getY()+radius*Math.sin(1.25*Math.PI));
+        Point bottom = new Point(centerOldNode.getX()+radius*Math.cos(1.5*Math.PI),centerOldNode.getY()+radius*Math.sin(1.5*Math.PI));
+        Point downRight = new Point(centerOldNode.getX()+radius*Math.cos(1.75*Math.PI),centerOldNode.getY()+radius*Math.sin(1.75*Math.PI));
+        Point right = new Point(centerOldNode.getX()+radius*Math.cos(0),centerOldNode.getY()+radius*Math.sin(0));
+        Point upperRight = new Point(centerOldNode.getX()+radius*Math.cos(0.25*Math.PI),centerOldNode.getY()+radius*Math.sin(0.25*Math.PI));
+        Point top = new Point(centerOldNode.getX()+radius*Math.cos(0.5*Math.PI),centerOldNode.getY()+radius*Math.sin(0.5*Math.PI));
+
+        Point[] centers = new Point[]{upperLeft,left,downLeft,bottom,downRight,right,upperRight,top};
+
+        Double[] distances = new Double[]{Node.getDistance(upperLeft,position), Node.getDistance(left,position),Node.getDistance(downLeft,position),Node.getDistance(bottom,position), Node.getDistance(downRight,position),Node.getDistance(right,position), Node.getDistance(upperRight,position), Node.getDistance(top,position)};
+
+        int minimumIndex = 0;
+        for (int i =1; i<distances.length;i++){
+            if (distances[i]<distances[minimumIndex]){
+                minimumIndex = i;
+            }
+        }
+        return centers[minimumIndex];
     }
 
     /**
