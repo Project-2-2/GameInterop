@@ -77,7 +77,7 @@ public class GraphExplorer implements Guard {
      * @param centerOldNode
      * @return
      */
-    public Point computeCenterNewNode(Point centerOldNode, double radius){
+    public Point computeCenterNewNode(Point centerOldNode, double radius){ //TODO: add all nodes to the graph if not wall without door and centers not in graph
         //compute the center of all possible directions the agent could go
         Point upperLeft = new Point(centerOldNode.getX()+radius*Math.cos(0.75*Math.PI),centerOldNode.getY()+radius*Math.sin(0.75*Math.PI));
         Point left = new Point(centerOldNode.getX()+radius*Math.cos(Math.PI),centerOldNode.getY()+radius*Math.sin(Math.PI));
@@ -146,7 +146,7 @@ public class GraphExplorer implements Guard {
      * @return
      */
     @Override
-    public GuardAction getAction(GuardPercepts percepts) {
+    public GuardAction getAction(GuardPercepts percepts) { //TODO: Check when to ignore exploration and hunt intruder; TODO: Implement utility function
         updateNodeIdleness();
 
         percepts.getVision().getFieldOfView().getRange();
