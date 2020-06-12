@@ -26,12 +26,14 @@ public class GraphExplorer implements Guard {
     private Angle angle;
 
     private double radius;
+    private int currentTime;
 
     public GraphExplorer(){
         position = new Point(0,0);
         nodes = new ArrayList<>();
         angle = Angle.fromDegrees(0);
         radius = 30;
+        currentTime = 0;
     }
 
     /**
@@ -168,6 +170,7 @@ public class GraphExplorer implements Guard {
     @Override
     public GuardAction getAction(GuardPercepts percepts) { //TODO: Check when to ignore exploration and hunt intruder; TODO: Implement utility function
         updateNodeIdleness();
+        currentTime++;
 
         percepts.getVision().getFieldOfView().getRange();
 
@@ -179,8 +182,31 @@ public class GraphExplorer implements Guard {
             return rotate(new Rotate(Angle.fromRadians(percepts.getScenarioGuardPercepts().getScenarioPercepts().getMaxRotationAngle().getRadians() * Game._RANDOM.nextDouble())));
 
         } else {
+            double maxMovementDistance = percepts.getScenarioGuardPercepts().getMaxMoveDistanceGuard().getValue() * getSpeedModifier(percepts);
+            Node nextNode = chooseNextNode(maxMovementDistance);
+            //moveToNode(nextNode)
+
             return move(new Move(new Distance(percepts.getScenarioGuardPercepts().getMaxMoveDistanceGuard().getValue() * getSpeedModifier(percepts))),percepts);
         }
+    }
+
+    private Node chooseNextNode(double velocity){
+        Node nextNode = this.nodes.get(0);
+        double utility = 0;
+        for(Node n: this.nodes){
+            double distance = this.previousNodeVisited.getCenter().getDistance(n.getCenter()).getValue();
+            if (distance < 2*radius){
+                double deltaT = distance/velocity;
+                double tNext = currentTime + deltaT;
+                double expectedIdleness = tNext - n.getNodeIdleness();
+                if(Math.abs(expectedIdleness)/deltaT > utility) {
+                    nextNode = n;
+                    utility = Math.abs(expectedIdleness)/deltaT;
+                }
+            }
+        }
+
+        return nextNode;
     }
 
     private double getSpeedModifier(GuardPercepts guardPercepts) {
