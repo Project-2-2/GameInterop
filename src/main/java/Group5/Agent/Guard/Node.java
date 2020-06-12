@@ -32,12 +32,26 @@ public class Node {
         nodeIdleness = 0;
         Set<ObjectPercept> vision = percepts.getVision().getObjects().getAll();
         objectList = new ArrayList<>();
-        for (ObjectPercept e : vision){
+        for (ObjectPercept e : vision) {
             objectList.add(e.getType());
         }
 //        radius = percepts.getVision().getFieldOfView().getRange().getValue();
 //        radius = 30;
         this.radius = radius;
+
+        leftBoundary=Math.min(position.getX()+0.5*radius,position.getX()-0.5*radius);
+        rightBoundary=Math.max(position.getX()+0.5*radius,position.getX()-0.5*radius);
+        topBoundary=Math.max(position.getY()+0.5*radius,position.getY()-0.5*radius);
+        bottomBoundary=Math.min(position.getY()+0.5*radius,position.getY()-0.5*radius);
+
+    }
+
+    public Node(Point position, double radius) {
+        center = position;
+        this.radius = radius;
+        objectList = new ArrayList<>();
+
+        nodeIdleness = 1000; //Cannot be INTEGER.MAXVALUE because when updated the value will be negative
 
         leftBoundary=Math.min(position.getX()+0.5*radius,position.getX()-0.5*radius);
         rightBoundary=Math.max(position.getX()+0.5*radius,position.getX()-0.5*radius);
