@@ -12,11 +12,12 @@ import Interop.Geometry.Point;
 import Interop.Percept.GuardPercepts;
 import Interop.Percept.Scenario.SlowDownModifiers;
 import Interop.Percept.Smell.SmellPerceptType;
+import Interop.Percept.Vision.ObjectPerceptType;
 
 import javax.swing.text.Position;
 import java.util.ArrayList;
 
-public class GraphExplorer implements Guard {
+public class GraphExplorer extends GuardExplorer {
 
     private Node previousNodeVisited;
     //list of all areas the guard has visited
@@ -168,7 +169,7 @@ public class GraphExplorer implements Guard {
      * @return
      */
     @Override
-    public GuardAction getAction(GuardPercepts percepts) { //TODO: Check when to ignore exploration and hunt intruder; TODO: Implement utility function
+    public void explore(GuardPercepts percepts) { //TODO: Check when to ignore exploration and hunt intruder; TODO: Implement utility function
         updateNodeIdleness();
         currentTime++;
 
@@ -176,22 +177,20 @@ public class GraphExplorer implements Guard {
 
         if(!percepts.wasLastActionExecuted()) {
             if(Math.random() < 0.1) {
-                return new DropPheromone(SmellPerceptType.values()[(int) (Math.random() * SmellPerceptType.values().length)]);
+                addActionToQueue(new DropPheromone(SmellPerceptType.values()[(int) (Math.random() * SmellPerceptType.values().length)]), percepts);
             }
 
-            return rotate(new Rotate(Angle.fromRadians(percepts.getScenarioGuardPercepts().getScenarioPercepts().getMaxRotationAngle().getRadians() * Game._RANDOM.nextDouble())));
+            addActionToQueue(new Rotate(Angle.fromRadians(percepts.getScenarioGuardPercepts().getScenarioPercepts().getMaxRotationAngle().getRadians() * Game._RANDOM.nextDouble())), percepts);
 
         } else {
             double maxMovementDistance = percepts.getScenarioGuardPercepts().getMaxMoveDistanceGuard().getValue() * getSpeedModifier(percepts);
             Node nextNode = chooseNextNode(maxMovementDistance);
             //moveToNode(nextNode)
-
-            return move(new Move(new Distance(percepts.getScenarioGuardPercepts().getMaxMoveDistanceGuard().getValue() * getSpeedModifier(percepts))),percepts);
         }
     }
 
     private Node chooseNextNode(double velocity){
-        Node nextNode = this.nodes.get(0);
+        Node nextNode = null;
         double utility = 0;
         for(Node n: this.nodes){
             double distance = this.previousNodeVisited.getCenter().getDistance(n.getCenter()).getValue();
@@ -207,6 +206,12 @@ public class GraphExplorer implements Guard {
         }
 
         return nextNode;
+    }
+
+    private void moveToNode(Node node){
+        //check doors/windows
+
+        //check walls or does Ionas do that already?
     }
 
     private double getSpeedModifier(GuardPercepts guardPercepts) {

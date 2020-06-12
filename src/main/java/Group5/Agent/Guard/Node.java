@@ -46,6 +46,10 @@ public class Node {
 
     }
 
+    public ArrayList<ObjectPerceptType> getObjectList() {
+        return objectList;
+    }
+
     public Node(Point position, double radius) {
         center = position;
         this.radius = radius;
