@@ -18,8 +18,6 @@ import java.util.ArrayList;
 
 public class GraphExplorer implements Guard {
 
-    //when this distance has exceeded we have to create a new node
-    private double distanceToNewRegion;
     private Node previousNodeVisited;
     //list of all areas the guard has visited
     private ArrayList<Node> nodes;
@@ -27,11 +25,13 @@ public class GraphExplorer implements Guard {
     private Point position;
     private Angle angle;
 
+    private double radius;
+
     public GraphExplorer(){
         position = new Point(0,0);
-        distanceToNewRegion = 8.0;
         nodes = new ArrayList<>();
         angle = Angle.fromDegrees(0);
+        radius = 30;
     }
 
     /**
@@ -52,16 +52,14 @@ public class GraphExplorer implements Guard {
             if (previousNodeVisited!=null) {
                 Point centerOldNode = previousNodeVisited.getCenter();
 //                System.out.println("created new Area");
-                distanceToNewRegion = percepts.getVision().getFieldOfView().getRange().getValue();
 //                Node newNode = new Node(percepts, computeCenterNewNode(centerOldNode, percepts.getVision().getFieldOfView().getRange().getValue()));
-                Node newNode = new Node(percepts, computeCenterNewNode(centerOldNode, 30));
+                Node newNode = new Node(percepts, computeCenterNewNode(centerOldNode, radius),radius);
                 previousNodeVisited = newNode;
                 nodes.add(newNode);
-                System.out.println(nodes.size());
+//                System.out.println(nodes.size());
             }else{
 //                System.out.println("created new Area");
-                distanceToNewRegion = percepts.getVision().getFieldOfView().getRange().getValue();
-                Node newNode = new Node(percepts, position);
+                Node newNode = new Node(percepts, position,radius);
                 previousNodeVisited = newNode;
                 nodes.add(newNode);
             }
@@ -109,11 +107,7 @@ public class GraphExplorer implements Guard {
     public GuardAction move(Move move, GuardPercepts percepts){
         Point movement = new Point(move.getDistance().getValue()*Math.cos(angle.getRadians()),move.getDistance().getValue()*Math.sin(angle.getRadians()));
         position = new Point(position.getX()+movement.getX(),position.getY()+movement.getY());
-        if(distanceToNewRegion>move.getDistance().getValue()){
-            distanceToNewRegion = distanceToNewRegion-move.getDistance().getValue();
-        }else{
             addAreaToGraph(percepts);
-        }
 //        System.out.println(position.toString());
         return move;
     }
