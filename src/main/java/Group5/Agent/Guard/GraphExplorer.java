@@ -45,7 +45,7 @@ public class GraphExplorer extends GuardExplorer {
         boolean newNodeBoolean = true;
         for (int i = 0; i<nodes.size();i++){
             if (nodes.get(i).agentInNode(position)){
-                nodes.get(i).visitNodeAgain(percepts);
+                nodes.get(i).visitNodeAgain(percepts, position);
                 previousNodeVisited = nodes.get(i);
                 newNodeBoolean = false;
                 break;
@@ -56,14 +56,14 @@ public class GraphExplorer extends GuardExplorer {
                 Point centerOldNode = previousNodeVisited.getCenter();
 //                System.out.println("created new Area");
 //                Node newNode = new Node(percepts, computeCenterNewNode(centerOldNode, percepts.getVision().getFieldOfView().getRange().getValue()));
-                Node newNode = new Node(percepts, computeCenterNewNode(centerOldNode, radius),radius);
+                Node newNode = new Node(percepts, computeCenterNewNode(centerOldNode, radius), this.position, radius);
                 generateAdjacentNodes(centerOldNode);
                 previousNodeVisited = newNode;
                 nodes.add(newNode);
 //                System.out.println(nodes.size());
             }else{
 //                System.out.println("created new Area");
-                Node newNode = new Node(percepts, position,radius);
+                Node newNode = new Node(percepts, position, position, radius);
                 generateAdjacentNodes(position);
                 previousNodeVisited = newNode;
                 nodes.add(newNode);
@@ -179,7 +179,7 @@ public class GraphExplorer extends GuardExplorer {
      * @return
      */
     @Override
-    public void explore(GuardPercepts percepts) { //TODO: Check when to ignore exploration and hunt intruder; TODO: Implement utility function
+    public void explore(GuardPercepts percepts) { //TODO: Check when to ignore exploration and hunt intruder
         updateNodeIdleness();
         currentTime++;
 
@@ -217,6 +217,11 @@ public class GraphExplorer extends GuardExplorer {
         }
     }
 
+    /**
+     * Chooses the node with maximum utility (i.e. a trade off between highest idleness and time it takes to get there)
+     * @param velocity Movement speed of the agent. Currently simply the maximum movement distance
+     * @return The next node to visit based on idleness
+     */
     private Node chooseNextNode(double velocity){
         Node nextNode = null;
         double utility = 0;
@@ -236,7 +241,11 @@ public class GraphExplorer extends GuardExplorer {
         return nextNode;
     }
 
-    private void moveToNode(Node node){
+    /**
+     * Not done
+     * @param node
+     */
+    private void moveToNode(Node node){ //TODO: implement
         //check doors/windows
 
         //check walls or does Ionas do that already?
