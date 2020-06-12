@@ -163,6 +163,16 @@ public class GraphExplorer extends GuardExplorer {
         }
     }
 
+    @Override
+    public GuardAction getAction(GuardPercepts percepts) {
+        //return explore(percepts);
+        //if queue is empty otherwise do actions inside queue
+//        if (!percepts.wasLastActionExecuted()){
+//            actionQueue.clear();
+//        }
+        return super.getAction(percepts);
+    }
+
     /**
      * just a random agent to start with
      * @param percepts The precepts represent the world as perceived by that agent.
