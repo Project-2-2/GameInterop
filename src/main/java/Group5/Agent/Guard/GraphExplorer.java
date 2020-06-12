@@ -162,8 +162,22 @@ public class GraphExplorer implements Guard {
         }
         else
         {
-            return move(new Move(new Distance(percepts.getScenarioGuardPercepts().getMaxMoveDistanceGuard().getValue() * getSpeedModifier(percepts))),percepts);
+//            return move(new Move(new Distance(percepts.getScenarioGuardPercepts().getMaxMoveDistanceGuard().getValue() * getSpeedModifier(percepts))),percepts);
+
+            Node nextNode = chooseNextNode();
+//            moveToNode(nextNode);
         }
+    }
+
+    private Node chooseNextNode(){
+
+        Node nextNode = this.nodes.get(0);
+        for(Node n: this.nodes){
+            int a = 1;
+//            if (this.previousNodeVisited.getCenter() - )
+        }
+
+        return nextNode;
     }
 
     private double getSpeedModifier(GuardPercepts guardPercepts)

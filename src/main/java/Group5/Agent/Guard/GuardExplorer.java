@@ -440,7 +440,7 @@ public class GuardExplorer implements Guard {
         //System.out.println(intruderMovement.getDegrees());
         lastDistanceToIntruder = new Distance(distanceToIntruder);
 
-        lastTimeSawIntruder = 60;
+        lastTimeSawIntruder = 0;
 
         if (Math.abs(angleToIntruder / count) > 15) {
             if (Math.random() < 0.2) {
