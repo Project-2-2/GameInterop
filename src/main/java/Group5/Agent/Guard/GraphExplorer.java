@@ -196,6 +196,24 @@ public class GraphExplorer extends GuardExplorer {
             double maxMovementDistance = percepts.getScenarioGuardPercepts().getMaxMoveDistanceGuard().getValue() * getSpeedModifier(percepts);
             Node nextNode = chooseNextNode(maxMovementDistance);
             //moveToNode(nextNode)
+            if(percepts.getAreaPercepts().isInDoor() && getDroppedPheromone() == 0) {
+//            System.out.println("door: drop pheromone type 2");
+                dropPheromone(percepts,SmellPerceptType.Pheromone2);
+                super.setDroppedPheromone(500);
+            }
+
+            if(percepts.getAreaPercepts().isInWindow() && getDroppedPheromone() == 0) {
+//            System.out.println("window: drop pheromone type 2");
+                dropPheromone(percepts,SmellPerceptType.Pheromone2);
+                super.setDroppedPheromone(500);
+            }
+
+            if(percepts.getAreaPercepts().isJustTeleported() && getDroppedPheromone() == 0) {
+//            System.out.println("teleported: drop pheromone type 2");
+                dropPheromone(percepts,SmellPerceptType.Pheromone2);
+                super.setDroppedPheromone(500);
+            }
+
         }
     }
 
