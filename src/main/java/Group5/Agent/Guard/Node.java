@@ -26,7 +26,7 @@ public class Node {
     private double topBoundary;
     private double bottomBoundary;
 
-    public Node(Percepts percepts, Point position){
+    public Node(Percepts percepts, Point position, double radius){
         center = position;
 //        System.out.println(center.toString());
         nodeIdleness = 0;
@@ -35,8 +35,9 @@ public class Node {
         for (ObjectPercept e : vision){
             objectList.add(e.getType());
         }
-        radius = percepts.getVision().getFieldOfView().getRange().getValue();
-        radius = 30;
+//        radius = percepts.getVision().getFieldOfView().getRange().getValue();
+//        radius = 30;
+        this.radius = radius;
 
         leftBoundary=Math.min(position.getX()+0.5*radius,position.getX()-0.5*radius);
         rightBoundary=Math.max(position.getX()+0.5*radius,position.getX()-0.5*radius);
