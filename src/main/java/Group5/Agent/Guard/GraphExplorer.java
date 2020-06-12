@@ -54,18 +54,44 @@ public class GraphExplorer implements Guard {
 //                System.out.println("created new Area");
 //                Node newNode = new Node(percepts, computeCenterNewNode(centerOldNode, percepts.getVision().getFieldOfView().getRange().getValue()));
                 Node newNode = new Node(percepts, computeCenterNewNode(centerOldNode, radius),radius);
+                generateAdjacentNodes(centerOldNode);
                 previousNodeVisited = newNode;
                 nodes.add(newNode);
 //                System.out.println(nodes.size());
             }else{
 //                System.out.println("created new Area");
                 Node newNode = new Node(percepts, position,radius);
+                generateAdjacentNodes(position);
                 previousNodeVisited = newNode;
                 nodes.add(newNode);
             }
         }
     }
 
+    /**
+     * generates the 8 neighbours of a node, and give them a big idleness value
+     * @param oldCenter center of node you want to generate neighbours
+     */
+    public void generateAdjacentNodes(Point oldCenter) {
+        boolean generateNode;
+        Node newNode;
+        for (double j= 0; j < 2; j+=0.25) {
+            generateNode= true;
+            Point newCenter = new Point(oldCenter.getX()+radius*Math.cos(j*Math.PI),oldCenter.getY()+radius*Math.sin(j*Math.PI));
+
+            for (Node node: nodes) {
+                if (node.getCenter() == newCenter) {
+                    generateNode = false;
+                    break;
+                }
+            }
+
+            if (generateNode) {
+                newNode = new Node(newCenter, radius);
+                nodes.add(newNode) ;
+            }
+        }
+    }
 
     /**
      * basically the guard can move in 360 degrees and there are 8 squares adjacent to one square
@@ -145,37 +171,31 @@ public class GraphExplorer implements Guard {
 
         percepts.getVision().getFieldOfView().getRange();
 
-        if(!percepts.wasLastActionExecuted())
-        {
-            if(Math.random() < 0.1)
-            {
+        if(!percepts.wasLastActionExecuted()) {
+            if(Math.random() < 0.1) {
                 return new DropPheromone(SmellPerceptType.values()[(int) (Math.random() * SmellPerceptType.values().length)]);
             }
 
             return rotate(new Rotate(Angle.fromRadians(percepts.getScenarioGuardPercepts().getScenarioPercepts().getMaxRotationAngle().getRadians() * Game._RANDOM.nextDouble())));
-        }
-        else
-        {
+
+        } else {
             return move(new Move(new Distance(percepts.getScenarioGuardPercepts().getMaxMoveDistanceGuard().getValue() * getSpeedModifier(percepts))),percepts);
         }
     }
 
-    private double getSpeedModifier(GuardPercepts guardPercepts)
-    {
+    private double getSpeedModifier(GuardPercepts guardPercepts) {
         SlowDownModifiers slowDownModifiers =  guardPercepts.getScenarioGuardPercepts().getScenarioPercepts().getSlowDownModifiers();
-        if(guardPercepts.getAreaPercepts().isInWindow())
-        {
+        if(guardPercepts.getAreaPercepts().isInWindow()) {
             return slowDownModifiers.getInWindow();
-        }
-        else if(guardPercepts.getAreaPercepts().isInSentryTower())
-        {
+
+        } else if(guardPercepts.getAreaPercepts().isInSentryTower()) {
             return slowDownModifiers.getInSentryTower();
-        }
-        else if(guardPercepts.getAreaPercepts().isInDoor())
-        {
+
+        } else if(guardPercepts.getAreaPercepts().isInDoor()) {
             return slowDownModifiers.getInDoor();
         }
 
         return 1;
     }
+
 }
