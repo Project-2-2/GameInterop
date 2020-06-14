@@ -266,12 +266,12 @@ public class GraphExplorer extends GuardExplorer {
         for(Node n: this.nodes){
             double distance = this.previousNodeVisited.getCenter().getDistance(n.getCenter()).getValue();
             if (distance < 2*radius){
-                double deltaT = distance/velocity;
-                double tNext = currentTime + deltaT;
-                double expectedIdleness = tNext - n.getNodeIdleness();
-                if(deltaT > 0.0005 && Math.abs(expectedIdleness)/deltaT > utility) {
+//                double deltaT = distance/velocity;
+//                double tNext = currentTime + deltaT;
+//                double expectedIdleness = tNext - n.getNodeIdleness();
+                if(distance > 0.0005 && n.getNodeIdleness() > utility) {
                     nextNode = n;
-                    utility = Math.abs(expectedIdleness)/deltaT;
+                    utility = n.getNodeIdleness();
                 }
             }
         }
@@ -298,10 +298,10 @@ public class GraphExplorer extends GuardExplorer {
             Angle angleBetweenCenters = vectorAngle(this.previousNodeVisited.getCenter(), node.getCenter());
             Angle angleBetweenCentersFull = Angle.fromRadians((angleBetweenCenters.getRadians() + 2 * Math.PI) % (2 * Math.PI));
             String directionKey = "";
-            if (angleBetweenCenters.getRadians() == 0) directionKey = "right";
-            else if (angleBetweenCenters.getRadians() == Math.PI / 2) directionKey = "top";
-            else if (angleBetweenCentersFull.getRadians() == Math.PI) directionKey = "left";
-            else if (angleBetweenCentersFull.getRadians() == -Math.PI / 2) directionKey = "bottom";
+            if (angleBetweenCenters.getRadians() < 0.05) directionKey = "right";
+            else if (angleBetweenCenters.getRadians() - Math.PI / 2 < 0.05) directionKey = "top";
+            else if (angleBetweenCentersFull.getRadians() - Math.PI < 0.05) directionKey = "left";
+            else if (angleBetweenCentersFull.getRadians() + Math.PI / 2 < 0.05) directionKey = "bottom";
 
             ArrayList<Point> doorList = new ArrayList<>();
             for(Point p: node.getObjectMap().get(ObjectPerceptType.Door)){
