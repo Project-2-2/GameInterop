@@ -12,10 +12,12 @@ import Interop.Geometry.Point;
 import Interop.Percept.GuardPercepts;
 import Interop.Percept.Scenario.SlowDownModifiers;
 import Interop.Percept.Smell.SmellPerceptType;
+import Interop.Percept.Vision.ObjectPercept;
 import Interop.Percept.Vision.ObjectPerceptType;
 
 import javax.swing.text.Position;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class GraphExplorer extends GuardExplorer {
 
@@ -28,6 +30,9 @@ public class GraphExplorer extends GuardExplorer {
 
     private double radius;
     private int currentTime;
+    private double epsilon; // two ObjectPercepts of the same type are considered identical of their distance is less than epsilon
+
+    private String mode;
 
     public GraphExplorer(){
         position = new Point(0,0);
@@ -35,6 +40,8 @@ public class GraphExplorer extends GuardExplorer {
         angle = Angle.fromDegrees(0);
         radius = 30;
         currentTime = 0;
+        epsilon = 0.05;
+        mode = "graph";
     }
 
     /**
@@ -45,7 +52,7 @@ public class GraphExplorer extends GuardExplorer {
         boolean newNodeBoolean = true;
         for (int i = 0; i<nodes.size();i++){
             if (nodes.get(i).agentInNode(position)){
-                nodes.get(i).visitNodeAgain(percepts, position);
+                nodes.get(i).visitNodeAgain(percepts, position, epsilon);
                 previousNodeVisited = nodes.get(i);
                 newNodeBoolean = false;
                 break;
@@ -185,35 +192,53 @@ public class GraphExplorer extends GuardExplorer {
 
         percepts.getVision().getFieldOfView().getRange();
 
-        if(!percepts.wasLastActionExecuted()) {
-            if(Math.random() < 0.1) {
-                addActionToQueue(new DropPheromone(SmellPerceptType.values()[(int) (Math.random() * SmellPerceptType.values().length)]), percepts);
+        boolean switchOffGuardMode = true;
+        for(ObjectPercept o: percepts.getVision().getObjects().getAll()) {
+            if(o.getType()==ObjectPerceptType.Door || o.getType()==ObjectPerceptType.Window) {
+                switchOffGuardMode = false;
+                break;
             }
+        }
+        if (switchOffGuardMode) this.mode = "graph";
 
-            addActionToQueue(new Rotate(Angle.fromRadians(percepts.getScenarioGuardPercepts().getScenarioPercepts().getMaxRotationAngle().getRadians() * Game._RANDOM.nextDouble())), percepts);
+        // TODO: account for the intruder
 
-        } else {
-            double maxMovementDistance = percepts.getScenarioGuardPercepts().getMaxMoveDistanceGuard().getValue() * getSpeedModifier(percepts);
-            Node nextNode = chooseNextNode(maxMovementDistance);
-            //moveToNode(nextNode)
-            if(percepts.getAreaPercepts().isInDoor() && getDroppedPheromone() == 0) {
+        if(this.mode.equals("guard")){
+            super.explore(percepts);
+
+        }
+        else {
+
+            if (!percepts.wasLastActionExecuted()) {
+                if (Math.random() < 0.1) {
+                    addActionToQueue(new DropPheromone(SmellPerceptType.values()[(int) (Math.random() * SmellPerceptType.values().length)]), percepts);
+                }
+
+                addActionToQueue(rotate(new Rotate(Angle.fromRadians(percepts.getScenarioGuardPercepts().getScenarioPercepts().getMaxRotationAngle().getRadians() * Game._RANDOM.nextDouble()))), percepts);
+
+            } else {
+                double maxMovementDistance = percepts.getScenarioGuardPercepts().getMaxMoveDistanceGuard().getValue() * getSpeedModifier(percepts);
+                Node nextNode = chooseNextNode(maxMovementDistance);
+                if(nextNode != null) moveToNode(nextNode, percepts);
+                if (percepts.getAreaPercepts().isInDoor() && getDroppedPheromone() == 0) {
 //            System.out.println("door: drop pheromone type 2");
-                dropPheromone(percepts,SmellPerceptType.Pheromone2);
-                super.setDroppedPheromone(500);
-            }
+//                    dropPheromone(percepts, SmellPerceptType.Pheromone2); //TODO: Throws Nullpointer exception after door
+                    super.setDroppedPheromone(500);
+                }
 
-            if(percepts.getAreaPercepts().isInWindow() && getDroppedPheromone() == 0) {
+                if (percepts.getAreaPercepts().isInWindow() && getDroppedPheromone() == 0) {
 //            System.out.println("window: drop pheromone type 2");
-                dropPheromone(percepts,SmellPerceptType.Pheromone2);
-                super.setDroppedPheromone(500);
-            }
+                    dropPheromone(percepts, SmellPerceptType.Pheromone2);
+                    super.setDroppedPheromone(500);
+                }
 
-            if(percepts.getAreaPercepts().isJustTeleported() && getDroppedPheromone() == 0) {
+                if (percepts.getAreaPercepts().isJustTeleported() && getDroppedPheromone() == 0) {
 //            System.out.println("teleported: drop pheromone type 2");
-                dropPheromone(percepts,SmellPerceptType.Pheromone2);
-                super.setDroppedPheromone(500);
-            }
+//                    dropPheromone(percepts, SmellPerceptType.Pheromone2); //TODO: Throws Nullpointer exception after teleport
+                    super.setDroppedPheromone(500);
+                }
 
+            }
         }
     }
 
@@ -245,10 +270,114 @@ public class GraphExplorer extends GuardExplorer {
      * Not done
      * @param node
      */
-    private void moveToNode(Node node){ //TODO: implement
+    private void moveToNode(Node node, GuardPercepts percepts){ //TODO: What about new nodes? I think it might break it, becauee there are no percepts stored yet.
+        //determine direction
+        Angle angle = getRelativeAngle(new Point(node.getCenter().getX()-this.position.getX(),
+                                                    node.getCenter().getY()-this.position.getY()), this.angle);
+
         //check doors/windows
+        if (node.getObjectMap().keySet().contains(ObjectPerceptType.Door) ||
+                node.getObjectMap().keySet().contains(ObjectPerceptType.Window)) {
+            HashMap<String, Angle[]> angleRanges = new HashMap<>();
+            angleRanges.put("right", new Angle[]{Angle.fromRadians(-Math.PI / 2), Angle.fromRadians(Math.PI / 2)});
+            angleRanges.put("top", new Angle[]{Angle.fromRadians(0), Angle.fromRadians(Math.PI)});
+            angleRanges.put("left", new Angle[]{Angle.fromRadians(Math.PI / 2), Angle.fromRadians(3 * Math.PI / 2)});
+            angleRanges.put("bottom", new Angle[]{Angle.fromRadians(Math.PI), Angle.fromRadians(2 * Math.PI)});
+
+            Angle angleBetweenCenters = vectorAngle(this.previousNodeVisited.getCenter(), node.getCenter());
+            Angle angleBetweenCentersFull = Angle.fromRadians((angleBetweenCenters.getRadians() + 2 * Math.PI) % (2 * Math.PI));
+            String directionKey = "";
+            if (angleBetweenCenters.getRadians() == 0) directionKey = "right";
+            else if (angleBetweenCenters.getRadians() == Math.PI / 2) directionKey = "top";
+            else if (angleBetweenCentersFull.getRadians() == Math.PI) directionKey = "left";
+            else if (angleBetweenCentersFull.getRadians() == -Math.PI / 2) directionKey = "bottom";
+
+            ArrayList<Point> doorList = new ArrayList<>();
+            for(Point p: node.getObjectMap().get(ObjectPerceptType.Door)){
+                if (doorOrWindowsOnTheWay(angleRanges, directionKey, p)) doorList.add(p);
+            }
+            if(doorList.isEmpty()){
+                for(Point p: node.getObjectMap().get(ObjectPerceptType.Window)) {
+                    if (doorOrWindowsOnTheWay(angleRanges, directionKey, p)) doorList.add(p);
+                }
+
+            }
+
+            if(!doorList.isEmpty()) {
+                Angle angleToPassable = this.getRelativeAngle(new Point(doorList.get(0).getX() - position.getX(),
+                        doorList.get(0).getY() - position.getY()), this.angle);
+                addActionToQueue(rotate(new Rotate(angleToPassable)), percepts);
+            }
+
+            for(Point p: doorList){
+                for (ObjectPercept o: percepts.getVision().getObjects().getAll()){
+                    Point q = new Point(o.getPoint().getX()+position.getX(), o.getPoint().getY()+position.getY());
+                    if(new Distance(p, q).getValue() < this.epsilon) {
+                        System.out.println("Switching to guard mode to go through door/window");
+                        this.mode = "guard";
+                        break;
+                    }
+                }
+            }
+            if(!this.mode.equals("guard")){
+                addActionToQueue(move(new Move(new Distance(2)), percepts), percepts);
+            }
+
+
+        }
 
         //check walls or does Ionas do that already?
+    }
+
+    /**
+     * Checks if there is a door or a Window on the way
+     * @param angleRanges
+     * @param directionKey
+     * @param p
+     * @return
+     */
+    private boolean doorOrWindowsOnTheWay(HashMap<String, Angle[]> angleRanges, String directionKey, Point p) {
+        boolean onTheWay = false;
+        Angle pointAngle = vectorAngle(this.previousNodeVisited.getCenter(), p);
+        if (directionKey.equals("left") || directionKey.equals("bottom"))
+            pointAngle = Angle.fromRadians((pointAngle.getRadians() + 2 * Math.PI) % (2 * Math.PI));
+        if (pointAngle.getRadians() >= angleRanges.get(directionKey)[0].getRadians() &&
+                pointAngle.getRadians() < angleRanges.get(directionKey)[1].getRadians()) {
+            onTheWay = true;
+        }
+        return onTheWay;
+    }
+
+    /**
+     *
+     * @param p Any point relative to the spawn position
+     * @param a Any angle relative to the original orientation of the agent
+     * @return The angle between the point when interpreted as a vector and angle a
+     */
+    private Angle getRelativeAngle(Point p, Angle a){
+        Angle pointAngle = Angle.fromRadians(Math.atan2(p.getY(), p.getX()));
+        return Angle.fromRadians(pointAngle.getRadians() - a.getRadians());
+    }
+    /**
+     *
+     * @param p1 Any point relative to the spawn position
+     * @param p2 Any point relative to the spawn position
+     * @return The angle between the two points when interpreted as vectors
+     */
+    private Angle getRelativeAngle(Point p1, Point p2){
+        Angle pointAngle1 = Angle.fromRadians(Math.atan2(p1.getY(), p1.getX()));
+        Angle pointAngle2 = Angle.fromRadians(Math.atan2(p2.getY(), p2.getX()));
+        return Angle.fromRadians(pointAngle2.getRadians() - pointAngle1.getRadians());
+    }
+
+    /**
+     *
+     * @param p1 Any point relative to the spawn position
+     * @param p2 Any point relative to the spawn position
+     * @return The angle of a vector between the two points from the x-axis of the spawn location
+     */
+    private Angle vectorAngle(Point p1, Point p2){
+       return Angle.fromRadians(Math.atan2(p2.getY() - p1.getY(), p2.getX() - p1.getX()));
     }
 
     private double getSpeedModifier(GuardPercepts guardPercepts) {

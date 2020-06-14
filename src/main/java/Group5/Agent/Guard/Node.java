@@ -99,8 +99,7 @@ public class Node {
      * @param percepts The world as perceived by the agent. These are the current objects in vision
      * @param agentPosition The current position of the agent relative to its spawn location
      */
-    public void visitNodeAgain(Percepts percepts, Point agentPosition){
-        double epsilon = 0.05;
+    public void visitNodeAgain(Percepts percepts, Point agentPosition, double epsilon){
         nodeIdleness = 0;
         Set<ObjectPercept> vision = percepts.getVision().getObjects().getAll();
         for (ObjectPercept o : vision){
