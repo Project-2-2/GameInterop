@@ -120,7 +120,7 @@ public class Node {
     }
 
     public boolean agentInNode(Point agentPosition){
-        return (agentPosition.getY()>bottomBoundary)&(agentPosition.getY()<topBoundary)&(agentPosition.getX()>leftBoundary)&(agentPosition.getX()<rightBoundary);
+        return (agentPosition.getY()>bottomBoundary)&(agentPosition.getY()<topBoundary)&&(agentPosition.getX()>leftBoundary)&(agentPosition.getX()<rightBoundary);
     }
 
     public static double getDistance(Point x, Point y){

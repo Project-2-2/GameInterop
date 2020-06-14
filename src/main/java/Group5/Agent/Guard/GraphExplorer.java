@@ -35,7 +35,7 @@ public class GraphExplorer extends GuardExplorer {
         position = new Point(0,0);
         nodes = new ArrayList<>();
         angle = Angle.fromDegrees(0);
-        radius = 30;
+        radius = 1030;
         currentTime = 0;
         epsilon = 0.5;
         mode = "graph";
@@ -48,13 +48,19 @@ public class GraphExplorer extends GuardExplorer {
     public void addAreaToGraph(GuardPercepts percepts){
         boolean newNodeBoolean = true;
         for (int i = 0; i<nodes.size();i++){
+            //it is correct that newNodeBoolean is always false since we already adding the adjacent nodes each time we
+            //visit a node
             if (nodes.get(i).agentInNode(position)){
                 nodes.get(i).visitNodeAgain(percepts, position, epsilon);
                 previousNodeVisited = nodes.get(i);
+//                System.out.println(previousNodeVisited.getCenter().toString());
+//                System.out.println(position.toString());
+                generateAdjacentNodes(nodes.get(i).getCenter());
                 newNodeBoolean = false;
                 break;
             }
         }
+        System.out.println(nodes.size());
         if (newNodeBoolean) {
             if (previousNodeVisited!=null) {
                 Point centerOldNode = previousNodeVisited.getCenter();
@@ -82,13 +88,17 @@ public class GraphExplorer extends GuardExplorer {
     public void generateAdjacentNodes(Point oldCenter) {
         boolean generateNode;
         Node newNode;
-        for (double j= 0; j < 2; j+=0.25) {
+
+//        System.out.println(oldCenter.toString());
+        for (double j= 0; j < 2; j+=0.5) {
             generateNode= true;
             Point newCenter = new Point(oldCenter.getX()+radius*Math.cos(j*Math.PI),oldCenter.getY()+radius*Math.sin(j*Math.PI));
 
             for (Node node: nodes) {
-                if (node.getCenter() == newCenter) {
+                if (Node.getDistance(node.getCenter(),newCenter)<radius-1) {
                     generateNode = false;
+//                    System.out.println("kak");
+//                    System.out.println(Node.getDistance(node.getCenter(),newCenter));
                     break;
                 }
             }
@@ -96,6 +106,29 @@ public class GraphExplorer extends GuardExplorer {
             if (generateNode) {
                 newNode = new Node(newCenter, radius);
                 nodes.add(newNode) ;
+//                System.out.println(Node.getDistance(oldCenter,newNode.getCenter()));
+            }
+        }
+
+        //the distance between the centers of diagonal squares is different
+        for (double j= 0.25; j < 2; j+=0.5) {
+            generateNode= true;
+            double radiusDiagonal = Math.sqrt(Math.pow(radius,2)+Math.pow(radius,2));
+            Point newCenter = new Point(oldCenter.getX()+radiusDiagonal*Math.cos(j*Math.PI),oldCenter.getY()+radiusDiagonal*Math.sin(j*Math.PI));
+
+            for (Node node: nodes) {
+                if (Node.getDistance(node.getCenter(),newCenter)<radius-1) {
+                    generateNode = false;
+//                    System.out.println("kak");
+//                    System.out.println(Node.getDistance(node.getCenter(),newCenter));
+                    break;
+                }
+            }
+
+            if (generateNode) {
+                newNode = new Node(newCenter, radius);
+                nodes.add(newNode) ;
+//                System.out.println(Node.getDistance(oldCenter,newNode.getCenter()));
             }
         }
     }
@@ -110,13 +143,14 @@ public class GraphExplorer extends GuardExplorer {
      */
     public Point computeCenterNewNode(Point centerOldNode, double radius){ //TODO: add all nodes to the graph if not wall without door and centers not in graph
         //compute the center of all possible directions the agent could go
-        Point upperLeft = new Point(centerOldNode.getX()+radius*Math.cos(0.75*Math.PI),centerOldNode.getY()+radius*Math.sin(0.75*Math.PI));
+        double radiusDiagonal = Math.sqrt(Math.pow(radius,2)+Math.pow(radius,2));
+        Point upperLeft = new Point(centerOldNode.getX()+radiusDiagonal*Math.cos(0.75*Math.PI),centerOldNode.getY()+radiusDiagonal*Math.sin(0.75*Math.PI));
         Point left = new Point(centerOldNode.getX()+radius*Math.cos(Math.PI),centerOldNode.getY()+radius*Math.sin(Math.PI));
-        Point downLeft = new Point(centerOldNode.getX()+radius*Math.cos(1.25*Math.PI),centerOldNode.getY()+radius*Math.sin(1.25*Math.PI));
+        Point downLeft = new Point(centerOldNode.getX()+radiusDiagonal*Math.cos(1.25*Math.PI),centerOldNode.getY()+radiusDiagonal*Math.sin(1.25*Math.PI));
         Point bottom = new Point(centerOldNode.getX()+radius*Math.cos(1.5*Math.PI),centerOldNode.getY()+radius*Math.sin(1.5*Math.PI));
-        Point downRight = new Point(centerOldNode.getX()+radius*Math.cos(1.75*Math.PI),centerOldNode.getY()+radius*Math.sin(1.75*Math.PI));
+        Point downRight = new Point(centerOldNode.getX()+radiusDiagonal*Math.cos(1.75*Math.PI),centerOldNode.getY()+radiusDiagonal*Math.sin(1.75*Math.PI));
         Point right = new Point(centerOldNode.getX()+radius*Math.cos(0),centerOldNode.getY()+radius*Math.sin(0));
-        Point upperRight = new Point(centerOldNode.getX()+radius*Math.cos(0.25*Math.PI),centerOldNode.getY()+radius*Math.sin(0.25*Math.PI));
+        Point upperRight = new Point(centerOldNode.getX()+radiusDiagonal*Math.cos(0.25*Math.PI),centerOldNode.getY()+radiusDiagonal*Math.sin(0.25*Math.PI));
         Point top = new Point(centerOldNode.getX()+radius*Math.cos(0.5*Math.PI),centerOldNode.getY()+radius*Math.sin(0.5*Math.PI));
 
         Point[] centers = new Point[]{upperLeft,left,downLeft,bottom,downRight,right,upperRight,top};
@@ -140,7 +174,7 @@ public class GraphExplorer extends GuardExplorer {
     public GuardAction move(Move move, GuardPercepts percepts){
         Point movement = new Point(move.getDistance().getValue()*Math.cos(angle.getRadians()),move.getDistance().getValue()*Math.sin(angle.getRadians()));
         position = new Point(position.getX()+movement.getX(),position.getY()+movement.getY());
-            addAreaToGraph(percepts);
+        addAreaToGraph(percepts);
 //        System.out.println("Moving ..." + position.toString());
         return move;
     }
