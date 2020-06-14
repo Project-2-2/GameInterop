@@ -199,10 +199,11 @@ public class GraphExplorer extends GuardExplorer {
         for(ObjectPercept o: percepts.getVision().getObjects().getAll()) {
             if(o.getType()==ObjectPerceptType.Door || o.getType()==ObjectPerceptType.Window) {
                 switchOffGuardMode = false;
+                System.out.println("Switching off guard mode.");
                 break;
             }
         }
-        if (switchOffGuardMode) this.mode = "graph";
+        if (switchOffGuardMode && this.mode.equals("guard")) this.mode = "graph";
 
         // TODO: account for the intruder
 
@@ -224,7 +225,7 @@ public class GraphExplorer extends GuardExplorer {
 //                for(Node n: nodes){
 //                    System.out.println(n.getCenter());
 //                }
-                Node nextNode = chooseNextNode(maxMovementDistance);
+                Node nextNode = chooseNextNode();
 
                 if(nextNode != null){
                     moveToNode(nextNode, percepts, maxMovementDistance);
@@ -253,18 +254,14 @@ public class GraphExplorer extends GuardExplorer {
 
     /**
      * Chooses the node with maximum utility (i.e. a trade off between highest idleness and time it takes to get there)
-     * @param velocity Movement speed of the agent. Currently simply the maximum movement distance
      * @return The next node to visit based on idleness
      */
-    private Node chooseNextNode(double velocity){
+    private Node chooseNextNode(){
         Node nextNode = null;
         double utility = 0;
         for(Node n: this.nodes){
             double distance = this.previousNodeVisited.getCenter().getDistance(n.getCenter()).getValue();
             if (distance < 2*radius){
-//                double deltaT = distance/velocity;
-//                double tNext = currentTime + deltaT;
-//                double expectedIdleness = tNext - n.getNodeIdleness();
                 if(distance > 0.0005 && n.getNodeIdleness() > utility) {
                     nextNode = n;
                     utility = n.getNodeIdleness();
@@ -300,8 +297,10 @@ public class GraphExplorer extends GuardExplorer {
             else if (angleBetweenCentersFull.getRadians() + Math.PI / 2 < 0.05) directionKey = "bottom";
 
             ArrayList<Point> doorList = new ArrayList<>();
-            for(Point p: node.getObjectMap().get(ObjectPerceptType.Door)){
-                if (doorOrWindowsOnTheWay(angleRanges, directionKey, p)) doorList.add(p);
+            if(node.getObjectMap().keySet().contains(ObjectPerceptType.Door)) {
+                for (Point p : node.getObjectMap().get(ObjectPerceptType.Door)) {
+                    if (doorOrWindowsOnTheWay(angleRanges, directionKey, p)) doorList.add(p);
+                }
             }
             if(doorList.isEmpty() && node.getObjectMap().keySet().contains(ObjectPerceptType.Window)){
                 for(Point p: node.getObjectMap().get(ObjectPerceptType.Window)) {
@@ -317,13 +316,14 @@ public class GraphExplorer extends GuardExplorer {
             }
 
             // TODO: rotate first
+            outerloop:
             for(Point p: doorList){
                 for (ObjectPercept o: percepts.getVision().getObjects().getAll()){
                     Point q = new Point(o.getPoint().getX()+position.getX(), o.getPoint().getY()+position.getY());
                     if(new Distance(p, q).getValue() < this.epsilon) {
                         System.out.println("Switching to guard mode to go through door/window");
                         this.mode = "guard";
-                        break;
+                        break outerloop;
                     }
                 }
             }
