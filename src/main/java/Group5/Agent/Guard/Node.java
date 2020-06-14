@@ -6,10 +6,7 @@ import Interop.Percept.Percepts;
 import Interop.Percept.Vision.ObjectPercept;
 import Interop.Percept.Vision.ObjectPerceptType;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class Node {
 
@@ -102,15 +99,18 @@ public class Node {
     public void visitNodeAgain(Percepts percepts, Point agentPosition, double epsilon){
         nodeIdleness = 0;
         Set<ObjectPercept> vision = percepts.getVision().getObjects().getAll();
+
         for (ObjectPercept o : vision){
             Point objectPoint = new Point(agentPosition.getX()+o.getPoint().getX(),
                     agentPosition.getY()+o.getPoint().getY());
             if (objectMap.keySet().contains(o.getType()))
-            {
+            { Set<Point> addThose = new HashSet<>();
                for(Point p: objectMap.get(o.getType())){
-                   if(new Distance(p, objectPoint).getValue() > epsilon)
-                       objectMap.get(o.getType()).add(objectPoint);
+                   if(new Distance(p, objectPoint).getValue() > epsilon) {
+                       addThose.add(objectPoint);
+                   }
                }
+                objectMap.get(o.getType()).addAll(addThose);
             }
             else{
                 objectMap.put(o.getType(), new ArrayList<>());

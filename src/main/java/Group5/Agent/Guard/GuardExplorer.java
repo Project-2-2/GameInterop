@@ -32,7 +32,7 @@ import java.util.concurrent.Callable;
 
 public class GuardExplorer implements Guard {
 
-    private Queue<GuardAction> actionQueue = new LinkedList<>();
+    protected Queue<GuardAction> actionQueue = new LinkedList<>();
     private int enteredSentryTower; //0 if didn't entered a sentry tower the last 30 turns
 
     private Angle lastDirectionIntruder;

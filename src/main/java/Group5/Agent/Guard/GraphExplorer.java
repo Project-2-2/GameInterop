@@ -1,10 +1,7 @@
 package Group5.Agent.Guard;
 
 import Group9.Game;
-import Interop.Action.DropPheromone;
-import Interop.Action.GuardAction;
-import Interop.Action.Move;
-import Interop.Action.Rotate;
+import Interop.Action.*;
 import Interop.Agent.Guard;
 import Interop.Geometry.Angle;
 import Interop.Geometry.Distance;
@@ -40,7 +37,7 @@ public class GraphExplorer extends GuardExplorer {
         angle = Angle.fromDegrees(0);
         radius = 30;
         currentTime = 0;
-        epsilon = 0.05;
+        epsilon = 0.5;
         mode = "graph";
     }
 
@@ -61,7 +58,7 @@ public class GraphExplorer extends GuardExplorer {
         if (newNodeBoolean) {
             if (previousNodeVisited!=null) {
                 Point centerOldNode = previousNodeVisited.getCenter();
-//                System.out.println("created new Area");
+                System.out.println("created new Area");
 //                Node newNode = new Node(percepts, computeCenterNewNode(centerOldNode, percepts.getVision().getFieldOfView().getRange().getValue()));
                 Node newNode = new Node(percepts, computeCenterNewNode(centerOldNode, radius), this.position, radius);
                 generateAdjacentNodes(centerOldNode);
@@ -69,7 +66,7 @@ public class GraphExplorer extends GuardExplorer {
                 nodes.add(newNode);
 //                System.out.println(nodes.size());
             }else{
-//                System.out.println("created new Area");
+                System.out.println("created new Area");
                 Node newNode = new Node(percepts, position, position, radius);
                 generateAdjacentNodes(position);
                 previousNodeVisited = newNode;
@@ -177,7 +174,15 @@ public class GraphExplorer extends GuardExplorer {
 //        if (!percepts.wasLastActionExecuted()){
 //            actionQueue.clear();
 //        }
-        return super.getAction(percepts);
+
+        GuardAction a = super.getAction(percepts); //TODO: Wrap everything that happens in Guard Explorer into "Move"and "Rotate" methods
+            if(a instanceof Rotate){
+                a = this.rotate((Rotate)a);
+            }
+            else if(a instanceof  Move){
+                a = this.move((Move)a, percepts);
+            }
+        return a;
     }
 
     /**
@@ -189,8 +194,6 @@ public class GraphExplorer extends GuardExplorer {
     public void explore(GuardPercepts percepts) { //TODO: Check when to ignore exploration and hunt intruder
         updateNodeIdleness();
         currentTime++;
-
-        percepts.getVision().getFieldOfView().getRange();
 
         boolean switchOffGuardMode = true;
         for(ObjectPercept o: percepts.getVision().getObjects().getAll()) {
@@ -214,12 +217,12 @@ public class GraphExplorer extends GuardExplorer {
                     addActionToQueue(new DropPheromone(SmellPerceptType.values()[(int) (Math.random() * SmellPerceptType.values().length)]), percepts);
                 }
 
-                addActionToQueue(rotate(new Rotate(Angle.fromRadians(percepts.getScenarioGuardPercepts().getScenarioPercepts().getMaxRotationAngle().getRadians() * Game._RANDOM.nextDouble()))), percepts);
+                addActionToQueue(new Rotate(Angle.fromRadians(percepts.getScenarioGuardPercepts().getScenarioPercepts().getMaxRotationAngle().getRadians() * Game._RANDOM.nextDouble())), percepts);
 
             } else {
                 double maxMovementDistance = percepts.getScenarioGuardPercepts().getMaxMoveDistanceGuard().getValue() * getSpeedModifier(percepts);
                 Node nextNode = chooseNextNode(maxMovementDistance);
-                if(nextNode != null) moveToNode(nextNode, percepts);
+                if(nextNode != null) moveToNode(nextNode, percepts); // TODO: Next node is at (1,0), mistake?
                 if (percepts.getAreaPercepts().isInDoor() && getDroppedPheromone() == 0) {
 //            System.out.println("door: drop pheromone type 2");
 //                    dropPheromone(percepts, SmellPerceptType.Pheromone2); //TODO: Throws Nullpointer exception after door
@@ -271,13 +274,11 @@ public class GraphExplorer extends GuardExplorer {
      * @param node
      */
     private void moveToNode(Node node, GuardPercepts percepts){ //TODO: What about new nodes? I think it might break it, becauee there are no percepts stored yet.
-        //determine direction
-        Angle angle = getRelativeAngle(new Point(node.getCenter().getX()-this.position.getX(),
-                                                    node.getCenter().getY()-this.position.getY()), this.angle);
-
+        System.out.println("Moving to node");
         //check doors/windows
         if (node.getObjectMap().keySet().contains(ObjectPerceptType.Door) ||
                 node.getObjectMap().keySet().contains(ObjectPerceptType.Window)) {
+            System.out.println("There is a passable object on the way.");
             HashMap<String, Angle[]> angleRanges = new HashMap<>();
             angleRanges.put("right", new Angle[]{Angle.fromRadians(-Math.PI / 2), Angle.fromRadians(Math.PI / 2)});
             angleRanges.put("top", new Angle[]{Angle.fromRadians(0), Angle.fromRadians(Math.PI)});
@@ -306,9 +307,10 @@ public class GraphExplorer extends GuardExplorer {
             if(!doorList.isEmpty()) {
                 Angle angleToPassable = this.getRelativeAngle(new Point(doorList.get(0).getX() - position.getX(),
                         doorList.get(0).getY() - position.getY()), this.angle);
-                addActionToQueue(rotate(new Rotate(angleToPassable)), percepts);
+                addActionToQueue(new Rotate(angleToPassable), percepts);
             }
 
+            // TODO: rotate first
             for(Point p: doorList){
                 for (ObjectPercept o: percepts.getVision().getObjects().getAll()){
                     Point q = new Point(o.getPoint().getX()+position.getX(), o.getPoint().getY()+position.getY());
@@ -320,13 +322,22 @@ public class GraphExplorer extends GuardExplorer {
                 }
             }
             if(!this.mode.equals("guard")){
-                addActionToQueue(move(new Move(new Distance(2)), percepts), percepts);
+                addActionToQueue(new Move(new Distance(2)), percepts);
             }
 
 
         }
 
         //check walls or does Ionas do that already?
+
+        else{
+            System.out.println("No doors. No Windows.");
+            //determine direction
+            Angle angleToNextNode = getRelativeAngle(new Point(node.getCenter().getX()-this.position.getX(),
+                    node.getCenter().getY()-this.position.getY()), this.angle);
+            addActionToQueue(new Rotate(angleToNextNode), percepts);
+            addActionToQueue(new Move(new Distance(5)), percepts);
+        }
     }
 
     /**
