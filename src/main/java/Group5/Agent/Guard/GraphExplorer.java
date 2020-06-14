@@ -141,7 +141,7 @@ public class GraphExplorer extends GuardExplorer {
         Point movement = new Point(move.getDistance().getValue()*Math.cos(angle.getRadians()),move.getDistance().getValue()*Math.sin(angle.getRadians()));
         position = new Point(position.getX()+movement.getX(),position.getY()+movement.getY());
             addAreaToGraph(percepts);
-//        System.out.println(position.toString());
+//        System.out.println("Moving ..." + position.toString());
         return move;
     }
 
@@ -228,10 +228,6 @@ public class GraphExplorer extends GuardExplorer {
 
                 if(nextNode != null){
                     moveToNode(nextNode, percepts, maxMovementDistance);
-                    System.out.println("Next node: " + nextNode.getCenter());
-                    System.out.println("Current node: " + previousNodeVisited.getCenter());
-                    System.out.println("Idleness of next: " + nextNode.getNodeIdleness());
-                    System.out.println("There are " + nodes.size() + " nodes.");
                 }
                 if (percepts.getAreaPercepts().isInDoor() && getDroppedPheromone() == 0) {
 //            System.out.println("door: drop pheromone type 2");
@@ -307,7 +303,7 @@ public class GraphExplorer extends GuardExplorer {
             for(Point p: node.getObjectMap().get(ObjectPerceptType.Door)){
                 if (doorOrWindowsOnTheWay(angleRanges, directionKey, p)) doorList.add(p);
             }
-            if(doorList.isEmpty()){
+            if(doorList.isEmpty() && node.getObjectMap().keySet().contains(ObjectPerceptType.Window)){
                 for(Point p: node.getObjectMap().get(ObjectPerceptType.Window)) {
                     if (doorOrWindowsOnTheWay(angleRanges, directionKey, p)) doorList.add(p);
                 }
