@@ -221,8 +221,18 @@ public class GraphExplorer extends GuardExplorer {
 
             } else {
                 double maxMovementDistance = percepts.getScenarioGuardPercepts().getMaxMoveDistanceGuard().getValue() * getSpeedModifier(percepts);
+//                for(Node n: nodes){
+//                    System.out.println(n.getCenter());
+//                }
                 Node nextNode = chooseNextNode(maxMovementDistance);
-                if(nextNode != null) moveToNode(nextNode, percepts); // TODO: Next node is at (1,0), mistake?
+
+                if(nextNode != null){
+                    moveToNode(nextNode, percepts, maxMovementDistance);
+                    System.out.println("Next node: " + nextNode.getCenter());
+                    System.out.println("Current node: " + previousNodeVisited.getCenter());
+                    System.out.println("Idleness of next: " + nextNode.getNodeIdleness());
+                    System.out.println("There are " + nodes.size() + " nodes.");
+                }
                 if (percepts.getAreaPercepts().isInDoor() && getDroppedPheromone() == 0) {
 //            System.out.println("door: drop pheromone type 2");
 //                    dropPheromone(percepts, SmellPerceptType.Pheromone2); //TODO: Throws Nullpointer exception after door
@@ -259,7 +269,7 @@ public class GraphExplorer extends GuardExplorer {
                 double deltaT = distance/velocity;
                 double tNext = currentTime + deltaT;
                 double expectedIdleness = tNext - n.getNodeIdleness();
-                if(Math.abs(expectedIdleness)/deltaT > utility) {
+                if(deltaT > 0.0005 && Math.abs(expectedIdleness)/deltaT > utility) {
                     nextNode = n;
                     utility = Math.abs(expectedIdleness)/deltaT;
                 }
@@ -273,7 +283,7 @@ public class GraphExplorer extends GuardExplorer {
      * Not done
      * @param node
      */
-    private void moveToNode(Node node, GuardPercepts percepts){ //TODO: What about new nodes? I think it might break it, becauee there are no percepts stored yet.
+    private void moveToNode(Node node, GuardPercepts percepts, double maxMovementDistance){ //TODO: What about new nodes? I think it might break it, becauee there are no percepts stored yet.
         System.out.println("Moving to node");
         //check doors/windows
         if (node.getObjectMap().keySet().contains(ObjectPerceptType.Door) ||
@@ -322,7 +332,7 @@ public class GraphExplorer extends GuardExplorer {
                 }
             }
             if(!this.mode.equals("guard")){
-                addActionToQueue(new Move(new Distance(2)), percepts);
+                addActionToQueue(new Move(new Distance(maxMovementDistance)), percepts);
             }
 
 
