@@ -28,7 +28,7 @@ public class GuardExplorer implements Guard {
     private int lastTimeSawIntruder;
     private int droppedPheromone;
     private int movedSomewhere;
-    private ArrayList<DropPheromone> myPheromone=new ArrayList<>();
+    private ArrayList<DropPheromone> myPheromone = new ArrayList<>();
 
     @Override
     public GuardAction getAction(GuardPercepts percepts) {
