@@ -26,6 +26,8 @@ public class Node {
     private double topBoundary;
     private double bottomBoundary;
 
+    private boolean neverVisited;
+
     public Node(Percepts percepts, Point position, Point agentPosition, double radius){
         center = position;
 //        System.out.println(center.toString());
@@ -40,6 +42,8 @@ public class Node {
         rightBoundary=Math.max(position.getX()+0.5*radius,position.getX()-0.5*radius);
         topBoundary=Math.max(position.getY()+0.5*radius,position.getY()-0.5*radius);
         bottomBoundary=Math.min(position.getY()+0.5*radius,position.getY()-0.5*radius);
+
+        neverVisited = false;
 
     }
 
@@ -80,6 +84,8 @@ public class Node {
         rightBoundary=Math.max(position.getX()+0.5*radius,position.getX()-0.5*radius);
         topBoundary=Math.max(position.getY()+0.5*radius,position.getY()-0.5*radius);
         bottomBoundary=Math.min(position.getY()+0.5*radius,position.getY()-0.5*radius);
+
+        neverVisited = true;
     }
 
 
@@ -97,6 +103,7 @@ public class Node {
      * @param agentPosition The current position of the agent relative to its spawn location
      */
     public void visitNodeAgain(Percepts percepts, Point agentPosition, double epsilon){
+        neverVisited = false;
         nodeIdleness = 0;
         Set<ObjectPercept> vision = percepts.getVision().getObjects().getAll();
 
@@ -145,5 +152,10 @@ public class Node {
 
     public double getBottomBoundary() {
         return bottomBoundary;
+    }
+
+    //checks if node was only generated as an adjacent node, or it was ever visited before
+    public boolean isNeverVisited(){
+        return neverVisited;
     }
 }

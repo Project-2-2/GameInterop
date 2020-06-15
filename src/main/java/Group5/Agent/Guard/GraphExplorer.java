@@ -15,6 +15,7 @@ import Interop.Percept.Vision.ObjectPerceptType;
 import javax.swing.text.Position;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 
 public class GraphExplorer extends GuardExplorer {
 
@@ -31,11 +32,15 @@ public class GraphExplorer extends GuardExplorer {
 
     private String mode;
 
+    //saves the nextNode that will be visited by the exploration algorithm
+    //if it cannot be reached remove this node from the list
+    private Node nextNode;
+
     public GraphExplorer(){
         position = new Point(0,0);
         nodes = new ArrayList<>();
         angle = Angle.fromDegrees(0);
-        radius = 1030;
+        radius = 20;
         currentTime = 0;
         epsilon = 0.5;
         mode = "graph";
@@ -53,13 +58,32 @@ public class GraphExplorer extends GuardExplorer {
             if (nodes.get(i).agentInNode(position)){
                 nodes.get(i).visitNodeAgain(percepts, position, epsilon);
                 previousNodeVisited = nodes.get(i);
+
+                //create the adjacent nodes only if node was never visited before
+                if (previousNodeVisited.isNeverVisited()){
+                    generateAdjacentNodes(previousNodeVisited.getCenter());
+                }
 //                System.out.println(previousNodeVisited.getCenter().toString());
 //                System.out.println(position.toString());
-                generateAdjacentNodes(nodes.get(i).getCenter());
+//                generateAdjacentNodes(nodes.get(i).getCenter());
                 newNodeBoolean = false;
                 break;
             }
         }
+
+        boolean allNodesVisited = true;
+        for (int i =0; i<nodes.size();i++){
+            if (nodes.get(i).isNeverVisited()){
+                allNodesVisited = false;
+            }
+        }
+        if (allNodesVisited&&nodes.size()!=0){
+//            System.out.println(nodes.size());
+            System.out.println("ALL NODES ARE VISITED");
+            System.out.println("NEW NODE CREATION HAS STOPPED");
+        }
+
+
         System.out.println(nodes.size());
         if (newNodeBoolean) {
             if (previousNodeVisited!=null) {
@@ -115,6 +139,7 @@ public class GraphExplorer extends GuardExplorer {
 
             if (generateNode) {
                 newNode = new Node(newCenter, radius);
+//                System.out.println(newNode.getCenter());
                 nodes.add(newNode);
 //              System.out.println(Node.getDistance(oldCenter,newNode.getCenter()));
             }
@@ -236,6 +261,8 @@ public class GraphExplorer extends GuardExplorer {
         else {
 
             if (!percepts.wasLastActionExecuted()) {
+                //cannot reach node so remove it from the map
+                removeUnreachableNode();
                 if (Math.random() < 0.1) {
                     addActionToQueue(new DropPheromone(SmellPerceptType.values()[(int) (Math.random() * SmellPerceptType.values().length)]), percepts);
                 }
@@ -290,8 +317,16 @@ public class GraphExplorer extends GuardExplorer {
                 }
             }
         }
-
+        this.nextNode = nextNode;
         return nextNode;
+    }
+
+    private void removeUnreachableNode(){
+//        System.out.println("biem");
+//        System.out.println(nodes.size());
+        nodes.remove(nextNode);
+//        System.out.println(nodes.size());
+        nextNode = null;
     }
 
     /**
