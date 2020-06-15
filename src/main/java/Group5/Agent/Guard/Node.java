@@ -99,8 +99,11 @@ public class Node {
         return objectMap;
     }
 
-    public void updateIdleness() {
-        nodeIdleness++;
+    public void updateIdleness(HashMap<ObjectPerceptType, Integer> weightMap ) {
+        for(ObjectPerceptType key: weightMap.keySet()) {
+            if (this.getObjectMap().keySet().contains(key))
+                nodeIdleness += weightMap.get(key);
+        }
     }
 
     public int getNodeIdleness() {

@@ -32,6 +32,9 @@ public class GraphExplorer extends GuardExplorer {
 
     private String mode;
     private Node guardTargetNode;
+    private boolean keepGoing;
+
+    private HashMap<ObjectPerceptType, Integer> weightMap;
 
     //saves the nextNode that will be visited by the exploration algorithm
     //if it cannot be reached remove this node from the list
@@ -45,6 +48,16 @@ public class GraphExplorer extends GuardExplorer {
         currentTime = 0;
         epsilon = 0.5;
         mode = "graph";
+        weightMap = new HashMap<>();
+        weightMap.put(ObjectPerceptType.Wall, 2);
+        weightMap.put(ObjectPerceptType.Window, 5);
+        weightMap.put(ObjectPerceptType.Door, 5);
+        weightMap.put(ObjectPerceptType.SentryTower, 10);
+        weightMap.put(ObjectPerceptType.Teleport, 5);
+        weightMap.put(ObjectPerceptType.ShadedArea, 1);
+        weightMap.put(ObjectPerceptType.EmptySpace, 1);
+        weightMap.put(ObjectPerceptType.Intruder, 15);
+
     }
 
     /**
@@ -62,7 +75,7 @@ public class GraphExplorer extends GuardExplorer {
 
                 //create the adjacent nodes only if node was never visited before
                 if (previousNodeVisited.isNeverVisited()) {
-                    System.out.println("biem");
+//                    System.out.println("biem");
                     generateAdjacentNodes(previousNodeVisited);
                 }
                 nodes.get(i).visitNodeAgain(percepts, position, epsilon);
@@ -86,7 +99,7 @@ public class GraphExplorer extends GuardExplorer {
         }
 
 
-        System.out.println(nodes.size());
+//        System.out.println(nodes.size());
 
 
         //System.out.println(nodes.size());
@@ -210,19 +223,19 @@ public class GraphExplorer extends GuardExplorer {
      * @return
      */
     public GuardAction rotate(Rotate rotate) {
-        angle = Angle.fromDegrees(angle.getDegrees() + rotate.getAngle().getDegrees());
-        while (angle.getDegrees() > 360) {
-            angle = Angle.fromDegrees(angle.getDegrees() - 360);
-        }
-        while (angle.getDegrees() < -360) {
-            angle = Angle.fromDegrees(angle.getDegrees() + 360);
-        }
+            angle = Angle.fromDegrees(angle.getDegrees() + rotate.getAngle().getDegrees());
+            while (angle.getDegrees() > 360) {
+                angle = Angle.fromDegrees(angle.getDegrees() - 360);
+            }
+            while (angle.getDegrees() < -360) {
+                angle = Angle.fromDegrees(angle.getDegrees() + 360);
+            }
         return rotate;
     }
 
     public void updateNodeIdleness() {
         for (int i = 0; i < nodes.size(); i++) {
-            nodes.get(i).updateIdleness();
+            nodes.get(i).updateIdleness(weightMap);
         }
     }
 
@@ -250,19 +263,21 @@ public class GraphExplorer extends GuardExplorer {
      * @return
      */
     @Override
-    public void explore(GuardPercepts percepts) { //TODO: Check when to ignore exploration and hunt intruder
+    public void explore(GuardPercepts percepts) {
         updateNodeIdleness();
 
-//        boolean switchOffGuardMode = true;
-//        for(ObjectPercept o: percepts.getVision().getObjects().getAll()) {
-//            if(o.getType()==ObjectPerceptType.Door || o.getType()==ObjectPerceptType.Window) {
-//                switchOffGuardMode = false;
-//                System.out.println("Switching off guard mode.");
-//                break;
-//            }
-//        }
-        if (this.guardTargetNode != null && this.guardTargetNode.agentInNode(position) && this.mode.equals("guard")) {
+        boolean switchOffGuardMode = true;
+        for(ObjectPercept o: percepts.getVision().getObjects().getAll()) {
+            if(o.getType()==ObjectPerceptType.Door || o.getType()==ObjectPerceptType.Window)  switchOffGuardMode = false;
+            else if(o.getType() == ObjectPerceptType.Intruder || o.getType()==ObjectPerceptType.SentryTower){
+                switchOffGuardMode = false;
+                System.out.println("Switching to guard mode to go to interesting object.");
+                this.mode = "guard";
+            }
+        }
+        if (this.guardTargetNode != null && switchOffGuardMode && this.mode.equals("guard")) {
             this.mode = "graph";
+            this.keepGoing = false;
             System.out.println("Switching off guard mode");
         }
 
@@ -294,19 +309,19 @@ public class GraphExplorer extends GuardExplorer {
                 }
                 if (percepts.getAreaPercepts().isInDoor() && getDroppedPheromone() == 0) {
 //            System.out.println("door: drop pheromone type 2");
-//                    dropPheromone(percepts, SmellPerceptType.Pheromone2); //TODO: Throws Nullpointer exception after door (needs fix)
+                    dropPheromone(percepts, SmellPerceptType.Pheromone2);
                     super.setDroppedPheromone(500);
                 }
 
-                if (percepts.getAreaPercepts().isInWindow() && getDroppedPheromone() == 0) { //TODO: Throws Nullpointer exception after window (needs fix)
+                if (percepts.getAreaPercepts().isInWindow() && getDroppedPheromone() == 0) {
 //            System.out.println("window: drop pheromone type 2");
-//                    dropPheromone(percepts, SmellPerceptType.Pheromone2);
+                    dropPheromone(percepts, SmellPerceptType.Pheromone2);
                     super.setDroppedPheromone(500);
                 }
 
                 if (percepts.getAreaPercepts().isJustTeleported() && getDroppedPheromone() == 0) {
 //            System.out.println("teleported: drop pheromone type 2");
-//                    dropPheromone(percepts, SmellPerceptType.Pheromone2); //TODO: Throws Nullpointer exception after teleport (needs fix)
+                    dropPheromone(percepts, SmellPerceptType.Pheromone2);
                     super.setDroppedPheromone(500);
                 }
 
@@ -352,8 +367,7 @@ public class GraphExplorer extends GuardExplorer {
         //System.out.println("Moving to node");
         //check doors/windows
         if (node.getObjectMap().keySet().contains(ObjectPerceptType.Door) ||
-                node.getObjectMap().keySet().contains(ObjectPerceptType.Window)) {
-            // System.out.println("There is a passable object on the way.");
+                node.getObjectMap().keySet().contains(ObjectPerceptType.Window) || this.keepGoing) {
             HashMap<String, Angle[]> angleRanges = new HashMap<>();
             angleRanges.put("right", new Angle[]{Angle.fromRadians(-Math.PI / 2), Angle.fromRadians(Math.PI / 2)});
             angleRanges.put("top", new Angle[]{Angle.fromRadians(0), Angle.fromRadians(Math.PI)});
@@ -380,27 +394,39 @@ public class GraphExplorer extends GuardExplorer {
                 }
 
             }
-
+            Angle angleToPassable = Angle.fromRadians(0);
             if (!doorList.isEmpty()) {
-                Angle angleToPassable = this.getRelativeAngle(new Point(doorList.get(0).getX() - position.getX(),
+                angleToPassable = this.getRelativeAngle(new Point(doorList.get(0).getX() - position.getX(),
                         doorList.get(0).getY() - position.getY()), this.angle);
-                addActionToQueue(new Rotate(angleToPassable), percepts);
+                System.out.println("Angle to door: " + angleToPassable.getDegrees());
+                if(angleToPassable.getRadians() > 0.05)
+                    addActionToQueue(new Rotate(angleToPassable), percepts);
             }
 
-            outerloop:
-            for (Point p : doorList) {
-                for (ObjectPercept o : percepts.getVision().getObjects().getAll()) {
-                    Point q = new Point(o.getPoint().getX() + position.getX(), o.getPoint().getY() + position.getY());
-                    if (new Distance(p, q).getValue() < this.epsilon) {
-                        // System.out.println("Switching to guard mode to go through door/window");
-                        this.mode = "guard";
-                        this.guardTargetNode = node;
-                        break outerloop;
-                    }
+            for (ObjectPercept o : percepts.getVision().getObjects().getAll()) {
+                Point q = new Point(o.getPoint().getX() + position.getX(), o.getPoint().getY() + position.getY());
+                if (o.getType() == ObjectPerceptType.Door || o.getType() == ObjectPerceptType.Window &&
+                        doorOrWindowsOnTheWay(angleRanges, directionKey, q)){
+                    System.out.println("Switching to guard mode to go through door/window");
+                    this.mode = "guard";
+                    this.guardTargetNode = node;
+                    break;
                 }
             }
-            if (!this.mode.equals("guard")) {
-                addActionToQueue(new Move(new Distance(maxMovementDistance)), percepts);
+
+            if (!this.mode.equals("guard") && angleToPassable.getDegrees() < 0.5) {
+                if(doorList.isEmpty()){
+                    System.out.println("Moving");
+                    Angle angleToNextNode = getRelativeAngle(new Point(node.getCenter().getX() - this.position.getX(),
+                            node.getCenter().getY() - this.position.getY()), this.angle);
+                    if (angleToNextNode.getRadians() > 0.05)
+                        addActionToQueue(new Rotate(angleToNextNode), percepts);
+                }
+                else {
+                    System.out.println("Moving to door/window.");
+                }
+                this.keepGoing = true;
+                addActionToQueue(new Move(new Distance(1)), percepts);
             }
 
 
@@ -408,12 +434,14 @@ public class GraphExplorer extends GuardExplorer {
 
         //check walls or does Ionas do that already?
 
+
         else {
-            // System.out.println("No doors. No Windows.");
+//             System.out.println("No doors. No Windows.");
             //determine direction
             Angle angleToNextNode = getRelativeAngle(new Point(node.getCenter().getX() - this.position.getX(),
                     node.getCenter().getY() - this.position.getY()), this.angle);
-            addActionToQueue(new Rotate(angleToNextNode), percepts);
+            if (angleToNextNode.getRadians() > 0.05)
+                addActionToQueue(new Rotate(angleToNextNode), percepts);
             addActionToQueue(new Move(new Distance(5)), percepts);
         }
     }
@@ -445,7 +473,7 @@ public class GraphExplorer extends GuardExplorer {
      */
     private Angle getRelativeAngle(Point p, Angle a) {
         Angle pointAngle = Angle.fromRadians(Math.atan2(p.getY(), p.getX()));
-        return Angle.fromRadians(pointAngle.getRadians() - a.getRadians());
+        return convertAngleToNegative(Angle.fromRadians(pointAngle.getRadians() - a.getRadians()));
     }
 
     /**
@@ -456,7 +484,8 @@ public class GraphExplorer extends GuardExplorer {
     private Angle getRelativeAngle(Point p1, Point p2) {
         Angle pointAngle1 = Angle.fromRadians(Math.atan2(p1.getY(), p1.getX()));
         Angle pointAngle2 = Angle.fromRadians(Math.atan2(p2.getY(), p2.getX()));
-        return Angle.fromRadians(pointAngle2.getRadians() - pointAngle1.getRadians());
+        return  convertAngleToNegative(Angle.fromRadians(pointAngle2.getRadians() - pointAngle1.getRadians()));
+
     }
 
     /**
@@ -465,7 +494,20 @@ public class GraphExplorer extends GuardExplorer {
      * @return The angle of a vector between the two points from the x-axis of the spawn location
      */
     private Angle vectorAngle(Point p1, Point p2) {
-        return Angle.fromRadians(Math.atan2(p2.getY() - p1.getY(), p2.getX() - p1.getX()));
+        return convertAngleToNegative(Angle.fromRadians(Math.atan2(p2.getY() - p1.getY(), p2.getX() - p1.getX())));
+    }
+
+    /**
+     *
+     * @param a An angle, potentially using a full circle of 2Pi radians
+     * @return An angle from 0 to Pi or -Pi to 0 radians
+     */
+    private Angle convertAngleToNegative(Angle a){
+        if(a.getRadians() > Math.PI)
+            return Angle.fromRadians(a.getRadians() - 2*Math.PI);
+        else if(a.getRadians() < -Math.PI)
+            return Angle.fromRadians(a.getRadians() + 2*Math.PI);
+        return a;
     }
 
     private double getSpeedModifier(GuardPercepts guardPercepts) {
