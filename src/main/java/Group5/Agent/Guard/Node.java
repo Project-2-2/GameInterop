@@ -14,7 +14,7 @@ public class Node {
     //first point node must be 0,0
     private Point center;
     //map all objects in a region to their position
-    private HashMap<ObjectPerceptType, List<Point>>objectMap;
+    private HashMap<ObjectPerceptType, List<Point>> objectMap;
     //to save how long a node has been unvisited
     private int nodeIdleness;
 
@@ -29,8 +29,8 @@ public class Node {
 
     private boolean neverVisited;
 
-    public Node(Percepts percepts, Point position, Point agentPosition, double radius){
-        center = new Point(Math.round(position.getX()) , Math.round(position.getY()));
+    public Node(Percepts percepts, Point position, Point agentPosition, double radius) {
+        center = new Point(Math.round(position.getX()), Math.round(position.getY()));
 //        System.out.println(center.toString());
         nodeIdleness = 0;
         createObjectMap(percepts, agentPosition);
@@ -41,43 +41,48 @@ public class Node {
         neighbours = new ArrayList<>();
 
 
-        leftBoundary=Math.min(position.getX()+0.5*radius,position.getX()-0.5*radius);
-        rightBoundary=Math.max(position.getX()+0.5*radius,position.getX()-0.5*radius);
-        topBoundary=Math.max(position.getY()+0.5*radius,position.getY()-0.5*radius);
-        bottomBoundary=Math.min(position.getY()+0.5*radius,position.getY()-0.5*radius);
+        leftBoundary = Math.min(position.getX() + 0.5 * radius, position.getX() - 0.5 * radius);
+        rightBoundary = Math.max(position.getX() + 0.5 * radius, position.getX() - 0.5 * radius);
+        topBoundary = Math.max(position.getY() + 0.5 * radius, position.getY() - 0.5 * radius);
+        bottomBoundary = Math.min(position.getY() + 0.5 * radius, position.getY() - 0.5 * radius);
 
     }
 
     public Node(Point position, double radius) {
-        center = new Point(Math.round(position.getX()) , Math.round(position.getY()));
+        center = new Point(Math.round(position.getX()), Math.round(position.getY()));
         this.radius = radius;
         neighbours = new ArrayList<>();
 
-        objectMap= new HashMap<>();
+        objectMap = new HashMap<>();
 
         nodeIdleness = 1000; //Cannot be INTEGER.MAXVALUE because when updated the value will be negative
 
-        leftBoundary=Math.min(position.getX()+0.5*radius,position.getX()-0.5*radius);
-        rightBoundary=Math.max(position.getX()+0.5*radius,position.getX()-0.5*radius);
-        topBoundary=Math.max(position.getY()+0.5*radius,position.getY()-0.5*radius);
-        bottomBoundary=Math.min(position.getY()+0.5*radius,position.getY()-0.5*radius);
+        leftBoundary = Math.min(position.getX() + 0.5 * radius, position.getX() - 0.5 * radius);
+        rightBoundary = Math.max(position.getX() + 0.5 * radius, position.getX() - 0.5 * radius);
+        topBoundary = Math.max(position.getY() + 0.5 * radius, position.getY() - 0.5 * radius);
+        bottomBoundary = Math.min(position.getY() + 0.5 * radius, position.getY() - 0.5 * radius);
 
         neverVisited = false;
 
     }
 
+    public static double getDistance(Point x, Point y) {
+        return Math.sqrt(Math.pow(x.getX() - y.getX(), 2) + Math.pow(x.getY() - y.getY(), 2));
+    }
+
     /**
      * Creates a mapping from ObjectPerceptTypes to their position relative to the spawn point of the agent.
      * The position can be used for maneuvering inside an area as well as recognizing an objectpercept.
-     * @param percepts The percepts found in the area
+     *
+     * @param percepts      The percepts found in the area
      * @param agentPosition The current position of the agent relative to its spawn location
      */
-    private void createObjectMap(Percepts percepts, Point agentPosition){
-        objectMap= new HashMap<>();
+    private void createObjectMap(Percepts percepts, Point agentPosition) {
+        objectMap = new HashMap<>();
         Set<ObjectPercept> objectPercepts = percepts.getVision().getObjects().getAll();
-        for(ObjectPercept o: objectPercepts){
-            Point p = new Point(agentPosition.getX()+o.getPoint().getX(),
-                    agentPosition.getY()+o.getPoint().getY());
+        for (ObjectPercept o : objectPercepts) {
+            Point p = new Point(agentPosition.getX() + o.getPoint().getX(),
+                    agentPosition.getY() + o.getPoint().getY());
             if (objectMap.keySet().contains(o.getType()))
                 objectMap.get(o.getType()).add(p);
             else {
@@ -92,11 +97,11 @@ public class Node {
         return objectMap;
     }
 
-    public void updateIdleness(){
+    public void updateIdleness() {
         nodeIdleness++;
     }
 
-    public int getNodeIdleness(){
+    public int getNodeIdleness() {
         return nodeIdleness;
     }
 
@@ -105,39 +110,34 @@ public class Node {
      * @param percepts The world as perceived by the agent. These are the current objects in vision
      * @param agentPosition The current position of the agent relative to its spawn location
      */
-    public void visitNodeAgain(Percepts percepts, Point agentPosition, double epsilon){
+    public void visitNodeAgain(Percepts percepts, Point agentPosition, double epsilon) {
         neverVisited = false;
         nodeIdleness = 0;
         Set<ObjectPercept> vision = percepts.getVision().getObjects().getAll();
 
-        for (ObjectPercept o : vision){
-            Point objectPoint = new Point(agentPosition.getX()+o.getPoint().getX(),
-                    agentPosition.getY()+o.getPoint().getY());
-            if (objectMap.keySet().contains(o.getType()))
-            { Set<Point> addThose = new HashSet<>();
-               for(Point p: objectMap.get(o.getType())){
-                   if(new Distance(p, objectPoint).getValue() > epsilon) {
-                       addThose.add(objectPoint);
-                   }
-               }
+        for (ObjectPercept o : vision) {
+            Point objectPoint = new Point(agentPosition.getX() + o.getPoint().getX(),
+                    agentPosition.getY() + o.getPoint().getY());
+            if (objectMap.keySet().contains(o.getType())) {
+                Set<Point> addThose = new HashSet<>();
+                for (Point p : objectMap.get(o.getType())) {
+                    if (new Distance(p, objectPoint).getValue() > epsilon) {
+                        addThose.add(objectPoint);
+                    }
+                }
                 objectMap.get(o.getType()).addAll(addThose);
-            }
-            else{
+            } else {
                 objectMap.put(o.getType(), new ArrayList<>());
                 objectMap.get(o.getType()).add(objectPoint);
             }
         }
     }
 
-    public boolean agentInNode(Point agentPosition){
-        return (agentPosition.getY()>bottomBoundary)&(agentPosition.getY()<topBoundary)&&(agentPosition.getX()>leftBoundary)&(agentPosition.getX()<rightBoundary);
+    public boolean agentInNode(Point agentPosition) {
+        return (agentPosition.getY() > bottomBoundary) & (agentPosition.getY() < topBoundary) && (agentPosition.getX() > leftBoundary) & (agentPosition.getX() < rightBoundary);
     }
 
-    public static double getDistance(Point x, Point y){
-        return Math.sqrt(Math.pow(x.getX()-y.getX(),2)+Math.pow(x.getY()-y.getY(),2));
-    }
-
-    public Point getCenter(){
+    public Point getCenter() {
         return center;
     }
 
@@ -158,7 +158,7 @@ public class Node {
     }
 
     //checks if node was only generated as an adjacent node, or it was ever visited before
-    public boolean isNeverVisited(){
+    public boolean isNeverVisited() {
         return neverVisited;
     }
 
