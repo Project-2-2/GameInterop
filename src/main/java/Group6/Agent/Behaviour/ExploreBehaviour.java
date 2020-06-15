@@ -22,7 +22,7 @@ public class ExploreBehaviour implements Behaviour {
 
             // go as far as possible
             return ActionsFactory.getValidMove(
-                Math.min(ActionsFactory.getMaxMoveDistance(percepts), wallDistance - 1.5),
+                Math.min(ActionsFactory.getMaxMoveDistance(percepts), wallDistance - 0.5),
                 percepts
             );
 
@@ -49,7 +49,7 @@ public class ExploreBehaviour implements Behaviour {
 
         isNextToWall = wallDistance < 2;
 
-        if(wallDistance > 4 && Math.random() > 0.95) switchRotationSide = !switchRotationSide;
+        if(wallDistance > 8 && Math.random() > 0.95) switchRotationSide = !switchRotationSide;
 
     }
 

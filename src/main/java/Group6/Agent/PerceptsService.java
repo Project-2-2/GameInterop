@@ -1,6 +1,9 @@
 package Group6.Agent;
 
+import Interop.Percept.GuardPercepts;
+import Interop.Percept.IntruderPercepts;
 import Interop.Percept.Percepts;
+import Interop.Percept.Scenario.ScenarioPercepts;
 import Interop.Percept.Sound.SoundPercept;
 import Interop.Percept.Sound.SoundPerceptType;
 import Interop.Percept.Sound.SoundPercepts;
@@ -114,6 +117,20 @@ public class PerceptsService {
             .getVision()
             .getObjects()
             .filter(objectPercept -> objectPercept.getType() == ObjectPerceptType.TargetArea);
+    }
+
+    public static double getCaptureDistance(Percepts percepts) {
+        return getScenarioPercepts(percepts).getCaptureDistance().getValue();
+    }
+
+    public static ScenarioPercepts getScenarioPercepts(Percepts percepts) {
+        if(percepts instanceof IntruderPercepts) return ((IntruderPercepts) percepts)
+            .getScenarioIntruderPercepts()
+            .getScenarioPercepts();
+        if(percepts instanceof GuardPercepts) return ((GuardPercepts) percepts)
+            .getScenarioGuardPercepts()
+            .getScenarioPercepts();
+        throw new RuntimeException("Unknown percepts: " + percepts);
     }
 
 }
