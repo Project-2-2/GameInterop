@@ -21,13 +21,6 @@ import Interop.Percept.Smell.SmellPerceptType;
 import Interop.Percept.Smell.SmellPercepts;
 import Interop.Percept.Sound.SoundPercepts;
 import Interop.Percept.Vision.*;
-import javafx.application.Application;
-import javafx.application.Platform;
-import javafx.embed.swing.JFXPanel;
-import javafx.fxml.FXML;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
-import javafx.scene.layout.BorderPane;
 
 import java.io.File;
 import java.io.IOException;
@@ -120,37 +113,37 @@ public class GameRunner {
 //
 //    }
 
-    @FXML
-    public void keyHandler(KeyEvent event) {
-        if (event.getCode() == KeyCode.P && !paused) {
-            paused = true;
-            pause();
-        }
-        if (event.getCode() == KeyCode.R && paused) {
-            paused = false;
-            this.startTimer();
-        }
-    }
+//    @FXML
+//    public void keyHandler(KeyEvent event) {
+//        if (event.getCode() == KeyCode.P && !paused) {
+//            paused = true;
+//            pause();
+//        }
+//        if (event.getCode() == KeyCode.R && paused) {
+//            paused = false;
+//            this.startTimer();
+//        }
+//    }
 
 
-    private void startTimer() {
-        this.timer = new Timer();
-        TimerTask timerTask = new TimerTask() {
-            public void run() {
-                Platform.runLater(new Runnable() {
-                    public void run() {
-                        try {
-                            update();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                });
-            }
-        };
-        long frameTimeInMilliseconds = (long) (100.0 / FRAMES_PER_SECOND);
-        this.timer.schedule(timerTask, 100, frameTimeInMilliseconds);
-    }
+//    private void startTimer() {
+//        this.timer = new Timer();
+//        TimerTask timerTask = new TimerTask() {
+//            public void run() {
+//                Platform.runLater(new Runnable() {
+//                    public void run() {
+//                        try {
+//                            update();
+//                        } catch (IOException e) {
+//                            e.printStackTrace();
+//                        }
+//                    }
+//                });
+//            }
+//        };
+//        long frameTimeInMilliseconds = (long) (100.0 / FRAMES_PER_SECOND);
+//        this.timer.schedule(timerTask, 100, frameTimeInMilliseconds);
+//    }
 
     private void update() throws IOException {
         if (gameEnded) {

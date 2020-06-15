@@ -2,14 +2,13 @@ package Group5.GameController;
 
 import Interop.Geometry.Point;
 import Interop.Percept.Smell.SmellPerceptType;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Ellipse;
+
 
 public class Pheromone {
     private SmellPerceptType type;
     private int turnsLeft;
     private Point location;
-    private Ellipse shape;
+//    private Ellipse shape;
     private double radius;
 
     public Pheromone(SmellPerceptType type, Point location, int turnsLeft, double radius) {
@@ -18,26 +17,26 @@ public class Pheromone {
         this.location = location;
         this.radius = radius;
 
-        this.shape = new Ellipse(this.radius, this.radius);
-        this.shape.setCenterX(location.getX());
-        this.shape.setCenterY(location.getY());
-        switch (type) {
-            case Pheromone1:
-                this.shape.setFill(Color.rgb(20, 120, 200, 0.8));
-                break;
-            case Pheromone2:
-                this.shape.setFill(Color.rgb(80, 70, 100, 0.8));
-                break;
-            case Pheromone3:
-                this.shape.setFill(Color.rgb(10, 150, 130, 0.8));
-                break;
-            case Pheromone4:
-                this.shape.setFill(Color.rgb(120, 50, 180, 0.8));
-                break;
-            case Pheromone5:
-                this.shape.setFill(Color.rgb(250, 50, 150, 0.8));
-                break;
-        }
+//        this.shape = new Ellipse(this.radius, this.radius);
+//        this.shape.setCenterX(location.getX());
+//        this.shape.setCenterY(location.getY());
+//        switch (type) {
+//            case Pheromone1:
+//                this.shape.setFill(Color.rgb(20, 120, 200, 0.8));
+//                break;
+//            case Pheromone2:
+//                this.shape.setFill(Color.rgb(80, 70, 100, 0.8));
+//                break;
+//            case Pheromone3:
+//                this.shape.setFill(Color.rgb(10, 150, 130, 0.8));
+//                break;
+//            case Pheromone4:
+//                this.shape.setFill(Color.rgb(120, 50, 180, 0.8));
+//                break;
+//            case Pheromone5:
+//                this.shape.setFill(Color.rgb(250, 50, 150, 0.8));
+//                break;
+//        }
 
     }
 
@@ -62,13 +61,13 @@ public class Pheromone {
 
     public void setLocation(Point location) {
         this.location = location;
-        this.shape.setCenterX(this.location.getX());
-        this.shape.setCenterY(this.location.getY());
+//        this.shape.setCenterX(this.location.getX());
+//        this.shape.setCenterY(this.location.getY());
     }
 
     public void updateShape() {
         this.radius = this.radius - (this.radius/turnsLeft);
-        this.shape.setRadiusX(this.radius);
-        this.shape.setRadiusY(this.radius);
+//        this.shape.setRadiusX(this.radius);
+//        this.shape.setRadiusY(this.radius);
     }
 }
