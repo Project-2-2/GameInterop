@@ -19,6 +19,7 @@ public class Node {
     private int nodeIdleness;
 
     private double radius;
+    private ArrayList<Node> neighbours;
 
     //every node is represented as a square, so these are the boundaries of the square
     private double leftBoundary;
@@ -29,7 +30,7 @@ public class Node {
     private boolean neverVisited;
 
     public Node(Percepts percepts, Point position, Point agentPosition, double radius){
-        center = position;
+        center = new Point(Math.round(position.getX()) , Math.round(position.getY()));
 //        System.out.println(center.toString());
         nodeIdleness = 0;
         createObjectMap(percepts, agentPosition);
@@ -37,6 +38,24 @@ public class Node {
 //        radius = percepts.getVision().getFieldOfView().getRange().getValue();
 //        radius = 30;
         this.radius = radius;
+        neighbours = new ArrayList<>();
+
+
+        leftBoundary=Math.min(position.getX()+0.5*radius,position.getX()-0.5*radius);
+        rightBoundary=Math.max(position.getX()+0.5*radius,position.getX()-0.5*radius);
+        topBoundary=Math.max(position.getY()+0.5*radius,position.getY()-0.5*radius);
+        bottomBoundary=Math.min(position.getY()+0.5*radius,position.getY()-0.5*radius);
+
+    }
+
+    public Node(Point position, double radius) {
+        center = new Point(Math.round(position.getX()) , Math.round(position.getY()));
+        this.radius = radius;
+        neighbours = new ArrayList<>();
+
+        objectMap= new HashMap<>();
+
+        nodeIdleness = 1000; //Cannot be INTEGER.MAXVALUE because when updated the value will be negative
 
         leftBoundary=Math.min(position.getX()+0.5*radius,position.getX()-0.5*radius);
         rightBoundary=Math.max(position.getX()+0.5*radius,position.getX()-0.5*radius);
@@ -72,22 +91,6 @@ public class Node {
     public HashMap<ObjectPerceptType, List<Point>> getObjectMap() {
         return objectMap;
     }
-
-    public Node(Point position, double radius) {
-        center = position;
-        this.radius = radius;
-        objectMap= new HashMap<>();
-
-        nodeIdleness = 1000; //Cannot be INTEGER.MAXVALUE because when updated the value will be negative
-
-        leftBoundary=Math.min(position.getX()+0.5*radius,position.getX()-0.5*radius);
-        rightBoundary=Math.max(position.getX()+0.5*radius,position.getX()-0.5*radius);
-        topBoundary=Math.max(position.getY()+0.5*radius,position.getY()-0.5*radius);
-        bottomBoundary=Math.min(position.getY()+0.5*radius,position.getY()-0.5*radius);
-
-        neverVisited = true;
-    }
-
 
     public void updateIdleness(){
         nodeIdleness++;
@@ -157,5 +160,13 @@ public class Node {
     //checks if node was only generated as an adjacent node, or it was ever visited before
     public boolean isNeverVisited(){
         return neverVisited;
+    }
+
+    public void addNeighbour(Node newNeighbour) {
+        neighbours.add(newNeighbour);
+    }
+
+    public ArrayList<Node> getNeighbours() {
+        return neighbours;
     }
 }

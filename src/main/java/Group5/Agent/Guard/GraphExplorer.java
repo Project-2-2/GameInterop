@@ -40,7 +40,7 @@ public class GraphExplorer extends GuardExplorer {
         position = new Point(0,0);
         nodes = new ArrayList<>();
         angle = Angle.fromDegrees(0);
-        radius = 20;
+        radius = 30;
         currentTime = 0;
         epsilon = 0.5;
         mode = "graph";
@@ -61,44 +61,30 @@ public class GraphExplorer extends GuardExplorer {
 
                 //create the adjacent nodes only if node was never visited before
                 if (previousNodeVisited.isNeverVisited()){
-                    generateAdjacentNodes(previousNodeVisited.getCenter());
+                    generateAdjacentNodes(previousNodeVisited);
                 }
 //                System.out.println(previousNodeVisited.getCenter().toString());
 //                System.out.println(position.toString());
-//                generateAdjacentNodes(nodes.get(i).getCenter());
+                generateAdjacentNodes(nodes.get(i));
                 newNodeBoolean = false;
                 break;
             }
         }
-
-        boolean allNodesVisited = true;
-        for (int i =0; i<nodes.size();i++){
-            if (nodes.get(i).isNeverVisited()){
-                allNodesVisited = false;
-            }
-        }
-        if (allNodesVisited&&nodes.size()!=0){
-//            System.out.println(nodes.size());
-            System.out.println("ALL NODES ARE VISITED");
-            System.out.println("NEW NODE CREATION HAS STOPPED");
-        }
-
-
-        System.out.println(nodes.size());
+        //System.out.println(nodes.size());
         if (newNodeBoolean) {
             if (previousNodeVisited!=null) {
                 Point centerOldNode = previousNodeVisited.getCenter();
                 System.out.println("created new Area");
 //                Node newNode = new Node(percepts, computeCenterNewNode(centerOldNode, percepts.getVision().getFieldOfView().getRange().getValue()));
                 Node newNode = new Node(percepts, computeCenterNewNode(centerOldNode, radius), this.position, radius);
-                generateAdjacentNodes(centerOldNode);
+                generateAdjacentNodes(newNode);
                 previousNodeVisited = newNode;
                 nodes.add(newNode);
 //                System.out.println(nodes.size());
             }else{
                 System.out.println("created new Area");
                 Node newNode = new Node(percepts, position, position, radius);
-                generateAdjacentNodes(position);
+                generateAdjacentNodes(newNode);
                 previousNodeVisited = newNode;
                 nodes.add(newNode);
             }
@@ -107,11 +93,12 @@ public class GraphExplorer extends GuardExplorer {
 
     /**
      * generates the 8 neighbours of a node, and give them a big idleness value
-     * @param oldCenter center of node you want to generate neighbours
+     * @param currentNode node you want to generate neighbours
      */
-    public void generateAdjacentNodes(Point oldCenter) {
+    public void generateAdjacentNodes(Node currentNode) {
         boolean generateNode;
         Node newNode;
+        Point oldCenter= currentNode.getCenter();
         Point newCenter;
 
 //        System.out.println(oldCenter.toString());
@@ -141,7 +128,8 @@ public class GraphExplorer extends GuardExplorer {
                 newNode = new Node(newCenter, radius);
 //                System.out.println(newNode.getCenter());
                 nodes.add(newNode);
-//              System.out.println(Node.getDistance(oldCenter,newNode.getCenter()));
+                currentNode.addNeighbour(newNode);
+                //              System.out.println(Node.getDistance(oldCenter,newNode.getCenter()));
             }
         }
     }
@@ -185,9 +173,10 @@ public class GraphExplorer extends GuardExplorer {
      * @return
      */
     public GuardAction move(Move move, GuardPercepts percepts){
+        addAreaToGraph(percepts);
         Point movement = new Point(move.getDistance().getValue()*Math.cos(angle.getRadians()),move.getDistance().getValue()*Math.sin(angle.getRadians()));
         position = new Point(position.getX()+movement.getX(),position.getY()+movement.getY());
-        addAreaToGraph(percepts);
+
 //        System.out.println("Moving ..." + position.toString());
         return move;
     }
