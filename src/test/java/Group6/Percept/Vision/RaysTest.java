@@ -9,6 +9,7 @@ import Group6.Percept.Vision.Ray;
 import Group6.Percept.Vision.Rays;
 import Group6.WorldState.Object.GuardState;
 import Group6.WorldState.Object.IntruderState;
+import Group6.WorldState.Object.QuadrilateralObject;
 import Group6.WorldState.Object.WorldStateObjects;
 import Interop.Percept.Vision.FieldOfView;
 import Interop.Percept.Vision.ObjectPerceptType;
@@ -28,7 +29,7 @@ public class RaysTest extends ExtendedUnitTest {
 
     private static void getObjectPerceptsTests() {
 
-        it("allows to get percepts", () -> {
+        it("allows to get percepts from different perspectives", () -> {
 
             FieldOfView fieldOfView = new FieldOfView(
                 new Distance(10).toInteropDistance(),
@@ -76,6 +77,65 @@ public class RaysTest extends ExtendedUnitTest {
                     new ObjectPercept(ObjectPerceptType.Guard, new Point(0, -5))
                 )
             );
+
+        });
+
+        it("respects opacity and partial opacity", () -> {
+
+            FieldOfView fieldOfView = new FieldOfView(
+                new Distance(10).toInteropDistance(),
+                Angle.fromDegrees(360).toInteropAngle()
+            );
+
+            GuardState guardState = new GuardState(
+                new RandomGuard(),
+                new Point(0,0),
+                Direction.fromDegrees(0)
+            );
+
+            IntruderState intruderState = new IntruderState(
+                new RandomIntruder(),
+                new Point(0,5.5),
+                Direction.fromDegrees(0)
+            );
+
+            QuadrilateralObject wall = new QuadrilateralObject(
+                Quadrilateral.createRectangle(
+                    new Point(3, 4),
+                    new Point(-1, 2)
+                ),
+                ObjectPerceptType.Wall
+            );
+
+            Rays guardRays = new Rays(guardState, fieldOfView, 4);
+            ObjectPercepts guardPerceptsWithWall = guardRays.getObjectPercepts(
+                new WorldStateObjects(intruderState, wall)
+            );
+
+            assertEqual(
+                guardPerceptsWithWall,
+                new ObjectPercepts(
+                    new ObjectPercept(ObjectPerceptType.EmptySpace, new Point(-10, 0)),
+                    new ObjectPercept(ObjectPerceptType.EmptySpace, new Point(+10, 0)),
+                    new ObjectPercept(ObjectPerceptType.EmptySpace, new Point(0, -10)),
+                    new ObjectPercept(ObjectPerceptType.Wall, new Point(0, 2))
+                )
+            );
+
+//            Rays intruderRays = new Rays(intruderState, fieldOfView, 4);
+//            ObjectPercepts intruderPercepts = intruderRays.getObjectPercepts(
+//                new WorldStateObjects(guardState)
+//            );
+//
+//            assertEqual(
+//                intruderPercepts,
+//                new ObjectPercepts(
+//                    new ObjectPercept(ObjectPerceptType.EmptySpace, new Point(-10, 0)),
+//                    new ObjectPercept(ObjectPerceptType.EmptySpace, new Point(+10, 0)),
+//                    new ObjectPercept(ObjectPerceptType.EmptySpace, new Point(0, 10)),
+//                    new ObjectPercept(ObjectPerceptType.Guard, new Point(0, -5))
+//                )
+//            );
 
         });
 
