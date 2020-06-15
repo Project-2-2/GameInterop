@@ -44,6 +44,8 @@ public class ActionsFactory {
 
     public static Move getValidMove(double desiredDistance, Percepts percepts) {
 
+        desiredDistance = Math.max(0, desiredDistance);
+
         new Distance(desiredDistance);
 
         double slowDownModifier = getSlowDownModifier(percepts);
