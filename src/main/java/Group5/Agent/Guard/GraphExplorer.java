@@ -88,47 +88,35 @@ public class GraphExplorer extends GuardExplorer {
     public void generateAdjacentNodes(Point oldCenter) {
         boolean generateNode;
         Node newNode;
+        Point newCenter;
 
 //        System.out.println(oldCenter.toString());
-        for (double j= 0; j < 2; j+=0.5) {
+        for (double j= 0; j < 2; j+=0.25) {
             generateNode= true;
-            Point newCenter = new Point(oldCenter.getX()+radius*Math.cos(j*Math.PI),oldCenter.getY()+radius*Math.sin(j*Math.PI));
 
-            for (Node node: nodes) {
-                if (Node.getDistance(node.getCenter(),newCenter)<radius-1) {
+            if (j%0.5==0) {
+                newCenter = new Point(oldCenter.getX()+radius*Math.cos(j*Math.PI),oldCenter.getY()+radius*Math.sin(j*Math.PI));
+
+            }else{
+                //the distance between the centers of diagonal squares is different
+                double radiusDiagonal = Math.sqrt(Math.pow(radius, 2) + Math.pow(radius, 2));
+                newCenter = new Point(oldCenter.getX() + radiusDiagonal * Math.cos(j * Math.PI), oldCenter.getY() + radiusDiagonal * Math.sin(j * Math.PI));
+
+            }
+
+            for (Node node : nodes) {
+                if (Node.getDistance(node.getCenter(), newCenter) < radius - 1) {
                     generateNode = false;
-//                    System.out.println("kak");
-//                    System.out.println(Node.getDistance(node.getCenter(),newCenter));
+//                  System.out.println("kak");
+//                  System.out.println(Node.getDistance(node.getCenter(),newCenter));
                     break;
                 }
             }
 
             if (generateNode) {
                 newNode = new Node(newCenter, radius);
-                nodes.add(newNode) ;
-//                System.out.println(Node.getDistance(oldCenter,newNode.getCenter()));
-            }
-        }
-
-        //the distance between the centers of diagonal squares is different
-        for (double j= 0.25; j < 2; j+=0.5) {
-            generateNode= true;
-            double radiusDiagonal = Math.sqrt(Math.pow(radius,2)+Math.pow(radius,2));
-            Point newCenter = new Point(oldCenter.getX()+radiusDiagonal*Math.cos(j*Math.PI),oldCenter.getY()+radiusDiagonal*Math.sin(j*Math.PI));
-
-            for (Node node: nodes) {
-                if (Node.getDistance(node.getCenter(),newCenter)<radius-1) {
-                    generateNode = false;
-//                    System.out.println("kak");
-//                    System.out.println(Node.getDistance(node.getCenter(),newCenter));
-                    break;
-                }
-            }
-
-            if (generateNode) {
-                newNode = new Node(newCenter, radius);
-                nodes.add(newNode) ;
-//                System.out.println(Node.getDistance(oldCenter,newNode.getCenter()));
+                nodes.add(newNode);
+//              System.out.println(Node.getDistance(oldCenter,newNode.getCenter()));
             }
         }
     }
@@ -311,11 +299,11 @@ public class GraphExplorer extends GuardExplorer {
      * @param node
      */
     private void moveToNode(Node node, GuardPercepts percepts, double maxMovementDistance){ //TODO: What about new nodes? I think it might break it, becauee there are no percepts stored yet.
-        System.out.println("Moving to node");
+        //System.out.println("Moving to node");
         //check doors/windows
         if (node.getObjectMap().keySet().contains(ObjectPerceptType.Door) ||
                 node.getObjectMap().keySet().contains(ObjectPerceptType.Window)) {
-            System.out.println("There is a passable object on the way.");
+           // System.out.println("There is a passable object on the way.");
             HashMap<String, Angle[]> angleRanges = new HashMap<>();
             angleRanges.put("right", new Angle[]{Angle.fromRadians(-Math.PI / 2), Angle.fromRadians(Math.PI / 2)});
             angleRanges.put("top", new Angle[]{Angle.fromRadians(0), Angle.fromRadians(Math.PI)});
@@ -355,7 +343,7 @@ public class GraphExplorer extends GuardExplorer {
                 for (ObjectPercept o: percepts.getVision().getObjects().getAll()){
                     Point q = new Point(o.getPoint().getX()+position.getX(), o.getPoint().getY()+position.getY());
                     if(new Distance(p, q).getValue() < this.epsilon) {
-                        System.out.println("Switching to guard mode to go through door/window");
+                       // System.out.println("Switching to guard mode to go through door/window");
                         this.mode = "guard";
                         break outerloop;
                     }
@@ -371,7 +359,7 @@ public class GraphExplorer extends GuardExplorer {
         //check walls or does Ionas do that already?
 
         else{
-            System.out.println("No doors. No Windows.");
+           // System.out.println("No doors. No Windows.");
             //determine direction
             Angle angleToNextNode = getRelativeAngle(new Point(node.getCenter().getX()-this.position.getX(),
                     node.getCenter().getY()-this.position.getY()), this.angle);
