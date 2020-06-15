@@ -1,8 +1,8 @@
 package Group5.GameController;
 
 
-import Group5.UI.DrawableDialogueBox;
-import Group5.UI.MapViewer;
+//import Group5.UI.DrawableDialogueBox;
+//import Group5.UI.MapViewer;
 import Interop.Action.*;
 import Interop.Geometry.Angle;
 import Interop.Geometry.Direction;
@@ -49,10 +49,10 @@ public class GameRunner {
 
     final private static double FRAMES_PER_SECOND = 20;
 
-    @FXML
-    private MapViewer mapViewer;
-    @FXML
-    private BorderPane gameBorder;
+//    @FXML
+//    private MapViewer mapViewer;
+//    @FXML
+//    private BorderPane gameBorder;
 
     private static MapInfo mapInfo;
 
@@ -79,46 +79,46 @@ public class GameRunner {
     public static void main(String[] args) throws IOException {
 
         GameRunner runner = new GameRunner();
-        runner.initialize();
+//        runner.initialize();
     }
 
-    @FXML
-    public void initialize() throws IOException {
-        //File file = DrawableDialogueBox.getFile();
-        //mapInfo.readMap(file.getPath());
-
-        File file = DrawableDialogueBox.getFile();
-        String src = "src/main/java/Group5/Maps/testmap2";
-        //mapInfo.readMap(src);
-        //tries to open the map without gui, otherwise open without gui
-        try{
-            mapInfo.readMap(file.getPath());
-        }catch (NullPointerException e){
-            JFXPanel panel =new JFXPanel();
-            mapInfo.readMap(src);
-        }
-
-
-
-
-
-
-
-        mapInfo.initialize();
-
-        vision = new Vision();
-        hearing = new Hearing(mapInfo);
-
-
-        this.update();
-        this.startTimer();
-
-        if (mapViewer!=null){
-            mapViewer.setFocusTraversable(true);
-            mapViewer.requestFocus();
-        }
-
-    }
+//    @FXML
+//    public void initialize() throws IOException {
+//        //File file = DrawableDialogueBox.getFile();
+//        //mapInfo.readMap(file.getPath());
+//
+////        File file = DrawableDialogueBox.getFile();
+//        String src = "src/main/java/Group5/Maps/testmap2";
+//        //mapInfo.readMap(src);
+//        //tries to open the map without gui, otherwise open without gui
+//        try{
+//            mapInfo.readMap(file.getPath());
+//        }catch (NullPointerException e){
+//            JFXPanel panel =new JFXPanel();
+//            mapInfo.readMap(src);
+//        }
+//
+//
+//
+//
+//
+//
+//
+//        mapInfo.initialize();
+//
+//        vision = new Vision();
+//        hearing = new Hearing(mapInfo);
+//
+//
+//        this.update();
+//        this.startTimer();
+//
+//        if (mapViewer!=null){
+//            mapViewer.setFocusTraversable(true);
+//            mapViewer.requestFocus();
+//        }
+//
+//    }
 
     @FXML
     public void keyHandler(KeyEvent event) {
@@ -153,7 +153,7 @@ public class GameRunner {
     }
 
     private void update() throws IOException {
-        if (gameEnded){
+        if (gameEnded) {
             System.out.println("Game ENDED");
             return;
         }
@@ -161,12 +161,11 @@ public class GameRunner {
 
 
         ObjectPercepts visionPercepts = getVision(mapInfo.intruders.get(0));
-        Set<ObjectPercept> percepts =visionPercepts.getAll();
+        Set<ObjectPercept> percepts = visionPercepts.getAll();
 //       System.out.println(percepts.size());
-        if (percepts.size()>0){
+        if (percepts.size() > 0) {
             //System.out.println(percepts.iterator().next().toString());
         }
-
 
 
 //        for (IntruderController intruder : mapInfo.intruders){
@@ -193,61 +192,63 @@ public class GameRunner {
 //        }
 
 
-        if (mapViewer!=null) {
-            for (Door door : mapInfo.doors) {
-                if (!door.doorClosed()) {
-                    mapViewer.doorOpening(door.x1, door.y1, door.x2, door.y2, door.x3, door.y3, door.x4, door.y4);
-                }
-            }
-            for (Window window : mapInfo.windows) {
-                if (!window.windowClosed()) {
-                    mapViewer.windowOpening(window.x1, window.y1, window.x2, window.y2, window.x3, window.y3, window.x4, window.y4);
-                }
-            }
-        }
+//        if (mapViewer!=null) {
+//            for (Door door : mapInfo.doors) {
+//                if (!door.doorClosed()) {
+//                    mapViewer.doorOpening(door.x1, door.y1, door.x2, door.y2, door.x3, door.y3, door.x4, door.y4);
+//                }
+//            }
+//            for (Window window : mapInfo.windows) {
+//                if (!window.windowClosed()) {
+//                    mapViewer.windowOpening(window.x1, window.y1, window.x2, window.y2, window.x3, window.y3, window.x4, window.y4);
+//                }
+//            }
+//        }
 
 
         //use a different agent for this
-        for (GuardController guard : mapInfo.guards){
+        for (GuardController guard : mapInfo.guards) {
             Action nextAction = guard.explorer.getAction(guard, visionPercepts);
 //            System.out.println(nextAction);
             if (nextAction instanceof Move) {
                 guard.move((Move) nextAction);
 //                System.out.println(((Move) nextAction).getDistance().getValue());
-            }
-            else {
+            } else {
                 Rotate r = (Rotate) nextAction;
                 guard.rotate(r.getAngle());
             }
 //            rotate(new Rotate(Angle.fromDegrees(90)));
 //            System.out.println(intruder.getAngle().getDegrees());
-            if(mapViewer!=null) {
-                mapViewer.moveIntruder(guard.position.getX(), guard.position.getY());
-                mapViewer.drawAgentVisionField(guard.position.getX(), guard.position.getY(),
-                        guard.getAngle().getRadians(), guard.getViewRange().getValue());
-            }
+//            if(mapViewer!=null) {
+//                mapViewer.moveIntruder(guard.position.getX(), guard.position.getY());
+//                mapViewer.drawAgentVisionField(guard.position.getX(), guard.position.getY(),
+//                        guard.getAngle().getRadians(), guard.getViewRange().getValue());
+//            }
+//        }
+//
+//        if (mapViewer!=null) {
+//            for (Door door : mapInfo.doors) {
+//                if (!door.doorClosed()) {
+//                    mapViewer.doorOpening(door.x1, door.y1, door.x2, door.y2, door.x3, door.y3, door.x4, door.y4);
+//                }
+//            }
+//            for (Window window : mapInfo.windows) {
+//                if (!window.windowClosed()) {
+//                    mapViewer.windowOpening(window.x1, window.y1, window.x2, window.y2, window.x3, window.y3, window.x4, window.y4);
+//                }
+//            }
+//        }
+
+            pheromoneStorage.updatePheromones();
+//
+//        checkIfIntruderCaught();
+//        checkGameEnded();
+            hearing.clearSounds();
+
         }
-
-        if (mapViewer!=null) {
-            for (Door door : mapInfo.doors) {
-                if (!door.doorClosed()) {
-                    mapViewer.doorOpening(door.x1, door.y1, door.x2, door.y2, door.x3, door.y3, door.x4, door.y4);
-                }
-            }
-            for (Window window : mapInfo.windows) {
-                if (!window.windowClosed()) {
-                    mapViewer.windowOpening(window.x1, window.y1, window.x2, window.y2, window.x3, window.y3, window.x4, window.y4);
-                }
-            }
-        }
-
-        pheromoneStorage.updatePheromones();
-
-        checkIfIntruderCaught();
-        checkGameEnded();
-        hearing.clearSounds();
-
     }
+
+
 
 
     private void checkGameEnded(){
