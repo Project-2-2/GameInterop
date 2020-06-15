@@ -3,6 +3,7 @@ package Group6;
 import Group6.Agent.Behaviour.*;
 import Group6.Agent.Guard.BehaviourBasedGuard;
 import Group6.Agent.Intruder.BehaviourBasedIntruder;
+import Group9.agent.factories.IAgentFactory;
 import Interop.Agent.Guard;
 import Interop.Agent.Intruder;
 
@@ -20,7 +21,19 @@ import java.util.List;
  * Agents must not hold ANY references to common objects or references to each other.
  */
 public class AgentsFactory {
-    
+
+    static public IAgentFactory getIAgentFactoryInstance() {
+        return new IAgentFactory() {
+            public List<Intruder> createIntruders(int amount) {
+                return AgentsFactory.createIntruders(amount);
+            }
+
+            public List<Guard> createGuards(int amount) {
+                return AgentsFactory.createGuards(amount);
+            }
+        };
+    }
+
     static public List<Intruder> createIntruders(int amount) {
         List<Intruder> list = new ArrayList<>();
         for (int i = 0; i < amount; i++) {
