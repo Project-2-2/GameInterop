@@ -272,14 +272,16 @@ public class GraphExplorer extends GuardExplorer {
             super.explore(percepts);
 
         } else {
+            if (Math.random() < 0.1 && getDroppedPheromone()==0) {
+                //addActionToQueue(new DropPheromone(SmellPerceptType.values()[(int) (Math.random() * SmellPerceptType.values().length)]), percepts);
+                dropPheromone(percepts, SmellPerceptType.Pheromone1);
+                setDroppedPheromone(500);
+                System.out.println("Random pheromone drop");
+            }
 
             if (!percepts.wasLastActionExecuted()) {
                 //cannot reach node so remove it from the map
                 removeUnreachableNode();
-                if (Math.random() < 0.1) {
-                    addActionToQueue(new DropPheromone(SmellPerceptType.values()[(int) (Math.random() * SmellPerceptType.values().length)]), percepts);
-                }
-
                 addActionToQueue(new Rotate(Angle.fromRadians(percepts.getScenarioGuardPercepts().getScenarioPercepts().getMaxRotationAngle().getRadians() * Game._RANDOM.nextDouble())), percepts);
 
             } else {
@@ -293,20 +295,20 @@ public class GraphExplorer extends GuardExplorer {
                     moveToNode(nextNode, percepts, maxMovementDistance);
                 }
                 if (percepts.getAreaPercepts().isInDoor() && getDroppedPheromone() == 0) {
-//            System.out.println("door: drop pheromone type 2");
-//                    dropPheromone(percepts, SmellPerceptType.Pheromone2); //TODO: Throws Nullpointer exception after door (needs fix)
+                    System.out.println("door: drop pheromone type 2");
+                    dropPheromone(percepts, SmellPerceptType.Pheromone2);
                     super.setDroppedPheromone(500);
                 }
 
-                if (percepts.getAreaPercepts().isInWindow() && getDroppedPheromone() == 0) { //TODO: Throws Nullpointer exception after window (needs fix)
-//            System.out.println("window: drop pheromone type 2");
-//                    dropPheromone(percepts, SmellPerceptType.Pheromone2);
+                if (percepts.getAreaPercepts().isInWindow() && getDroppedPheromone() == 0) {
+                    System.out.println("window: drop pheromone type 2");
+                    dropPheromone(percepts, SmellPerceptType.Pheromone2);
                     super.setDroppedPheromone(500);
                 }
 
                 if (percepts.getAreaPercepts().isJustTeleported() && getDroppedPheromone() == 0) {
 //            System.out.println("teleported: drop pheromone type 2");
-//                    dropPheromone(percepts, SmellPerceptType.Pheromone2); //TODO: Throws Nullpointer exception after teleport (needs fix)
+                    dropPheromone(percepts, SmellPerceptType.Pheromone2);
                     super.setDroppedPheromone(500);
                 }
 
