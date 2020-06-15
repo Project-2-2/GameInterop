@@ -1,6 +1,5 @@
 package Group9;
 
-import Group6.Geometry.Point;
 import Group9.agent.container.AgentContainer;
 import Group9.agent.container.GuardContainer;
 import Group9.agent.container.IntruderContainer;
@@ -680,7 +679,7 @@ public class Game implements Runnable {
                     angle %= (Math.PI * 2);
                     return new SoundPercept(
                             sound.getType(),
-                            agentContainer.getDirectionFromAgentPointOfView(sound.getCenter())
+                            Direction.fromRadians(angle)
                     );
                 }).collect(Collectors.toUnmodifiableSet()));
     }

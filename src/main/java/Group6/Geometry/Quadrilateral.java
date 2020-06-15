@@ -59,22 +59,6 @@ public class Quadrilateral implements Area {
 
     }
 
-    public static Quadrilateral createRectangle(Point cornerA, Point cornerC) {
-        if(cornerA.getX() < cornerC.getX() || cornerA.getY() < cornerC.getY()) {
-            throw new RuntimeException(
-                "Corner A must have X and Y coordinates bigger than corner C!\n" +
-                "Corner A: " + cornerA + "\n" +
-                "Corner C: " + cornerC + "\n"
-            );
-        }
-        return new Quadrilateral(
-            cornerA,
-            new Point(cornerC.getX(), cornerA.getY()),
-            cornerC,
-            new Point(cornerA.getX(), cornerC.getY())
-        );
-    }
-
     public Point getPointA() {
         return pointA;
     }

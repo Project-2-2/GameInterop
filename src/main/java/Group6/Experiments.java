@@ -78,7 +78,35 @@ public class Experiments {
     private static Game getGame(Callback<Game> callback) {
         return new Game(
                 Parser.parseFile("./src/main/java/Group6/maps/spiral.map"),
-                AgentsFactory.getIAgentFactoryInstance(),
+                new IAgentFactory() {
+                    public List<Intruder> createIntruders(int amount) {
+                        List<Intruder> list = new ArrayList<>();
+                        for (int i = 0; i < amount; i++) {
+                            list.add(new BehaviourBasedIntruder(Arrays.asList(
+                                new ToTargetBehaviour(),
+                                new ToTeleportBehaviour(),
+                                new ToPassageBehaviour(),
+                                new AvoidWallsBehaviour(),
+                                new DisperseBehaviour(),
+                                new ExploreBehaviour()
+                            )));
+                        }
+                        return list;
+                    }
+
+                    public List<Guard> createGuards(int amount) {
+                        List<Guard> list = new ArrayList<>();
+                        for (int i = 0; i < amount; i++) {
+                            list.add(new BehaviourBasedGuard(Arrays.asList(
+                                new YellBehaviour(),
+                                new FollowIntruderBehaviour(),
+                                new FollowYellBehaviour(),
+                                new ExploreBehaviour()
+                            )));
+                        }
+                        return list;
+                    }
+                },
                 false,
                 -1,
                 callback

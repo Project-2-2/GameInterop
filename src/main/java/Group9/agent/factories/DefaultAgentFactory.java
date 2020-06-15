@@ -32,7 +32,6 @@ public class DefaultAgentFactory implements IAgentFactory {
 
     public List<Guard> createGuards(int number) {
         List<Guard> guards = new ArrayList<>();
-//        guards.add((percepts -> new Yell()));
         for(int i = 0; i < number; i++)
         {
             guards.add(new RandomAgent());

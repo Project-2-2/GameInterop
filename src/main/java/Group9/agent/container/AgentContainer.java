@@ -6,7 +6,6 @@ import Group9.map.area.ModifyViewEffect;
 import Group9.map.area.ModifyViewRangeEffect;
 import Group9.math.Vector2;
 import Group9.tree.PointContainer;
-import Interop.Geometry.Direction;
 import Interop.Geometry.Distance;
 import Interop.Percept.Vision.FieldOfView;
 
@@ -51,12 +50,6 @@ public abstract class AgentContainer<T> {
     public Vector2 getDirection()
     {
         return direction;
-    }
-
-    public Direction getDirectionFromAgentPointOfView(Vector2 position) {
-        double direction = getDirection().angle(position.sub(getPosition()));
-        if(direction < 0) direction += Math.PI * 2;
-        return Direction.fromRadians(direction % (Math.PI * 2));
     }
 
     public FieldOfView getFOV(Set<EffectArea> areas)
