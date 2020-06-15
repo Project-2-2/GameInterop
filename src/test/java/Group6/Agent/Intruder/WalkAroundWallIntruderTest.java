@@ -1,4 +1,4 @@
-package Group6.Agent;
+package Group6.Agent.Intruder;
 
 
 import Group6.Agent.Intruder.WalksAroundWallIntruder;
@@ -11,7 +11,7 @@ import Interop.Action.Move;
 import Interop.Percept.IntruderPercepts;
 
 
-public class walkWallTest extends ExtendedUnitTest {
+public class WalkAroundWallIntruderTest extends ExtendedUnitTest {
 
     public static void main(String [] args){
 
@@ -20,7 +20,7 @@ public class walkWallTest extends ExtendedUnitTest {
         WalksAroundWallIntruder walkIntruder = new WalksAroundWallIntruder();
 
 
-        it("walk wall ", () -> {
+        xit("walk wall ", () -> {
 
             IntruderPercepts percepts= IntruderPerceptsBuilder.getSimple(true);
             Action action=walkIntruder.getAction(percepts);
