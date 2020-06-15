@@ -1,4 +1,4 @@
-package Group8.Agents;
+package Group8.Agents.Guard;
 
 import Interop.Action.GuardAction;
 import Interop.Action.NoAction;

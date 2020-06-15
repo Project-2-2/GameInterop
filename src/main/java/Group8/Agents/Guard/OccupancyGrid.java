@@ -1,7 +1,6 @@
-package Group8.Agents;
+package Group8.Agents.Guard;
 
 
-import java.util.ArrayList;
 import java.util.Arrays;
 
 /**

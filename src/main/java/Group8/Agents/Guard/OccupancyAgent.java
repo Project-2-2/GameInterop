@@ -1,4 +1,4 @@
-package Group8.Agents;
+package Group8.Agents.Guard;
 
 import Group9.Game;
 import Interop.Action.DropPheromone;
@@ -7,7 +7,6 @@ import Interop.Action.Move;
 import Interop.Action.Rotate;
 import Interop.Agent.Guard;
 import Interop.Geometry.Angle;
-import Interop.Geometry.Direction;
 import Interop.Geometry.Distance;
 import Interop.Geometry.Point;
 import Interop.Percept.GuardPercepts;

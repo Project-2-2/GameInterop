@@ -1,4 +1,4 @@
-package Group8.Agents;
+package Group8.Agents.Intruder;
 
 import Group9.Game;
 import Interop.Action.IntruderAction;
