@@ -1,28 +1,17 @@
 package Group5;
 
-import javafx.application.Application;
-import javafx.application.Platform;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.stage.Stage;
-import javafx.fxml.*;
+import Group5.factories.AgentFactoryGroup5;
+import Group9.Game;
+import Group9.agent.factories.DefaultAgentFactory;
+import Group9.map.parser.Parser;
 
-public class Main extends Application {
-
-    @Override
-    public void start(Stage primaryStage) throws Exception {
-        Parent root = FXMLLoader.load(getClass().getResource("/src/main/java/Group5/UI/startWindow.fxml"));
-        primaryStage.setTitle("MARL Surveillance Simulation");
-        primaryStage.setScene(new Scene(root));
-        primaryStage.show();
-        primaryStage.setOnCloseRequest(e -> {
-            Platform.exit();
-            System.exit(0);
-        });
-    }
+public class Main {
 
     public static void main(String[] args) {
-        launch(args);
+
+        Game game = new Game(Parser.parseFile("./src/main/java/Group9/map/maps/test_2.map"), new AgentFactoryGroup5(), false);
+        game.run();
+        System.out.printf("The winner is: %s\n", game.getWinner());
+
     }
 }
