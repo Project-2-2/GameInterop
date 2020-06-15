@@ -58,20 +58,37 @@ public class GraphExplorer extends GuardExplorer {
             //it is correct that newNodeBoolean is always false since we already adding the adjacent nodes each time we
             //visit a node
             if (nodes.get(i).agentInNode(position)) {
-                nodes.get(i).visitNodeAgain(percepts, position, epsilon);
                 previousNodeVisited = nodes.get(i);
 
                 //create the adjacent nodes only if node was never visited before
                 if (previousNodeVisited.isNeverVisited()) {
+                    System.out.println("biem");
                     generateAdjacentNodes(previousNodeVisited);
                 }
+                nodes.get(i).visitNodeAgain(percepts, position, epsilon);
 //                System.out.println(previousNodeVisited.getCenter().toString());
 //                System.out.println(position.toString());
-                generateAdjacentNodes(nodes.get(i));
                 newNodeBoolean = false;
                 break;
             }
         }
+
+        boolean allNodesVisited = true;
+        for (int i =0; i<nodes.size();i++){
+            if (nodes.get(i).isNeverVisited()){
+                allNodesVisited = false;
+            }
+        }
+        if (allNodesVisited&&nodes.size()!=0){
+//            System.out.println(nodes.size());
+            System.out.println("ALL NODES ARE VISITED");
+            System.out.println("NEW NODE CREATION HAS STOPPED");
+        }
+
+
+        System.out.println(nodes.size());
+
+
         //System.out.println(nodes.size());
         if (newNodeBoolean) {
             if (previousNodeVisited != null) {

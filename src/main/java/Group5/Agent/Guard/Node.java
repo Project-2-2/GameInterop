@@ -46,6 +46,8 @@ public class Node {
         topBoundary = Math.max(position.getY() + 0.5 * radius, position.getY() - 0.5 * radius);
         bottomBoundary = Math.min(position.getY() + 0.5 * radius, position.getY() - 0.5 * radius);
 
+        neverVisited = false;
+
     }
 
     public Node(Point position, double radius) {
@@ -62,7 +64,7 @@ public class Node {
         topBoundary = Math.max(position.getY() + 0.5 * radius, position.getY() - 0.5 * radius);
         bottomBoundary = Math.min(position.getY() + 0.5 * radius, position.getY() - 0.5 * radius);
 
-        neverVisited = false;
+        neverVisited = true;
 
     }
 
