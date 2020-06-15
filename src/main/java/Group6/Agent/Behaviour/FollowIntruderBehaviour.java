@@ -24,23 +24,6 @@ public class FollowIntruderBehaviour implements Behaviour {
             PerceptsService.getMeanDistance(intruderPercepts), percepts
         );
 
-//        if(meanDistance < PerceptsService.getCaptureDistance(percepts)) {
-//            return ActionsFactory.getValidRotate(towards, percepts);
-//        }
-
-        double maxApproachAngle = 1 + Math.random() * 3;
-        if(meanDistance > 0.5 * percepts.getVision().getFieldOfView().getRange().getValue()) {
-            maxApproachAngle *= 2;
-        }
-
-        if(meanDistance < ActionsFactory.getMaxMoveDistance(percepts)) {
-            maxApproachAngle = Math.random();
-        }
-
-        if(Math.abs(towards) < maxApproachAngle) {
-            return ActionsFactory.getValidMove(meanDistance - 0.5, percepts);
-        }
-
         return ActionsFactory.getValidRotate(towards, percepts);
 
     }
