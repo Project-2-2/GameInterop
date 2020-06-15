@@ -3,6 +3,7 @@ package Group9.agent;
 import Group9.Game;
 import Interop.Action.IntruderAction;
 import Interop.Action.Move;
+import Interop.Action.NoAction;
 import Interop.Action.Rotate;
 import Interop.Agent.Intruder;
 import Interop.Geometry.Angle;
@@ -12,6 +13,8 @@ import Interop.Percept.IntruderPercepts;
 import Interop.Percept.Scenario.SlowDownModifiers;
 
 public class RandomIntruderAgent implements Intruder {
+
+    private int counter = 0;
 
     private double getSpeedModifier(IntruderPercepts guardPercepts)
     {

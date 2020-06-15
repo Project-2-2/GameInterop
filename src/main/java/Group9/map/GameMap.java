@@ -29,7 +29,6 @@ public class GameMap {
     private final GameSettings gameSettings;
 
     private final double rayConstant;
-    private QuadTree<MapObject> quadTree;
     private List<MapObject> mapObjects;
 
     private List<DynamicObject<?>> dynamicObjects = new ArrayList<>();
@@ -293,15 +292,19 @@ public class GameMap {
 
         Set<ObjectPercept> retSet = new HashSet<>();
 
+        boolean onlyEmptySpace = true;
         for (Map.Entry<Vector2, ObjectPerceptType> entry : entries) {
             retSet.add(new ObjectPercept(entry.getValue(), entry.getKey().toVexing()));
+            if(onlyEmptySpace) {
+                onlyEmptySpace = (entry.getValue() == ObjectPerceptType.EmptySpace);
+            }
             if (entry.getValue().isOpaque())
             {
                 break;
             }
         }
 
-        if(retSet.isEmpty())
+        if(retSet.isEmpty() || onlyEmptySpace)
         {
             retSet.add(new ObjectPercept(ObjectPerceptType.EmptySpace, line.getEnd()
                     .sub(agentContainer.getPosition()) // move relative to agent
