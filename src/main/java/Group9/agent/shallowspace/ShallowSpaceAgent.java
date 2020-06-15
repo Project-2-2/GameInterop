@@ -37,7 +37,7 @@ public class ShallowSpaceAgent implements Guard {
                 targetAreaGuarding.clear();
                 followIntruder.clear();
                 followIntruder.addAll(
-                        moveTowardsPoint(percepts, new Vector2(0, 1 ), new Vector2.Origin(), intruderPosition)
+                        moveTowardsPoint(percepts, new Vector2(0, 1), new Vector2.Origin(), intruderPosition)
                 );
             }
 
@@ -51,7 +51,7 @@ public class ShallowSpaceAgent implements Guard {
             VisionPrecepts vision = percepts.getVision();
             Set<ObjectPercept> objectPercepts = vision.getObjects().getAll();
 
-            if(!foundTargetArea)
+            if(!foundTargetArea && false)
             {
                 for(ObjectPercept object : objectPercepts){
                     if (object.getType().equals(ObjectPerceptType.TargetArea)){
