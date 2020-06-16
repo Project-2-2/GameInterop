@@ -1,5 +1,6 @@
 package Group9.agent.factories;
 
+import Group6.Agent.Intruder.StraightToTargetIntruder;
 import Group9.agent.RandomAgent;
 import Group9.agent.RandomIntruderAgent;
 import Interop.Agent.Guard;
@@ -23,7 +24,7 @@ public class DefaultAgentFactory implements IAgentFactory {
         List<Intruder> intruders = new ArrayList<>();
         for(int i = 0; i < number; i++)
         {
-            intruders.add(new RandomIntruderAgent());
+            intruders.add(new StraightToTargetIntruder());
         }
         return intruders;
     }
