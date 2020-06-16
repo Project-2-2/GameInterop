@@ -1,6 +1,7 @@
 package Group11.View;
 
 import Group11.AgentsFactory;
+import Group11.CoolAgentFactory;
 import Group9.Game;
 import Group9.agent.factories.DefaultAgentFactory;
 import Group9.map.parser.Parser;
@@ -24,7 +25,7 @@ public class ExperimentRunner {
         @Override
         public void run() {
             for (int i = 0; i < n; i++) {
-                Game game = new Game(Parser.parseFile("./src/main/java/Group11/MapFiles/map2.map"), new AgentsFactory(), false);
+                Game game = new Game(Parser.parseFile("./src/main/java/Group11/MapFiles/map2.map"), new CoolAgentFactory(), false);
                 game.run();
                 if (game.getWinner().equals(Game.Team.GUARDS)) {
                     winsGuard++;
