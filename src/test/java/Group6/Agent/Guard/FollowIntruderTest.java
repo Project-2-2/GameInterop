@@ -15,7 +15,7 @@ public class FollowIntruderTest extends ExtendedUnitTest {
 
         FollowIntruder followIntruder=new FollowIntruder();
 
-        it("Follow intruder", () -> {
+        xit("Follow intruder", () -> {
 
             GuardPercepts percepts= GuardPerceptsBuilder.getSimple(true);
             Action action=followIntruder.getAction(percepts);
@@ -23,7 +23,7 @@ public class FollowIntruderTest extends ExtendedUnitTest {
             assertInstanceOf(action, Move.class);
             assertTrue(((Move)action).getDistance().getValue() > 0);
         });
-        it("rotates if it couldn't move", () -> {
+        xit("rotates if it couldn't move", () -> {
 
             GuardPercepts percepts = GuardPerceptsBuilder.getSimple(false);
             Action action = followIntruder.getAction(percepts);

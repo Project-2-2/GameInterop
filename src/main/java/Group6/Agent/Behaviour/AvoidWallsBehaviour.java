@@ -24,17 +24,21 @@ public class AvoidWallsBehaviour implements Behaviour {
 
         actions++;
         ObjectPercepts objectPercepts = PerceptsService.getWallPercepts(percepts);
+        double wallDirection = PerceptsService.getMeanDirection(objectPercepts);
+
+        if(wallDirection < 10) return ActionsFactory
+            .getValidRotate(Math.signum(wallDirection) * 90 + wallDirection, percepts);
 
         return ActionsFactory.getPartMaxRotate(
             percepts,
-            Math.signum(0.3 * PerceptsService.getMeanDirection(objectPercepts))
+            0.3 * Math.signum(wallDirection)
         );
 
     }
 
     public boolean shouldExecute(Percepts percepts) {
 
-        if(actions > 3) { actions = 0; tillNextAction = 20; }
+        if(actions > 5) { actions = 0; tillNextAction = 10; }
         if(tillNextAction > 0) return false;
 
         return wallDistance1 > 0 && wallDistance1 < wallDistance2;

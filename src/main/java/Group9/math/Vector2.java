@@ -109,6 +109,11 @@ public class Vector2 {
         return angle;
     }
 
+    public double angledSigned(Vector2 other)
+    {
+        return Math.atan2(other.getY(), other.getX()) - Math.atan2(this.getY(), this.getX());
+    }
+
     public double distance(Vector2 other)
     {
         return Math.sqrt(Math.pow(this.x - other.getX(), 2) + Math.pow(this.y - other.getY(), 2));

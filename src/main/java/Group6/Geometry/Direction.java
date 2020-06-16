@@ -25,6 +25,25 @@ public final class Direction extends Angle {
         }
     }
 
+    public static Direction getRelativeDirection(
+        Interop.Geometry.Point source,
+        Interop.Geometry.Direction sourceFacing,
+        Interop.Geometry.Point target
+    ) {
+
+        Point sourcePosition = new Point(source);
+        Point targetPosition = new Point(target);
+
+        Direction sourceDirection = fromInteropDirection(sourceFacing);
+
+        return targetPosition
+            .subtract(sourcePosition) // shift target to source coordinate system
+            .toPoint()
+            .getClockDirection()
+            .getRelativeTo(sourceDirection);
+
+    }
+
     public Direction getChangedBy(Angle angle) {
         return fromAngle(angle.sum(this));
     }

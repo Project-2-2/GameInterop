@@ -1,8 +1,14 @@
 package Group6;
 
+import Group6.Agent.Behaviour.*;
+import Group6.Agent.Guard.BehaviourBasedGuard;
+import Group6.Agent.Intruder.BehaviourBasedIntruder;
+import Group9.agent.factories.IAgentFactory;
 import Interop.Agent.Guard;
 import Interop.Agent.Intruder;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -15,10 +21,45 @@ import java.util.List;
  * Agents must not hold ANY references to common objects or references to each other.
  */
 public class AgentsFactory {
-    static public List<Intruder> createIntruders(int number) {
-        return Collections.emptyList();
+
+    static public IAgentFactory getIAgentFactoryInstance() {
+        return new IAgentFactory() {
+            public List<Intruder> createIntruders(int amount) {
+                return AgentsFactory.createIntruders(amount);
+            }
+
+            public List<Guard> createGuards(int amount) {
+                return AgentsFactory.createGuards(amount);
+            }
+        };
     }
-    static public List<Guard> createGuards(int number) {
-        return Collections.emptyList();
+
+    static public List<Intruder> createIntruders(int amount) {
+        List<Intruder> list = new ArrayList<>();
+        for (int i = 0; i < amount; i++) {
+            list.add(new BehaviourBasedIntruder(Arrays.asList(
+                new ToTargetBehaviour(),
+                new ToTeleportBehaviour(),
+                new ToPassageBehaviour(),
+                new AvoidWallsBehaviour(),
+                new DisperseBehaviour(),
+                new ExploreBehaviour()
+            )));
+        }
+        return list;
     }
+
+    static public List<Guard> createGuards(int amount) {
+        List<Guard> list = new ArrayList<>();
+        for (int i = 0; i < amount; i++) {
+            list.add(new BehaviourBasedGuard(Arrays.asList(
+                new YellBehaviour(),
+                new FollowIntruderBehaviour(),
+                new FollowYellBehaviour(),
+                new ExploreBehaviour()
+            )));
+        }
+        return list;
+    }
+
 }
