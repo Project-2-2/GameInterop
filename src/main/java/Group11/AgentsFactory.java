@@ -23,7 +23,7 @@ import java.util.List;
  * Agents must not hold ANY references to common objects or references to each other.
  */
 public class AgentsFactory {
-     public List<Intruder> createIntruders(int number) {
+     static public List<Intruder> createIntruders(int number) {
         List<Intruder> intruders = new ArrayList<>();
         for(int i = 0; i < number; i++)
         {
@@ -31,7 +31,7 @@ public class AgentsFactory {
         }
         return intruders;
     }
-    public List<Guard> createGuards(int number) {
+    static public List<Guard> createGuards(int number) {
         List<Guard> guards = new ArrayList<>();
         for(int i = 0; i < number; i++)
         {
