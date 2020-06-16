@@ -19,19 +19,30 @@ import java.util.List;
  * For example:
  * Agents must not hold ANY references to common objects or references to each other.
  */
-public class AgentsFactory implements IAgentFactory{
+public class AgentsFactory {
 
+    static public IAgentFactory getIAgentFactoryInstance() {
+        return new IAgentFactory() {
+            public List<Intruder> createIntruders(int amount) {
+                return AgentsFactory.createIntruders(amount);
+            }
+
+            public List<Guard> createGuards(int amount) {
+                return AgentsFactory.createGuards(amount);
+            }
+        };
+    }
     //minor change
-    public List<Intruder> createIntruders(int number) {
+    static public List<Intruder> createIntruders(int amount) {
         List<Intruder> intruders = new LinkedList<>();
-        for(int i = 0; i < number; i++){
+        for(int i = 0; i < amount; i++){
             intruders.add(new OurIntruder());
         }
         return intruders;
     }
-    public List<Guard> createGuards(int number) {
+    static public List<Guard> createGuards(int amount) {
         List<Guard> guards = new ArrayList<>();
-        for(int i = 0; i < number; i++)
+        for(int i = 0; i < amount; i++)
         {
             guards.add(new FollowGuard());
         }
