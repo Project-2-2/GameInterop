@@ -13,8 +13,8 @@ import Group9.agent.factories.IAgentFactory;
  * For example:
  * Agents must not hold ANY references to common objects or references to each other.
  */
-public class AgentsFactory {
-    public static List<Intruder> createIntruders(int number) {
+public class IAgentsFactoryGroup3 implements IAgentFactory{
+    public List<Intruder> createIntruders(int number) {
         
     	List<Intruder> intruders = new ArrayList<Intruder>();
     	
@@ -25,7 +25,7 @@ public class AgentsFactory {
     	
     	return intruders;
     }
-    public static List<Guard> createGuards(int number) {
+    public List<Guard> createGuards(int number) {
     	
     	List<Guard> guards = new ArrayList<Guard>();
     	for(int i = 0; i < number; i++) {
