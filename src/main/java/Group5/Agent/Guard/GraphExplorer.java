@@ -56,7 +56,7 @@ public class GraphExplorer extends GuardExplorer {
         weightMap.put(ObjectPerceptType.Teleport, 5);
         weightMap.put(ObjectPerceptType.ShadedArea, 1);
         weightMap.put(ObjectPerceptType.EmptySpace, 1);
-        weightMap.put(ObjectPerceptType.Intruder, 15);
+        weightMap.put(ObjectPerceptType.Intruder, 100);
 
     }
 
@@ -269,11 +269,17 @@ public class GraphExplorer extends GuardExplorer {
         boolean switchOffGuardMode = true;
         for(ObjectPercept o: percepts.getVision().getObjects().getAll()) {
             if(o.getType()==ObjectPerceptType.Door || o.getType()==ObjectPerceptType.Window)  switchOffGuardMode = false;
-            else if(o.getType() == ObjectPerceptType.Intruder || o.getType()==ObjectPerceptType.SentryTower){
+            else if(o.getType() == ObjectPerceptType.Intruder || o.getType()==ObjectPerceptType.SentryTower ||
+                    super.getLastTimeSawIntruder() > 0){
                 switchOffGuardMode = false;
+                actionQueue.clear();
                 System.out.println("Switching to guard mode to go to interesting object.");
                 this.mode = "guard";
             }
+        }
+        if(!percepts.getSounds().getAll().isEmpty()){
+            this.mode = "guard";
+            switchOffGuardMode = false;
         }
         if (this.guardTargetNode != null && switchOffGuardMode && this.mode.equals("guard")) {
             this.mode = "graph";
