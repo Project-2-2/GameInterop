@@ -1,0 +1,4 @@
+To use group 7's guard: create an instance of the Group7.AgentCapturer.java class
+To use group 7's intruder: create an instance of the Group7.Agent.AstarAgent class
+
+Create these instances inside the DefaultAgentFactory
