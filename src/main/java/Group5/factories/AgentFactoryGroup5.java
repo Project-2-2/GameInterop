@@ -35,6 +35,11 @@ public class AgentFactoryGroup5 implements IAgentFactory {
             //Change here the type of intruder you want
 
             //guards.add(new GuardExplorer());
+//            if (i==1){
+//                guards.add(new GuardExplorer());
+//            }else{
+//                guards.add(new GraphExplorer());
+//            }
             guards.add(new GraphExplorer());
             //guards.add(new DeepSpace());
         }

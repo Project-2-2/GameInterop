@@ -213,7 +213,7 @@ public class GuardExplorer implements Guard {
 
         Set<SmellPercept> pheromone1 = smellPheromone(percepts, SmellPerceptType.Pheromone1);
         if (!pheromone1.isEmpty()) {
-            System.out.println("leave explored zone ");
+//            System.out.println("leave explored zone ");
             GuardAction action = leaveExploredZone(percepts);
             if (action != null) {
                 addActionToQueue(action, percepts);
@@ -431,6 +431,12 @@ public class GuardExplorer implements Guard {
         }
 
         return 1;
+    }
+
+    public void reduceLastTimeSawIntruder(){
+        if (lastTimeSawIntruder>0){
+            lastTimeSawIntruder--;
+        }
     }
 
     /**

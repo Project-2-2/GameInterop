@@ -57,7 +57,7 @@ public class Node {
 
         objectMap = new HashMap<>();
 
-        nodeIdleness = 1000; //Cannot be INTEGER.MAXVALUE because when updated the value will be negative
+        nodeIdleness = 50; //Cannot be INTEGER.MAXVALUE because when updated the value will be negative
 
         leftBoundary = Math.min(position.getX() + 0.5 * radius, position.getX() - 0.5 * radius);
         rightBoundary = Math.max(position.getX() + 0.5 * radius, position.getX() - 0.5 * radius);
