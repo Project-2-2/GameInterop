@@ -292,29 +292,44 @@ public class GraphExplorer extends GuardExplorer {
                 clearQueue = false;
         }
         else if(visionPerceptTypes.contains(ObjectPerceptType.Intruder)){
-//                switchOffGuardMode = false;
+                switchOffGuardMode = false;
                 if (clearQueue){
                     actionQueue.clear();
                 }
                 clearQueue = false;
                 super.followIntruder(percepts,percepts.getVision().getObjects().getAll());
+                return;
 //                System.out.println("Switching to guard mode to go to interesting object.");
 //                this.mode = "guard";
-            }else if (super.getLastTimeSawIntruder()>0){
+            }
+        else if (super.getLastTimeSawIntruder()>0){
                 stayInNode = true;
-                System.out.println("entered last time saw intruder");
-                super.reduceLastTimeSawIntruder();
+//                System.out.println("entered last time saw intruder");
+//                super.reduceLastTimeSawIntruder();
 
             }
-            else if(getLastTimeSawIntruder()==0){
-                stayInNode = false;
+        else if(visionPerceptTypes.contains(ObjectPerceptType.SentryTower)){
+            if(clearQueue){
+                actionQueue.clear();
             }
+            clearQueue = false;
+            this.mode = "guard";
+        }
+
+        else if(super.getLastTimeSawIntruder()==0){
+//            System.out.println("remove counter for intruder");
+            stayInNode = false;
+        }
+
+        if(super.getLastTimeSawIntruder()==1){
+            System.out.println("remove counter for intruder");
+        }
 
 //        if(!percepts.getSounds().getAll().isEmpty()){
 //            this.mode = "guard";
 //            switchOffGuardMode = false;
 //        }
-        if (this.guardTargetNode != null && switchOffGuardMode && this.mode.equals("guard")) {
+        if (switchOffGuardMode && this.mode.equals("guard")) {
             this.mode = "graph";
             clearQueue = true;
             System.out.println("Switching off guard mode");
@@ -338,7 +353,8 @@ public class GraphExplorer extends GuardExplorer {
             if (!percepts.wasLastActionExecuted()) {
                 //cannot reach node so remove it from the map
                 removeUnreachableNode();
-                addActionToQueue(new Rotate(Angle.fromRadians(percepts.getScenarioGuardPercepts().getScenarioPercepts().getMaxRotationAngle().getRadians() * Game._RANDOM.nextDouble())), percepts);
+                super.moveParallelToWall(percepts,percepts.getVision().getObjects().getAll());
+//                addActionToQueue(new Rotate(Angle.fromRadians(percepts.getScenarioGuardPercepts().getScenarioPercepts().getMaxRotationAngle().getRadians() * Game._RANDOM.nextDouble())), percepts);
 
             } else {
                 double maxMovementDistance = percepts.getScenarioGuardPercepts().getMaxMoveDistanceGuard().getValue() * getSpeedModifier(percepts);
@@ -348,7 +364,10 @@ public class GraphExplorer extends GuardExplorer {
                 Node previousNode = previousNodeVisited;
                 Node nextNode = chooseNextNode();
                 if(previousNodeVisited!=null&&nextNode!=null){
-                    System.out.println(nextNode.equals(previousNode));
+                    if(nextNode.equals(previousNode)){
+                        System.out.println(nextNode.equals(previousNode));
+                    }
+//                    System.out.println(nextNode.equals(previousNode));
                 }
 //                System.out.println(nextNode == null);
                 if (nextNode != null) {
@@ -392,7 +411,7 @@ public class GraphExplorer extends GuardExplorer {
             for (Node n : previousNodeVisited.getNeighbours()) {
                 double distance = this.previousNodeVisited.getCenter().getDistance(n.getCenter()).getValue();
 //            if (distance < 2 * radius) {
-                if (distance > epsilon && n.getNodeIdleness() > utility) {
+                if (distance > epsilon && n.getNodeIdleness() >= utility) {
                     nextNode = n;
                     utility = n.getNodeIdleness();
                 }
