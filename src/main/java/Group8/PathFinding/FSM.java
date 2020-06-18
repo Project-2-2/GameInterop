@@ -56,7 +56,7 @@ public class FSM {
     public IntruderAction getMoveIntruder(IntruderPercepts percepts) {
         currentPercepts = percepts;
         boolean ic = predictCollision(percepts);
-        System.out.println(String.format("Collision is imminent: %b",ic));
+        //System.out.println(String.format("Collision is imminent: %b",ic));
         if(ic){
             this.phase = Phase.CircumNav;
             actionQueue.clear();

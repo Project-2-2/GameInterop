@@ -59,7 +59,7 @@ public class SimplePathfinding {
                 counter++;
             }
             firstTime = false;
-            return new Move(new Distance(0.25));
+            return new Move(new Distance(0.4));
         }
         else if(percepts.getTargetDirection().getRadians() >= MAX_ROTATION.getRadians()){
             return new Rotate(Angle.fromRadians(MAX_ROTATION.getRadians()));

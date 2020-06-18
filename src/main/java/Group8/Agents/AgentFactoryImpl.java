@@ -2,6 +2,7 @@ package Group8.Agents;
 
 import Group8.Agents.Intruder.FSM;
 import Group8.Agents.Intruder.SimplePathfindingIntruder;
+import Group8.Agents.Intruder.aStarIntruder;
 import Group9.agent.RandomAgent;
 import Group9.agent.RandomIntruderAgent;
 import Group9.agent.factories.IAgentFactory;
@@ -13,14 +14,13 @@ import java.util.List;
 
 public class AgentFactoryImpl implements IAgentFactory{
     public static final AlgoG GUARD_ALGORITHM = AlgoG.OCCUPANCY_AGENT;
-    public static final AlgoI INTRUDER_ALGORITHM = AlgoI.FSM;
+    public static final AlgoI INTRUDER_ALGORITHM = AlgoI.ASTAR;
 
     public enum AlgoI {
-        SIMPLE_PATH,FSM
+        SIMPLE_PATH,FSM, ASTAR
     }
     public enum AlgoG {
         AI1,OCCUPANCY_AGENT
-
     }
 
     @Override
@@ -35,6 +35,8 @@ public class AgentFactoryImpl implements IAgentFactory{
                 case SIMPLE_PATH:
                     intruders.add(new SimplePathfindingIntruder());
                     break;
+                case ASTAR:
+                    intruders.add(new aStarIntruder());
             }
         }
 
