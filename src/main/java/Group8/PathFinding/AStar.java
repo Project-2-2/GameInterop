@@ -157,7 +157,7 @@ public class AStar {
      * Note, this method discretizes the map.
      */
     public void mapping(IntruderPercepts percepts) {
-        Set<ObjectPercept> objectPercepts = percepts.getVision().getObjects().getAll();
+        Set<ObjectPercept> objectPercepts =  percepts.getVision().getObjects().getAll();
         Iterator<ObjectPercept> objectPerceptIterator = objectPercepts.iterator();
         //TODO: not the way to get angle
 
@@ -183,8 +183,8 @@ public class AStar {
             // Boolean occupancy.
             for (int x = x1, y = y1; x <= x2; x++) {
                 if (x == x2 && y == y2) {
-
                     //set only last value to true
+                    System.out.println("yanisse");
                     occupancyGrid.update(x, y);
                     break;
                 } else {
@@ -658,6 +658,52 @@ public class AStar {
                 System.out.println("you need to get a N,S,E,W case for log map updating.");
             }
         }
+
+
+
+        //TODO: test decoupling indepence of true value to row and column.  Phase 3
+//      //this assumes that walls go only horizontally and vertically- decouples independence maybe be more accurate
+//      if (x2 > x1 && y2 > y1) {
+//            int rowCountIndex = 0;
+//            //row count
+//            for(int i  = y1-explorationSize; i < y1; i++) {
+//                int countTrueRow =0;
+//                for(int j = x1; j < x1 + explorationSize; j++) {
+//                    //check if value is true.
+//                    if(occupancyGrid.occupancyGrid[j][i]) {
+//                        countTrueRow++;
+//                    }
+//
+//                    if(j == x1 + explorationSize - 1) {
+//                        //record the count true values in row
+//                        rowCount[rowCountIndex] = countTrueRow;
+//                        rowCountIndex++;
+//                    }
+//                }
+//            }
+//
+//        }
+//        // SW case
+//        else if(x2 > x1 && y2 < y1) {
+//
+//        }
+//        // SE case
+//        else if(x2 < x1 && y2 < y1) {
+//
+//        }
+//        // NE case
+//        else if(x2 < x1 && y2 > y1) {
+//
+//        }
+//        //Agent is facing the endpoint
+//        else {
+//
+//        }
     }
 
+    //linking up path planning would be better in the future.
+    /**
+     * This function finds the minimum cost in Log-map as to the direction in which the agent would navigate towards
+     * @return Angle that the agent should take as next move set.
+     */
 }
