@@ -292,13 +292,17 @@ public class GraphExplorer extends GuardExplorer {
                 clearQueue = false;
         }
         else if(visionPerceptTypes.contains(ObjectPerceptType.Intruder)){
-                switchOffGuardMode = false;
+//                switchOffGuardMode = false;
                 if (clearQueue){
                     actionQueue.clear();
                 }
                 clearQueue = false;
                 super.followIntruder(percepts,percepts.getVision().getObjects().getAll());
-                return;
+                if (!percepts.wasLastActionExecuted()){
+//                    System.out.println("fail");
+                }else{
+//                    System.out.println("pass");
+                }
 //                System.out.println("Switching to guard mode to go to interesting object.");
 //                this.mode = "guard";
             }
@@ -322,24 +326,24 @@ public class GraphExplorer extends GuardExplorer {
         }
 
         if(super.getLastTimeSawIntruder()==1){
-            System.out.println("remove counter for intruder");
+//            System.out.println("remove counter for intruder");
         }
 
-//        if(!percepts.getSounds().getAll().isEmpty()){
-//            this.mode = "guard";
-//            switchOffGuardMode = false;
-//        }
+        if(!percepts.getSounds().getAll().isEmpty()){
+            this.mode = "guard";
+            switchOffGuardMode = false;
+        }
         if (switchOffGuardMode && this.mode.equals("guard")) {
             this.mode = "graph";
             clearQueue = true;
-            System.out.println("Switching off guard mode");
+//            System.out.println("Switching off guard mode");
             keepGoing = false;
         }
 
         // TODO: account for the intruder
 
         if (this.mode.equals("guard")) {
-            System.out.println("entering guard mode");
+//            System.out.println("entering guard mode");
             super.explore(percepts);
 
         } else {
@@ -365,7 +369,7 @@ public class GraphExplorer extends GuardExplorer {
                 Node nextNode = chooseNextNode();
                 if(previousNodeVisited!=null&&nextNode!=null){
                     if(nextNode.equals(previousNode)){
-                        System.out.println(nextNode.equals(previousNode));
+//                        System.out.println(nextNode.equals(previousNode));
                     }
 //                    System.out.println(nextNode.equals(previousNode));
                 }
@@ -477,7 +481,7 @@ public class GraphExplorer extends GuardExplorer {
 
         if (node.getObjectMap().keySet().contains(ObjectPerceptType.Door) ||
                 node.getObjectMap().keySet().contains(ObjectPerceptType.Window)) {
-            System.out.println("node contains door or window");
+//            System.out.println("node contains door or window");
 
             objectsOnTheWay objectsOnTheWay = getObjectsOnTheWay(node, ObjectPerceptType.Door);
 
@@ -517,7 +521,7 @@ public class GraphExplorer extends GuardExplorer {
                     //System.out.println("Moving to door/window.");
                 }
                 this.keepGoing = true;
-                addActionToQueue(new Move(new Distance(1)), percepts);
+                addActionToQueue(new Move(new Distance(percepts.getScenarioGuardPercepts().getMaxMoveDistanceGuard().getValue() * getSpeedModifier(percepts))), percepts);
             }
 
 
@@ -533,7 +537,7 @@ public class GraphExplorer extends GuardExplorer {
                     node.getCenter().getY() - this.position.getY()), this.angle);
             if (angleToNextNode.getRadians() > 0.05)
                 addActionToQueue(new Rotate(angleToNextNode), percepts);
-            addActionToQueue(new Move(new Distance(1)), percepts);
+            addActionToQueue(new Move(new Distance(percepts.getScenarioGuardPercepts().getMaxMoveDistanceGuard().getValue() * getSpeedModifier(percepts))), percepts);
         }
     }
 

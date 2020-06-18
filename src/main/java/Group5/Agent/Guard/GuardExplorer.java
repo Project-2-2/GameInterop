@@ -117,6 +117,7 @@ public class GuardExplorer implements Guard {
     }
 
     public void explore(GuardPercepts percepts) {
+//        System.out.println("calling explorer");
         Set<ObjectPercept> vision = percepts.getVision().getObjects().getAll();
         ArrayList<ObjectPerceptType> visionPerceptTypes = new ArrayList<>();
         Set<SoundPercept> sound = percepts.getSounds().getAll();
@@ -331,6 +332,7 @@ public class GuardExplorer implements Guard {
             }
             addActionToQueue(new Rotate(Angle.fromDegrees(-angleToIntruder / count)), percepts);
         } else {
+//            System.out.println("kak");
             addActionToQueue(new Move(new Distance(distanceToIntruder / count)), percepts);
         }
     }
