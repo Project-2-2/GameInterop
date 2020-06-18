@@ -28,7 +28,6 @@ public class GuardExplorer implements Guard {
     private int lastTimeSawIntruder;
     private int droppedPheromone;
     private int movedSomewhere;
-    private ArrayList<DropPheromone> myPheromone = new ArrayList<>();
 
     @Override
     public GuardAction getAction(GuardPercepts percepts) {
@@ -208,17 +207,6 @@ public class GuardExplorer implements Guard {
             dropPheromone(percepts, SmellPerceptType.Pheromone1);
             this.droppedPheromone = 500;
             return;
-        }
-
-
-        Set<SmellPercept> pheromone1 = smellPheromone(percepts, SmellPerceptType.Pheromone1);
-        if (!pheromone1.isEmpty()) {
-//            System.out.println("leave explored zone ");
-            GuardAction action = leaveExploredZone(percepts);
-            if (action != null) {
-                addActionToQueue(action, percepts);
-                return;
-            }
         }
 
 
@@ -502,7 +490,6 @@ public class GuardExplorer implements Guard {
     protected void dropPheromone(GuardPercepts p, SmellPerceptType type) {
         DropPheromone action = new DropPheromone(type);
         addActionToQueue(action, p);
-        myPheromone.add(action);
 
     }
 
@@ -510,7 +497,7 @@ public class GuardExplorer implements Guard {
         return !percepts.getSounds().getAll().isEmpty();
     }
 
-    private Set<SmellPercept> smellPheromone(GuardPercepts percepts) {
+    protected Set<SmellPercept> smellPheromone(GuardPercepts percepts) {
         if (percepts.getSmells().getAll().isEmpty())
             return null;
         else
@@ -535,16 +522,7 @@ public class GuardExplorer implements Guard {
     /**
      * If smells a pheromone where he wanted to go, he changes directions
      */
-    private GuardAction leaveExploredZone(GuardPercepts p) {
-        Set<SmellPercept> smell = smellPheromone(p);
-        if (smell != null) {
-            for (SmellPercept sp : smell)
-                if (sp.getType().toString().equals("Pheromone1") && !myPheromone.contains(sp))
-                    return new Rotate(Angle.fromRadians(Math.PI / 2));
-        }
 
-        return null;
-    }
 
     public int getDroppedPheromone() {
         return droppedPheromone;
