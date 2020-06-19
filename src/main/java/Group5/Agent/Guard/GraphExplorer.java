@@ -18,10 +18,7 @@ import Interop.Percept.Sound.SoundPercept;
 import Interop.Percept.Vision.ObjectPercept;
 import Interop.Percept.Vision.ObjectPerceptType;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class GraphExplorer extends GuardExplorer {
 
@@ -408,12 +405,10 @@ public class GraphExplorer extends GuardExplorer {
                     return;
                 }
 
-                GuardAction toExploreZone=leaveExploredZone(percepts);
-                if(toExploreZone!=null)
-                {
-                    addActionToQueue(toExploreZone,percepts);
-                    return;
-                }
+                for (SmellPercept sp : smelledPheromone)
+                    if (sp.getType().toString().equals("Pheromone1"))
+                        changeTarget();
+
 
                 if (percepts.getAreaPercepts().isInDoor() && getDroppedPheromone() == 0) {
 //                    System.out.println("door: drop pheromone type 2");
@@ -474,6 +469,36 @@ public class GraphExplorer extends GuardExplorer {
         }
         else
             return nextNode;
+    }
+
+    private void changeTarget() {
+        ArrayList<Node> neighbours = new ArrayList<>(previousNodeVisited.getNeighbours());
+        neighbours.remove(nextNode);
+
+        Node nextNode = null;
+        double utility = 0;
+        if(previousNodeVisited!=null) {
+            for (Node n : neighbours) {
+                if (n.getNodeIdleness() >= utility) {
+                    nextNode = n;
+                    utility = n.getNodeIdleness();
+                }
+            }
+        }
+        this.nextNode = nextNode;
+        if (nextNode == null) return;
+        objectsOnTheWay wallsOnTheWay = getObjectsOnTheWay(nextNode, ObjectPerceptType.Wall);
+        objectsOnTheWay doorsOntheWay = getObjectsOnTheWay(nextNode, ObjectPerceptType.Door);
+        objectsOnTheWay windowsOntheWay = getObjectsOnTheWay(nextNode, ObjectPerceptType.Window);
+
+        if(wallsOnTheWay.perceptList.size() > maxWallsOntheWay && doorsOntheWay.perceptList.isEmpty() && windowsOntheWay.perceptList.isEmpty()){
+            removeUnreachableNode();
+            previousNodeVisited.getNeighbours().remove(nextNode);
+            changeTarget();
+        }
+        else
+            return;
+
     }
 
     private void removeUnreachableNode() {
@@ -590,15 +615,6 @@ public class GraphExplorer extends GuardExplorer {
                 addActionToQueue(new Rotate(angleToNextNode), percepts);
             addActionToQueue(new Move(new Distance(percepts.getScenarioGuardPercepts().getMaxMoveDistanceGuard().getValue() * getSpeedModifier(percepts))), percepts);
         }
-    }
-
-    private GuardAction leaveExploredZone(GuardPercepts p) {
-
-            for (SmellPercept sp : smelledPheromone)
-                if (sp.getType().toString().equals("Pheromone1"))
-                    return new Rotate(Angle.fromRadians(Math.PI / 2));
-
-        return null;
     }
 
     @Override

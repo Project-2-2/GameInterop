@@ -521,11 +521,6 @@ public class GuardExplorer implements Guard {
         return toReturn;
     }
 
-    /**
-     * If smells a pheromone where he wanted to go, he changes directions
-     */
-
-
     public int getDroppedPheromone() {
         return droppedPheromone;
     }
