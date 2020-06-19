@@ -62,7 +62,7 @@ public class GraphExplorer extends GuardExplorer {
         position = new Point(0, 0);
         nodes = new ArrayList<>();
         angle = Angle.fromDegrees(0);
-        radius = 30;
+        radius = 5;
         currentTime = 0;
         epsilon = 0.5;
         maxWallsOntheWay = 10;
@@ -345,6 +345,10 @@ public class GraphExplorer extends GuardExplorer {
             clearQueue = false;
             this.mode = "guard";
         }
+        else if(!percepts.getSounds().getAll().isEmpty()){
+            this.mode = "guard";
+            switchOffGuardMode = false;
+        }
 
         else if(super.getLastTimeSawIntruder()==0){
 //            System.out.println("remove counter for intruder");
@@ -355,10 +359,6 @@ public class GraphExplorer extends GuardExplorer {
 //            System.out.println("remove counter for intruder");
         }
 
-        if(!percepts.getSounds().getAll().isEmpty()){
-            this.mode = "guard";
-            switchOffGuardMode = false;
-        }
         if (switchOffGuardMode && this.mode.equals("guard")) {
             this.mode = "graph";
             clearQueue = true;
