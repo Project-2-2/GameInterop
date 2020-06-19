@@ -450,7 +450,7 @@ public class GraphExplorer extends GuardExplorer {
             for (Node n : previousNodeVisited.getNeighbours()) {
                 double distance = this.previousNodeVisited.getCenter().getDistance(n.getCenter()).getValue();
 //            if (distance < 2 * radius) {
-                if (distance > epsilon && n.getNodeIdleness() >= utility) {
+                if (distance > epsilon && n.getNodeIdleness() > utility) {
                     nextNode = n;
                     utility = n.getNodeIdleness();
                 }
