@@ -3,7 +3,6 @@ package Group4;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import Interop.Action.*;
-import Interop.*;
 import Interop.Percept.*;
 import Interop.Geometry.*;
 import Interop.Agent.*;
