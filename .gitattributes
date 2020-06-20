@@ -1,1 +1,2 @@
-*.svg binary
+**/*.svg binary
+**/*.pdf binary
