@@ -25,7 +25,7 @@ public class GUI extends Application{
 
     // If we need to pass a specific factory make sure to use -1 for ticks since that will be the fastest
     // DefaultAgentFactory needs to be replaced!
-    private final Game game = new Game(Parser.parseFile("./src/main/java/Group9/map/maps/TestMapEasy.map"),new DefaultAgentFactory(), false, 15,null);
+    private final Game game = new Game(Parser.parseFile("./src/main/java/Group9/map/maps/test_2.map"),new DefaultAgentFactory(), false, 15,null);
 
     private final GameScene scene = new GameScene(new StackPane(),game.getGameMap());
 

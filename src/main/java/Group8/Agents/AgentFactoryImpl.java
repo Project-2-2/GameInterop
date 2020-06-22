@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class AgentFactoryImpl implements IAgentFactory{
-    public static final AlgoG GUARD_ALGORITHM = AlgoG.OCCUPANCY_AGENT;
+    public static final AlgoG GUARD_ALGORITHM = AlgoG.AI1;
     public static final AlgoI INTRUDER_ALGORITHM = AlgoI.ASTAR;
 
     public enum AlgoI {
@@ -58,7 +58,6 @@ public class AgentFactoryImpl implements IAgentFactory{
                     break;
             }
         }
-
         return guards;
     }
 }

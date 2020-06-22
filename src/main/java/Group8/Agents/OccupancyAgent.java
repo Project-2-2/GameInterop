@@ -150,13 +150,22 @@ public class OccupancyAgent implements Guard {
         rangeDistance = percepts.getVision().getFieldOfView().getRange();
         mapping(percepts);
 
+        for(int i = 0 ; i < this.occupancyGrid.occupancyGrid.length; i++){
+            for(int j = 0 ; j < this.occupancyGrid.occupancyGrid[0].length; j++){
+                if(this.occupancyGrid.occupancyGrid[i][j]==true){
+                    System.out.println("yanis le tres nwar");
+                }
+            }
+        }
+
+        rotateAngleNew = Angle.fromRadians(percepts.getScenarioGuardPercepts().getScenarioPercepts().getMaxRotationAngle().getRadians() * Game._RANDOM.nextDouble());
+
         if(!percepts.wasLastActionExecuted())
         {
             if(Math.random() < 0.2)
             {
                 return new DropPheromone(SmellPerceptType.values()[(int) (Math.random() * SmellPerceptType.values().length)]);
             }
-            rotateAngleNew = Angle.fromRadians(percepts.getScenarioGuardPercepts().getScenarioPercepts().getMaxRotationAngle().getRadians() * Game._RANDOM.nextDouble());
             return new Rotate(rotateAngleNew);
 
         } else {
@@ -164,6 +173,7 @@ public class OccupancyAgent implements Guard {
             //radian sometimes not turning negative
             //radians in this case is Math.Atan(percentageOfSlope/100)
            // System.out.println(maxMoveDistance.toString());
+
             xPosition+=maxMoveDistance.getValue()*rotateAngleNew.getRadians();
             yPosition+=maxMoveDistance.getValue()*rotateAngleNew.getRadians();
             return new Move(maxMoveDistance);
@@ -311,8 +321,11 @@ public class OccupancyAgent implements Guard {
 
                 //If x and y are in the final vision point and set to true if there is a wall.
                 if(x==objectPercept.getPoint().getX() && y == objectPercept.getPoint().getY()) {
+                    System.out.println("hit");
+
                     //only walls are solid
                     if(objectPercept.getType().isSolid()) {
+
                         occupancyGrid.update(x,y, true);
                     } else {
                         occupancyGrid.update(x,y, false);
@@ -682,8 +695,8 @@ public class OccupancyAgent implements Guard {
             // NE
             else if (x2 < x1 && y2 < y1) {
                 //this counts everything
-                for (int i = y1; i < y1 + explorationSize; i++) {
-                    for (int j = x1 - explorationSize; j < x1; j++) {
+                for (int i = y1; i < y1 + explorationSize -1; i++) {
+                    for (int j = x1 - explorationSize; j < x1 -1; j++) {
                         if (occupancyGrid.logMap[j][i] == 0) {
                             //at top left
                             if (i == 0 && j == 0) {

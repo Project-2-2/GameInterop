@@ -9,7 +9,7 @@ import java.util.Arrays;
  */
 public class OccupancyGrid {
     //the higher the value of xsize and ysize the greater the accuracy at cost of complexity.
-    private final double xsize = 80; //X size of map
+    private final double xsize = 249; //X size of map
     private final double ysize = 120; //Y size of map
     private double grid_size;
 

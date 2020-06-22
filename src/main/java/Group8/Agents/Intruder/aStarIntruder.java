@@ -17,7 +17,7 @@ public class aStarIntruder implements Intruder {
     @Override
     public IntruderAction getAction(IntruderPercepts percepts){
         if(pathfinding == null){
-            pathfinding = new AStar(percepts);
+            pathfinding = new AStar();
         }
         return pathfinding.getMoveIntruder(percepts);
     }
