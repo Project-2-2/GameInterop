@@ -11,6 +11,7 @@ import Interop.Percept.IntruderPercepts;
 import Interop.Percept.Vision.ObjectPercept;
 
 import java.util.Iterator;
+import java.util.Random;
 import java.util.Set;
 
 /**
@@ -28,7 +29,9 @@ public class AStar {
     private double log_free = Math.log(0.35/0.65);
     Distance rangeDistance;
     private boolean[][] openSet, closedSet;
-    private boolean rotate = true;
+    private boolean rotateToZero = true; private boolean circ = false;
+    private double angle = 0;
+    private int counter = 0;
 
     public AStar() {
         this.occupancyGrid = new OccupancyGrid();
@@ -44,24 +47,44 @@ public class AStar {
         rangeDistance = percepts.getVision().getFieldOfView().getRange();
         MAX_ROTATION = percepts.getScenarioIntruderPercepts().getScenarioPercepts().getMaxRotationAngle();
         mapping(percepts);
-
-        System.out.println("x: " + this.xPosition);
-        System.out.println("y: " + this.yPosition);
-
         //Create empty set and close set
         openSet = this.occupancyGrid.occupancyGrid;
+        counter++;
 
+        if(rotateToZero){
+            angle = percepts.getTargetDirection().getRadians();
+        }
+
+        if(counter % 13 == 0){
+            counter++;
+            if(percepts.getTargetDirection().getRadians() >= MAX_ROTATION.getRadians()){
+                circ = true;
+                return new Rotate(Angle.fromRadians(-MAX_ROTATION.getRadians()));
+            }
+            else {
+                circ = true;
+                return new Rotate(Angle.fromRadians(percepts.getTargetDirection().getRadians()+0.0001));
+            }
+        }
+        if(circ){
+            return new Move(percepts.getScenarioIntruderPercepts().getMaxMoveDistanceIntruder());
+        }
         // Calls the a* algorithm if the agent encounters a wall
+
         if(!percepts.wasLastActionExecuted()){
-            boolean [][] newPath = findPath(openSet, percepts);
+
+            boolean [][] newPath = findPath(openSet, percepts, angle);
             for(int i = 0 ; i < newPath.length; i++){
-                    for(int j = 0 ; j < newPath[0].length; j++) {
-                        System.out.print(newPath[i][j]+ " ");
-                    }
+                for(int j = 0 ; j < newPath[0].length; j++) {
+                    System.out.print(newPath[i][j]+ " ");
+                }
                 System.out.println();
             }
+            circ = true;
             return new Rotate(Angle.fromRadians(MAX_ROTATION.getRadians()));
         }
+
+
         if(((Math.abs(percepts.getTargetDirection().getRadians())) <= 0.001)){
             double move = percepts.getScenarioIntruderPercepts().getMaxMoveDistanceIntruder().getValue();
             xPosition+= move * percepts.getTargetDirection().getDegrees();
@@ -83,15 +106,21 @@ public class AStar {
      * @param percepts the precepts of the agent
      * @return
      */
-    private boolean[][] findPath(boolean[][] openSet, IntruderPercepts percepts) {
+    private boolean[][] findPath(boolean[][] openSet, IntruderPercepts percepts, double angle) {
         // Path is a 2D boolean array which sets the shortest path as true
         boolean[][] path = new boolean[openSet.length][openSet[0].length];
 
         Point best_point = new Point(this.xPosition, this.yPosition);
+
         int counter = 0;
         // Non deterministically guess the position of the target area using the direction
+        double slope = Math.tan(Math.atan(this.yPosition/this.xPosition)-angle);
+        Random random = new Random();
+        int x = random.nextInt(10);
+
+        Point targetPoint = new Point(x, slope*x);
+
         System.out.println(percepts.getTargetDirection().getDegrees());
-        Point targetPoint = new Point(70, 70);
         double x_history = 0;double y_history = 0;
         double min = Double.MAX_VALUE;
 
